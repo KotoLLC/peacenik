@@ -59,6 +59,8 @@ func (s *Server) Run() error {
 	r.Mount("/info", handler.Info(s.services.Info))
 	r.Mount("/auth", handler.Auth(s.checkAuth, s.services.User, s.sessionStore, sessionName, sessionUserKey))
 	r.Mount("/invite", s.checkAuth(handler.Invite(s.services.Invite)))
+	r.Mount("/friends", s.checkAuth(handler.Friend(s.repos.Relations)))
+	r.Mount("/communities", s.checkAuth(handler.Community(s.repos.Relations)))
 
 	listenAddr := ":" + strconv.Itoa(s.port)
 	log.Println("started on " + listenAddr)

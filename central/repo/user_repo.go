@@ -12,10 +12,10 @@ import (
 type User struct {
 	ID           string `json:"id" db:"id"`
 	Name         string `json:"name" db:"name"`
-	Email        string `json:"email" db:"email"`
+	Email        string `json:"email,omitempty" db:"email"`
 	PasswordHash string `json:"-" db:"password_hash"`
-	CreatedAt    string `json:"created_at" db:"created_at"`
-	UpdatedAt    string `json:"updated_at" db:"updated_at"`
+	CreatedAt    string `json:"created_at,omitempty" db:"created_at"`
+	UpdatedAt    string `json:"updated_at,omitempty" db:"updated_at"`
 }
 
 type UserRepo interface {
