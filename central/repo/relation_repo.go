@@ -15,6 +15,8 @@ var (
 type RelationRepo interface {
 	AddRelation(user1ID, user2Email, community string) error
 	AcceptRelation(user1ID, user2ID, user2Email, community string) error
+	Friends(user User) ([]User, error)
+	Communities(user User) ([]string, error)
 }
 
 type relationRepo struct {
@@ -53,4 +55,57 @@ func (r *relationRepo) AcceptRelation(user1ID, user2ID, user2Email, community st
 		return ErrRelationNotFound
 	}
 	return nil
+}
+
+func (r *relationRepo) Friends(user User) ([]User, error) {
+	var friends []User
+	err := r.db.Select(&friends, `
+		select id, name
+		from users
+		where id in (
+			select user2_id
+			from relations
+			where user1_id = $1 and accepted_at <> ''
+			union
+			select user1_id
+			from relations
+			where user2_id = $1 and accepted_at <> '')`,
+		user.ID)
+	if err != nil {
+		return nil, err
+	}
+	return friends, nil
+}
+
+func (r *relationRepo) Communities(user User) ([]string, error) {
+	var communities []string
+	err := r.db.Select(&communities, `
+		select distinct community
+		from relations
+		where accepted_at <> ''
+		  and (user1_id in (
+				select $1
+				union
+				select user2_id
+				from relations
+				where user1_id = $1 and accepted_at <> ''
+				union
+				select user1_id
+				from relations
+				where user2_id = $1 and accepted_at <> '')
+			  or user2_id in (
+				select $1
+				union
+				select user2_id
+				from relations
+				where user1_id = $1 and accepted_at <> ''
+				union
+				select user1_id
+				from relations
+				where user2_id = $1 and accepted_at <> ''))`,
+		user.ID)
+	if err != nil {
+		return nil, err
+	}
+	return communities, nil
 }

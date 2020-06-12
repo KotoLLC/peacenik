@@ -53,4 +53,12 @@ Content-Type: application/json
 {
   "token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21tdW5pdHkiOiJodHRwOi8vbG9jYWxob3N0OjEyMDAyIiwiZXhwIjoxNTkyNTc1NTUzLCJpZCI6IjM1ZjM1NjU2LTliN2MtNDkyOS1iM2VmLTRjYmFkMjI2NDE2NCIsIm5hbWUiOiJhbmRyZXk5Iiwic2NvcGUiOiJpbnZpdGUiLCJ3aG9tIjoiYW5kcmV5QG1haWwuY29tIn0.if9Ap2wm1dsKZBxXJcY5HFlli1AkxDMUZoz-gTs75QQjolTMMVwc0es_DGD05A3yq-IneDXMoz9POXReYcbpA_NfAfIXn-DqYZ6Q0CKlw-fYaxUSYy5c2C8e0Mg0QCJJmqQcmSZrkB_eWfreS8AS-GGCgB-J4dCeILh9U1heZgQ"
 }
+
+
+### List of friends (for current user).
+POST http://localhost:12001/friends
+
+
+### List of communities (for current user).
+POST http://localhost:12001/communities
 ```
