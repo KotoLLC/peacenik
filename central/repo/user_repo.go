@@ -21,6 +21,7 @@ type User struct {
 type UserRepo interface {
 	FindUserByID(id string) (*User, error)
 	FindUserByEmail(email string) (*User, error)
+	FindUserByName(name string) (*User, error)
 	AddUser(id, name, email, passwordHash string) error
 }
 
@@ -49,6 +50,18 @@ func (ur *userRepo) FindUserByID(id string) (*User, error) {
 func (ur *userRepo) FindUserByEmail(email string) (*User, error) {
 	var user User
 	err := ur.db.Get(&user, "select id, name, email, password_hash, created_at, updated_at from users where email = $1", email)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (ur *userRepo) FindUserByName(name string) (*User, error) {
+	var user User
+	err := ur.db.Get(&user, "select id, name, email, password_hash, created_at, updated_at from users where name = $1", name)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil

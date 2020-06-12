@@ -37,6 +37,14 @@ func (s *userService) Register(name, email, password string) error {
 		return ErrUserAlreadyExists
 	}
 
+	user, err = s.users.FindUserByName(name)
+	if err != nil {
+		return err
+	}
+	if user != nil {
+		return ErrUserAlreadyExists
+	}
+
 	userID, err := uuid.NewV4()
 	if err != nil {
 		return err
