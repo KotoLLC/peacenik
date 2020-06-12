@@ -7,7 +7,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/mreider/koto/central/repo"
-	"github.com/mreider/koto/central/token"
+	"github.com/mreider/koto/token"
 )
 
 type UserService interface {
