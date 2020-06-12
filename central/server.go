@@ -22,7 +22,8 @@ const (
 )
 
 type Repos struct {
-	User repo.UserRepo
+	User      repo.UserRepo
+	Relations repo.RelationRepo
 }
 
 type Services struct {
