@@ -3,8 +3,6 @@ package service
 import (
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
-
 	"github.com/mreider/koto/central/repo"
 	"github.com/mreider/koto/token"
 )
@@ -16,12 +14,12 @@ type InviteService interface {
 
 type inviteService struct {
 	users          repo.UserRepo
-	relations      repo.RelationRepo
+	relations      repo.InviteRepo
 	tokenGenerator token.Generator
 	tokenParser    token.Parser
 }
 
-func NewInvite(users repo.UserRepo, relations repo.RelationRepo, tokenGenerator token.Generator, tokenParser token.Parser) InviteService {
+func NewInvite(users repo.UserRepo, relations repo.InviteRepo, tokenGenerator token.Generator, tokenParser token.Parser) InviteService {
 	return &inviteService{
 		users:          users,
 		relations:      relations,
@@ -31,7 +29,7 @@ func NewInvite(users repo.UserRepo, relations repo.RelationRepo, tokenGenerator 
 }
 
 func (s *inviteService) Create(user repo.User, whomEmail, community string) (token string, err error) {
-	err = s.relations.AddRelation(user.ID, whomEmail, community)
+	err = s.relations.AddInvite(user.ID, whomEmail, community)
 	if err != nil {
 		return "", err
 	}
@@ -44,14 +42,9 @@ func (s *inviteService) Create(user repo.User, whomEmail, community string) (tok
 }
 
 func (s *inviteService) Accept(user repo.User, inviteToken string) error {
-	jwtToken, err := s.tokenParser.Parse(inviteToken)
+	_, claims, err := s.tokenParser.Parse(inviteToken, "invite")
 	if err != nil {
 		return err
-	}
-
-	claims := jwtToken.Claims.(jwt.MapClaims)
-	if claims["scope"].(string) != "invite" {
-		return token.ErrInvalidToken
 	}
 
 	whomEmail := claims["whom"].(string)
@@ -59,5 +52,5 @@ func (s *inviteService) Accept(user repo.User, inviteToken string) error {
 		return token.ErrInvalidToken
 	}
 
-	return s.relations.AcceptRelation(claims["id"].(string), user.ID, user.Email, claims["community"].(string))
+	return s.relations.AcceptInvite(claims["id"].(string), user.ID, user.Email, claims["community"].(string))
 }

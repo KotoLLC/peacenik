@@ -22,6 +22,7 @@ const (
 
 type Repos struct {
 	User      repo.UserRepo
+	Invites   repo.InviteRepo
 	Relations repo.RelationRepo
 }
 
@@ -29,6 +30,7 @@ type Services struct {
 	Info   service.InfoService
 	User   service.UserService
 	Invite service.InviteService
+	Token  service.TokenService
 }
 
 type Server struct {
@@ -56,7 +58,8 @@ func (s *Server) Run() error {
 	s.setupMiddlewares(r)
 
 	r.Mount("/info", handler.Info(s.services.Info))
-	r.Mount("/auth", handler.Auth(s.checkAuth, s.services.User, s.sessionStore, sessionName, sessionUserKey))
+	r.Mount("/auth", handler.Auth(s.services.User, s.sessionStore, sessionName, sessionUserKey))
+	r.Mount("/token", s.checkAuth(handler.Token(s.services.Token)))
 	r.Mount("/invite", s.checkAuth(handler.Invite(s.services.Invite)))
 	r.Mount("/friends", s.checkAuth(handler.Friend(s.repos.Relations)))
 	r.Mount("/communities", s.checkAuth(handler.Community(s.repos.Relations)))
