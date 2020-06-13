@@ -2,6 +2,7 @@ package repo
 
 import (
 	"errors"
+	"sort"
 
 	"github.com/jmoiron/sqlx"
 
@@ -12,11 +13,16 @@ var (
 	ErrRelationNotFound = errors.New("relation not found")
 )
 
+type Community struct {
+	Address string   `json:"address"`
+	Friends []string `json:"friends"`
+}
+
 type RelationRepo interface {
 	AddRelation(user1ID, user2Email, community string) error
 	AcceptRelation(user1ID, user2ID, user2Email, community string) error
 	Friends(user User) ([]User, error)
-	Communities(user User) ([]string, error)
+	Communities(user User) ([]Community, error)
 }
 
 type relationRepo struct {
@@ -77,10 +83,15 @@ func (r *relationRepo) Friends(user User) ([]User, error) {
 	return friends, nil
 }
 
-func (r *relationRepo) Communities(user User) ([]string, error) {
-	var communities []string
-	err := r.db.Select(&communities, `
-		select distinct community
+func (r *relationRepo) Communities(user User) ([]Community, error) {
+	type communityItem struct {
+		Community string `db:"community"`
+		User1ID   string `db:"user1_id"`
+		User2ID   string `db:"user2_id"`
+	}
+	var communityItems []communityItem
+	err := r.db.Select(&communityItems, `
+		select distinct community, user1_id, user2_id
 		from relations
 		where accepted_at <> ''
 		  and (user1_id in (
@@ -107,5 +118,36 @@ func (r *relationRepo) Communities(user User) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	return communities, nil
+
+	communityFriendsMap := make(map[string]map[string]struct{}, 0)
+	for _, item := range communityItems {
+		if _, ok := communityFriendsMap[item.Community]; !ok {
+			communityFriendsMap[item.Community] = make(map[string]struct{})
+		}
+		communityFriendsMap[item.Community][item.User1ID] = struct{}{}
+		communityFriendsMap[item.Community][item.User2ID] = struct{}{}
+	}
+
+	communities := make([]string, 0, len(communityFriendsMap))
+	for community := range communityFriendsMap {
+		communities = append(communities, community)
+	}
+	sort.SliceStable(communities, func(i, j int) bool {
+		return len(communityFriendsMap[communities[i]]) > len(communityFriendsMap[communities[j]])
+	})
+
+	result := make([]Community, len(communities))
+	for i, community := range communities {
+		friends := make([]string, 0, len(communityFriendsMap[community]))
+		for userID := range communityFriendsMap[community] {
+			friends = append(friends, userID)
+		}
+		sort.Strings(friends)
+		result[i] = Community{
+			Address: community,
+			Friends: friends,
+		}
+	}
+
+	return result, nil
 }

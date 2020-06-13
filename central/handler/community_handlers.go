@@ -31,7 +31,7 @@ func (h *communityHandlers) Communities(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	if communities == nil {
-		communities = []string{}
+		communities = []repo.Community{}
 	}
 	common.WriteJSONToResponse(w, communities)
 }
