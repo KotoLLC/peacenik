@@ -1,9 +1,8 @@
 package main
 
 import (
+	"flag"
 	"log"
-	"path/filepath"
-	"strconv"
 
 	"github.com/mreider/koto/central"
 	"github.com/mreider/koto/central/migrate"
@@ -14,19 +13,22 @@ import (
 )
 
 func main() {
-	port, err := strconv.Atoi("PORT")
-	if err != nil {
-		port = 12001
-	}
+	var listenAddress string
+	var dbPath string
+	var privateKeyPath string
 
-	dbPath := filepath.Join(".", "central.db")
+	flag.StringVar(&listenAddress, "address", ":12001", "http address to listen")
+	flag.StringVar(&dbPath, "db", "central.db", "path to Sqlite DB file")
+	flag.StringVar(&privateKeyPath, "key", "central.rsa", "path to private key file")
+	flag.Parse()
+
 	db, n, err := common.OpenDatabase(dbPath, migrate.Migrate)
 	if err != nil {
 		log.Fatalln(err)
 	}
 	log.Printf("Applied %d migrations to %s\n", n, dbPath)
 
-	privateKey, publicKey, publicKeyPEM, err := token.RSAKeysFromPrivateKeyFile("central.rsa")
+	privateKey, publicKey, publicKeyPEM, err := token.RSAKeysFromPrivateKeyFile(privateKeyPath)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -45,7 +47,7 @@ func main() {
 		Invite: service.NewInvite(repos.User, repos.Relations, tokenGenerator, tokenParser),
 	}
 
-	server := central.NewServer(port, services, repos)
+	server := central.NewServer(listenAddress, services, repos)
 	err = server.Run()
 	if err != nil {
 		log.Fatalln(err)
