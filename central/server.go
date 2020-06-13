@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -33,19 +32,19 @@ type Services struct {
 }
 
 type Server struct {
-	port         int
+	listenAddr   string
 	services     Services
 	repos        Repos
 	sessionStore *sessions.CookieStore
 }
 
-func NewServer(port int, services Services, repos Repos) *Server {
+func NewServer(listenAddr string, services Services, repos Repos) *Server {
 	sessionStore := sessions.NewCookieStore([]byte(cookieAuthenticationKey))
 	sessionStore.Options.HttpOnly = true
 	sessionStore.Options.MaxAge = 0
 
 	return &Server{
-		port:         port,
+		listenAddr:   listenAddr,
 		services:     services,
 		repos:        repos,
 		sessionStore: sessionStore,
@@ -62,9 +61,8 @@ func (s *Server) Run() error {
 	r.Mount("/friends", s.checkAuth(handler.Friend(s.repos.Relations)))
 	r.Mount("/communities", s.checkAuth(handler.Community(s.repos.Relations)))
 
-	listenAddr := ":" + strconv.Itoa(s.port)
-	log.Println("started on " + listenAddr)
-	return http.ListenAndServe(listenAddr, r)
+	log.Println("started on " + s.listenAddr)
+	return http.ListenAndServe(s.listenAddr, r)
 }
 
 func (s *Server) setupMiddlewares(r *chi.Mux) {
