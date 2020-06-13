@@ -18,3 +18,4 @@
 *.db
 *.rsa
 /central-service
+/node-service

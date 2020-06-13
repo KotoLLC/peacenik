@@ -7,12 +7,11 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/gorilla/sessions"
 
-	"github.com/mreider/koto/central/repo"
 	"github.com/mreider/koto/central/service"
 	"github.com/mreider/koto/common"
 )
 
-func Auth(checkAuth func(http.Handler) http.Handler, userService service.UserService, sessionStore *sessions.CookieStore, sessionName, sessionUserKey string) http.Handler {
+func Auth(userService service.UserService, sessionStore *sessions.CookieStore, sessionName, sessionUserKey string) http.Handler {
 	h := &authHandlers{
 		userService:    userService,
 		sessionStore:   sessionStore,
@@ -23,7 +22,6 @@ func Auth(checkAuth func(http.Handler) http.Handler, userService service.UserSer
 	r.Post("/register", h.Register)
 	r.Post("/login", h.Login)
 	r.Post("/logout", h.Logout)
-	r.Post("/token", checkAuth(http.HandlerFunc(h.Token)).ServeHTTP)
 	return r
 }
 
@@ -91,20 +89,4 @@ func (h *authHandlers) Logout(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-}
-
-func (h *authHandlers) Token(w http.ResponseWriter, r *http.Request) {
-	user := r.Context().Value(service.ContextUserKey).(repo.User)
-
-	token, err := h.userService.Token(user)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	var response struct {
-		Token string `json:"token"`
-	}
-	response.Token = token
-	common.WriteJSONToResponse(w, response)
 }

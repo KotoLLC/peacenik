@@ -12,7 +12,7 @@ var (
 )
 
 type Parser interface {
-	Parse(rawToken string) (token *jwt.Token, err error)
+	Parse(rawToken string, scope string) (token *jwt.Token, claims jwt.MapClaims, err error)
 }
 
 type parser struct {
@@ -25,7 +25,7 @@ func NewParser(publicKey *rsa.PublicKey) Parser {
 	}
 }
 
-func (p *parser) Parse(rawToken string) (token *jwt.Token, err error) {
+func (p *parser) Parse(rawToken string, scope string) (token *jwt.Token, claims jwt.MapClaims, err error) {
 	jwtToken, err := jwt.Parse(rawToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 			return nil, ErrInvalidToken
@@ -33,11 +33,16 @@ func (p *parser) Parse(rawToken string) (token *jwt.Token, err error) {
 		return p.publicKey, nil
 	})
 	if err != nil {
-		return nil, err
-	}
-	if !jwtToken.Valid {
-		return jwtToken, ErrInvalidToken
+		return nil, nil, err
 	}
 
-	return jwtToken, nil
+	claims = jwtToken.Claims.(jwt.MapClaims)
+	if !jwtToken.Valid {
+		return jwtToken, claims, ErrInvalidToken
+	}
+
+	if scope != claims["scope"].(string) {
+		return jwtToken, claims, ErrInvalidToken
+	}
+	return jwtToken, claims, nil
 }

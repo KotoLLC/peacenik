@@ -1,8 +1,6 @@
 package service
 
 import (
-	"time"
-
 	"github.com/gofrs/uuid"
 	"golang.org/x/crypto/bcrypt"
 
@@ -13,7 +11,6 @@ import (
 type UserService interface {
 	Register(name, email, password string) error
 	Login(email, password string) (user *repo.User, err error)
-	Token(user repo.User) (token string, err error)
 }
 
 type userService struct {
@@ -77,8 +74,4 @@ func (s *userService) Login(email, password string) (user *repo.User, err error)
 		return nil, ErrUserInvalidEmailOrPassword
 	}
 	return user, nil
-}
-
-func (s *userService) Token(user repo.User) (token string, err error) {
-	return s.tokenGenerator.Generate(user, "auth", time.Now().Add(time.Minute*10), nil)
 }

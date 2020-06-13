@@ -38,13 +38,15 @@ func main() {
 
 	repos := central.Repos{
 		User:      repo.NewUsers(db),
+		Invites:   repo.NewInvites(db),
 		Relations: repo.NewRelations(db),
 	}
 
 	services := central.Services{
 		Info:   service.NewInfo(string(publicKeyPEM)),
 		User:   service.NewUser(repos.User, tokenGenerator),
-		Invite: service.NewInvite(repos.User, repos.Relations, tokenGenerator, tokenParser),
+		Invite: service.NewInvite(repos.User, repos.Invites, tokenGenerator, tokenParser),
+		Token:  service.NewToken(repos.Relations, tokenGenerator),
 	}
 
 	server := central.NewServer(listenAddress, services, repos)
