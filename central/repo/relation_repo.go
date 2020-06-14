@@ -33,9 +33,9 @@ func (r *relationRepo) Friends(user User) ([]User, error) {
 		select id, name
 		from users
 		where id in (
-			select user2_id
+			select friend_id
 			from relations
-			where user1_id = $1)`,
+			where user_id = $1)`,
 		user.ID)
 	if err != nil {
 		return nil, err
@@ -48,7 +48,7 @@ func (r *relationRepo) InvitedCommunities(user User) ([]string, error) {
 	err := r.db.Select(&communities, `
 		select distinct community
 		from relations
-		where user1_id = $1;`,
+		where user_id = $1;`,
 		user.ID)
 	if err != nil {
 		return nil, err
@@ -66,10 +66,10 @@ func (r *relationRepo) RelatedCommunities(user User) ([]Community, error) {
 	}
 	var communityItems []communityItem
 	err := r.db.Select(&communityItems, `
-		select distinct community, user1_id as user_id
+		select distinct community, user_id as user_id
 		from relations
-		where user1_id = $1
-			or user1_id in (select user2_id from relations where user1_id = $1);`,
+		where user_id = $1
+			or user_id in (select friend_id from relations where user_id = $1);`,
 		user.ID)
 	if err != nil {
 		return nil, err
