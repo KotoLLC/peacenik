@@ -35,6 +35,10 @@ func (h *messageHandlers) Messages(w http.ResponseWriter, r *http.Request) {
 	var request struct {
 		Token string `json:"token"`
 	}
+	if !common.ReadJSONFromRequest(w, r, &request) {
+		return
+	}
+
 	_, claims, err := h.tokenParser.Parse(request.Token, "get-messages")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -46,8 +50,12 @@ func (h *messageHandlers) Messages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	friends := claims["friends"].([]string)
-	messages, err := h.messageRepo.Messages(friends)
+	rawUserIDs := claims["users"].([]interface{})
+	userIDs := make([]string, len(rawUserIDs))
+	for i, rawUserID := range rawUserIDs {
+		userIDs[i] = rawUserID.(string)
+	}
+	messages, err := h.messageRepo.Messages(userIDs)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

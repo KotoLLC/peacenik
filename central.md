@@ -73,9 +73,17 @@ POST http://localhost:12001/communities/invited
 POST http://localhost:12001/communities/related
 
 
-### Get short-lived signed post tokens
-POST http://localhost:12001/token/post
+### Get a short-lived signed "post message" token
+POST http://localhost:12001/token/postMessage
 Content-Type: application/json
 
 {"communities":  ["http://localhost:12002", "http://localhost:12003"]}
+
+
+### Get a short-lived signed "get messages" token
+POST http://localhost:12001/token/getMessages
+Content-Type: application/json
+
+{"communities":  ["http://localhost:12002", "http://localhost:12003"]}
+
 ```
