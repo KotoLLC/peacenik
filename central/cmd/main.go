@@ -48,6 +48,7 @@ func main() {
 		User:   service.NewUser(repos.User, tokenGenerator),
 		Invite: service.NewInvite(repos.User, repos.Invite, tokenGenerator, tokenParser),
 		Token:  service.NewToken(repos.Node, tokenGenerator),
+		Node:   service.NewNode(repos.Node),
 	}
 
 	server := central.NewServer(listenAddress, services, repos)
