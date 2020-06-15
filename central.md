@@ -45,6 +45,15 @@ POST http://localhost:12001/token/auth
 POST http://localhost:12001/auth/logout
 
 
+### Register a new node
+POST http://localhost:12001/nodes/register
+Content-Type: application/json
+
+{
+  "address": "http://localhost:12002"
+}
+
+
 ### Create invite.
 POST http://localhost:12001/invite/create
 Content-Type: application/json

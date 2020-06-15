@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -10,18 +11,41 @@ import (
 	"github.com/mreider/koto/common"
 )
 
-func Node(nodeRepo repo.NodeRepo) http.Handler {
+func Node(nodeService service.NodeService, nodeRepo repo.NodeRepo) http.Handler {
 	h := &nodeHandlers{
-		nodeRepo: nodeRepo,
+		nodeService: nodeService,
+		nodeRepo:    nodeRepo,
 	}
 	r := chi.NewRouter()
+	r.Post("/register", h.RegisterNode)
 	r.Post("/postMessages", h.PostMessagesNodes)
 	r.Post("/getMessages", h.GetMessagesNodes)
 	return r
 }
 
 type nodeHandlers struct {
-	nodeRepo repo.NodeRepo
+	nodeService service.NodeService
+	nodeRepo    repo.NodeRepo
+}
+
+func (h *nodeHandlers) RegisterNode(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value(service.ContextUserKey).(repo.User)
+	var request struct {
+		Address string `json:"address"`
+	}
+	if !common.ReadJSONFromRequest(w, r, &request) {
+		return
+	}
+
+	err := h.nodeService.AddNode(request.Address, user.Email)
+	if err != nil {
+		status := http.StatusInternalServerError
+		if errors.Is(err, service.ErrNodeAlreadyExists) {
+			status = http.StatusConflict
+		}
+		http.Error(w, err.Error(), status)
+		return
+	}
 }
 
 func (h *nodeHandlers) PostMessagesNodes(w http.ResponseWriter, r *http.Request) {

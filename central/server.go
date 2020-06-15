@@ -32,6 +32,7 @@ type Services struct {
 	User   service.UserService
 	Invite service.InviteService
 	Token  service.TokenService
+	Node   service.NodeService
 }
 
 type Server struct {
@@ -63,7 +64,7 @@ func (s *Server) Run() error {
 	r.Mount("/token", s.checkAuth(handler.Token(s.services.Token)))
 	r.Mount("/invite", s.checkAuth(handler.Invite(s.services.Invite)))
 	r.Mount("/friends", s.checkAuth(handler.Friend(s.repos.Friend)))
-	r.Mount("/nodes", s.checkAuth(handler.Node(s.repos.Node)))
+	r.Mount("/nodes", s.checkAuth(handler.Node(s.services.Node, s.repos.Node)))
 
 	log.Println("started on " + s.listenAddr)
 	return http.ListenAndServe(s.listenAddr, r)

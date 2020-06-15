@@ -1,9 +1,14 @@
 package repo
 
 import (
+	"database/sql"
+	"errors"
 	"sort"
 
+	"github.com/gofrs/uuid"
 	"github.com/jmoiron/sqlx"
+
+	"github.com/mreider/koto/common"
 )
 
 type GetMessagesNode struct {
@@ -12,6 +17,8 @@ type GetMessagesNode struct {
 }
 
 type NodeRepo interface {
+	NodeExists(address string) (bool, error)
+	AddNode(address, adminEmail string) error
 	PostMessagesNodes(user User) ([]string, error)
 	GetMessageNodes(user User) ([]GetMessagesNode, error)
 }
@@ -24,6 +31,32 @@ func NewNodes(db *sqlx.DB) NodeRepo {
 	return &nodeRepo{
 		db: db,
 	}
+}
+
+func (r *nodeRepo) NodeExists(address string) (bool, error) {
+	var nodeID string
+	err := r.db.Get(&nodeID, `select id from nodes where address = $1`,
+		address)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
+}
+
+func (r *nodeRepo) AddNode(address, adminEmail string) error {
+	nodeID, err := uuid.NewV4()
+	if err != nil {
+		return err
+	}
+
+	_, err = r.db.Exec(`
+		insert into nodes(id, address, admin_email, created_at, disabled_at) 
+		VALUES ($1, $2, $3, $4, '')`,
+		nodeID, address, adminEmail, common.CurrentTimestamp())
+	return err
 }
 
 func (r *nodeRepo) PostMessagesNodes(user User) ([]string, error) {
