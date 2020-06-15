@@ -8,35 +8,34 @@ import (
 )
 
 type InviteService interface {
-	Create(user repo.User, whomEmail, community string) (token string, err error)
+	Create(user repo.User, whomEmail string) (token string, err error)
 	Accept(user repo.User, inviteToken string) error
 }
 
 type inviteService struct {
 	users          repo.UserRepo
-	relations      repo.InviteRepo
+	invites        repo.InviteRepo
 	tokenGenerator token.Generator
 	tokenParser    token.Parser
 }
 
-func NewInvite(users repo.UserRepo, relations repo.InviteRepo, tokenGenerator token.Generator, tokenParser token.Parser) InviteService {
+func NewInvite(users repo.UserRepo, invites repo.InviteRepo, tokenGenerator token.Generator, tokenParser token.Parser) InviteService {
 	return &inviteService{
 		users:          users,
-		relations:      relations,
+		invites:        invites,
 		tokenGenerator: tokenGenerator,
 		tokenParser:    tokenParser,
 	}
 }
 
-func (s *inviteService) Create(user repo.User, whomEmail, community string) (token string, err error) {
-	err = s.relations.AddInvite(user.ID, whomEmail, community)
+func (s *inviteService) Create(user repo.User, whomEmail string) (token string, err error) {
+	err = s.invites.AddInvite(user.ID, whomEmail)
 	if err != nil {
 		return "", err
 	}
 
 	claims := map[string]interface{}{
-		"whom":      whomEmail,
-		"community": community,
+		"whom": whomEmail,
 	}
 	return s.tokenGenerator.Generate(user, "invite", time.Now().Add(time.Hour*24*7), claims)
 }
@@ -52,5 +51,5 @@ func (s *inviteService) Accept(user repo.User, inviteToken string) error {
 		return token.ErrInvalidToken
 	}
 
-	return s.relations.AcceptInvite(claims["id"].(string), user.ID, user.Email, claims["community"].(string))
+	return s.invites.AcceptInvite(claims["id"].(string), user.ID, user.Email)
 }

@@ -9,18 +9,18 @@ import (
 
 type TokenService interface {
 	Auth(user repo.User) (token string, err error)
-	PostMessage(user repo.User, communities []string) (tokens []string, err error)
-	GetMessages(user repo.User, communities []string) (tokens []string, err error)
+	PostMessage(user repo.User, nodes []string) (tokens []string, err error)
+	GetMessages(user repo.User, nodes []string) (tokens []string, err error)
 }
 
 type tokenService struct {
-	relationRepo   repo.RelationRepo
+	nodeRepo       repo.NodeRepo
 	tokenGenerator token.Generator
 }
 
-func NewToken(relationRepo repo.RelationRepo, tokenGenerator token.Generator) TokenService {
+func NewToken(nodeRepo repo.NodeRepo, tokenGenerator token.Generator) TokenService {
 	return &tokenService{
-		relationRepo:   relationRepo,
+		nodeRepo:       nodeRepo,
 		tokenGenerator: tokenGenerator,
 	}
 }
@@ -29,26 +29,26 @@ func (s *tokenService) Auth(user repo.User) (token string, err error) {
 	return s.tokenGenerator.Generate(user, "auth", time.Now().Add(time.Minute*10), nil)
 }
 
-func (s *tokenService) PostMessage(user repo.User, communities []string) (tokens []string, err error) {
-	userCommunities, err := s.relationRepo.InvitedCommunities(user)
+func (s *tokenService) PostMessage(user repo.User, nodes []string) (tokens []string, err error) {
+	userNodes, err := s.nodeRepo.PostMessagesNodes(user)
 	if err != nil {
 		return nil, err
 	}
-	communitySet := make(map[string]bool)
-	for _, community := range userCommunities {
-		communitySet[community] = true
+	nodeSet := make(map[string]bool)
+	for _, node := range userNodes {
+		nodeSet[node] = true
 	}
 
-	tokens = make([]string, len(communities))
+	tokens = make([]string, len(nodes))
 	exp := time.Now().Add(time.Minute * 10)
-	for i, community := range communities {
-		if communitySet[community] {
-			claims := map[string]interface{}{"community": community}
-			communityToken, err := s.tokenGenerator.Generate(user, "post-message", exp, claims)
+	for i, node := range nodes {
+		if nodeSet[node] {
+			claims := map[string]interface{}{"node": node}
+			nodeToken, err := s.tokenGenerator.Generate(user, "post-message", exp, claims)
 			if err != nil {
 				return nil, err
 			}
-			tokens[i] = communityToken
+			tokens[i] = nodeToken
 		} else {
 			tokens[i] = ""
 		}
@@ -56,29 +56,29 @@ func (s *tokenService) PostMessage(user repo.User, communities []string) (tokens
 	return tokens, nil
 }
 
-func (s *tokenService) GetMessages(user repo.User, communities []string) (tokens []string, err error) {
-	relatedCommunities, err := s.relationRepo.RelatedCommunities(user)
+func (s *tokenService) GetMessages(user repo.User, nodes []string) (tokens []string, err error) {
+	getMessageNodes, err := s.nodeRepo.GetMessageNodes(user)
 	if err != nil {
 		return nil, err
 	}
-	communityMap := make(map[string]repo.Community)
-	for _, community := range relatedCommunities {
-		communityMap[community.Address] = community
+	getMessageNodeMap := make(map[string]repo.GetMessagesNode)
+	for _, node := range getMessageNodes {
+		getMessageNodeMap[node.Address] = node
 	}
 
-	tokens = make([]string, len(communities))
+	tokens = make([]string, len(nodes))
 	exp := time.Now().Add(time.Minute * 10)
-	for i, community := range communities {
-		if relatedCommunity, ok := communityMap[community]; ok {
+	for i, node := range nodes {
+		if getMessagesNode, ok := getMessageNodeMap[node]; ok {
 			claims := map[string]interface{}{
-				"community": relatedCommunity.Address,
-				"users":     relatedCommunity.Friends,
+				"node":  getMessagesNode.Address,
+				"users": getMessagesNode.Friends,
 			}
-			communityToken, err := s.tokenGenerator.Generate(user, "get-messages", exp, claims)
+			nodeToken, err := s.tokenGenerator.Generate(user, "get-messages", exp, claims)
 			if err != nil {
 				return nil, err
 			}
-			tokens[i] = communityToken
+			tokens[i] = nodeToken
 		} else {
 			tokens[i] = ""
 		}

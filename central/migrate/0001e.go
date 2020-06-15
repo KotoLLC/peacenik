@@ -25,11 +25,8 @@ drop table invites;
 
 alter table invites_dg_tmp rename to invites;
 
-create unique index invites_user_id_friend_email_community_uindex
-	on invites (user_id, friend_email, community);
-
-create unique index invites_friend_email_user_id_community_uindex
-	on invites (friend_email, user_id, community);
+create unique index invites_user_id_friend_email_community_uindex on invites (user_id, friend_email, community);
+create unique index invites_friend_email_user_id_community_uindex on invites (friend_email, user_id, community);
 `,
 			`
 create table relations_dg_tmp

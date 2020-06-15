@@ -21,9 +21,10 @@ const (
 )
 
 type Repos struct {
-	User      repo.UserRepo
-	Invites   repo.InviteRepo
-	Relations repo.RelationRepo
+	User   repo.UserRepo
+	Invite repo.InviteRepo
+	Friend repo.FriendRepo
+	Node   repo.NodeRepo
 }
 
 type Services struct {
@@ -61,8 +62,8 @@ func (s *Server) Run() error {
 	r.Mount("/auth", handler.Auth(s.services.User, s.sessionStore, sessionName, sessionUserKey))
 	r.Mount("/token", s.checkAuth(handler.Token(s.services.Token)))
 	r.Mount("/invite", s.checkAuth(handler.Invite(s.services.Invite)))
-	r.Mount("/friends", s.checkAuth(handler.Friend(s.repos.Relations)))
-	r.Mount("/communities", s.checkAuth(handler.Community(s.repos.Relations)))
+	r.Mount("/friends", s.checkAuth(handler.Friend(s.repos.Friend)))
+	r.Mount("/nodes", s.checkAuth(handler.Node(s.repos.Node)))
 
 	log.Println("started on " + s.listenAddr)
 	return http.ListenAndServe(s.listenAddr, r)

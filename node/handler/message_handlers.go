@@ -45,7 +45,7 @@ func (h *messageHandlers) Messages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if userID != claims["id"].(string) || h.externalAddress != claims["community"].(string) {
+	if userID != claims["id"].(string) || h.externalAddress != claims["node"].(string) {
 		http.Error(w, token.ErrInvalidToken.Error(), http.StatusBadRequest)
 		return
 	}
@@ -85,7 +85,7 @@ func (h *messageHandlers) PostMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if userID != claims["id"].(string) || h.externalAddress != claims["community"].(string) {
+	if userID != claims["id"].(string) || h.externalAddress != claims["node"].(string) {
 		http.Error(w, token.ErrInvalidToken.Error(), http.StatusBadRequest)
 		return
 	}
