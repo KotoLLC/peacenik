@@ -10,9 +10,9 @@ import (
 	"github.com/mreider/koto/common"
 )
 
-func Friend(relationRepo repo.RelationRepo) http.Handler {
+func Friend(friendRepo repo.FriendRepo) http.Handler {
 	h := &friendHandlers{
-		relationRepo: relationRepo,
+		friendRepo: friendRepo,
 	}
 	r := chi.NewRouter()
 	r.Post("/", h.Friends)
@@ -20,12 +20,12 @@ func Friend(relationRepo repo.RelationRepo) http.Handler {
 }
 
 type friendHandlers struct {
-	relationRepo repo.RelationRepo
+	friendRepo repo.FriendRepo
 }
 
 func (h *friendHandlers) Friends(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value(service.ContextUserKey).(repo.User)
-	friends, err := h.relationRepo.Friends(user)
+	friends, err := h.friendRepo.Friends(user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

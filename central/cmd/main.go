@@ -37,16 +37,17 @@ func main() {
 	tokenParser := token.NewParser(publicKey)
 
 	repos := central.Repos{
-		User:      repo.NewUsers(db),
-		Invites:   repo.NewInvites(db),
-		Relations: repo.NewRelations(db),
+		User:   repo.NewUsers(db),
+		Invite: repo.NewInvites(db),
+		Friend: repo.NewFriends(db),
+		Node:   repo.NewNodes(db),
 	}
 
 	services := central.Services{
 		Info:   service.NewInfo(string(publicKeyPEM)),
 		User:   service.NewUser(repos.User, tokenGenerator),
-		Invite: service.NewInvite(repos.User, repos.Invites, tokenGenerator, tokenParser),
-		Token:  service.NewToken(repos.Relations, tokenGenerator),
+		Invite: service.NewInvite(repos.User, repos.Invite, tokenGenerator, tokenParser),
+		Token:  service.NewToken(repos.Node, tokenGenerator),
 	}
 
 	server := central.NewServer(listenAddress, services, repos)

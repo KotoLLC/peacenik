@@ -49,7 +49,7 @@ POST http://localhost:12001/auth/logout
 POST http://localhost:12001/invite/create
 Content-Type: application/json
 
-{"whom": "andrey@mail.com", "community": "http://localhost:12002"}
+{"whom": "andrey@mail.com"}
 
 
 ### Accept invite.
@@ -65,25 +65,25 @@ Content-Type: application/json
 POST http://localhost:12001/friends
 
 
-### List of invited communities (for current user).
-POST http://localhost:12001/communities/invited
+### List of "post messages" nodes (for current user).
+POST http://localhost:12001/nodes/postMessages
 
 
-### List of all related communities (for current user).
-POST http://localhost:12001/communities/related
+### List of "get messages" nodes (for current user).
+POST http://localhost:12001/nodes/getMessages
 
 
 ### Get a short-lived signed "post message" token
 POST http://localhost:12001/token/postMessage
 Content-Type: application/json
 
-{"communities":  ["http://localhost:12002", "http://localhost:12003"]}
+{"nodes":  ["http://localhost:12002", "http://localhost:12003"]}
 
 
 ### Get a short-lived signed "get messages" token
 POST http://localhost:12001/token/getMessages
 Content-Type: application/json
 
-{"communities":  ["http://localhost:12002", "http://localhost:12003"]}
+{"nodes":  ["http://localhost:12002", "http://localhost:12003"]}
 
 ```

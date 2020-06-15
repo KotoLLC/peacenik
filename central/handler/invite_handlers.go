@@ -30,19 +30,18 @@ func (h *inviteHandlers) Create(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value(service.ContextUserKey).(repo.User)
 
 	var request struct {
-		Whom      string `json:"whom"`
-		Community string `json:"community"`
+		Whom string `json:"whom"`
 	}
 	if !common.ReadJSONFromRequest(w, r, &request) {
 		return
 	}
 
-	if request.Whom == "" || request.Community == "" || request.Whom == user.Email {
+	if request.Whom == "" || request.Whom == user.Email {
 		http.Error(w, "", http.StatusBadRequest)
 		return
 	}
 
-	inviteToken, err := h.inviteService.Create(user, request.Whom, request.Community)
+	inviteToken, err := h.inviteService.Create(user, request.Whom)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
