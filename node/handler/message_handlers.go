@@ -90,11 +90,8 @@ func (h *messageHandlers) PostMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if userID != request.Message.UserID || claims["name"].(string) != request.Message.UserName {
-		http.Error(w, token.ErrInvalidToken.Error(), http.StatusBadRequest)
-		return
-	}
-
+	request.Message.UserID = claims["id"].(string)
+	request.Message.UserName = claims["name"].(string)
 	err = h.messageRepo.AddMessage(request.Message)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
