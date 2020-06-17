@@ -31,7 +31,7 @@ To understand Koto, let's look at an example social graph.
 
 ![example social graph](readme-images/1-social-graph.png)
 
-Mike, and Janice, want to start Koto nodes, bring their friends with them, and share thoughts, photos, and videos. So they create instance on AWS, Google Cloud, Digital Ocean, or wherever. Next they download a Koto release, and run it.
+Mike, and Janice, want to start Koto nodes to share thoughts, photos, and videos with their friends. So they create instances on Digital Ocean, or wherever, download the latest release, and run it.
 
 ![new nodes](readme-images/2-new-nodes.png)
 
