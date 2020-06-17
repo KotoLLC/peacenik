@@ -4,7 +4,7 @@ A quasi-distributed ad-free open-source social network
 
 ## Introduction
 
-Koto as an open-source, ad-free, social network with a mixture of central and distributed control. Central control provides a common login across all nodes, as well as some prevention of bad actors from joining a network. Distribution provides individual ownership, and privacy, for messages, images, and pictures.
+Koto as an open-source, ad-free, social network with a mixture of central and distributed control. Central control provides a common login across all nodes, and prevents bad actors from joining a network. Distribution provides individual ownership, and privacy, for messages, images, and pictures.
 
 Koto is comparable to Facebook, rather than Twitter, as it is for closed circles of friendships.
 
@@ -19,7 +19,7 @@ Koto is unique among [social network sites](https://en.wikipedia.org/wiki/List_o
 
 Koto blends these last two categories, offering both a distributed OSS approach, as well as more of a "closed circle" approach like Facebook.
 
-*Note*: the [Minds](https://www.minds.com/) project is a similar blend, but relies on Blockchain, and an incentive model for posting, which seem unnecesary to us.
+*Note: [Minds](https://www.minds.com/) is a similar blend, but relies on Blockchain, and an incentive model for posting, which seem unnecesary to us.*
 
 ## How it works
 
@@ -55,23 +55,23 @@ Fran also posts a message, with a photo of her dog. Since she is friends with Mi
 
 ![new nodes](readme-images/7-second-message.png)
 
-Friends can see lists of their friend's friends. So if Fran asks to be friends with Debbie, Mike can see that they are friends, and also invite Debbie to be friends. Debbie doesn't have to accept.
+Friends can see lists of their friend's friends. If Fran asks Debbie to be friends, Mike can see they are friends, and invite Debbie to be friends. Debbie doesn't have to accept.
 
 ![new nodes](readme-images/8-friends-o-friends.png)
 
-If Debbie becomes friends with William, who is already friends with Steve, Mike will see William in Steve's list. Fran also sees William in Debbie's list. This is all just like Facebook. We also plan to add privacy features, if you don't want friends of friends to discover you.
+If Debbie becomes friends with William, who is friends with Steve, Mike will see William in Steve's list. Fran also sees William in Debbie's list (like Facebook). We will add privacy features - if you don't want people to discover you.
 
 ![new nodes](readme-images/9-more-friends.png)
 
 Now for Janice.
 
-Janice is on her own node, completely separate from Mike's node. She invites Tina, who is already friends with Steve, on Mike's node. 
+Janice is on her own node. She invites Tina, who is friends with Steve, on Mike's node. 
 
-Now both Steve and Tina can see messages on both nodes, because they have friendships there. Since both Steve and Tina are logged into the central server, which understands relationships, they do not need to login to Tina nor Mike's node to see messages.
+Both Steve and Tina can see messages on both nodes, because they have friendships there, and they are already logged into the central server.
 
 ![new nodes](readme-images/10-cross-nodes.png)
 
-Both Steve and Tina see messages in one contiguous timeline - again like Facebook. They are not aware of which message is coming from which node.
+Steve and Tina see messages in one contiguous timeline - again like Facebook. They aren't aware that some messages are from Mike's node, and others are from Janice's node.
 
 ![new nodes](readme-images/11-contiguous.png)
 
