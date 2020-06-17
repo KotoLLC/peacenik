@@ -1,0 +1,806 @@
+{
+	"info": {
+		"_postman_id": "6e617bcb-2394-47e1-bced-8bffe1290e7c",
+		"name": "requests",
+		"description": "Authenticate from central server",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get public key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3edb3bcc-02fe-41e9-8bb5-f0ea8f5c6038",
+						"exec": [
+							"pm.test(\"verify a key is returned\", function() {",
+							"        pm.response.to.have.status(200);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:12001/info/publicKey\n\n",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "12001",
+					"path": [
+						"info",
+						"publicKey\n\n"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register Matt",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a4f1ca10-0544-45a2-97c2-22c75c3ff45c",
+						"exec": [
+							"pm.response.to.have.status(200);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"name\":  \"mreider\", \"email\": \"mreider@mail.com\", \"password\":  \"12345\"}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:12001/auth/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "12001",
+					"path": [
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register Andrey",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2b7f02c4-7f72-4302-857c-850203a93701",
+						"exec": [
+							"pm.response.to.have.status(200);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"name\":  \"andrey\", \"email\": \"andrey@mail.com\", \"password\":  \"12345\"}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:12001/auth/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "12001",
+					"path": [
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login Matt",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f1ca4d6b-1e04-4b73-942d-02e22003490f",
+						"exec": [
+							"pm.response.to.have.status(200);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"email\": \"mreider@mail.com\", \"password\":  \"12345\"}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:12001/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "12001",
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Matt gets short lived auth token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8f3d53e4-58f6-43c1-b050-d9885fe52299",
+						"exec": [
+							"pm.response.to.have.status(200);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:12001/token/auth",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "12001",
+					"path": [
+						"token",
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Matt invites Andrey to be a friend",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2431e3c8-d1b3-4d86-b123-0ac8f6126df6",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"INVITATION\", jsonData.token);",
+							"pm.response.to.have.status(200);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"whom\": \"andrey@mail.com\"}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:12001/invite/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "12001",
+					"path": [
+						"invite",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4a2731ac-267a-46f1-86d1-8a5101cea1c1",
+						"exec": [
+							"pm.response.to.have.status(200);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:12001/auth/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "12001",
+					"path": [
+						"auth",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login Andrey",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ba2a7a69-223f-42a6-8caa-dc7d37023079",
+						"exec": [
+							"pm.response.to.have.status(200);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"email\": \"andrey@mail.com\", \"password\":  \"12345\"}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:12001/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "12001",
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Andrey gets short lived auth token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "eec6f69e-a9be-4de7-bafb-cc511336fe19",
+						"exec": [
+							"pm.response.to.have.status(200);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:12001/token/auth",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "12001",
+					"path": [
+						"token",
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Andrey accepts Matt's invitation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a27d9085-4b04-43b1-82c6-e5c27d34382b",
+						"exec": [
+							"pm.response.to.have.status(200);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"token\": \"{{INVITATION}}\"\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:12001/invite/accept",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "12001",
+					"path": [
+						"invite",
+						"accept"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Andrey gets a list of friends",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "77482365-5ad7-476a-bb1d-6a6cbeba8715",
+						"exec": [
+							"pm.response.to.have.status(200);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:12001/friends",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "12001",
+					"path": [
+						"friends"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Andrey registers a new node",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "07e11354-4d25-42f3-b8b4-c0ee1cceb469",
+						"exec": [
+							"pm.response.to.have.status(200);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"address\": \"http://localhost:12003\"\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:12001/nodes/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "12001",
+					"path": [
+						"nodes",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Andrey's node list he can post to",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "76a19bca-360c-4559-828c-96ed63a0bd07",
+						"exec": [
+							"pm.response.to.have.status(200);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:12001/nodes/postMessages",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "12001",
+					"path": [
+						"nodes",
+						"postMessages"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Andrey's node list he can get messages from",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fa3d162d-01fc-43a1-895d-27e778f9aa46",
+						"exec": [
+							"pm.response.to.have.status(200);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:12001/nodes/getMessages",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "12001",
+					"path": [
+						"nodes",
+						"getMessages"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Andrey gets short lived post message token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b04c5e26-04dc-4445-be25-0530cf4d64d1",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"POST-MESSAGE-TOKEN\", jsonData.token);",
+							"pm.response.to.have.status(200);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"nodes\":  [\"http://localhost:12002\"]}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:12001/token/postMessage",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "12001",
+					"path": [
+						"token",
+						"postMessage"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Andrey gets a short lived get message token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ff9e38fc-061c-4a64-a912-7a5d9a585f70",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"GET-MESSAGE-TOKEN\", jsonData.token);",
+							"pm.response.to.have.status(200);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"nodes\":  [\"http://localhost:12002\"]}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:12001/token/getMessages",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "12001",
+					"path": [
+						"token",
+						"getMessages"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Andrey posts a message",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "810b69ff-3493-4b9d-9088-e75407702147",
+						"exec": [
+							"pm.response.to.have.status(200);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"token\":  \"{{POST-MESSAGE-TOKEN}}\",\n  \"message\": {\n    \"id\": \"2\",\n    \"user_id\": \"d18871d9-233e-4dbe-bf30-ad3a1689f985\",\n    \"user_name\": \"andrey\",\n    \"text\": \"second message\",\n    \"created_at\": \"2020-06-12T10:16:40.335Z\",\n    \"updated_at\": \"2020-06-12T10:16:40.335Z\"\n  }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:12002/messages/post",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "12002",
+					"path": [
+						"messages",
+						"post"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Andrey gets a message",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "aba823d5-7e1f-45f0-b610-8576aa13d901",
+						"exec": [
+							"pm.response.to.have.status(200);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"token\":  \"{{POST-MESSAGE-TOKEN}}\",\n  \"message\": {\n    \"id\": \"2\",\n    \"user_id\": \"d18871d9-233e-4dbe-bf30-ad3a1689f985\",\n    \"user_name\": \"andrey\",\n    \"text\": \"second message\",\n    \"created_at\": \"2020-06-12T10:16:40.335Z\",\n    \"updated_at\": \"2020-06-12T10:16:40.335Z\"\n  }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:12002/messages/post",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "12002",
+					"path": [
+						"messages",
+						"post"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "7fb501dc-4156-4502-9771-2df8d7b02c9a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "1b7acab0-34a5-4dbf-b726-91c27e8bf3d2",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "f589a1a8-7c65-4255-875d-94179dcf16c6",
+			"key": "TOKEN",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
