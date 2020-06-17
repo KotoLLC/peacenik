@@ -67,7 +67,7 @@ If Debbie becomes friends with William, who is friends with Steve, Mike will see
 
 Janice is on her own node. She invites Tina, who is friends with Steve, on Mike's node. 
 
-Both Steve and Tina can see messages on both nodes, because they have friendships there, and they are already logged into the central server.
+Both Steve and Tina can see messages on both nodes, because they have friendships there.
 
 ![new nodes](readme-images/10-cross-nodes.png)
 
