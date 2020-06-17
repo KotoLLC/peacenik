@@ -75,5 +75,5 @@ Steve and Tina see messages in one contiguous timeline - again like Facebook. Th
 
 ![new nodes](readme-images/11-contiguous.png)
 
-When Tina posts a message, it will go to the node where most of her friends are. At this point she has one friend on each node, so it might end up on either one. As Koto gets more popular, we will change this alogirithm a bit to make sure popular nodes are not overwhelmed.
+When Tina posts a message, it is stored on the node where she has the most friends. At this point she has one friend on each node, so it might end up on either one. As Koto gets more popular, we will change this alogirithm a bit to make sure popular nodes are not overwhelmed.
 
