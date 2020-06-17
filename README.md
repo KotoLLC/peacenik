@@ -39,7 +39,7 @@ Mike and Janice register their nodes with Jessie, who runs the central node.
 
 ![new nodes](readme-images/3-register.png)
 
-Mike invites his mother Fran, and Steve, to be friends. We'll get to Tina a little later.
+Mike invites his mother Fran, and Steve, to be friends. We'll look at Janice a little later.
 
 ![new nodes](readme-images/4-invitation.png)
 
