@@ -35,11 +35,11 @@ Mike, and Janice, want to start Koto nodes to share thoughts, photos, and videos
 
 ![new nodes](readme-images/2-new-nodes.png)
 
-Now, Mike and Janice register their nodes with Jessie, who runs the central node.
+Mike and Janice register their nodes with Jessie, who runs the central node.
 
 ![new nodes](readme-images/3-register.png)
 
-Next, Mike invites his mother Fran, and Steve, to be friends. We'll get to Tina a little later.
+Mike invites his mother Fran, and Steve, to be friends. We'll get to Tina a little later.
 
 ![new nodes](readme-images/4-invitation.png)
 
@@ -63,7 +63,7 @@ If Debbie becomes friends with William, who is friends with Steve, Mike will see
 
 ![new nodes](readme-images/9-more-friends.png)
 
-Now for Janice.
+**Now for Janice.**
 
 Janice is on her own node. She invites Tina, who is friends with Steve, on Mike's node. 
 
