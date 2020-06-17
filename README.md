@@ -14,7 +14,7 @@ Koto is unique among [social network sites](https://en.wikipedia.org/wiki/List_o
 
 1. Failed (or failing) startups with no revenue
 2. Commercial products that serve ads or charge a fee
-3. Distributed OSS projects comparable to Twitter ([Mastadon](https://joinmastodon.org/), [Diaspora](https://diasporafoundation.org/),[Steemit](https://steemit.com/))
+3. Distributed OSS projects comparable to Twitter ([Mastadon](https://joinmastodon.org/), [Diaspora](https://diasporafoundation.org/), [Steemit](https://steemit.com/))
 4. Centralized OSS projects comparable to Facebook ([Buddy Press](https://buddypress.org/)]
 
 Koto blends these last two categories, offering both a distributed OSS approach, as well as more of a "closed circle" approach like Facebook.
