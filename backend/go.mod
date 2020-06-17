@@ -1,4 +1,4 @@
-module github.com/mreider/koto
+module github.com/mreider/koto/backend
 
 go 1.14
 

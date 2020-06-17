@@ -5,10 +5,10 @@ import (
 
 	"github.com/go-chi/chi"
 
-	"github.com/mreider/koto/common"
-	"github.com/mreider/koto/node/repo"
-	"github.com/mreider/koto/node/service"
-	"github.com/mreider/koto/token"
+	"github.com/mreider/koto/backend/common"
+	"github.com/mreider/koto/backend/node/repo"
+	"github.com/mreider/koto/backend/node/service"
+	"github.com/mreider/koto/backend/token"
 )
 
 func Message(externalAddress string, tokenParser token.Parser, messageRepo repo.MessageRepo) http.Handler {

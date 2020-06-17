@@ -7,8 +7,8 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/gorilla/sessions"
 
-	"github.com/mreider/koto/central/service"
-	"github.com/mreider/koto/common"
+	"github.com/mreider/koto/backend/central/service"
+	"github.com/mreider/koto/backend/common"
 )
 
 func Auth(userService service.UserService, sessionStore *sessions.CookieStore, sessionName, sessionUserKey string) http.Handler {
