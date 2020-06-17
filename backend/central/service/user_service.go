@@ -4,8 +4,8 @@ import (
 	"github.com/gofrs/uuid"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/mreider/koto/central/repo"
-	"github.com/mreider/koto/token"
+	"github.com/mreider/koto/backend/central/repo"
+	"github.com/mreider/koto/backend/token"
 )
 
 type UserService interface {

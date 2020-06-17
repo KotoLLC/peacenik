@@ -5,7 +5,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/mreider/koto/common"
+	"github.com/mreider/koto/backend/common"
 )
 
 var (

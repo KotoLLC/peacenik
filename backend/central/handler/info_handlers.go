@@ -5,8 +5,8 @@ import (
 
 	"github.com/go-chi/chi"
 
-	"github.com/mreider/koto/central/service"
-	"github.com/mreider/koto/common"
+	"github.com/mreider/koto/backend/central/service"
+	"github.com/mreider/koto/backend/common"
 )
 
 func Info(infoService service.InfoService) http.Handler {

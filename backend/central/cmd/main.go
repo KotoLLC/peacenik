@@ -4,12 +4,12 @@ import (
 	"flag"
 	"log"
 
-	"github.com/mreider/koto/central"
-	"github.com/mreider/koto/central/migrate"
-	"github.com/mreider/koto/central/repo"
-	"github.com/mreider/koto/central/service"
-	"github.com/mreider/koto/common"
-	"github.com/mreider/koto/token"
+	"github.com/mreider/koto/backend/central"
+	"github.com/mreider/koto/backend/central/migrate"
+	"github.com/mreider/koto/backend/central/repo"
+	"github.com/mreider/koto/backend/central/service"
+	"github.com/mreider/koto/backend/common"
+	"github.com/mreider/koto/backend/token"
 )
 
 func main() {

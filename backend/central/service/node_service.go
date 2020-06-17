@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/mreider/koto/central/repo"
+	"github.com/mreider/koto/backend/central/repo"
 )
 
 type NodeService interface {

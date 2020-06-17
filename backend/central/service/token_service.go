@@ -3,8 +3,8 @@ package service
 import (
 	"time"
 
-	"github.com/mreider/koto/central/repo"
-	"github.com/mreider/koto/token"
+	"github.com/mreider/koto/backend/central/repo"
+	"github.com/mreider/koto/backend/token"
 )
 
 type TokenService interface {

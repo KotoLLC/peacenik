@@ -6,10 +6,10 @@ import (
 
 	"github.com/go-chi/chi"
 
-	"github.com/mreider/koto/central/repo"
-	"github.com/mreider/koto/central/service"
-	"github.com/mreider/koto/common"
-	"github.com/mreider/koto/token"
+	"github.com/mreider/koto/backend/central/repo"
+	"github.com/mreider/koto/backend/central/service"
+	"github.com/mreider/koto/backend/common"
+	"github.com/mreider/koto/backend/token"
 )
 
 func Invite(inviteService service.InviteService) http.Handler {

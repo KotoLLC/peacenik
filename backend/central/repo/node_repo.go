@@ -8,7 +8,7 @@ import (
 	"github.com/gofrs/uuid"
 	"github.com/jmoiron/sqlx"
 
-	"github.com/mreider/koto/common"
+	"github.com/mreider/koto/backend/common"
 )
 
 type GetMessagesNode struct {

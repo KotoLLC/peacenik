@@ -9,9 +9,9 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/gorilla/sessions"
 
-	"github.com/mreider/koto/central/handler"
-	"github.com/mreider/koto/central/repo"
-	"github.com/mreider/koto/central/service"
+	"github.com/mreider/koto/backend/central/handler"
+	"github.com/mreider/koto/backend/central/repo"
+	"github.com/mreider/koto/backend/central/service"
 )
 
 const (

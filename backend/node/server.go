@@ -9,10 +9,10 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 
-	"github.com/mreider/koto/node/handler"
-	"github.com/mreider/koto/node/repo"
-	"github.com/mreider/koto/node/service"
-	"github.com/mreider/koto/token"
+	"github.com/mreider/koto/backend/node/handler"
+	"github.com/mreider/koto/backend/node/repo"
+	"github.com/mreider/koto/backend/node/service"
+	"github.com/mreider/koto/backend/token"
 )
 
 type Repos struct {

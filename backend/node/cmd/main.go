@@ -12,11 +12,11 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 
-	"github.com/mreider/koto/common"
-	"github.com/mreider/koto/node"
-	"github.com/mreider/koto/node/migrate"
-	"github.com/mreider/koto/node/repo"
-	"github.com/mreider/koto/token"
+	"github.com/mreider/koto/backend/common"
+	"github.com/mreider/koto/backend/node"
+	"github.com/mreider/koto/backend/node/migrate"
+	"github.com/mreider/koto/backend/node/repo"
+	"github.com/mreider/koto/backend/token"
 )
 
 var (
