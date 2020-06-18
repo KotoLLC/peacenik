@@ -20,29 +20,37 @@ go build -o central-service ./central/cmd/
 
 ```
 ### Get the public key to check token signatures
-GET http://localhost:12001/info/publicKey
+POST http://localhost:12001/rpc.InfoService/PublicKey
+Content-Type: application/json
+
+{}
 
 
 ### Register a new user
-POST http://localhost:12001/auth/register
+POST http://localhost:12001/rpc.AuthService/Register
 Content-Type: application/json
 
 {"name":  "andrey", "email": "andrey@mail.com", "password":  "12345"}
 
 
 ### Login
-POST http://localhost:12001/auth/login
+POST http://localhost:12001/rpc.AuthService/Login
 Content-Type: application/json
 
-{"email": "andrey@mail.com", "password":  "12345"}
+{"name": "andrey", "password":  "12345"}
 
 
 ### Get a short-lived signed authentication token
-POST http://localhost:12001/token/auth
+POST http://localhost:12001/rpc.TokenService/Auth
+Content-Type: application/json
 
+{}
 
 ### Logout
-POST http://localhost:12001/auth/logout
+POST http://localhost:12001/rpc.AuthService/Logout
+Content-Type: application/json
+
+{}
 
 
 ### Register a new node
@@ -83,14 +91,14 @@ POST http://localhost:12001/nodes/getMessages
 
 
 ### Get a short-lived signed "post message" token
-POST http://localhost:12001/token/postMessage
+POST http://localhost:12001/rpc.TokenService/PostMessage
 Content-Type: application/json
 
 {"nodes":  ["http://localhost:12002", "http://localhost:12003"]}
 
 
 ### Get a short-lived signed "get messages" token
-POST http://localhost:12001/token/getMessages
+POST http://localhost:12001/rpc.TokenService/GetMessages
 Content-Type: application/json
 
 {"nodes":  ["http://localhost:12002", "http://localhost:12003"]}

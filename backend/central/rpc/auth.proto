@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package rpc;
+option go_package = "rpc";
+
+import "model.proto";
+
+service AuthService {
+    rpc Register (AuthRegisterRequest) returns (Empty);
+    rpc Login (AuthLoginRequest) returns (Empty);
+    rpc Logout (Empty) returns (Empty);
+}
+
+message AuthRegisterRequest {
+    string name = 1;
+    string email = 2;
+    string password = 3;
+}
+
+message AuthLoginRequest {
+    string name = 1;
+    string password = 2;
+}

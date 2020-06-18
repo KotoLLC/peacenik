@@ -8,6 +8,7 @@ type ContextKey string
 
 const (
 	ContextUserKey ContextKey = "user"
+	ContextSession ContextKey = "session"
 )
 
 var (

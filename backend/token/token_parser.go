@@ -3,7 +3,6 @@ package token
 import (
 	"crypto/rsa"
 	"errors"
-	"fmt"
 
 	"github.com/dgrijalva/jwt-go"
 )
@@ -27,7 +26,6 @@ func NewParser(publicKey *rsa.PublicKey) Parser {
 }
 
 func (p *parser) Parse(rawToken string, scope string) (token *jwt.Token, claims jwt.MapClaims, err error) {
-	fmt.Println(rawToken)
 	jwtToken, err := jwt.Parse(rawToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 			return nil, ErrInvalidToken
