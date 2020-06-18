@@ -36,22 +36,20 @@ func main() {
 	tokenGenerator := token.NewGenerator(privateKey)
 	tokenParser := token.NewParser(publicKey)
 
-	repos := central.Repos{
+	repos := repo.Repos{
 		User:   repo.NewUsers(db),
 		Invite: repo.NewInvites(db),
 		Friend: repo.NewFriends(db),
 		Node:   repo.NewNodes(db),
 	}
 
-	services := central.Services{
-		Info:   service.NewInfo(string(publicKeyPEM)),
+	services := service.Services{
 		User:   service.NewUser(repos.User, tokenGenerator),
 		Invite: service.NewInvite(repos.User, repos.Invite, tokenGenerator, tokenParser),
-		Token:  service.NewToken(repos.Node, tokenGenerator),
 		Node:   service.NewNode(repos.Node),
 	}
 
-	server := central.NewServer(listenAddress, services, repos)
+	server := central.NewServer(listenAddress, string(publicKeyPEM), services, repos, tokenGenerator)
 	err = server.Run()
 	if err != nil {
 		log.Fatalln(err)

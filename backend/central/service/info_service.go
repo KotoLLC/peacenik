@@ -1,19 +1,25 @@
 package service
 
-type InfoService interface {
-	PublicKey() string
-}
+import (
+	"context"
+
+	"github.com/mreider/koto/backend/central/rpc"
+)
 
 type infoService struct {
+	*BaseService
 	pubKeyPem string
 }
 
-func NewInfo(pubKeyPem string) InfoService {
+func NewInfo(base *BaseService, pubKeyPem string) rpc.InfoService {
 	return &infoService{
-		pubKeyPem: pubKeyPem,
+		BaseService: base,
+		pubKeyPem:   pubKeyPem,
 	}
 }
 
-func (s *infoService) PublicKey() string {
-	return s.pubKeyPem
+func (s *infoService) PublicKey(_ context.Context, _ *rpc.Empty) (*rpc.InfoPublicKeyResponse, error) {
+	return &rpc.InfoPublicKeyResponse{
+		PublicKey: s.pubKeyPem,
+	}, nil
 }

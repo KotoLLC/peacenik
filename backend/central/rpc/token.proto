@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package rpc;
+option go_package = "rpc";
+
+import "model.proto";
+
+service TokenService {
+    rpc Auth (Empty) returns (TokenAuthResponse);
+    rpc PostMessage (TokenPostMessageRequest) returns (TokenPostMessageResponse);
+    rpc GetMessages (TokenGetMessagesRequest) returns (TokenGetMessagesResponse);
+}
+
+message TokenAuthResponse {
+    string token = 1;
+}
+
+message TokenPostMessageRequest {
+    repeated string nodes = 1;
+}
+
+message TokenPostMessageResponse {
+    repeated string tokens = 1;
+}
+
+message TokenGetMessagesRequest {
+    repeated string nodes = 1;
+}
+
+message TokenGetMessagesResponse {
+    repeated string tokens = 1;
+}
+
