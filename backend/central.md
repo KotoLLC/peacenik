@@ -54,7 +54,7 @@ Content-Type: application/json
 
 
 ### Register a new node
-POST http://localhost:12001/nodes/register
+POST http://localhost:12001/rpc.NodeService/Register
 Content-Type: application/json
 
 {
@@ -63,31 +63,40 @@ Content-Type: application/json
 
 
 ### Create invite.
-POST http://localhost:12001/invite/create
+POST http://localhost:12001/rpc.InviteService/Create
 Content-Type: application/json
 
-{"whom": "andrey@mail.com"}
+{"friend": "andrey@mail.com"}
 
 
 ### Accept invite.
-POST http://localhost:12001/invite/accept
+POST http://localhost:12001//rpc.InviteService/Accept
 Content-Type: application/json
 
 {
-  "token": "INVITE-TOKEN"
+  "inviter_id": "USER-ID"
 }
 
 
 ### List of friends (for current user).
-POST http://localhost:12001/friends
+POST http://localhost:12001/rpc.UserService/Friends
+Content-Type: application/json
+
+{}
 
 
 ### List of "post messages" nodes (for current user).
-POST http://localhost:12001/nodes/postMessages
+POST http://localhost:12001/rpc.NodeService/PostMessages
+Content-Type: application/json
+
+{}
 
 
 ### List of "get messages" nodes (for current user).
-POST http://localhost:12001/nodes/getMessages
+POST http://localhost:12001/rpc.NodeService/GetMessages
+Content-Type: application/json
+
+{}
 
 
 ### Get a short-lived signed "post message" token

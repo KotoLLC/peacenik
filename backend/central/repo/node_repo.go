@@ -12,8 +12,8 @@ import (
 )
 
 type GetMessagesNode struct {
-	Address string   `json:"address"`
-	Friends []string `json:"friends"`
+	Address string
+	Users   []string
 }
 
 type NodeRepo interface {
@@ -117,7 +117,7 @@ func (r *nodeRepo) GetMessageNodes(user User) ([]GetMessagesNode, error) {
 		sort.Strings(friends)
 		result[i] = GetMessagesNode{
 			Address: nodeAddress,
-			Friends: friends,
+			Users:   friends,
 		}
 	}
 
