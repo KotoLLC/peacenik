@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package rpc;
+option go_package = "../rpc";
+
+message Empty {
+}
+
+message User {
+    string id = 1;
+    string name = 2;
+}

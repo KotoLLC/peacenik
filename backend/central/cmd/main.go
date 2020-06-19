@@ -7,7 +7,6 @@ import (
 	"github.com/mreider/koto/backend/central"
 	"github.com/mreider/koto/backend/central/migrate"
 	"github.com/mreider/koto/backend/central/repo"
-	"github.com/mreider/koto/backend/central/service"
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/token"
 )
@@ -28,13 +27,12 @@ func main() {
 	}
 	log.Printf("Applied %d migrations to %s\n", n, dbPath)
 
-	privateKey, publicKey, publicKeyPEM, err := token.RSAKeysFromPrivateKeyFile(privateKeyPath)
+	privateKey, _, publicKeyPEM, err := token.RSAKeysFromPrivateKeyFile(privateKeyPath)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	tokenGenerator := token.NewGenerator(privateKey)
-	tokenParser := token.NewParser(publicKey)
 
 	repos := repo.Repos{
 		User:   repo.NewUsers(db),
@@ -43,13 +41,7 @@ func main() {
 		Node:   repo.NewNodes(db),
 	}
 
-	services := service.Services{
-		User:   service.NewUser(repos.User, tokenGenerator),
-		Invite: service.NewInvite(repos.User, repos.Invite, tokenGenerator, tokenParser),
-		Node:   service.NewNode(repos.Node),
-	}
-
-	server := central.NewServer(listenAddress, string(publicKeyPEM), services, repos, tokenGenerator)
+	server := central.NewServer(listenAddress, string(publicKeyPEM), repos, tokenGenerator)
 	err = server.Run()
 	if err != nil {
 		log.Fatalln(err)
