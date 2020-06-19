@@ -13,8 +13,8 @@ var (
 )
 
 type InviteRepo interface {
-	AddInvite(user1ID, user2Email string) error
-	AcceptInvite(user1ID, user2ID, user2Email string) error
+	AddInvite(userID, friendEmail string) error
+	AcceptInvite(inviterID, friendID, friendEmail string) error
 }
 
 type inviteRepo struct {

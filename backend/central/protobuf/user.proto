@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package rpc;
+option go_package = "../rpc";
+
+import "model.proto";
+
+service UserService {
+    rpc Friends (Empty) returns (UserFriendsResponse);
+}
+
+message UserFriendsResponse {
+    repeated User friends = 1;
+}
+

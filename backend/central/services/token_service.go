@@ -1,4 +1,4 @@
-package service
+package services
 
 import (
 	"context"
@@ -85,7 +85,7 @@ func (s *tokenService) GetMessages(ctx context.Context, r *rpc.TokenGetMessagesR
 		if getMessagesNode, ok := getMessageNodeMap[node]; ok {
 			claims := map[string]interface{}{
 				"node":  getMessagesNode.Address,
-				"users": getMessagesNode.Friends,
+				"users": getMessagesNode.Users,
 			}
 			nodeToken, err := s.tokenGenerator.Generate(user, "get-messages", exp, claims)
 			if err != nil {
