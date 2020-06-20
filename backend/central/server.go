@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/twitchtv/twirp"
 
+	"github.com/mreider/koto/backend/central/bcrypt"
 	"github.com/mreider/koto/backend/central/repo"
 	"github.com/mreider/koto/backend/central/rpc"
 	"github.com/mreider/koto/backend/central/services"
@@ -49,9 +50,11 @@ func (s *Server) Run() error {
 	s.setupMiddlewares(r)
 
 	rpcHooks := &twirp.ServerHooks{}
-	baseService := services.NewBaseService(s.repos)
+	baseService := services.NewBase(s.repos)
 
-	authService := services.NewAuth(baseService, sessionUserKey)
+	passwordHash := bcrypt.NewPasswordHash()
+
+	authService := services.NewAuth(baseService, sessionUserKey, passwordHash)
 	authServiceHandler := rpc.NewAuthServiceServer(authService, rpcHooks)
 	r.Handle(authServiceHandler.PathPrefix()+"*", s.authSessionProvider(authServiceHandler))
 
