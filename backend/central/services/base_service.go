@@ -10,7 +10,7 @@ type BaseService struct {
 	repos repo.Repos
 }
 
-func NewBaseService(repos repo.Repos) *BaseService {
+func NewBase(repos repo.Repos) *BaseService {
 	return &BaseService{
 		repos: repos,
 	}
