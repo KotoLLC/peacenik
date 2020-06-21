@@ -26,12 +26,13 @@ const (
 type Server struct {
 	listenAddr     string
 	pubKeyPEM      string
+	admins         map[string]bool
 	repos          repo.Repos
 	tokenGenerator token.Generator
 	sessionStore   *sessions.CookieStore
 }
 
-func NewServer(listenAddr, pubKeyPEM string, repos repo.Repos, tokenGenerator token.Generator) *Server {
+func NewServer(listenAddr, pubKeyPEM string, admins map[string]bool, repos repo.Repos, tokenGenerator token.Generator) *Server {
 	sessionStore := sessions.NewCookieStore([]byte(cookieAuthenticationKey))
 	sessionStore.Options.HttpOnly = true
 	sessionStore.Options.MaxAge = 0
@@ -39,6 +40,7 @@ func NewServer(listenAddr, pubKeyPEM string, repos repo.Repos, tokenGenerator to
 	return &Server{
 		listenAddr:     listenAddr,
 		pubKeyPEM:      pubKeyPEM,
+		admins:         admins,
 		repos:          repos,
 		tokenGenerator: tokenGenerator,
 		sessionStore:   sessionStore,
@@ -108,6 +110,7 @@ func (s *Server) checkAuth(next http.Handler) http.Handler {
 		}
 
 		ctx := context.WithValue(r.Context(), services.ContextUserKey, *user)
+		ctx = context.WithValue(ctx, services.ContextIsAdminKey, s.admins[user.Name] || s.admins[user.Email])
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

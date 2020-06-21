@@ -3,8 +3,9 @@ package services
 type ContextKey string
 
 const (
-	ContextUserKey ContextKey = "user"
-	ContextSession ContextKey = "session"
+	ContextUserKey    ContextKey = "user"
+	ContextIsAdminKey ContextKey = "isAdmin"
+	ContextSession    ContextKey = "session"
 )
 
 type Session interface {

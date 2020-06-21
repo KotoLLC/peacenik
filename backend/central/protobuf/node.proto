@@ -7,12 +7,31 @@ import "model.proto";
 
 service NodeService {
     rpc Register (NodeRegisterRequest) returns (Empty);
+    rpc Nodes (Empty) returns (NodeNodesResponse);
+    rpc Approve (NodeApproveRequest) returns (Empty);
     rpc PostMessages (Empty) returns (NodePostMessagesResponse);
     rpc GetMessages (Empty) returns (NodeGetMessagesResponse);
 }
 
 message NodeRegisterRequest {
     string address = 1;
+}
+
+message NodeNodesResponseNode {
+    string id = 1;
+    string address = 2;
+    User user = 3;
+    string created_at = 4;
+    string approved_at = 5;
+    string disabled_at = 6;
+}
+
+message NodeNodesResponse {
+    repeated NodeNodesResponseNode nodes = 1;
+}
+
+message NodeApproveRequest {
+    string node_id = 1;
 }
 
 message NodePostMessagesResponse {
