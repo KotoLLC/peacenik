@@ -19,3 +19,7 @@ func NewBase(repos repo.Repos) *BaseService {
 func (s *BaseService) getUser(ctx context.Context) repo.User {
 	return ctx.Value(ContextUserKey).(repo.User)
 }
+
+func (s *BaseService) isAdmin(ctx context.Context) bool {
+	return ctx.Value(ContextIsAdminKey).(bool)
+}

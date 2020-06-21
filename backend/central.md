@@ -13,7 +13,7 @@ go build -o central-service ./central/cmd/
 # Run
 
 ```
-./central-service -address ":12001" -db central.db -key central.rsa
+./central-service -address ":12001" -db central.db -key central.rsa -admin admin@mail.org
 ```
 
 # API
@@ -60,6 +60,20 @@ Content-Type: application/json
 {
   "address": "http://localhost:12002"
 }
+
+
+### Get all nodes (admin access)
+POST http://localhost:12001/rpc.NodeService/Nodes
+Content-Type: application/json
+
+{}
+
+
+### Approve node (admin access)
+POST http://localhost:12001/rpc.NodeService/Approve
+Content-Type: application/json
+
+{"node_id":  "e60b3ff4-9ac0-4ba4-a45c-626c4eb29f75"}
 
 
 ### Create invite.

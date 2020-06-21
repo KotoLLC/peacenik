@@ -11,6 +11,16 @@ import (
 	"github.com/mreider/koto/backend/common"
 )
 
+type Node struct {
+	ID         string `db:"id"`
+	Address    string `db:"address"`
+	AdminID    string `db:"admin_id"`
+	AdminName  string `db:"admin_name"`
+	CreatedAt  string `db:"created_at"`
+	ApprovedAt string `db:"approved_at"`
+	DisabledAt string `db:"disabled_at"`
+}
+
 type GetMessagesNode struct {
 	Address string
 	Users   []string
@@ -18,7 +28,9 @@ type GetMessagesNode struct {
 
 type NodeRepo interface {
 	NodeExists(address string) (bool, error)
-	AddNode(address, adminEmail string) error
+	AddNode(address string, nodeAdmin User) error
+	Nodes() ([]Node, error)
+	ApproveNode(nodeID string) error
 	PostMessagesNodes(user User) ([]string, error)
 	GetMessageNodes(user User) ([]GetMessagesNode, error)
 }
@@ -46,16 +58,34 @@ func (r *nodeRepo) NodeExists(address string) (bool, error) {
 	return true, nil
 }
 
-func (r *nodeRepo) AddNode(address, adminEmail string) error {
+func (r *nodeRepo) AddNode(address string, nodeAdmin User) error {
 	nodeID, err := uuid.NewV4()
 	if err != nil {
 		return err
 	}
 
 	_, err = r.db.Exec(`
-		insert into nodes(id, address, admin_email, created_at, disabled_at) 
-		VALUES ($1, $2, $3, $4, '')`,
-		nodeID, address, adminEmail, common.CurrentTimestamp())
+		insert into nodes(id, address, admin_id, created_at, approved_at, disabled_at) 
+		VALUES ($1, $2, $3, $4, '', '')`,
+		nodeID, address, nodeAdmin.ID, common.CurrentTimestamp())
+	return err
+}
+
+func (r *nodeRepo) Nodes() ([]Node, error) {
+	var nodes []Node
+	err := r.db.Select(&nodes, `
+		select id, address, admin_id, created_at, approved_at, disabled_at,
+		       (select name from users where id = nodes.admin_id) admin_name
+		from nodes`)
+	return nodes, err
+}
+
+func (r *nodeRepo) ApproveNode(nodeID string) error {
+	_, err := r.db.Exec(`
+		update nodes
+		set approved_at = $1
+		where id = $2`,
+		common.CurrentTimestamp(), nodeID)
 	return err
 }
 
