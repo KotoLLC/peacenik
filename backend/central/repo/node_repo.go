@@ -21,9 +21,10 @@ type Node struct {
 	DisabledAt string `db:"disabled_at"`
 }
 
-type GetMessagesNode struct {
-	Address string
-	Users   []string
+type UserNode struct {
+	Node        Node
+	MinDistance int
+	Count       int
 }
 
 type NodeRepo interface {
@@ -31,8 +32,7 @@ type NodeRepo interface {
 	AddNode(address string, nodeAdmin User) error
 	Nodes() ([]Node, error)
 	ApproveNode(nodeID string) error
-	PostMessagesNodes(user User) ([]string, error)
-	GetMessageNodes(user User) ([]GetMessagesNode, error)
+	UserNodes(user User) ([]UserNode, []string, error)
 }
 
 type nodeRepo struct {
@@ -89,67 +89,80 @@ func (r *nodeRepo) ApproveNode(nodeID string) error {
 	return err
 }
 
-func (r *nodeRepo) PostMessagesNodes(user User) ([]string, error) {
-	var nodeAddresses []string
-	err := r.db.Select(&nodeAddresses, `
-		select n.address
-		from user_nodes un
-			inner join nodes n on n.id = un.node_id
-		where un.user_id = $1 and un.disabled_at = '' and n.disabled_at = '';`,
-		user.ID)
+func (r *nodeRepo) UserNodes(user User) (userNodes []UserNode, userIDs []string, err error) {
+	type friend struct {
+		MinDistance int
+		Count       int
+	}
+	type friendPair struct {
+		UserID   string `db:"user_id"`
+		FriendID string `db:"friend_id"`
+	}
+	currentLevel := []string{user.ID}
+	nextPairs := make([]friendPair, 0)
+	friends := map[string]friend{user.ID: {MinDistance: 0, Count: 1}}
+	friendPairs := map[friendPair]struct{}{}
+	distance := 0
+	for len(currentLevel) > 0 {
+		nextPairs = nextPairs[:0]
+		distance++
+		query, args, err := sqlx.In(`
+			select user_id, friend_id
+			from friends
+			where user_id in (?)`,
+			currentLevel)
+		if err != nil {
+			return nil, nil, err
+		}
+		query = r.db.Rebind(query)
+		err = r.db.Select(&nextPairs, query, args...)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		currentLevel = currentLevel[:0]
+		for _, pair := range nextPairs {
+			if _, ok := friendPairs[pair]; ok {
+				continue
+			}
+			if _, ok := friendPairs[friendPair{UserID: pair.FriendID, FriendID: pair.UserID}]; ok {
+				continue
+			}
+			friendPairs[pair] = struct{}{}
+			if f, ok := friends[pair.FriendID]; !ok {
+				friends[pair.FriendID] = friend{MinDistance: distance, Count: 1}
+				currentLevel = append(currentLevel, pair.FriendID)
+			} else {
+				friends[pair.FriendID] = friend{MinDistance: f.MinDistance, Count: f.Count + 1}
+			}
+		}
+	}
+
+	userIDs = make([]string, 0, len(friends))
+	for friendID := range friends {
+		userIDs = append(userIDs, friendID)
+	}
+	sort.Strings(userIDs)
+
+	var nodes []Node
+	err = r.db.Select(&nodes, `
+		select id, address, admin_id, created_at, approved_at, disabled_at
+		from nodes
+		where approved_at <> '' and disabled_at = ''`)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	sort.Strings(nodeAddresses)
-
-	return nodeAddresses, nil
-}
-
-func (r *nodeRepo) GetMessageNodes(user User) ([]GetMessagesNode, error) {
-	type item struct {
-		NodeAddress string `db:"address"`
-		UserID      string `db:"user_id"`
-	}
-	var items []item
-	err := r.db.Select(&items, `
-		select distinct n.address, f.user_id
-		from friends f
-			inner join user_nodes un on un.user_id = f.user_id
-			inner join nodes n on n.id = un.node_id
-		where (f.user_id = $1 or f.user_id in (select friend_id from friends where user_id = $1))
-			and n.disabled_at = '';`,
-		user.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	nodeFriendsMap := make(map[string]map[string]struct{})
-	for _, item := range items {
-		if _, ok := nodeFriendsMap[item.NodeAddress]; !ok {
-			nodeFriendsMap[item.NodeAddress] = make(map[string]struct{})
-		}
-		nodeFriendsMap[item.NodeAddress][item.UserID] = struct{}{}
-	}
-
-	nodeAddresses := make([]string, 0, len(nodeFriendsMap))
-	for nodeAddress := range nodeFriendsMap {
-		nodeAddresses = append(nodeAddresses, nodeAddress)
-	}
-	sort.Strings(nodeAddresses)
-
-	result := make([]GetMessagesNode, len(nodeAddresses))
-	for i, nodeAddress := range nodeAddresses {
-		friends := make([]string, 0, len(nodeFriendsMap[nodeAddress]))
-		for userID := range nodeFriendsMap[nodeAddress] {
-			friends = append(friends, userID)
-		}
-		sort.Strings(friends)
-		result[i] = GetMessagesNode{
-			Address: nodeAddress,
-			Users:   friends,
+	userNodes = make([]UserNode, 0, 10)
+	for _, node := range nodes {
+		if friend, ok := friends[node.AdminID]; ok {
+			userNodes = append(userNodes, UserNode{
+				Node:        node,
+				MinDistance: friend.MinDistance,
+				Count:       friend.Count,
+			})
 		}
 	}
 
-	return result, nil
+	return userNodes, userIDs, nil
 }

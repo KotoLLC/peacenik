@@ -99,20 +99,6 @@ Content-Type: application/json
 {}
 
 
-### List of "post messages" nodes (for current user).
-POST http://localhost:12001/rpc.NodeService/PostMessages
-Content-Type: application/json
-
-{}
-
-
-### List of "get messages" nodes (for current user).
-POST http://localhost:12001/rpc.NodeService/GetMessages
-Content-Type: application/json
-
-{}
-
-
 ### Get a short-lived signed "post message" token
 POST http://localhost:12001/rpc.TokenService/PostMessage
 Content-Type: application/json
