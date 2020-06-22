@@ -9,8 +9,6 @@ service NodeService {
     rpc Register (NodeRegisterRequest) returns (Empty);
     rpc Nodes (Empty) returns (NodeNodesResponse);
     rpc Approve (NodeApproveRequest) returns (Empty);
-    rpc PostMessages (Empty) returns (NodePostMessagesResponse);
-    rpc GetMessages (Empty) returns (NodeGetMessagesResponse);
 }
 
 message NodeRegisterRequest {
@@ -32,17 +30,4 @@ message NodeNodesResponse {
 
 message NodeApproveRequest {
     string node_id = 1;
-}
-
-message NodePostMessagesResponse {
-    repeated string nodes = 1;
-}
-
-message NodeGetMessagesNode {
-    string address = 1;
-    repeated string users = 2;
-}
-
-message NodeGetMessagesResponse {
-    repeated NodeGetMessagesNode nodes = 1;
 }

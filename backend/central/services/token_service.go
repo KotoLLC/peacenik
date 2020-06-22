@@ -2,11 +2,11 @@ package services
 
 import (
 	"context"
+	"sort"
 	"time"
 
 	"github.com/twitchtv/twirp"
 
-	"github.com/mreider/koto/backend/central/repo"
 	"github.com/mreider/koto/backend/central/rpc"
 	"github.com/mreider/koto/backend/token"
 )
@@ -36,65 +36,67 @@ func (s *tokenService) Auth(ctx context.Context, _ *rpc.Empty) (*rpc.TokenAuthRe
 	}, nil
 }
 
-func (s *tokenService) PostMessage(ctx context.Context, r *rpc.TokenPostMessageRequest) (*rpc.TokenPostMessageResponse, error) {
+func (s *tokenService) PostMessage(ctx context.Context, _ *rpc.Empty) (*rpc.TokenPostMessageResponse, error) {
 	user := s.getUser(ctx)
 
-	userNodes, err := s.repos.Node.PostMessagesNodes(user)
+	nodes, _, err := s.repos.Node.UserNodes(user)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
-	nodeSet := make(map[string]bool)
-	for _, node := range userNodes {
-		nodeSet[node] = true
+	sort.Slice(nodes, func(i, j int) bool {
+		if nodes[i].MinDistance < nodes[j].MinDistance {
+			return true
+		}
+
+		if nodes[i].Count < nodes[j].Count {
+			return true
+		}
+
+		if nodes[i].Node.ApprovedAt > nodes[j].Node.ApprovedAt {
+			return true
+		}
+
+		return nodes[i].Node.Address < nodes[j].Node.Address
+	})
+
+	if len(nodes) > 1 {
+		nodes = nodes[:1]
 	}
 
-	tokens := make([]string, len(r.Nodes))
+	tokens := make(map[string]string)
 	exp := time.Now().Add(time.Minute * 10)
-	for i, node := range r.Nodes {
-		if nodeSet[node] {
-			claims := map[string]interface{}{"node": node}
-			nodeToken, err := s.tokenGenerator.Generate(user, "post-message", exp, claims)
-			if err != nil {
-				return nil, err
-			}
-			tokens[i] = nodeToken
-		} else {
-			tokens[i] = ""
+	for _, node := range nodes {
+		claims := map[string]interface{}{"node": node.Node.Address}
+		nodeToken, err := s.tokenGenerator.Generate(user, "post-message", exp, claims)
+		if err != nil {
+			return nil, err
 		}
+		tokens[node.Node.Address] = nodeToken
 	}
 	return &rpc.TokenPostMessageResponse{
 		Tokens: tokens,
 	}, nil
 }
 
-func (s *tokenService) GetMessages(ctx context.Context, r *rpc.TokenGetMessagesRequest) (*rpc.TokenGetMessagesResponse, error) {
+func (s *tokenService) GetMessages(ctx context.Context, _ *rpc.Empty) (*rpc.TokenGetMessagesResponse, error) {
 	user := s.getUser(ctx)
 
-	getMessageNodes, err := s.repos.Node.GetMessageNodes(user)
+	nodes, userIDs, err := s.repos.Node.UserNodes(user)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
-	getMessageNodeMap := make(map[string]repo.GetMessagesNode)
-	for _, node := range getMessageNodes {
-		getMessageNodeMap[node.Address] = node
-	}
-
-	tokens := make([]string, len(r.Nodes))
+	tokens := make(map[string]string)
 	exp := time.Now().Add(time.Minute * 10)
-	for i, node := range r.Nodes {
-		if getMessagesNode, ok := getMessageNodeMap[node]; ok {
-			claims := map[string]interface{}{
-				"node":  getMessagesNode.Address,
-				"users": getMessagesNode.Users,
-			}
-			nodeToken, err := s.tokenGenerator.Generate(user, "get-messages", exp, claims)
-			if err != nil {
-				return nil, err
-			}
-			tokens[i] = nodeToken
-		} else {
-			tokens[i] = ""
+	for _, node := range nodes {
+		claims := map[string]interface{}{
+			"node":  node.Node.Address,
+			"users": userIDs,
 		}
+		nodeToken, err := s.tokenGenerator.Generate(user, "get-messages", exp, claims)
+		if err != nil {
+			return nil, err
+		}
+		tokens[node.Node.Address] = nodeToken
 	}
 	return &rpc.TokenGetMessagesResponse{
 		Tokens: tokens,

@@ -76,37 +76,3 @@ func (s *nodeService) Approve(ctx context.Context, r *rpc.NodeApproveRequest) (*
 
 	return &rpc.Empty{}, nil
 }
-
-func (s *nodeService) PostMessages(ctx context.Context, _ *rpc.Empty) (*rpc.NodePostMessagesResponse, error) {
-	user := s.getUser(ctx)
-
-	nodes, err := s.repos.Node.PostMessagesNodes(user)
-	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
-	}
-
-	return &rpc.NodePostMessagesResponse{
-		Nodes: nodes,
-	}, nil
-}
-
-func (s *nodeService) GetMessages(ctx context.Context, _ *rpc.Empty) (*rpc.NodeGetMessagesResponse, error) {
-	user := s.getUser(ctx)
-
-	nodes, err := s.repos.Node.GetMessageNodes(user)
-	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
-	}
-
-	rpcNodes := make([]*rpc.NodeGetMessagesNode, len(nodes))
-	for i, node := range nodes {
-		rpcNodes[i] = &rpc.NodeGetMessagesNode{
-			Address: node.Address,
-			Users:   node.Users,
-		}
-	}
-
-	return &rpc.NodeGetMessagesResponse{
-		Nodes: rpcNodes,
-	}, nil
-}

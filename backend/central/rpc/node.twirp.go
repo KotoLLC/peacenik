@@ -26,10 +26,6 @@ type NodeService interface {
 	Nodes(context.Context, *Empty) (*NodeNodesResponse, error)
 
 	Approve(context.Context, *NodeApproveRequest) (*Empty, error)
-
-	PostMessages(context.Context, *Empty) (*NodePostMessagesResponse, error)
-
-	GetMessages(context.Context, *Empty) (*NodeGetMessagesResponse, error)
 }
 
 // ===========================
@@ -38,7 +34,7 @@ type NodeService interface {
 
 type nodeServiceProtobufClient struct {
 	client HTTPClient
-	urls   [5]string
+	urls   [3]string
 	opts   twirp.ClientOptions
 }
 
@@ -55,12 +51,10 @@ func NewNodeServiceProtobufClient(addr string, client HTTPClient, opts ...twirp.
 	}
 
 	prefix := urlBase(addr) + NodeServicePathPrefix
-	urls := [5]string{
+	urls := [3]string{
 		prefix + "Register",
 		prefix + "Nodes",
 		prefix + "Approve",
-		prefix + "PostMessages",
-		prefix + "GetMessages",
 	}
 
 	return &nodeServiceProtobufClient{
@@ -130,53 +124,13 @@ func (c *nodeServiceProtobufClient) Approve(ctx context.Context, in *NodeApprove
 	return out, nil
 }
 
-func (c *nodeServiceProtobufClient) PostMessages(ctx context.Context, in *Empty) (*NodePostMessagesResponse, error) {
-	ctx = ctxsetters.WithPackageName(ctx, "rpc")
-	ctx = ctxsetters.WithServiceName(ctx, "NodeService")
-	ctx = ctxsetters.WithMethodName(ctx, "PostMessages")
-	out := new(NodePostMessagesResponse)
-	err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[3], in, out)
-	if err != nil {
-		twerr, ok := err.(twirp.Error)
-		if !ok {
-			twerr = twirp.InternalErrorWith(err)
-		}
-		callClientError(ctx, c.opts.Hooks, twerr)
-		return nil, err
-	}
-
-	callClientResponseReceived(ctx, c.opts.Hooks)
-
-	return out, nil
-}
-
-func (c *nodeServiceProtobufClient) GetMessages(ctx context.Context, in *Empty) (*NodeGetMessagesResponse, error) {
-	ctx = ctxsetters.WithPackageName(ctx, "rpc")
-	ctx = ctxsetters.WithServiceName(ctx, "NodeService")
-	ctx = ctxsetters.WithMethodName(ctx, "GetMessages")
-	out := new(NodeGetMessagesResponse)
-	err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[4], in, out)
-	if err != nil {
-		twerr, ok := err.(twirp.Error)
-		if !ok {
-			twerr = twirp.InternalErrorWith(err)
-		}
-		callClientError(ctx, c.opts.Hooks, twerr)
-		return nil, err
-	}
-
-	callClientResponseReceived(ctx, c.opts.Hooks)
-
-	return out, nil
-}
-
 // =======================
 // NodeService JSON Client
 // =======================
 
 type nodeServiceJSONClient struct {
 	client HTTPClient
-	urls   [5]string
+	urls   [3]string
 	opts   twirp.ClientOptions
 }
 
@@ -193,12 +147,10 @@ func NewNodeServiceJSONClient(addr string, client HTTPClient, opts ...twirp.Clie
 	}
 
 	prefix := urlBase(addr) + NodeServicePathPrefix
-	urls := [5]string{
+	urls := [3]string{
 		prefix + "Register",
 		prefix + "Nodes",
 		prefix + "Approve",
-		prefix + "PostMessages",
-		prefix + "GetMessages",
 	}
 
 	return &nodeServiceJSONClient{
@@ -254,46 +206,6 @@ func (c *nodeServiceJSONClient) Approve(ctx context.Context, in *NodeApproveRequ
 	ctx = ctxsetters.WithMethodName(ctx, "Approve")
 	out := new(Empty)
 	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[2], in, out)
-	if err != nil {
-		twerr, ok := err.(twirp.Error)
-		if !ok {
-			twerr = twirp.InternalErrorWith(err)
-		}
-		callClientError(ctx, c.opts.Hooks, twerr)
-		return nil, err
-	}
-
-	callClientResponseReceived(ctx, c.opts.Hooks)
-
-	return out, nil
-}
-
-func (c *nodeServiceJSONClient) PostMessages(ctx context.Context, in *Empty) (*NodePostMessagesResponse, error) {
-	ctx = ctxsetters.WithPackageName(ctx, "rpc")
-	ctx = ctxsetters.WithServiceName(ctx, "NodeService")
-	ctx = ctxsetters.WithMethodName(ctx, "PostMessages")
-	out := new(NodePostMessagesResponse)
-	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[3], in, out)
-	if err != nil {
-		twerr, ok := err.(twirp.Error)
-		if !ok {
-			twerr = twirp.InternalErrorWith(err)
-		}
-		callClientError(ctx, c.opts.Hooks, twerr)
-		return nil, err
-	}
-
-	callClientResponseReceived(ctx, c.opts.Hooks)
-
-	return out, nil
-}
-
-func (c *nodeServiceJSONClient) GetMessages(ctx context.Context, in *Empty) (*NodeGetMessagesResponse, error) {
-	ctx = ctxsetters.WithPackageName(ctx, "rpc")
-	ctx = ctxsetters.WithServiceName(ctx, "NodeService")
-	ctx = ctxsetters.WithMethodName(ctx, "GetMessages")
-	out := new(NodeGetMessagesResponse)
-	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[4], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -364,12 +276,6 @@ func (s *nodeServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 		return
 	case "/rpc.NodeService/Approve":
 		s.serveApprove(ctx, resp, req)
-		return
-	case "/rpc.NodeService/PostMessages":
-		s.servePostMessages(ctx, resp, req)
-		return
-	case "/rpc.NodeService/GetMessages":
-		s.serveGetMessages(ctx, resp, req)
 		return
 	default:
 		msg := fmt.Sprintf("no handler for path %q", req.URL.Path)
@@ -766,264 +672,6 @@ func (s *nodeServiceServer) serveApproveProtobuf(ctx context.Context, resp http.
 	callResponseSent(ctx, s.hooks)
 }
 
-func (s *nodeServiceServer) servePostMessages(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
-	header := req.Header.Get("Content-Type")
-	i := strings.Index(header, ";")
-	if i == -1 {
-		i = len(header)
-	}
-	switch strings.TrimSpace(strings.ToLower(header[:i])) {
-	case "application/json":
-		s.servePostMessagesJSON(ctx, resp, req)
-	case "application/protobuf":
-		s.servePostMessagesProtobuf(ctx, resp, req)
-	default:
-		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
-		twerr := badRouteError(msg, req.Method, req.URL.Path)
-		s.writeError(ctx, resp, twerr)
-	}
-}
-
-func (s *nodeServiceServer) servePostMessagesJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
-	var err error
-	ctx = ctxsetters.WithMethodName(ctx, "PostMessages")
-	ctx, err = callRequestRouted(ctx, s.hooks)
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-
-	reqContent := new(Empty)
-	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
-	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
-		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
-		return
-	}
-
-	// Call service method
-	var respContent *NodePostMessagesResponse
-	func() {
-		defer ensurePanicResponses(ctx, resp, s.hooks)
-		respContent, err = s.NodeService.PostMessages(ctx, reqContent)
-	}()
-
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-	if respContent == nil {
-		s.writeError(ctx, resp, twirp.InternalError("received a nil *NodePostMessagesResponse and nil error while calling PostMessages. nil responses are not supported"))
-		return
-	}
-
-	ctx = callResponsePrepared(ctx, s.hooks)
-
-	var buf bytes.Buffer
-	marshaler := &jsonpb.Marshaler{OrigName: true}
-	if err = marshaler.Marshal(&buf, respContent); err != nil {
-		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
-		return
-	}
-
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
-	respBytes := buf.Bytes()
-	resp.Header().Set("Content-Type", "application/json")
-	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
-	resp.WriteHeader(http.StatusOK)
-
-	if n, err := resp.Write(respBytes); err != nil {
-		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
-		twerr := twirp.NewError(twirp.Unknown, msg)
-		callError(ctx, s.hooks, twerr)
-	}
-	callResponseSent(ctx, s.hooks)
-}
-
-func (s *nodeServiceServer) servePostMessagesProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
-	var err error
-	ctx = ctxsetters.WithMethodName(ctx, "PostMessages")
-	ctx, err = callRequestRouted(ctx, s.hooks)
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-
-	buf, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
-		return
-	}
-	reqContent := new(Empty)
-	if err = proto.Unmarshal(buf, reqContent); err != nil {
-		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
-		return
-	}
-
-	// Call service method
-	var respContent *NodePostMessagesResponse
-	func() {
-		defer ensurePanicResponses(ctx, resp, s.hooks)
-		respContent, err = s.NodeService.PostMessages(ctx, reqContent)
-	}()
-
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-	if respContent == nil {
-		s.writeError(ctx, resp, twirp.InternalError("received a nil *NodePostMessagesResponse and nil error while calling PostMessages. nil responses are not supported"))
-		return
-	}
-
-	ctx = callResponsePrepared(ctx, s.hooks)
-
-	respBytes, err := proto.Marshal(respContent)
-	if err != nil {
-		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
-		return
-	}
-
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
-	resp.Header().Set("Content-Type", "application/protobuf")
-	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
-	resp.WriteHeader(http.StatusOK)
-	if n, err := resp.Write(respBytes); err != nil {
-		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
-		twerr := twirp.NewError(twirp.Unknown, msg)
-		callError(ctx, s.hooks, twerr)
-	}
-	callResponseSent(ctx, s.hooks)
-}
-
-func (s *nodeServiceServer) serveGetMessages(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
-	header := req.Header.Get("Content-Type")
-	i := strings.Index(header, ";")
-	if i == -1 {
-		i = len(header)
-	}
-	switch strings.TrimSpace(strings.ToLower(header[:i])) {
-	case "application/json":
-		s.serveGetMessagesJSON(ctx, resp, req)
-	case "application/protobuf":
-		s.serveGetMessagesProtobuf(ctx, resp, req)
-	default:
-		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
-		twerr := badRouteError(msg, req.Method, req.URL.Path)
-		s.writeError(ctx, resp, twerr)
-	}
-}
-
-func (s *nodeServiceServer) serveGetMessagesJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
-	var err error
-	ctx = ctxsetters.WithMethodName(ctx, "GetMessages")
-	ctx, err = callRequestRouted(ctx, s.hooks)
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-
-	reqContent := new(Empty)
-	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
-	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
-		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
-		return
-	}
-
-	// Call service method
-	var respContent *NodeGetMessagesResponse
-	func() {
-		defer ensurePanicResponses(ctx, resp, s.hooks)
-		respContent, err = s.NodeService.GetMessages(ctx, reqContent)
-	}()
-
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-	if respContent == nil {
-		s.writeError(ctx, resp, twirp.InternalError("received a nil *NodeGetMessagesResponse and nil error while calling GetMessages. nil responses are not supported"))
-		return
-	}
-
-	ctx = callResponsePrepared(ctx, s.hooks)
-
-	var buf bytes.Buffer
-	marshaler := &jsonpb.Marshaler{OrigName: true}
-	if err = marshaler.Marshal(&buf, respContent); err != nil {
-		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
-		return
-	}
-
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
-	respBytes := buf.Bytes()
-	resp.Header().Set("Content-Type", "application/json")
-	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
-	resp.WriteHeader(http.StatusOK)
-
-	if n, err := resp.Write(respBytes); err != nil {
-		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
-		twerr := twirp.NewError(twirp.Unknown, msg)
-		callError(ctx, s.hooks, twerr)
-	}
-	callResponseSent(ctx, s.hooks)
-}
-
-func (s *nodeServiceServer) serveGetMessagesProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
-	var err error
-	ctx = ctxsetters.WithMethodName(ctx, "GetMessages")
-	ctx, err = callRequestRouted(ctx, s.hooks)
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-
-	buf, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
-		return
-	}
-	reqContent := new(Empty)
-	if err = proto.Unmarshal(buf, reqContent); err != nil {
-		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
-		return
-	}
-
-	// Call service method
-	var respContent *NodeGetMessagesResponse
-	func() {
-		defer ensurePanicResponses(ctx, resp, s.hooks)
-		respContent, err = s.NodeService.GetMessages(ctx, reqContent)
-	}()
-
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-	if respContent == nil {
-		s.writeError(ctx, resp, twirp.InternalError("received a nil *NodeGetMessagesResponse and nil error while calling GetMessages. nil responses are not supported"))
-		return
-	}
-
-	ctx = callResponsePrepared(ctx, s.hooks)
-
-	respBytes, err := proto.Marshal(respContent)
-	if err != nil {
-		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
-		return
-	}
-
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
-	resp.Header().Set("Content-Type", "application/protobuf")
-	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
-	resp.WriteHeader(http.StatusOK)
-	if n, err := resp.Write(respBytes); err != nil {
-		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
-		twerr := twirp.NewError(twirp.Unknown, msg)
-		callError(ctx, s.hooks, twerr)
-	}
-	callResponseSent(ctx, s.hooks)
-}
-
 func (s *nodeServiceServer) ServiceDescriptor() ([]byte, int) {
 	return twirpFileDescriptor3, 0
 }
@@ -1037,31 +685,26 @@ func (s *nodeServiceServer) PathPrefix() string {
 }
 
 var twirpFileDescriptor3 = []byte{
-	// 410 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x93, 0xcb, 0x8a, 0xdb, 0x30,
-	0x14, 0x86, 0xb1, 0x93, 0x38, 0xf1, 0x71, 0x29, 0x54, 0xbd, 0xc4, 0x98, 0x86, 0x06, 0xaf, 0x02,
-	0xa5, 0x4e, 0x48, 0x17, 0xa5, 0xcb, 0x14, 0x42, 0xc9, 0xa2, 0xa5, 0xb8, 0xcc, 0x66, 0x36, 0xc1,
-	0xb1, 0x0e, 0xc1, 0x90, 0x44, 0x1a, 0x49, 0x09, 0xcc, 0x5b, 0xcc, 0x2b, 0xcd, 0x9b, 0x0d, 0x92,
-	0x6c, 0x8f, 0x9d, 0xf1, 0x2c, 0xbc, 0x38, 0xb7, 0xff, 0xd7, 0xf9, 0x24, 0x03, 0x9c, 0x18, 0xc5,
-	0x84, 0x0b, 0xa6, 0x18, 0xe9, 0x09, 0x9e, 0x47, 0xc1, 0x91, 0x51, 0x3c, 0xd8, 0x4c, 0x3c, 0x87,
-	0xf7, 0x7f, 0x19, 0xc5, 0x14, 0xf7, 0x85, 0x54, 0x28, 0x52, 0xbc, 0x3b, 0xa3, 0x54, 0x24, 0x84,
-	0x61, 0x46, 0xa9, 0x40, 0x29, 0x43, 0x67, 0xea, 0xcc, 0xfc, 0xb4, 0x0a, 0xe3, 0x47, 0x07, 0x3e,
-	0xea, 0x09, 0xfd, 0xc9, 0x14, 0x25, 0x67, 0x27, 0x69, 0x02, 0xf2, 0x16, 0xdc, 0x82, 0x96, 0xed,
-	0x6e, 0x41, 0x9b, 0x1a, 0x6e, 0x4b, 0x83, 0x4c, 0xa0, 0x7f, 0x96, 0x28, 0xc2, 0xde, 0xd4, 0x99,
-	0x05, 0x4b, 0x3f, 0x11, 0x3c, 0x4f, 0x6e, 0x24, 0x8a, 0xd4, 0xa4, 0xc9, 0x04, 0x20, 0x17, 0x98,
-	0x29, 0xa4, 0xdb, 0x4c, 0x85, 0x7d, 0x33, 0xeb, 0x97, 0x99, 0x95, 0x22, 0x5f, 0x20, 0xc8, 0x38,
-	0x17, 0xec, 0x62, 0xeb, 0x03, 0x53, 0x87, 0x2a, 0x65, 0x1b, 0x68, 0x21, 0xb3, 0xdd, 0xc1, 0x36,
-	0x78, 0xb6, 0xa1, 0x4a, 0xad, 0x54, 0xbc, 0x86, 0x77, 0x2f, 0x56, 0x20, 0x0b, 0x18, 0x68, 0x52,
-	0x7a, 0xe1, 0xde, 0x2c, 0x58, 0x46, 0xe6, 0x54, 0x9d, 0x9b, 0xa6, 0xb6, 0x31, 0xfe, 0x06, 0x44,
-	0x87, 0x2b, 0xeb, 0x5c, 0xa1, 0x1b, 0xc3, 0x50, 0x97, 0xb7, 0x35, 0x0b, 0x4f, 0x87, 0x1b, 0x1a,
-	0x2f, 0x20, 0xd4, 0xed, 0xff, 0x98, 0x54, 0x7f, 0x50, 0xca, 0x6c, 0xdf, 0x30, 0xff, 0xd0, 0x34,
-	0xf7, 0x2b, 0x83, 0xb5, 0xbd, 0x9c, 0xdf, 0x58, 0x0f, 0x18, 0xd0, 0xaf, 0x5e, 0x8e, 0x96, 0xd1,
-	0x04, 0x35, 0x70, 0x23, 0x63, 0x82, 0x78, 0x03, 0xe3, 0x2b, 0x99, 0xda, 0x37, 0x69, 0x2f, 0x1d,
-	0xd6, 0x4b, 0x5f, 0x79, 0x96, 0x27, 0x5a, 0x3e, 0xb8, 0x10, 0xe8, 0xf8, 0x3f, 0x8a, 0x4b, 0x91,
-	0x6b, 0x68, 0xa3, 0xea, 0xe9, 0x90, 0xe7, 0xe1, 0xab, 0xd7, 0x14, 0x81, 0xa9, 0xac, 0x8f, 0x5c,
-	0xdd, 0x93, 0xaf, 0x30, 0x30, 0x40, 0x49, 0x23, 0x19, 0x7d, 0xea, 0x86, 0x4d, 0x12, 0x18, 0x96,
-	0x74, 0xc9, 0xb8, 0x6e, 0x69, 0xf3, 0x6e, 0x89, 0xff, 0x84, 0x37, 0x4d, 0xbc, 0x2d, 0x8f, 0x49,
-	0x2d, 0xd0, 0x79, 0x03, 0x3f, 0x20, 0x68, 0xec, 0xdc, 0x9a, 0xfc, 0xdc, 0x45, 0xa5, 0x1a, 0xfc,
-	0x35, 0xba, 0xf5, 0x92, 0x64, 0x2e, 0x78, 0xbe, 0xf3, 0xcc, 0x2f, 0xf5, 0xfd, 0x29, 0x00, 0x00,
-	0xff, 0xff, 0x8c, 0xef, 0x77, 0xa8, 0x72, 0x03, 0x00, 0x00,
+	// 324 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x52, 0x4d, 0x4b, 0xc3, 0x40,
+	0x10, 0x25, 0xfd, 0x48, 0xdb, 0x09, 0x08, 0x8e, 0x68, 0x43, 0xa0, 0x58, 0x72, 0x2a, 0x88, 0x5b,
+	0xa9, 0xbf, 0xa0, 0x42, 0x0f, 0x5e, 0x3c, 0xac, 0x78, 0xf1, 0x52, 0xd2, 0xec, 0x20, 0x81, 0xb6,
+	0xbb, 0xee, 0x6e, 0x0b, 0xfe, 0x17, 0xff, 0x8c, 0xff, 0x4c, 0x76, 0xb7, 0x29, 0xa9, 0xf6, 0x90,
+	0xc3, 0xbc, 0xf7, 0x66, 0xe6, 0xcd, 0xcb, 0x02, 0x6c, 0xa5, 0x20, 0xa6, 0xb4, 0xb4, 0x12, 0xdb,
+	0x5a, 0x95, 0x59, 0xb2, 0x91, 0x82, 0xd6, 0x01, 0xc9, 0xa7, 0x70, 0xf5, 0x22, 0x05, 0x71, 0xfa,
+	0xa8, 0x8c, 0x25, 0xcd, 0xe9, 0x73, 0x47, 0xc6, 0x62, 0x0a, 0xbd, 0x42, 0x08, 0x4d, 0xc6, 0xa4,
+	0xd1, 0x38, 0x9a, 0x0c, 0x78, 0x5d, 0xe6, 0x3f, 0x11, 0x5c, 0xbb, 0x0e, 0xf7, 0x19, 0x4e, 0x46,
+	0xc9, 0xad, 0xf1, 0x05, 0x5e, 0x40, 0xab, 0x12, 0x07, 0x79, 0xab, 0x12, 0xcd, 0x19, 0xad, 0x93,
+	0x19, 0x38, 0x82, 0xce, 0xce, 0x90, 0x4e, 0xdb, 0xe3, 0x68, 0x92, 0xcc, 0x06, 0x4c, 0xab, 0x92,
+	0xbd, 0x19, 0xd2, 0xdc, 0xc3, 0x38, 0x02, 0x28, 0x35, 0x15, 0x96, 0xc4, 0xb2, 0xb0, 0x69, 0xc7,
+	0xf7, 0x0e, 0x0e, 0xc8, 0xdc, 0xe2, 0x2d, 0x24, 0x85, 0x52, 0x5a, 0xee, 0x03, 0xdf, 0xf5, 0x3c,
+	0xd4, 0x50, 0x10, 0x88, 0xca, 0x14, 0xab, 0x75, 0x10, 0xc4, 0x41, 0x50, 0x43, 0x73, 0x9b, 0x2f,
+	0xe0, 0xf2, 0xdf, 0x09, 0xf8, 0x00, 0x5d, 0x97, 0x94, 0x3b, 0xb8, 0x3d, 0x49, 0x66, 0x99, 0x77,
+	0x75, 0xf6, 0x52, 0x1e, 0x84, 0xf9, 0x3d, 0xa0, 0x2b, 0xe7, 0x61, 0x73, 0x1d, 0xdd, 0x10, 0x7a,
+	0x8e, 0x5e, 0x1e, 0xb3, 0x88, 0x5d, 0xf9, 0x2c, 0x66, 0xdf, 0x11, 0x24, 0x4e, 0xff, 0x4a, 0x7a,
+	0x5f, 0x95, 0x6e, 0x61, 0xbf, 0x8e, 0x1d, 0xd3, 0xe3, 0xb6, 0x3f, 0x7f, 0x22, 0x03, 0xcf, 0x2c,
+	0x36, 0xca, 0x7e, 0xe1, 0x1d, 0x74, 0xbd, 0x19, 0x6c, 0x80, 0xd9, 0xcd, 0x79, 0xa3, 0xc8, 0xa0,
+	0x77, 0x70, 0x86, 0xc3, 0xa3, 0xe4, 0xd4, 0x6b, 0x73, 0xf8, 0x53, 0xff, 0x3d, 0x66, 0x6c, 0xaa,
+	0x55, 0xb9, 0x8a, 0xfd, 0xd3, 0x78, 0xfc, 0x0d, 0x00, 0x00, 0xff, 0xff, 0x71, 0x77, 0xd0, 0x8c,
+	0x3a, 0x02, 0x00, 0x00,
 }
