@@ -7,9 +7,19 @@ import "model.proto";
 
 service UserService {
     rpc Friends (Empty) returns (UserFriendsResponse);
+    rpc FriendsOfFriends (Empty) returns (UserFriendsOfFriendsResponse);
 }
 
 message UserFriendsResponse {
     repeated User friends = 1;
+}
+
+message UserFriendsOfFriendsResponseFriend {
+    User user = 1;
+    repeated User friends = 2;
+}
+
+message UserFriendsOfFriendsResponse {
+    repeated UserFriendsOfFriendsResponseFriend friends = 1;
 }
 

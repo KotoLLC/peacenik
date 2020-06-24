@@ -113,6 +113,13 @@ Content-Type: application/json
 {}
 
 
+### List of friends of friends (for current user).
+POST http://localhost:12001/rpc.UserService/FriendsOfFriends
+Content-Type: application/json
+
+{}
+
+
 ### Get a short-lived signed "post message" token
 POST http://localhost:12001/rpc.TokenService/PostMessage
 Content-Type: application/json
