@@ -83,6 +83,20 @@ Content-Type: application/json
 {"friend": "andrey@mail.com"}
 
 
+### Get invites from me.
+POST http://localhost:12001/rpc.InviteService/FromMe
+Content-Type: application/json
+
+{}
+
+
+### Get invites for me.
+POST http://localhost:12001/rpc.InviteService/ForMe
+Content-Type: application/json
+
+{}
+
+
 ### Accept invite.
 POST http://localhost:12001//rpc.InviteService/Accept
 Content-Type: application/json

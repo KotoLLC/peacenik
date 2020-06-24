@@ -12,9 +12,23 @@ var (
 	ErrInviteNotFound = errors.New("invite not found")
 )
 
+type Invite struct {
+	ID          int    `db:"id"`
+	UserID      string `db:"user_id"`
+	UserName    string `db:"user_name"`
+	UserEmail   string `db:"user_email"`
+	FriendID    string `db:"friend_id"`
+	FriendName  string `db:"friend_name"`
+	FriendEmail string `db:"friend_email"`
+	CreatedAt   string `db:"created_at"`
+	AcceptedAt  string `db:"accepted_at"`
+}
+
 type InviteRepo interface {
 	AddInvite(userID, friendEmail string) error
 	AcceptInvite(inviterID, friendID, friendEmail string) error
+	InvitesFromMe(user User) ([]Invite, error)
+	InvitesForMe(user User) ([]Invite, error)
 }
 
 type inviteRepo struct {
@@ -74,4 +88,32 @@ func (r *inviteRepo) AcceptInvite(inviterID, friendID, friendEmail string) error
 
 		return nil
 	})
+}
+
+func (r *inviteRepo) InvitesFromMe(user User) ([]Invite, error) {
+	var invites []Invite
+	err := r.db.Select(&invites, `
+		select i.id, i.user_id, coalesce(u.id, '') friend_id, coalesce(u.name, '') friend_name, i.friend_email, i.created_at, i.accepted_at
+		from invites i
+			left join users u on u.email = i.friend_email 
+		where i.user_id = $1;`,
+		user.ID)
+	if err != nil {
+		return nil, err
+	}
+	return invites, nil
+}
+
+func (r *inviteRepo) InvitesForMe(user User) ([]Invite, error) {
+	var invites []Invite
+	err := r.db.Select(&invites, `
+		select i.id, i.user_id, u.name user_name, u.email user_email, i.friend_email, i.created_at, i.accepted_at
+		from invites i
+			inner join users u on u.id = i.user_id
+		where i.friend_email = $1;`,
+		user.Email)
+	if err != nil {
+		return nil, err
+	}
+	return invites, nil
 }
