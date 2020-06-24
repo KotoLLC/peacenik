@@ -8,6 +8,8 @@ import "model.proto";
 service InviteService {
     rpc Create (InviteCreateRequest) returns (Empty);
     rpc Accept (InviteAcceptRequest) returns (Empty);
+    rpc FromMe (Empty) returns (InviteFromMeResponse);
+    rpc ForMe (Empty) returns (InviteForMeResponse);
 }
 
 message InviteCreateRequest {
@@ -18,3 +20,17 @@ message InviteAcceptRequest {
     string inviter_id = 1;
 }
 
+message InviteFriendInvite {
+    string friend_id = 1;
+    string friend_name = 2;
+    string created_at = 3;
+    string accepted_at = 4;
+}
+
+message InviteFromMeResponse {
+    repeated InviteFriendInvite invites = 1;
+}
+
+message InviteForMeResponse {
+    repeated InviteFriendInvite invites = 1;
+}

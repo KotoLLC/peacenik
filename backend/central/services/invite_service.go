@@ -55,3 +55,45 @@ func (s *inviteService) Accept(ctx context.Context, r *rpc.InviteAcceptRequest) 
 	}
 	return &rpc.Empty{}, nil
 }
+
+func (s *inviteService) FromMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFromMeResponse, error) {
+	user := s.getUser(ctx)
+	invites, err := s.repos.Invite.InvitesFromMe(user)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+	rpcInvites := make([]*rpc.InviteFriendInvite, len(invites))
+	for i, invite := range invites {
+		rpcInvites[i] = &rpc.InviteFriendInvite{
+			FriendId:   invite.FriendID,
+			FriendName: invite.FriendName,
+			CreatedAt:  invite.CreatedAt,
+			AcceptedAt: invite.AcceptedAt,
+		}
+	}
+
+	return &rpc.InviteFromMeResponse{
+		Invites: rpcInvites,
+	}, nil
+}
+
+func (s *inviteService) ForMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteForMeResponse, error) {
+	user := s.getUser(ctx)
+	invites, err := s.repos.Invite.InvitesForMe(user)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+	rpcInvites := make([]*rpc.InviteFriendInvite, len(invites))
+	for i, invite := range invites {
+		rpcInvites[i] = &rpc.InviteFriendInvite{
+			FriendId:   invite.UserID,
+			FriendName: invite.UserName,
+			CreatedAt:  invite.CreatedAt,
+			AcceptedAt: invite.AcceptedAt,
+		}
+	}
+
+	return &rpc.InviteForMeResponse{
+		Invites: rpcInvites,
+	}, nil
+}

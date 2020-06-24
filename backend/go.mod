@@ -13,6 +13,6 @@ require (
 	github.com/rubenv/sql-migrate v0.0.0-20200616145509-8d140a17f351
 	github.com/stretchr/testify v1.6.1
 	github.com/twitchtv/twirp v5.12.0+incompatible
-	golang.org/x/crypto v0.0.0-20200604202706-70a84ac30bf9
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	google.golang.org/protobuf v1.24.0
 )
