@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package rpc;
+option go_package = "../rpc";
+
+import "model.proto";
+
+service MessageService {
+    rpc Post (MessagePostRequest) returns (Empty);
+    rpc Messages (MessageMessagesRequest) returns (MessageMessagesResponse);
+}
+
+message MessagePostRequest {
+    string token = 1;
+    Message message = 2;
+}
+
+message MessageMessagesRequest {
+    string token = 1;
+}
+
+message MessageMessagesResponse {
+    repeated Message messages = 1;
+}
+

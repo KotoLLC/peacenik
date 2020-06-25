@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package rpc;
+option go_package = "../rpc";
+
+message Empty {
+}
+
+message Message {
+    string id = 1;
+    string user_id = 2;
+    string user_name = 3;
+    string text = 4;
+    string created_at = 5;
+    string updated_at = 6;
+}

@@ -33,7 +33,7 @@ func (p *parser) Parse(rawToken string, scope string) (token *jwt.Token, claims 
 		return p.publicKey, nil
 	})
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, ErrInvalidToken
 	}
 
 	claims = jwtToken.Claims.(jwt.MapClaims)

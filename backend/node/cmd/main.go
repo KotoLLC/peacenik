@@ -60,13 +60,11 @@ func main() {
 	}
 
 	tokenParser := token.NewParser(centralPublicKey)
-	repos := node.Repos{
+	repos := repo.Repos{
 		Message: repo.NewMessages(db),
 	}
 
-	services := node.Services{}
-
-	server := node.NewServer(internalAddress, externalAddress, tokenParser, services, repos)
+	server := node.NewServer(internalAddress, externalAddress, repos, tokenParser)
 	err = server.Run()
 	if err != nil {
 		log.Fatalln(err)
@@ -78,7 +76,7 @@ func loadCentralPublicKey(centralServerAddress string) (*rsa.PublicKey, error) {
 		Timeout: time.Second * 30,
 	}
 
-	resp, err := client.Get(centralServerAddress + "/info/publicKey")
+	resp, err := client.Post(centralServerAddress+"/rpc.InfoService/PublicKey", "application/json", strings.NewReader("{}"))
 	if err != nil {
 		return nil, err
 	}
