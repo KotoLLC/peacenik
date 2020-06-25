@@ -1,10 +1,11 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
-import { ErrorBoundary } from '@view/common/ErrorBoundary'
+import { ErrorBoundary } from '@view/ErrorBoundary'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
 import { CssBaseline } from '@material-ui/core'
 import store from '@store/store'
+import { Routes } from '@view/routes'
 
 const theme = createMuiTheme({
   typography: {
@@ -20,7 +21,7 @@ class App extends React.Component<{}> {
         <ErrorBoundary>
           <ThemeProvider theme={theme}>
             <CssBaseline />
-            <h1>Koto</h1>
+            <Routes/>
           </ThemeProvider>
         </ErrorBoundary>
       </Provider>
