@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@view/*": ["./src/view/*"],
+      "@store/*": ["./src/store/*"],
+      "@sagas/*": ["./src/sagas/*"],
+    }
+  }
+}
