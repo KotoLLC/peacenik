@@ -124,13 +124,13 @@ Content-Type: application/json
 POST http://localhost:12001/rpc.TokenService/PostMessage
 Content-Type: application/json
 
-{"nodes":  ["http://localhost:12002", "http://localhost:12003"]}
+{}
 
 
 ### Get a short-lived signed "get messages" token
 POST http://localhost:12001/rpc.TokenService/GetMessages
 Content-Type: application/json
 
-{"nodes":  ["http://localhost:12002", "http://localhost:12003"]}
+{}
 
 ```
