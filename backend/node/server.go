@@ -8,35 +8,27 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/twitchtv/twirp"
 
-	"github.com/mreider/koto/backend/node/handler"
 	"github.com/mreider/koto/backend/node/repo"
-	"github.com/mreider/koto/backend/node/service"
+	"github.com/mreider/koto/backend/node/rpc"
+	"github.com/mreider/koto/backend/node/services"
 	"github.com/mreider/koto/backend/token"
 )
-
-type Repos struct {
-	Message repo.MessageRepo
-}
-
-type Services struct {
-}
 
 type Server struct {
 	internalAddr    string
 	externalAddress string
+	repos           repo.Repos
 	tokenParser     token.Parser
-	services        Services
-	repos           Repos
 }
 
-func NewServer(internalAddr, externalAddress string, tokenParser token.Parser, services Services, repos Repos) *Server {
+func NewServer(internalAddr, externalAddress string, repos repo.Repos, tokenParser token.Parser) *Server {
 	return &Server{
 		internalAddr:    internalAddr,
 		externalAddress: externalAddress,
-		tokenParser:     tokenParser,
-		services:        services,
 		repos:           repos,
+		tokenParser:     tokenParser,
 	}
 }
 
@@ -44,7 +36,12 @@ func (s *Server) Run() error {
 	r := chi.NewRouter()
 	s.setupMiddlewares(r)
 
-	r.Mount("/messages", s.checkAuth(handler.Message(s.externalAddress, s.tokenParser, s.repos.Message)))
+	rpcHooks := &twirp.ServerHooks{}
+	baseService := services.NewBase(s.repos, s.tokenParser, s.externalAddress)
+
+	messageService := services.NewMessage(baseService)
+	messageServiceHandler := rpc.NewMessageServiceServer(messageService, rpcHooks)
+	r.Handle(messageServiceHandler.PathPrefix()+"*", s.checkAuth(messageServiceHandler))
 
 	log.Println("started on " + s.internalAddr)
 	return http.ListenAndServe(s.internalAddr, r)
@@ -73,7 +70,7 @@ func (s *Server) checkAuth(next http.Handler) http.Handler {
 		}
 
 		userID := claims["id"].(string)
-		ctx := context.WithValue(r.Context(), service.ContextUserKey, userID)
+		ctx := context.WithValue(r.Context(), services.ContextUserKey, services.User{ID: userID})
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

@@ -14,7 +14,7 @@ go build -o node-service ./node/cmd/
 
 ```
 ### Post a message
-POST http://localhost:12002/messages/post
+POST http://localhost:12002/rpc.MessageService/Post
 Authorization: Bearer AUTH-TOKEN
 Content-Type: application/json
 
@@ -30,7 +30,7 @@ Content-Type: application/json
 
 
 ### Get messages
-POST http://localhost:12002/messages/get
+POST http://localhost:12002/rpc.MessageService/Messages
 Authorization: Bearer AUTH-TOKEN
 Content-Type: application/json
 
