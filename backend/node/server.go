@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/cors"
 	"github.com/twitchtv/twirp"
 
 	"github.com/mreider/koto/backend/node/repo"
@@ -52,6 +53,15 @@ func (s *Server) setupMiddlewares(r *chi.Mux) {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+
+	corsOptions := cors.Options{
+		AllowOriginFunc: func(r *http.Request, origin string) bool {
+			return true
+		},
+		AllowCredentials: true,
+		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodDelete},
+	}
+	r.Use(cors.New(corsOptions).Handler)
 }
 
 func (s *Server) checkAuth(next http.Handler) http.Handler {
