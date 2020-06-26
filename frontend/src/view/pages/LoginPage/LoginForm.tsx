@@ -12,8 +12,9 @@ import { validate } from '@services/validation'
 import { Footer } from './Menu'
 import { FormWrapper, FormControlStyled, ButtonStyled, ContainerStyled, Header } from './styles'
 import { ApiDataTypes } from './../../../types/api'
+import { RouteComponentProps } from 'react-router-dom'
 
-type FieldsType = '' | 'email' | 'password'
+type FieldsType = 'email' | 'password' | ''
 
 interface State {
   email: string
@@ -24,10 +25,11 @@ interface State {
   errorMessage: string
 }
 
-export interface Props {
+export interface Props extends RouteComponentProps {
   loginErrorMessage: string
   isLogged: boolean
   onLogin: (data: ApiDataTypes.Login) => void
+  resetLoginFailedMessage: () => void
 }
 
 export class LoginForm extends React.PureComponent<Props, State> {
@@ -48,6 +50,7 @@ export class LoginForm extends React.PureComponent<Props, State> {
         isRequested: false
       }
     } if (nextProps.isLogged === true) {
+      nextProps.history.push('/home')
       return { isRequested: false }
     } else {
       return {}
@@ -108,6 +111,10 @@ export class LoginForm extends React.PureComponent<Props, State> {
     })
 
     onLogin({ email, password })
+  }
+
+  componentWillUnmount() {
+    this.props.resetLoginFailedMessage()
   }
 
   render() {

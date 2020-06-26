@@ -25,6 +25,11 @@ const reducer = (state = initialState, action) => {
         loginErrorMessage: action.payload,
       } }
     }
+    case Types.RESET_LOGIN_FAILED_MESSAGE: {
+      return { ...state, ...{ 
+        loginErrorMessage: '',
+      } }
+    }
     default: return state
   }
 }
