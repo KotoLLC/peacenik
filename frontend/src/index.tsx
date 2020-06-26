@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import { ErrorBoundary } from '@view/ErrorBoundary'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
 import { CssBaseline } from '@material-ui/core'
-import store from '@store/store'
+import { store } from '@store/store'
 import { Routes } from '@view/routes'
 
 const theme = createMuiTheme({

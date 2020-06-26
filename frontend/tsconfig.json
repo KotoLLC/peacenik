@@ -27,7 +27,6 @@
     "downlevelIteration": true
   },
   "include": [
-    "src",
-    "lead"
+    "src"
   ]
 }

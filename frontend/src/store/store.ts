@@ -1,17 +1,15 @@
-import { createStore, combineReducers, applyMiddleware } from 'redux'
+import { applyMiddleware, combineReducers, createStore, compose } from 'redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import createSagaMiddleware from 'redux-saga'
-import rootSaga from '@sagas/index'
+import { rootSaga } from '@sagas/index'
+import authorization from './authorization'
 
-const rootReducer = combineReducers({})
 const sagaMiddleware = createSagaMiddleware()
+const rootReducer = combineReducers({
+    authorization
+})
 
-const createAppStore = () => {
-    const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(
-        sagaMiddleware,
-    )))
-    sagaMiddleware.run(rootSaga)
-    return store
-}
+const middlewares = composeWithDevTools(applyMiddleware(sagaMiddleware))
+export const store = createStore(rootReducer, compose(...[middlewares]))
 
-export default createAppStore()
+sagaMiddleware.run(rootSaga)
