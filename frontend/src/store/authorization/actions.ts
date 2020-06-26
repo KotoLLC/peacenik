@@ -1,5 +1,5 @@
 
-import { ApiDataTypes } from './../../types'
+import { ApiTypes } from './../../types'
 
 export enum Types {
   LOGIN_REQUESTED = 'LOGIN_REQUESTED',
@@ -8,7 +8,7 @@ export enum Types {
   RESET_LOGIN_FAILED_MESSAGE = 'RESET_LOGIN_FAILED_MESSAGE',
 }
 
-export const loginRequested = (payload: ApiDataTypes.Login) => ({
+export const loginRequested = (payload: ApiTypes.Login) => ({
   type: Types.LOGIN_REQUESTED,
   payload
 })

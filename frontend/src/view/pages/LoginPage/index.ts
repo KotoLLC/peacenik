@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { LoginForm, Props } from './LoginForm'
 import Actions from '@store/actions'
-import { ApiDataTypes, StoreTypes } from './../../../types'
+import { ApiTypes, StoreTypes } from './../../../types'
 
 type StateProps = Pick<Props, 'loginErrorMessage' | 'isLogged'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
@@ -11,7 +11,7 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
 
 type DispatchProps = Pick<Props, 'onLogin' | 'resetLoginFailedMessage'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-    onLogin: (data: ApiDataTypes.Login) => dispatch(Actions.authorization.loginRequested(data)),
+    onLogin: (data: ApiTypes.Login) => dispatch(Actions.authorization.loginRequested(data)),
     resetLoginFailedMessage: () => dispatch(Actions.authorization.resetLoginFailedMessage()),
 })
 
