@@ -1,15 +1,14 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import i18n from '@view/i18n'
 
 export const Footer = () => (
   <Menu>
-    <LinkStyled to="/forgotten-password">{i18n.login.menu.forgottenPassword}</LinkStyled>
-    <LinkStyled to="/register">{i18n.login.menu.register}</LinkStyled>
-    <LinkStyled to="/about">{i18n.login.menu.about}</LinkStyled>
-    <LinkStyled to="/code-of-conduct">{i18n.login.menu.codeOfConduct}</LinkStyled>
-    <LinkStyled to="/contact-us">{i18n.login.menu.contactUs}</LinkStyled>
+    <LinkStyled to="/forgotten-password">Forgotten password</LinkStyled>
+    <LinkStyled to="/register">Register for Koto</LinkStyled>
+    <LinkStyled to="/about">About Koto</LinkStyled>
+    <LinkStyled to="/code-of-conduct">Code of conduct</LinkStyled>
+    <LinkStyled to="/contact-us">Contact us</LinkStyled>
   </Menu>
 )
 
