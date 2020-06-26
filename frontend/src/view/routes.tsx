@@ -6,9 +6,8 @@ import { connect } from 'react-redux'
 import { StoreTypes } from './../types'
 
 const PrivateRoute = ({ component, ...rest }) => {
-  const routeComponent = props => {
-    return rest.isLogged ? createElement(component, props) : <Redirect to={{ pathname: '/login' }} />
-  }
+  const routeComponent = props =>
+    rest.isLogged ? createElement(component, props) : <Redirect to={{ pathname: '/login' }} />
   return <Route {...rest} render={routeComponent} />
 }
 
@@ -19,7 +18,7 @@ export const RoutesComponent: React.SFC<Props> = (props) => {
     <Router history={history}>
       <Switch>
         <Route path="/login" component={LoginPage} />
-        <PrivateRoute isLogged={isLogged} path="/contact-us" component={<>Private</>} />
+        <PrivateRoute isLogged={isLogged} path="/home" component={() => <>Koto Home</>} />
         <Redirect exact from="/" to="/login" />
       </Switch>
     </Router>

@@ -6,7 +6,6 @@
       "@store/*": ["./src/store/*"],
       "@sagas/*": ["./src/sagas/*"],
       "@services/*": ["./src/services/*"],
-      "@types/*": ["./src/types/*"],
     }
   }
 }

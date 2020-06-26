@@ -9,9 +9,10 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
     isLogged: state.authorization.isLogged,
 })
 
-type DispatchProps = Pick<Props, 'onLogin'>
+type DispatchProps = Pick<Props, 'onLogin' | 'resetLoginFailedMessage'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
     onLogin: (data: ApiDataTypes.Login) => dispatch(Actions.authorization.loginRequested(data)),
+    resetLoginFailedMessage: () => dispatch(Actions.authorization.resetLoginFailedMessage()),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginForm)
