@@ -11,7 +11,7 @@ import FormHelperText from '@material-ui/core/FormHelperText'
 import { validate } from '@services/validation'
 import { Footer } from './Menu'
 import { FormWrapper, FormControlStyled, ButtonStyled, ContainerStyled, Header } from './styles'
-import { ApiDataTypes } from './../../../types/api'
+import { ApiTypes } from './../../../types/api'
 import { RouteComponentProps } from 'react-router-dom'
 
 type FieldsType = 'email' | 'password' | ''
@@ -28,7 +28,7 @@ interface State {
 export interface Props extends RouteComponentProps {
   loginErrorMessage: string
   isLogged: boolean
-  onLogin: (data: ApiDataTypes.Login) => void
+  onLogin: (data: ApiTypes.Login) => void
   resetLoginFailedMessage: () => void
 }
 

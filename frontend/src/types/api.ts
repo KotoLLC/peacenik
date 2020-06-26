@@ -1,5 +1,5 @@
 
-export declare namespace ApiDataTypes {
+export declare namespace ApiTypes {
 
   export interface Login {
     email: string
