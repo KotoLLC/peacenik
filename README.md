@@ -16,6 +16,8 @@ You can run the backend API's here:
 
 [Run a node](backend/node.md)
 
+Tests are run using [Postman](https://www.postman.com/). Just import the [requests.json](requests.json) file.
+
 ## Comparison to other social network projects
 
 Koto is unique among [social network sites](https://en.wikipedia.org/wiki/List_of_social_networking_websites) and [projects](https://en.wikipedia.org/wiki/Comparison_of_social_networking_software), which seem to fall into one of four categories:
