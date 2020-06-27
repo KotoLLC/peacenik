@@ -1,0 +1,744 @@
+{
+	"info": {
+		"_postman_id": "6e617bcb-2394-47e1-bced-8bffe1290e7c",
+		"name": "requests",
+		"description": "Authenticate from central server",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Register people",
+			"item": [
+				{
+					"name": "Get public key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3edb3bcc-02fe-41e9-8bb5-f0ea8f5c6038",
+								"exec": [
+									"pm.test(\"verify a key is returned\", function() {",
+									"        pm.response.to.have.status(200);",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"user-agent": true,
+							"accept-encoding": true,
+							"connection": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:12001/rpc.InfoService/PublicKey",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "12001",
+							"path": [
+								"rpc.InfoService",
+								"PublicKey"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register Matt",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a4f1ca10-0544-45a2-97c2-22c75c3ff45c",
+								"exec": [
+									"pm.response.to.have.status(200);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\":  \"mreider\", \"email\": \"mreider@mail.com\", \"password\":  \"12345\"}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:12001/rpc.AuthService/Register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "12001",
+							"path": [
+								"rpc.AuthService",
+								"Register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register Andrey",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2b7f02c4-7f72-4302-857c-850203a93701",
+								"exec": [
+									"pm.response.to.have.status(200);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\":  \"andrey\", \"email\": \"andrey@mail.com\", \"password\":  \"12345\"}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:12001/rpc.AuthService/Register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "12001",
+							"path": [
+								"rpc.AuthService",
+								"Register"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Matt node & invitation",
+			"item": [
+				{
+					"name": "Login Matt",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f1ca4d6b-1e04-4b73-942d-02e22003490f",
+								"exec": [
+									"pm.response.to.have.status(200);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\": \"matt\", \"password\":  \"12345\"}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:12001/rpc.AuthService/Login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "12001",
+							"path": [
+								"rpc.AuthService",
+								"Login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Matt gets short lived auth token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8f3d53e4-58f6-43c1-b050-d9885fe52299",
+								"exec": [
+									"pm.response.to.have.status(200);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "    {}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:12001/rpc.TokenService/Auth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "12001",
+							"path": [
+								"rpc.TokenService",
+								"Auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Matt invites Andrey to be a friend",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2431e3c8-d1b3-4d86-b123-0ac8f6126df6",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"INVITATION\", jsonData.token);",
+									"pm.response.to.have.status(200);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"friend\": \"andrey@mail.com\"}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:12001/rpc.InviteService/Create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "12001",
+							"path": [
+								"rpc.InviteService",
+								"Create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Matt gets a list of invites that he has sent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "932c1b9c-91e7-4403-9bd9-0b34db2bf2fa",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"INVITATION\", jsonData.token);",
+									"pm.response.to.have.status(200);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"friend\": \"andrey@mail.com\"}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:12001/rpc.InviteService/FromMe",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "12001",
+							"path": [
+								"rpc.InviteService",
+								"FromMe"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Matt registers a new node",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9137e8e4-3cd9-4ffc-89d7-673278028adf",
+								"exec": [
+									"pm.response.to.have.status(200);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"address\": \"http://localhost:12002\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:12001/rpc.NodeService/Register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "12001",
+							"path": [
+								"rpc.NodeService",
+								"Register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Matt (who is an admin) gets all nodes in a list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ab4ca261-4bb1-48ec-8286-8d779edae820",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"NODE\", jsonData.nodes[0].id);",
+									"tests[\"id = \" + jsonData.nodes[0].id] = true; ",
+									"pm.response.to.have.status(200);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"address\": \"http://localhost:12002\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:12001/rpc.NodeService/Nodes",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "12001",
+							"path": [
+								"rpc.NodeService",
+								"Nodes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Matt (who is an admin) approves a node",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5c5cb07d-b113-4eb7-a73b-5c3cff98f9fd",
+								"exec": [
+									"pm.response.to.have.status(200);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"node_id\":  \"{{NODE}}\"}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:12001/rpc.NodeService/Approve",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "12001",
+							"path": [
+								"rpc.NodeService",
+								"Approve"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4a2731ac-267a-46f1-86d1-8a5101cea1c1",
+								"exec": [
+									"pm.response.to.have.status(200);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:12001/rpc.AuthService/Logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "12001",
+							"path": [
+								"rpc.AuthService",
+								"Logout"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "15b1f376-15db-4d4b-a198-027358e4cbdc",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "89db1af2-500d-40eb-8654-f00d8250aa47",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Andrey accepts",
+			"item": [
+				{
+					"name": "Login Andrey",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ba2a7a69-223f-42a6-8caa-dc7d37023079",
+								"exec": [
+									"pm.response.to.have.status(200);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\": \"andrey\", \"password\":  \"12345\"}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:12001/rpc.AuthService/Login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "12001",
+							"path": [
+								"rpc.AuthService",
+								"Login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Andrey gets short lived auth token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "eec6f69e-a9be-4de7-bafb-cc511336fe19",
+								"exec": [
+									"pm.response.to.have.status(200);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:12001/rpc.TokenService/Auth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "12001",
+							"path": [
+								"rpc.TokenService",
+								"Auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Andrey gets invites sent to him",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c21c7905-6b24-4345-a650-c9cf5e359573",
+								"exec": [
+									"pm.response.to.have.status(200);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:12001/rpc.InviteService/ForMe",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "12001",
+							"path": [
+								"rpc.InviteService",
+								"ForMe"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "940c73f1-da5f-49f0-8039-4b7df672d93d",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "e549f361-c4b0-4e56-b1a2-e80e11a5fea7",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "7fb501dc-4156-4502-9771-2df8d7b02c9a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "1b7acab0-34a5-4dbf-b726-91c27e8bf3d2",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "31a991e5-95b4-45a6-8f68-06069d618a7a",
+			"key": "TOKEN",
+			"value": ""
+		}
+	],
+	"protocolProfileBehavior": {}
+}
