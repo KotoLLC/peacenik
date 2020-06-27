@@ -1,0 +1,130 @@
+# koto.tavern.yaml
+---
+test_name: Get public key
+stages:
+  - name: get key
+    request:
+      url: "http://localhost:12001/rpc.InfoService/PublicKey"
+      method: POST
+      json:
+        foo: ""
+
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+      headers:
+        content-type: application/json
+---
+test_name: Register Matt
+stages:
+  - name: Register Matt
+    request:
+      url: "http://localhost:12001/rpc.AuthService/Register"
+      json:
+        name: "matt"
+        email: "matt@email.com"
+        password: "12345"
+      method: POST
+      headers:
+        content-type: application/json
+    response:
+      status_code:
+        - 200
+        - 409
+---
+test_name: Register Andrey
+stages:
+  - name: Register Andrey
+    request:
+      url: "http://localhost:12001/rpc.AuthService/Register"
+      json:
+        name: "andrey"
+        email: "andrey@email.com"
+        password: "12345"
+      method: POST
+      headers:
+        content-type: application/json
+    response:
+      status_code:
+        - 200
+        - 409
+---
+test_name: Login Matt, get a token, logout
+stages:
+  - &matt_login
+    name: Login Matt
+    request:
+      url: "http://localhost:12001/rpc.AuthService/Login"
+      json:
+        name: "matt"
+        password: "12345"
+      method: POST
+      headers:
+        content-type: application/json
+    response:
+      status_code:
+        - 200
+      cookies:
+        - auth-session
+  - &matt_token
+    name: Get Matt a short-lived token
+    request:
+      url: "http://localhost:12001/rpc.TokenService/Auth"
+      json:
+        foo: ""
+      method: POST
+      headers:
+        content-type: application/json
+    response:
+      status_code:
+        - 200
+  - &matt_logout
+    name: Logout matt
+    request:
+      url: "http://localhost:12001/rpc.AuthService/Logout"
+      json:
+        foo: ""
+      method: POST
+      headers:
+        content-type: application/json
+    response:
+      status_code:
+        - 200
+---
+test_name: Login and register a node for Matt
+stages:
+  - *matt_login
+  - *matt_token
+  - name: Register node
+    request:
+      url: "http://localhost:12001/rpc.NodeService/Register"
+      json:
+        name: "address"
+        password: http://localhost:12002"
+      method: POST
+      headers:
+        content-type: application/json
+    response:
+      status_code:
+        - 200
+        - 409
+
+---
+test_name: Get all nodes
+stages:
+  - *matt_login
+  - *matt_token
+  - name: Get all nodes
+    request:
+      url: "http://localhost:12001/rpc.NodeService/Nodes"
+      json:
+        foo: ""
+      method: POST
+      headers:
+        content-type: application/json
+    response:
+      status_code:
+        - 200
+
+        
