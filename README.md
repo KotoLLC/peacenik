@@ -8,6 +8,13 @@ Koto is an open-source, ad-free, social network with a mixture of central and di
 
 Koto is comparable to Facebook, rather than Twitter, as it is for closed circles of friendships.
 
+## Setup instructions
+
+You can run the backend API's here:
+
+[Run a central server](backend/central.md)
+[Run a node](backend/node.md)
+
 ## Comparison to other social network projects
 
 Koto is unique among [social network sites](https://en.wikipedia.org/wiki/List_of_social_networking_websites) and [projects](https://en.wikipedia.org/wiki/Comparison_of_social_networking_software), which seem to fall into one of four categories:
