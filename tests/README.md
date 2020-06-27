@@ -13,5 +13,5 @@ pip install tavern[pytest]
 ## Running tests
 
 ```
-tavern-ci koto.tavern.yaml
+py.test
 ```
