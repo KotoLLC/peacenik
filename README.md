@@ -13,6 +13,7 @@ Koto is comparable to Facebook, rather than Twitter, as it is for closed circles
 You can run the backend API's here:
 
 [Run a central server](backend/central.md)
+
 [Run a node](backend/node.md)
 
 ## Comparison to other social network projects
