@@ -131,7 +131,7 @@ export class LoginForm extends React.PureComponent<Props, State> {
       <ContainerStyled maxWidth="sm">
         <Header>
           <Typography variant="h3" gutterBottom>Koto</Typography>
-          <Typography variant="subtitle1" gutterBottom>Koto is a safe, friendly, distributed socila network.</Typography>
+          <Typography variant="subtitle1" gutterBottom>Koto is a safe, friendly, distributed social  network.</Typography>
         </Header>
         <FormWrapper onSubmit={this.onFormSubmit}>
           <FormControlStyled variant="outlined">
