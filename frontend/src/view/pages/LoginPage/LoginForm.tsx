@@ -14,10 +14,10 @@ import { FormWrapper, FormControlStyled, ButtonStyled, ContainerStyled, Header }
 import { ApiTypes } from './../../../types/api'
 import { RouteComponentProps } from 'react-router-dom'
 
-type FieldsType = 'email' | 'password' | ''
+type FieldsType = 'name' | 'password' | ''
 
 interface State {
-  email: string
+  name: string
   password: string
   isPasswordVisible: boolean
   isRequested: boolean
@@ -35,7 +35,7 @@ export interface Props extends RouteComponentProps {
 export class LoginForm extends React.PureComponent<Props, State> {
 
   state = {
-    email: '',
+    name: '',
     password: '',
     isPasswordVisible: false,
     isRequested: false,
@@ -59,7 +59,7 @@ export class LoginForm extends React.PureComponent<Props, State> {
 
   onEmailChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     this.setState({
-      email: event.currentTarget.value.trim()
+      name: event.currentTarget.value.trim()
     })
   }
 
@@ -76,12 +76,12 @@ export class LoginForm extends React.PureComponent<Props, State> {
   }
 
   onValidate = (): boolean => {
-    const { email, password } = this.state
+    const { password, name } = this.state
 
-    if (!validate.isEmailValid(email)) {
+    if (!validate.isEmailValid(name)) {
       this.setState({
         errorMessage: 'Email is incorrect',
-        noValideField: 'email',
+        noValideField: 'name',
       })
       return false
     }
@@ -99,7 +99,7 @@ export class LoginForm extends React.PureComponent<Props, State> {
 
   onFormSubmit = (event: FormEvent) => {
     event.preventDefault()
-    const { email, password } = this.state
+    const { name, password } = this.state
     const { onLogin } = this.props
 
     if (!this.onValidate()) return
@@ -110,7 +110,7 @@ export class LoginForm extends React.PureComponent<Props, State> {
       noValideField: '',
     })
 
-    onLogin({ email, password })
+    onLogin({ name, password })
   }
 
   componentWillUnmount() {
@@ -120,7 +120,7 @@ export class LoginForm extends React.PureComponent<Props, State> {
   render() {
     const {
       password,
-      email,
+      name,
       isPasswordVisible,
       isRequested,
       errorMessage,
@@ -135,12 +135,12 @@ export class LoginForm extends React.PureComponent<Props, State> {
         </Header>
         <FormWrapper onSubmit={this.onFormSubmit}>
           <FormControlStyled variant="outlined">
-            <InputLabel htmlFor="email">Email</InputLabel>
+            <InputLabel htmlFor="name">Email</InputLabel>
             <OutlinedInput
-              id="email"
+              id="name"
               type={'text'}
-              value={email}
-              error={(noValideField === 'email') ? true : false}
+              value={name}
+              error={(noValideField === 'name') ? true : false}
               onChange={this.onEmailChange}
               labelWidth={70}
             />
