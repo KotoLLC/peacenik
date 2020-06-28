@@ -96,7 +96,8 @@ func (r *inviteRepo) InvitesFromMe(user User) ([]Invite, error) {
 		select i.id, i.user_id, coalesce(u.id, '') friend_id, coalesce(u.name, '') friend_name, i.friend_email, i.created_at, i.accepted_at
 		from invites i
 			left join users u on u.email = i.friend_email 
-		where i.user_id = $1;`,
+		where i.user_id = $1
+		order by i.created_at desc;`,
 		user.ID)
 	if err != nil {
 		return nil, err
@@ -110,7 +111,8 @@ func (r *inviteRepo) InvitesForMe(user User) ([]Invite, error) {
 		select i.id, i.user_id, u.name user_name, u.email user_email, i.friend_email, i.created_at, i.accepted_at
 		from invites i
 			inner join users u on u.id = i.user_id
-		where i.friend_email = $1;`,
+		where i.friend_email = $1
+		order by i.created_at desc;`,
 		user.Email)
 	if err != nil {
 		return nil, err
