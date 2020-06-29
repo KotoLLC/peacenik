@@ -8,6 +8,10 @@ Koto is an open-source, ad-free, social network with a mixture of central and di
 
 Koto is comparable to Facebook, rather than Twitter, as it is for closed circles of friendships.
 
+## Status
+
+The alpha version should be ready in July 2020. You can check our progress [here](https://github.com/mreider/koto/projects/1)
+
 ## Setup instructions
 
 You can run the backend API's here:
@@ -31,59 +35,18 @@ Koto blends these last two categories, offering both a distributed OSS approach,
 
 *Note: [Minds](https://www.minds.com/) is a similar blend, but relies on Blockchain, and an incentive model for posting, which seem unnecesary to us.*
 
-## How it works
+## How the social graph works
 
-Facebook is comprised of a [social graph](https://en.wikipedia.org/wiki/Social_graph) representing relationships between different people. Koto attempts to recreate a social graph, giving individuals the ability to accept or ignore friendship requests, and thereby limit the people who can post messages in their timeline. Unlike Facebook, it accomplishes this on distributed nodes, owned and operated by individuals, rather than corporations.
+You can read about Koto's [social graph here](social-graph.md). It's almost identical to Facebook. Friends can post / see your timeline, but nobody else can.
 
-### Example social graph
+## Our motivation
 
-To understand Koto, let's look at an example social graph.
+We want a functional alternative to Facebook that does not sell advertising or tolerate the distribution of lies to tilt elections, create chaos, encourage ignorance, and ruin civil discourse.
 
-![example social graph](readme-images/1-social-graph.png)
+## Who are you?
 
-Mike, and Janice, want to start Koto nodes to share thoughts, photos, and videos with their friends. So they create instances on Digital Ocean, or wherever, download the latest release, and run it.
+[I am a product manager with 30 years of experience](https://www.linkedin.com/in/mreider/) in the industry. I have been part of large software companies, and a few startups, one of which worked to measure Facebook video analytics. I am from Boston, lived in San Francisco for 20 years, and now live in Austria with my 2 kids and lovely wife. I work for Dynatrace and manage Koto in my spare time.
 
-![new nodes](readme-images/2-new-nodes.png)
+## How you can help
 
-Mike and Janice register their nodes with Jessie, who runs the central node.
-
-![new nodes](readme-images/3-register.png)
-
-Mike invites his mother Fran, and Steve, to be friends. We'll look at Janice a little later.
-
-![new nodes](readme-images/4-invitation.png)
-
-Steve and Fran's accounts are stored at the central server, which also stores friendship information.
-
-![new nodes](readme-images/5-central-db.png)
-
-Mike posts a message, with a photo of his cat. This is stored on his node.
-
-![new nodes](readme-images/6-first-message.png)
-
-Fran also posts a message, with a photo of her dog. Since she is friends with Mike, he sees the message. But Steve is not friends with Fran, so he doesn't see it. Just like Facebook.
-
-![new nodes](readme-images/7-second-message.png)
-
-Friends can see lists of their friend's friends. If Fran asks Debbie to be friends, Mike can see they are friends, and invite Debbie to be friends. Debbie doesn't have to accept.
-
-![new nodes](readme-images/8-friends-o-friends.png)
-
-If Debbie becomes friends with William, who is friends with Steve, Mike will see William in Steve's list. Fran also sees William in Debbie's list (like Facebook). We will add privacy features - if you don't want people to discover you.
-
-![new nodes](readme-images/9-more-friends.png)
-
-**Now for Janice.**
-
-Janice is on her own node. She invites Tina, who is friends with Steve, on Mike's node. 
-
-Both Steve and Tina can see messages on both nodes, because they have friendships there.
-
-![new nodes](readme-images/10-cross-nodes.png)
-
-Steve and Tina see messages in one contiguous timeline - again like Facebook. They aren't aware that some messages are from Mike's node, and others are from Janice's node.
-
-![new nodes](readme-images/11-contiguous.png)
-
-When Tina posts a message, it is stored on the node where she has the most friends. At this point she has one friend on each node, so it might end up on either one. As Koto gets more popular, we will change this alogirithm a bit to make sure popular nodes are not overwhelmed.
-
+This thing costs money! I am paying for a couple of engineers to help me, plus server costs, etc. So please donate to our [gofundme](https://www.gofundme.com/f/byezuck), send me a donation on [Paypal](https://paypal.me/Mreider), or to my Bitcoin wallet `1Bdgi62pGvaP4ZaY2nGSeNr9UfquvMqQ5P`

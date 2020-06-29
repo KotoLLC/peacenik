@@ -1,7 +1,13 @@
 package repo
 
 import (
+	"errors"
+
 	"github.com/jmoiron/sqlx"
+)
+
+var (
+	ErrMessageNotFound = errors.New("message not found")
 )
 
 type Message struct {
@@ -16,6 +22,8 @@ type Message struct {
 type MessageRepo interface {
 	AddMessage(message Message) error
 	Messages(userIDs []string) ([]Message, error)
+	EditMessage(userID, messageID, text, updatedAt string) error
+	DeleteMessage(userID, messageID string) error
 }
 
 type messageRepo struct {
@@ -28,8 +36,8 @@ func NewMessages(db *sqlx.DB) MessageRepo {
 	}
 }
 
-func (mr *messageRepo) AddMessage(message Message) error {
-	_, err := mr.db.Exec(`
+func (r *messageRepo) AddMessage(message Message) error {
+	_, err := r.db.Exec(`
 		insert into messages(id, user_id, user_name, text, created_at, updated_at)
 		select $1, $2, $3, $4, $5, $6
 		where not exists(select * from messages where id = $1)`,
@@ -40,7 +48,7 @@ func (mr *messageRepo) AddMessage(message Message) error {
 	return nil
 }
 
-func (mr *messageRepo) Messages(userIDs []string) ([]Message, error) {
+func (r *messageRepo) Messages(userIDs []string) ([]Message, error) {
 	var messages []Message
 	query, args, err := sqlx.In(`
 		select id, user_id, user_name, text, created_at, updated_at
@@ -49,10 +57,47 @@ func (mr *messageRepo) Messages(userIDs []string) ([]Message, error) {
 	if err != nil {
 		return nil, err
 	}
-	query = mr.db.Rebind(query)
-	err = mr.db.Select(&messages, query, args...)
+	query = r.db.Rebind(query)
+	err = r.db.Select(&messages, query, args...)
 	if err != nil {
 		return nil, err
 	}
 	return messages, nil
+}
+
+func (r *messageRepo) EditMessage(userID, messageID, text, updatedAt string) error {
+	res, err := r.db.Exec(`
+		update messages
+		set text = $1, updated_at = $2
+		where id = $3 and user_id = $4`,
+		text, updatedAt, messageID, userID)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected < 1 {
+		return ErrMessageNotFound
+	}
+	return nil
+}
+
+func (r *messageRepo) DeleteMessage(userID, messageID string) error {
+	res, err := r.db.Exec(`
+		delete from messages
+		where id = $1 and user_id = $2`,
+		messageID, userID)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected < 1 {
+		return ErrMessageNotFound
+	}
+	return nil
 }

@@ -37,4 +37,25 @@ Content-Type: application/json
 {
   "token":  GET-MESSAGES-TOKEN
 }
+
+### Edit message
+POST http://localhost:12002/rpc.MessageService/Edit
+Authorization: Bearer AUTH-TOKEN
+Content-Type: application/json
+
+{
+  "message_id": "4",
+  "text": "updated message",
+  "updated_at": "2020-06-29T11:11:11.111Z"
+}
+
+### Delete message
+POST http://localhost:12002/rpc.MessageService/Delete
+Authorization: Bearer AUTH-TOKEN
+Content-Type: application/json
+
+{
+  "message_id": "4"
+}
+
 ```

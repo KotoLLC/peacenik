@@ -64,9 +64,14 @@ func (s *inviteService) FromMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFr
 	}
 	rpcInvites := make([]*rpc.InviteFriendInvite, len(invites))
 	for i, invite := range invites {
+		friendName := invite.FriendName
+		if invite.FriendID == "" {
+			friendName = invite.FriendEmail
+		}
+
 		rpcInvites[i] = &rpc.InviteFriendInvite{
 			FriendId:   invite.FriendID,
-			FriendName: invite.FriendName,
+			FriendName: friendName,
 			CreatedAt:  invite.CreatedAt,
 			AcceptedAt: invite.AcceptedAt,
 		}
