@@ -10,7 +10,7 @@ import {
   ContainerTitle,
 } from './styles'
 import { Tabs } from './Tabs'
-import { TopBar } from '@view/shared/TopBar'
+import TopBar from '@view/shared/TopBar'
 import ListItem from '@material-ui/core/ListItem'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import FormControl from '@material-ui/core/FormControl'
