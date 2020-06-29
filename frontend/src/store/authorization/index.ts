@@ -5,9 +5,9 @@ export interface State {
   loginErrorMessage: string
 }
 
-const token = localStorage.getItem('koto-token')
+const isLogged = localStorage.getItem('isLogged')
 const initialState: State = {
-  isLogged: (token) ? true : false,
+  isLogged: (Boolean(isLogged)) ? true : false,
   loginErrorMessage: '',
 }
 

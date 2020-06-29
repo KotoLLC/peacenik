@@ -78,9 +78,9 @@ export class LoginForm extends React.PureComponent<Props, State> {
   onValidate = (): boolean => {
     const { password, name } = this.state
 
-    if (!validate.isEmailValid(name)) {
+    if (!validate.isUserNameValid(name)) {
       this.setState({
-        errorMessage: 'Email is incorrect',
+        errorMessage: 'Name or email are incorrect',
         noValideField: 'name',
       })
       return false
