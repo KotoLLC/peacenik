@@ -22,7 +22,7 @@
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
     "noErrorTruncation": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "noUnusedParameters": false,
     "downlevelIteration": true
   },
