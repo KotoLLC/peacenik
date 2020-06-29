@@ -17,9 +17,9 @@
 							"script": {
 								"id": "388c0c46-4e30-4772-b704-ce7ca71487a5",
 								"exec": [
-									"pm.test(\"verify a key is returned\", function() {",
-									"        pm.response.to.have.status(200);",
-									"})"
+									"pm.response.to.have.status(200);",
+									"var jsonData = JSON.parse(responseBody);",
+									"tests[jsonData.public_key] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -67,7 +67,8 @@
 							"script": {
 								"id": "75b81f69-cc39-4ab1-a07e-6b61b49b3efc",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.expect(pm.response.code).to.be.oneOf([200,409]);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -112,7 +113,8 @@
 							"script": {
 								"id": "b30c2cd3-917b-49e7-bbc6-a995c7c3d7d9",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.expect(pm.response.code).to.be.oneOf([200,409]);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -157,7 +159,8 @@
 							"script": {
 								"id": "ba8aeb3c-908c-4383-9b86-cdca4be6bcab",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.expect(pm.response.code).to.be.oneOf([200,409]);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -202,7 +205,8 @@
 							"script": {
 								"id": "bdeba01d-cd7c-4282-9e5f-8535865df4e6",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.expect(pm.response.code).to.be.oneOf([200,409]);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -253,7 +257,8 @@
 							"script": {
 								"id": "4e518f06-48a4-45af-a7fb-a54fd2c637d7",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -298,7 +303,8 @@
 							"script": {
 								"id": "8ec859e7-1431-4e4c-9f64-22ae097939eb",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -343,7 +349,8 @@
 							"script": {
 								"id": "ead7f996-d7f2-4dbd-8b68-8bee3413ca84",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -388,7 +395,8 @@
 							"script": {
 								"id": "4268161c-d6b4-4e82-90a9-25b8e4534fe6",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -433,7 +441,8 @@
 							"script": {
 								"id": "a26e034f-19ab-49ca-a6fb-ee94296de8a3",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -478,7 +487,8 @@
 							"script": {
 								"id": "323f7459-88a2-44cf-beee-bed584c2969d",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -523,7 +533,8 @@
 							"script": {
 								"id": "cb8371ab-2406-41ca-8362-d08aba2fe7e8",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.expect(pm.response.code).to.be.oneOf([200,409]);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -616,7 +627,8 @@
 							"script": {
 								"id": "fd6c4646-f1eb-4b1c-b2ca-a80949372d94",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -661,7 +673,8 @@
 							"script": {
 								"id": "1e396b85-62b9-4771-9209-49c092bf4d36",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -734,7 +747,8 @@
 							"script": {
 								"id": "9a85aad0-61d7-4712-af3c-810c04f81407",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -779,7 +793,8 @@
 							"script": {
 								"id": "af31f8f3-04f0-4d1c-9095-6ef21ca6514a",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -826,7 +841,8 @@
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"INVITER_ID\", jsonData.invites[0].friend_id);",
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -871,7 +887,8 @@
 							"script": {
 								"id": "2bdd999b-afb4-4002-8a26-e3c1201e6b50",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -916,7 +933,8 @@
 							"script": {
 								"id": "4186aaf9-d1e1-44e4-87de-018badd8e35c",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -961,7 +979,8 @@
 							"script": {
 								"id": "ca603711-acc2-49a5-b265-7226bba31dc5",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -1034,7 +1053,8 @@
 							"script": {
 								"id": "eb0d5c38-87c7-4d58-9d3f-bbc0efeaade0",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -1079,7 +1099,8 @@
 							"script": {
 								"id": "4afba04a-7715-4d57-957b-7e09e8ccf3c8",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -1126,7 +1147,8 @@
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"INVITER_ID\", jsonData.invites[0].friend_id);",
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -1171,7 +1193,8 @@
 							"script": {
 								"id": "c9f6964b-b39f-4eaf-9bc2-32c528960ee1",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -1216,7 +1239,8 @@
 							"script": {
 								"id": "0faf3972-cbbb-4778-8c26-3fa50a419ee0",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -1261,7 +1285,8 @@
 							"script": {
 								"id": "1df119bd-4f9b-41b0-8e78-00db7c8fa1f4",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -1334,7 +1359,8 @@
 							"script": {
 								"id": "00eb363e-c1d6-4fdd-a025-4c2c6d3a6991",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -1379,7 +1405,8 @@
 							"script": {
 								"id": "58bd07c6-86b2-4026-873f-8cca48e97481",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -1426,7 +1453,8 @@
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"INVITER_ID\", jsonData.invites[0].friend_id);",
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -1471,7 +1499,8 @@
 							"script": {
 								"id": "32c0eff2-beca-4cb5-9230-a5d34967c853",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -1516,7 +1545,8 @@
 							"script": {
 								"id": "c0106388-7957-4561-a5cb-afa97adc7bbf",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -1561,7 +1591,8 @@
 							"script": {
 								"id": "30c3dcaa-c7ef-4771-a3e4-3bc7cf4dc8d8",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -1634,7 +1665,8 @@
 							"script": {
 								"id": "928da4bc-aa9d-4653-9cc4-cbb7da3553c3",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -1681,7 +1713,8 @@
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"AUTH_TOKEN\", jsonData.token);",
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -1728,7 +1761,8 @@
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"POST_TOKEN\", jsonData.tokens[\"http://localhost:12002\"]);",
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -1773,7 +1807,8 @@
 							"script": {
 								"id": "96495922-9734-4222-afee-3611740404e6",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -1834,7 +1869,8 @@
 							"script": {
 								"id": "a32a226e-c5e6-46fc-8de1-eda26c43d241",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -1907,7 +1943,8 @@
 							"script": {
 								"id": "7103c48c-a86f-4ae3-abcd-43a3cb3947ee",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -1954,7 +1991,8 @@
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"AUTH_TOKEN\", jsonData.token);",
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -2001,7 +2039,8 @@
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"GET_TOKEN\",  jsonData.tokens[\"http://localhost:12002\"]);",
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -2046,7 +2085,8 @@
 							"script": {
 								"id": "5ab731da-1f8e-4e3e-ba38-218f262b553c",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
@@ -2101,7 +2141,8 @@
 							"script": {
 								"id": "e4458964-3746-4fcf-a779-76b5ffd31d10",
 								"exec": [
-									"pm.response.to.have.status(200);"
+									"pm.response.to.have.status(200);",
+									"tests[\"passed\"] = true; "
 								],
 								"type": "text/javascript"
 							}
