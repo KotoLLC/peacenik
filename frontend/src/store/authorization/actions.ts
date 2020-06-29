@@ -2,17 +2,17 @@
 import { ApiTypes } from './../../types'
 
 export enum Types {
-  LOGIN_REQUESTED = 'LOGIN_REQUESTED',
+  LOGIN_REQUEST = 'LOGIN_REQUEST',
   LOGIN_SUCCESS = 'LOGIN_SUCCESS',
   LOGIN_FAILED = 'LOGIN_FAILED',
   RESET_LOGIN_FAILED_MESSAGE = 'RESET_LOGIN_FAILED_MESSAGE',
 
-  LOGOUT_REQUESTED = 'LOGOUT_REQUESTED',
+  LOGOUT_REQUEST = 'LOGOUT_REQUEST',
   LOGOUT_SUCCESS = 'LOGOUT_SUCCESS',
 }
 
-export const loginRequested = (payload: ApiTypes.Login) => ({
-  type: Types.LOGIN_REQUESTED,
+export const loginRequest = (payload: ApiTypes.Login) => ({
+  type: Types.LOGIN_REQUEST,
   payload
 })
 
@@ -29,8 +29,8 @@ export const resetLoginFailedMessage = () => ({
   type: Types.RESET_LOGIN_FAILED_MESSAGE
 })
 
-export const logoutRequested = () => ({
-  type: Types.LOGOUT_REQUESTED,
+export const logoutRequest = () => ({
+  type: Types.LOGOUT_REQUEST,
 })
 
 export const logoutSucces = () => ({
@@ -38,10 +38,10 @@ export const logoutSucces = () => ({
 })
 
 export default {
-  loginRequested,
+  loginRequest,
   loginSucces,
   loginFailed,
   resetLoginFailedMessage,
-  logoutRequested,
+  logoutRequest,
   logoutSucces,
 }

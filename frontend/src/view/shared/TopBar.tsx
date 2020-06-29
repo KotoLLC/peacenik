@@ -8,7 +8,7 @@ import Actions from '@store/actions'
 
 type DispatchProps = Pick<Props, 'onLogout'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onLogout: () => dispatch(Actions.authorization.logoutRequested()),
+  onLogout: () => dispatch(Actions.authorization.logoutRequest()),
 })
 
 interface Props {

@@ -11,7 +11,7 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
 
 type DispatchProps = Pick<Props, 'onLogin' | 'resetLoginFailedMessage'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-    onLogin: (data: ApiTypes.Login) => dispatch(Actions.authorization.loginRequested(data)),
+    onLogin: (data: ApiTypes.Login) => dispatch(Actions.authorization.loginRequest(data)),
     resetLoginFailedMessage: () => dispatch(Actions.authorization.resetLoginFailedMessage()),
 })
 
