@@ -92,3 +92,27 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 		Messages: rpcMessages,
 	}, nil
 }
+
+func (s *messageService) Edit(ctx context.Context, r *rpc.MessageEditRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+	err := s.repos.Message.EditMessage(user.ID, r.MessageId, r.Text, r.UpdatedAt)
+	if err != nil {
+		if errors.Is(err, repo.ErrMessageNotFound) {
+			return nil, twirp.NotFoundError(err.Error())
+		}
+		return nil, twirp.InternalErrorWith(err)
+	}
+	return &rpc.Empty{}, nil
+}
+
+func (s *messageService) Delete(ctx context.Context, r *rpc.MessageDeleteRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+	err := s.repos.Message.DeleteMessage(user.ID, r.MessageId)
+	if err != nil {
+		if errors.Is(err, repo.ErrMessageNotFound) {
+			return nil, twirp.NotFoundError(err.Error())
+		}
+		return nil, twirp.InternalErrorWith(err)
+	}
+	return &rpc.Empty{}, nil
+}
