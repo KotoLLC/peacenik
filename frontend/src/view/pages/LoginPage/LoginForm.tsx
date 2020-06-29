@@ -20,7 +20,7 @@ interface State {
   name: string
   password: string
   isPasswordVisible: boolean
-  isRequested: boolean
+  isRequest: boolean
   noValideField: FieldsType
   errorMessage: string
 }
@@ -38,7 +38,7 @@ export class LoginForm extends React.PureComponent<Props, State> {
     name: '',
     password: '',
     isPasswordVisible: false,
-    isRequested: false,
+    isRequest: false,
     noValideField: '' as FieldsType,
     errorMessage: '',
   }
@@ -47,11 +47,11 @@ export class LoginForm extends React.PureComponent<Props, State> {
     if (nextProps.loginErrorMessage != '') {
       return {
         errorMessage: nextProps.loginErrorMessage,
-        isRequested: false
+        isRequest: false
       }
     } if (nextProps.isLogged === true) {
       nextProps.history.push('/friends/list')
-      return { isRequested: false }
+      return { isRequest: false }
     } else {
       return {}
     }
@@ -105,7 +105,7 @@ export class LoginForm extends React.PureComponent<Props, State> {
     if (!this.onValidate()) return
 
     this.setState({
-      isRequested: true,
+      isRequest: true,
       errorMessage: '',
       noValideField: '',
     })
@@ -122,7 +122,7 @@ export class LoginForm extends React.PureComponent<Props, State> {
       password,
       name,
       isPasswordVisible,
-      isRequested,
+      isRequest,
       errorMessage,
       noValideField,
     } = this.state
@@ -174,7 +174,7 @@ export class LoginForm extends React.PureComponent<Props, State> {
             type="submit"
             onClick={this.onFormSubmit}
           >
-            {isRequested ? <CircularProgress size={25} color={'inherit'} /> : 'Login'}
+            {isRequest ? <CircularProgress size={25} color={'inherit'} /> : 'Login'}
           </ButtonStyled>
           {errorMessage && <FormHelperText error>{errorMessage}</FormHelperText>}
         </FormWrapper>

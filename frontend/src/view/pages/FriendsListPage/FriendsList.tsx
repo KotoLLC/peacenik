@@ -21,8 +21,14 @@ import Divider from '@material-ui/core/Divider'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemAvatar from '@material-ui/core/ListItemAvatar'
 import Avatar from '@material-ui/core/Avatar'
+import { ApiTypes } from './../../../types/index'
 
-export class FriendsList extends React.Component {
+export interface Props {
+  friends: ApiTypes.Friend[]
+  onGetFriends: () => void
+}
+
+export class FriendsList extends React.Component<Props> {
 
   mapFriendOfFriends = () => {
     return (
@@ -44,10 +50,38 @@ export class FriendsList extends React.Component {
     )
   }
 
+  mapFriends = () => {
+    const { friends } = this.props
+
+    if (!friends.length) {
+      <p>You don't have any friends yet.</p>
+    }
+
+    return friends.map(item => (
+      <div key={item.id}>
+        <ListItem>
+        {/* <ListItem alignItems="flex-start"> */}
+          <ListItemAvatar>
+            <Avatar alt={item.name} />
+          </ListItemAvatar>
+          <ListItemText
+            primary={<>{item.name}</>}
+            secondary={null}
+          />
+        </ListItem>
+        <Divider variant="inset" component="li" />
+      </div>
+    ))
+  }
+
+  componentDidMount() {
+    this.props.onGetFriends()
+  }
+
   render() {
     return (
       <PageWrapper>
-        <TopBar/>
+        <TopBar />
         <Header>
           <Tabs />
         </Header>
@@ -63,16 +97,7 @@ export class FriendsList extends React.Component {
               </FormControl>
             </SearchWrapper>
             <ListStyled>
-              <ListItem alignItems="flex-start">
-                <ListItemAvatar>
-                  <Avatar alt="Remy Sharp" />
-                </ListItemAvatar>
-                <ListItemText
-                  primary={<>User Name</>}
-                  secondary={<>You have 2 friends in common</>}
-                />
-              </ListItem>
-              <Divider variant="inset" component="li" />
+              {this.mapFriends()}
             </ListStyled>
           </Paper>
         </SidebarWrapper>

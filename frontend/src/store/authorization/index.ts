@@ -5,9 +5,9 @@ export interface State {
   loginErrorMessage: string
 }
 
-const isLogged = localStorage.getItem('isLogged') || ''
+const isLogged = localStorage.getItem('isLogged')
 const initialState: State = {
-  isLogged: (JSON.parse(isLogged)) ? true : false,
+  isLogged: (isLogged == 'true') ? true : false,
   loginErrorMessage: '',
 }
 
