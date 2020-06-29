@@ -14,3 +14,12 @@ export function* watchlogin(action: { type: AuthorizationTypes.LOGIN_REQUESTED, 
     yield put(Actions.authorization.loginFailed(response.error.response.data.msg || 'Server error'))
   }
 }
+
+export function* watchlogout(action: { type: AuthorizationTypes.LOGOUT_REQUESTED}) {
+  const response = yield API.authorization.logout()
+
+  if (response.status === 200) {
+    localStorage.setItem('isLogged', 'false')
+    yield put(Actions.authorization.logoutSucces())
+  }
+}

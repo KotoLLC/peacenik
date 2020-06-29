@@ -5,9 +5,9 @@ export interface State {
   loginErrorMessage: string
 }
 
-const isLogged = localStorage.getItem('isLogged')
+const isLogged = localStorage.getItem('isLogged') || ''
 const initialState: State = {
-  isLogged: (Boolean(isLogged)) ? true : false,
+  isLogged: (JSON.parse(isLogged)) ? true : false,
   loginErrorMessage: '',
 }
 
@@ -28,6 +28,11 @@ const reducer = (state = initialState, action) => {
     case Types.RESET_LOGIN_FAILED_MESSAGE: {
       return { ...state, ...{ 
         loginErrorMessage: '',
+      } }
+    }
+    case Types.LOGOUT_SUCCESS: {
+      return { ...state, ...{ 
+        isLogged: false, 
       } }
     }
     default: return state
