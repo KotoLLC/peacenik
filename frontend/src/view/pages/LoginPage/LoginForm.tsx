@@ -50,7 +50,7 @@ export class LoginForm extends React.PureComponent<Props, State> {
         isRequested: false
       }
     } if (nextProps.isLogged === true) {
-      nextProps.history.push('/home')
+      nextProps.history.push('/friends/list')
       return { isRequested: false }
     } else {
       return {}
