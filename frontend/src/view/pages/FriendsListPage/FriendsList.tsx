@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 import {
   PageWrapper,
   Header,
@@ -8,6 +8,7 @@ import {
   SearchWrapper,
   SearchIconStyled,
   ContainerTitle,
+  EmptyFriendsText,
 } from './styles'
 import { Tabs } from './Tabs'
 import TopBar from '@view/shared/TopBar'
@@ -28,7 +29,17 @@ export interface Props {
   onGetFriends: () => void
 }
 
-export class FriendsList extends React.Component<Props> {
+interface State {
+  fileredFriends: ApiTypes.Friend[]
+  filterValue: string
+}
+
+export class FriendsList extends React.Component<Props, State> {
+
+  state = {
+    fileredFriends: [],
+    filterValue: '',
+  }
 
   mapFriendOfFriends = () => {
     return (
@@ -50,23 +61,28 @@ export class FriendsList extends React.Component<Props> {
     )
   }
 
-  mapFriends = () => {
-    const { friends } = this.props
+  emptyFriendsMessage = () => {
+    const { filterValue } = this.state
+    return (filterValue) ? <EmptyFriendsText>No one's been found.</EmptyFriendsText> : 
+      <EmptyFriendsText>You don't have any friends yet.</EmptyFriendsText>
+  }
+    
+  mapFriends = (friends: ApiTypes.Friend[]) => {
 
     if (!friends.length) {
-      <p>You don't have any friends yet.</p>
+      return this.emptyFriendsMessage()
     }
 
     return friends.map(item => (
       <div key={item.id}>
         <ListItem>
-        {/* <ListItem alignItems="flex-start"> */}
+          {/* <ListItem alignItems="flex-start"> */}
           <ListItemAvatar>
             <Avatar alt={item.name} />
           </ListItemAvatar>
           <ListItemText
             primary={<>{item.name}</>}
-            secondary={null}
+            // secondary={null}
           />
         </ListItem>
         <Divider variant="inset" component="li" />
@@ -74,11 +90,24 @@ export class FriendsList extends React.Component<Props> {
     ))
   }
 
+  onFilterValueChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { friends } = this.props
+    const { value } = event.currentTarget
+
+    this.setState({
+      filterValue: value,
+      fileredFriends: friends.filter(item => item.name.includes(value))
+    })
+  }
+
   componentDidMount() {
     this.props.onGetFriends()
   }
 
   render() {
+    const { friends } = this.props
+    const { fileredFriends, filterValue } = this.state
+
     return (
       <PageWrapper>
         <TopBar />
@@ -92,12 +121,13 @@ export class FriendsList extends React.Component<Props> {
                 <Input
                   id="filter"
                   placeholder="Filter"
+                  onChange={this.onFilterValueChange}
                   startAdornment={<InputAdornment position="start"><SearchIconStyled /></InputAdornment>}
                 />
               </FormControl>
             </SearchWrapper>
             <ListStyled>
-              {this.mapFriends()}
+              {this.mapFriends((filterValue) ? fileredFriends : friends)}
             </ListStyled>
           </Paper>
         </SidebarWrapper>

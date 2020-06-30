@@ -75,3 +75,11 @@ export const ContainerTitle = styled.h3`
   padding: 0 0 5px;
   margin: 0;
 `
+
+export const EmptyFriendsText = styled.div`
+  padding: 15px;
+  width: 100%;
+  display: flex;
+  line-height: center;
+  align-content: center;
+`
