@@ -22,6 +22,7 @@
 		"react-app-rewired": "^2.1.3",
 		"react-cookie": "^4.0.3",
 		"react-dom": "16.8.6",
+		"react-notify-toast": "^0.5.1",
 		"react-redux": "^7.2.0",
 		"react-router-dom": "^5.2.0",
 		"react-scripts": "2.1.8",
