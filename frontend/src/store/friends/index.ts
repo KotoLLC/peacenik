@@ -2,11 +2,13 @@ import { Types } from './actions'
 import { ApiTypes } from './../../types'
 
 export interface State {
-  friends: ApiTypes.Friend[],
+  friends: ApiTypes.User[],
+  friendsOfFriends: ApiTypes.FriendsOfFriend[],
 }
 
 const initialState: State = {
   friends: [],
+  friendsOfFriends: [],
 }
 
 const reducer = (state = initialState, action) => {
@@ -15,6 +17,13 @@ const reducer = (state = initialState, action) => {
       return {
         ...state, ...{
           friends: action.payload,
+        }
+      }
+    }
+    case Types.GET_FRIENDS_OF_FRIENDS_SUCCESS: {
+      return {
+        ...state, ...{
+          friendsOfFriends: action.payload,
         }
       }
     }

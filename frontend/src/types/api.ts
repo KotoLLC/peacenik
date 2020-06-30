@@ -5,10 +5,15 @@ export declare namespace ApiTypes {
     name: string
     password: string
   }
-  
-  export interface Friend {
-    name: string
+
+  export interface User {
     id: string
+    name: string
+  }
+
+  export interface FriendsOfFriend {
+    user: User
+    friends: User[]
   }
 
 }
