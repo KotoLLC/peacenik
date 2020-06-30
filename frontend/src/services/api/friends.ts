@@ -6,4 +6,10 @@ export default {
       return response
     }).catch(error => ({ error }))
   },
+  
+  getFriendsOfFriends: async () => {
+    return await axiosInstance.post('/rpc.UserService/FriendsOfFriends', {}).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
 }

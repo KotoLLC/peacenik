@@ -9,6 +9,8 @@ import {
   SearchIconStyled,
   ContainerTitle,
   EmptyFriendsText,
+  UserNoteUnderlined,
+  UserName,
 } from './styles'
 import { Tabs } from './Tabs'
 import TopBar from '@view/shared/TopBar'
@@ -22,32 +24,38 @@ import Divider from '@material-ui/core/Divider'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemAvatar from '@material-ui/core/ListItemAvatar'
 import Avatar from '@material-ui/core/Avatar'
-import { ApiTypes } from './../../../types/index'
+import { ApiTypes, FriendsTypes } from './../../../types/index'
 
 export interface Props {
-  friends: ApiTypes.Friend[]
+  friends: ApiTypes.User[]
+  friendsOfFriends: ApiTypes.FriendsOfFriend[]
   onGetFriends: () => void
+  onGetFriendsOfFriends: () => void
 }
 
 interface State {
-  fileredFriends: ApiTypes.Friend[]
+  filteredFriends: ApiTypes.User[]
+  filteredFriendsOfFriends: ApiTypes.FriendsOfFriend[]
   filterValue: string
+  currentTab: FriendsTypes.CurrentTab
 }
 
 export class FriendsList extends React.Component<Props, State> {
 
   state = {
-    fileredFriends: [],
+    filteredFriends: [],
+    filteredFriendsOfFriends: [],
     filterValue: '',
+    currentTab: 'friends' as FriendsTypes.CurrentTab
   }
 
-  mapFriendOfFriends = () => {
+  mainContent = () => {
     return (
       <>
-        <ContainerTitle>Remy Sharp`s common friends</ContainerTitle>
+        <ContainerTitle>Content</ContainerTitle>
         <Divider />
         <List>
-          <ListItem>
+          {/* <ListItem>
             <ListItemAvatar>
               <Avatar alt="User Name" />
             </ListItemAvatar>
@@ -55,64 +63,124 @@ export class FriendsList extends React.Component<Props, State> {
               primary="User Name"
               secondary={null}
             />
-          </ListItem>
+          </ListItem> */}
         </List>
       </>
     )
   }
 
-  emptyFriendsMessage = () => {
-    const { filterValue } = this.state
-    return (filterValue) ? <EmptyFriendsText>No one's been found.</EmptyFriendsText> : 
-      <EmptyFriendsText>You don't have any friends yet.</EmptyFriendsText>
+  renderEmptyListMessage = () => {
+    const { filterValue, currentTab } = this.state
+
+    if (filterValue) {
+      return <EmptyFriendsText>No one's been found.</EmptyFriendsText>
+    }
+
+    switch (currentTab) {
+      case 'friends': return <EmptyFriendsText>You don't have any friends yet.</EmptyFriendsText>
+      case 'friends-of-friends': return <EmptyFriendsText>You don't have any friends of friends yet.</EmptyFriendsText>
+      default: return null
+    }
+
   }
-    
-  mapFriends = (friends: ApiTypes.Friend[]) => {
+
+  mapFriends = (friends: ApiTypes.User[]) => {
 
     if (!friends.length) {
-      return this.emptyFriendsMessage()
+      return this.renderEmptyListMessage()
     }
 
     return friends.map(item => (
       <div key={item.id}>
         <ListItem>
-          {/* <ListItem alignItems="flex-start"> */}
           <ListItemAvatar>
             <Avatar alt={item.name} />
           </ListItemAvatar>
-          <ListItemText
-            primary={<>{item.name}</>}
-            // secondary={null}
-          />
+          <ListItemText primary={<UserName>{item.name}</UserName>} />
         </ListItem>
         <Divider variant="inset" component="li" />
       </div>
     ))
   }
 
+  mapFriendsOfFriends = (friendsOfFriends: ApiTypes.FriendsOfFriend[]) => {
+
+    if (!friendsOfFriends.length) {
+      return this.renderEmptyListMessage()
+    }
+
+    return friendsOfFriends.map(item => {
+      const { user, friends } = item
+      return (
+        <div key={user.id}>
+          <ListItem alignItems={friends.length ? 'flex-start' : 'center'}>
+            <ListItemAvatar>
+              <Avatar alt={user.name} />
+            </ListItemAvatar>
+            <ListItemText
+              primary={<UserName>{user.name}</UserName>}
+              secondary={(friends.length) ? <UserNoteUnderlined>You have {friends.length} in common</UserNoteUnderlined> : null}
+            />
+          </ListItem>
+          <Divider variant="inset" component="li" />
+        </div>
+      )
+    })
+  }
+
+  onTabSwitch = (value: FriendsTypes.CurrentTab) => {
+    this.setState({
+      currentTab: value,
+      filterValue: '',
+      filteredFriends: [],
+    })
+  }
+
   onFilterValueChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { friends } = this.props
     const { value } = event.currentTarget
+    const { currentTab } = this.state
 
     this.setState({
       filterValue: value,
-      fileredFriends: friends.filter(item => item.name.includes(value))
+    })
+
+    switch (currentTab) {
+      case 'friends': this.setFilteredFriends(value); break
+      case 'friends-of-friends': this.setFilteredFriendsOfFriends(value); break
+      default: return null
+    }
+  }
+
+  setFilteredFriends = (value: string) => {
+    const { friends } = this.props
+
+    this.setState({
+      filteredFriends: friends.filter(item => item.name.includes(value))
+    })
+  }
+
+  setFilteredFriendsOfFriends = (value: string) => {
+    const { friendsOfFriends } = this.props
+
+    this.setState({
+      filteredFriendsOfFriends: friendsOfFriends.filter(item => item.user.name.includes(value))
     })
   }
 
   componentDidMount() {
     this.props.onGetFriends()
+    this.props.onGetFriendsOfFriends()
   }
 
   render() {
-    const { friends } = this.props
-    const { fileredFriends, filterValue } = this.state
+    const { friends, friendsOfFriends } = this.props
+    const { filteredFriends, filteredFriendsOfFriends, filterValue, currentTab } = this.state
 
     return (
       <PageWrapper>
         <TopBar />
         <Header>
-          <Tabs />
+          <Tabs onTabClick={this.onTabSwitch} />
         </Header>
         <SidebarWrapper>
           <Paper>
@@ -122,17 +190,19 @@ export class FriendsList extends React.Component<Props, State> {
                   id="filter"
                   placeholder="Filter"
                   onChange={this.onFilterValueChange}
+                  value={filterValue}
                   startAdornment={<InputAdornment position="start"><SearchIconStyled /></InputAdornment>}
                 />
               </FormControl>
             </SearchWrapper>
             <ListStyled>
-              {this.mapFriends((filterValue) ? fileredFriends : friends)}
+              {(currentTab === 'friends') && this.mapFriends((filterValue) ? filteredFriends : friends)}
+              {(currentTab === 'friends-of-friends') && this.mapFriendsOfFriends((filterValue) ? filteredFriendsOfFriends : friendsOfFriends)}
             </ListStyled>
           </Paper>
         </SidebarWrapper>
         <ContentWrapper>
-          {this.mapFriendOfFriends()}
+          {this.mainContent()}
         </ContentWrapper>
       </PageWrapper>
     )

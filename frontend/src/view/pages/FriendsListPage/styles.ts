@@ -83,3 +83,13 @@ export const EmptyFriendsText = styled.div`
   line-height: center;
   align-content: center;
 `
+
+export const UserNoteUnderlined = styled.span`
+  text-decoration: underline;
+  text-transform: capitalize;
+  color: #1976d2;
+  cursor: pointer;
+`
+export const UserName = styled.span`
+  text-transform: capitalize
+`
