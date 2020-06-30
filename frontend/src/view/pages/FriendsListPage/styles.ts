@@ -71,9 +71,10 @@ export const SearchIconStyled = styled(SearchIcon)`
 `
 
 export const ContainerTitle = styled.h3`
-  font-size: 16px;
+  font-size: 14px;
   padding: 0 0 5px;
   margin: 0;
+  text-transform: uppercase;
 `
 
 export const EmptyFriendsText = styled.div`
