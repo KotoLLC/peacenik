@@ -1,17 +1,4 @@
 import React, { ChangeEvent } from 'react'
-import {
-  PageWrapper,
-  Header,
-  SidebarWrapper,
-  ContentWrapper,
-  ListStyled,
-  SearchWrapper,
-  SearchIconStyled,
-  ContainerTitle,
-  EmptyFriendsText,
-  UserNoteUnderlined,
-  UserName,
-} from './styles'
 import { Tabs } from './Tabs'
 import TopBar from '@view/shared/TopBar'
 import ListItem from '@material-ui/core/ListItem'
@@ -25,6 +12,19 @@ import ListItemText from '@material-ui/core/ListItemText'
 import ListItemAvatar from '@material-ui/core/ListItemAvatar'
 import Avatar from '@material-ui/core/Avatar'
 import { ApiTypes, FriendsTypes } from './../../../types/index'
+import {
+  PageWrapper,
+  Header,
+  SidebarWrapper,
+  ContentWrapper,
+  ListStyled,
+  SearchWrapper,
+  SearchIconStyled,
+  ContainerTitle,
+  EmptyFriendsText,
+  UserNoteUnderlined,
+  UserName,
+} from './styles'
 
 export interface Props {
   friends: ApiTypes.User[]
@@ -38,6 +38,7 @@ interface State {
   filteredFriendsOfFriends: ApiTypes.FriendsOfFriend[]
   filterValue: string
   currentTab: FriendsTypes.CurrentTab
+  selectedFriendsOfFriend: ApiTypes.FriendsOfFriend | null
 }
 
 export class FriendsList extends React.Component<Props, State> {
@@ -46,27 +47,8 @@ export class FriendsList extends React.Component<Props, State> {
     filteredFriends: [],
     filteredFriendsOfFriends: [],
     filterValue: '',
-    currentTab: 'friends' as FriendsTypes.CurrentTab
-  }
-
-  mainContent = () => {
-    return (
-      <>
-        <ContainerTitle>Content</ContainerTitle>
-        <Divider />
-        <List>
-          {/* <ListItem>
-            <ListItemAvatar>
-              <Avatar alt="User Name" />
-            </ListItemAvatar>
-            <ListItemText
-              primary="User Name"
-              secondary={null}
-            />
-          </ListItem> */}
-        </List>
-      </>
-    )
+    currentTab: 'friends' as FriendsTypes.CurrentTab,
+    selectedFriendsOfFriend: null as ApiTypes.FriendsOfFriend | null,
   }
 
   renderEmptyListMessage = () => {
@@ -81,7 +63,14 @@ export class FriendsList extends React.Component<Props, State> {
       case 'friends-of-friends': return <EmptyFriendsText>You don't have any friends of friends yet.</EmptyFriendsText>
       default: return null
     }
+  }
 
+  onFriendOfFriendsSelect = (id: string) => {
+    const { friendsOfFriends } = this.props
+
+    this.setState({
+      selectedFriendsOfFriend: friendsOfFriends.find(item => item.user.id === id) || null
+    })
   }
 
   mapFriends = (friends: ApiTypes.User[]) => {
@@ -119,7 +108,10 @@ export class FriendsList extends React.Component<Props, State> {
             </ListItemAvatar>
             <ListItemText
               primary={<UserName>{user.name}</UserName>}
-              secondary={(friends.length) ? <UserNoteUnderlined>You have {friends.length} in common</UserNoteUnderlined> : null}
+              secondary={(friends.length) ?
+                <UserNoteUnderlined
+                  onClick={() => this.onFriendOfFriendsSelect(user.id)}>
+                  You have {friends.length} in common</UserNoteUnderlined> : null}
             />
           </ListItem>
           <Divider variant="inset" component="li" />
@@ -133,10 +125,11 @@ export class FriendsList extends React.Component<Props, State> {
       currentTab: value,
       filterValue: '',
       filteredFriends: [],
+      selectedFriendsOfFriend: null,
     })
   }
 
-  onFilterValueChange = (event: ChangeEvent<HTMLInputElement>) => {
+  onInputValueChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.currentTarget
     const { currentTab } = this.state
 
@@ -167,6 +160,31 @@ export class FriendsList extends React.Component<Props, State> {
     })
   }
 
+  mainContent = () => {
+    const { selectedFriendsOfFriend } = this.state
+    if (!selectedFriendsOfFriend) return null
+
+    const { user, friends } = selectedFriendsOfFriend
+
+    return (
+      <>
+        <ContainerTitle>{user.name}`s common friends</ContainerTitle>
+        <Divider />
+        <List>
+          {friends.length && friends.map(item => (
+            <ListItem key={item.id}>
+              <ListItemAvatar>
+                <Avatar alt={item.name} />
+              </ListItemAvatar>
+              <ListItemText primary={<UserName>{item.name}</UserName>} />
+            </ListItem>
+          ))}
+        </List>
+      </>
+    )
+
+  }
+
   componentDidMount() {
     this.props.onGetFriends()
     this.props.onGetFriendsOfFriends()
@@ -189,7 +207,7 @@ export class FriendsList extends React.Component<Props, State> {
                 <Input
                   id="filter"
                   placeholder="Filter"
-                  onChange={this.onFilterValueChange}
+                  onChange={this.onInputValueChange}
                   value={filterValue}
                   startAdornment={<InputAdornment position="start"><SearchIconStyled /></InputAdornment>}
                 />
