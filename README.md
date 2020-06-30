@@ -20,7 +20,7 @@ You can run the backend API's here:
 
 [Run a node](backend/node.md)
 
-Tests are run using [Postman](https://www.postman.com/). Just import the [requests.json](requests.json) file.
+[Run tests](tests.md)
 
 ## Comparison to other social network projects
 
