@@ -10,6 +10,8 @@ Tests are run using [newman](https://www.npmjs.com/package/newman) - a command l
 
 `./test-run.sh`
 
+(ctrl-c will stop everything gracefully)
+
 ## Run tests
 
 `newman run requests.json`
