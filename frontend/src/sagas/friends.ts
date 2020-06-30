@@ -9,6 +9,6 @@ export function* watchGetFriends(action: { type: FriendsTypes.GET_FRIENDS_REQUES
   if (response.status === 200) {
     yield put(Actions.friends.getFriendsSucces(response.data.friends || []))
   } else {
-    // yield put(Actions.friends.getFriendsSucces([]))
+    yield put(Actions.notify.setErrorNotify(response.error.response.data.msg || 'Server error'))
   }
 }

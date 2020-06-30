@@ -6,6 +6,7 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
 import { CssBaseline } from '@material-ui/core'
 import { store } from '@store/store'
 import { Routes } from '@view/routes'
+import Notify from '@view/shared/Notify'
 
 const theme = createMuiTheme({
   typography: {
@@ -22,6 +23,7 @@ class App extends React.Component<{}> {
           <ThemeProvider theme={theme}>
             <CssBaseline />
             <Routes/>
+            <Notify/>
           </ThemeProvider>
         </ErrorBoundary>
       </Provider>
