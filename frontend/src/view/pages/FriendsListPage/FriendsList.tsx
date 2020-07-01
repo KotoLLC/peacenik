@@ -148,7 +148,7 @@ export class FriendsList extends React.Component<Props, State> {
     const { friends } = this.props
 
     this.setState({
-      filteredFriends: friends.filter(item => item.name.includes(value))
+      filteredFriends: friends.filter(item => item.name.toLowerCase().includes(value.toLowerCase()))
     })
   }
 
@@ -156,7 +156,7 @@ export class FriendsList extends React.Component<Props, State> {
     const { friendsOfFriends } = this.props
 
     this.setState({
-      filteredFriendsOfFriends: friendsOfFriends.filter(item => item.user.name.includes(value))
+      filteredFriendsOfFriends: friendsOfFriends.filter(item => item.user.name.toLowerCase().includes(value.toLowerCase()))
     })
   }
 
