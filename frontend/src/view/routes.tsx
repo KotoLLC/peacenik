@@ -2,7 +2,7 @@ import React, { createElement } from 'react'
 import { createBrowserHistory } from 'history'
 import { Router, Switch, Route, Redirect } from 'react-router-dom'
 import LoginPage from '@view/pages/LoginPage'
-import FriendsListPage from '@view/pages/FriendsListPage'
+import { FriendsPage } from '@view/pages/FriendsPage'
 import { connect } from 'react-redux'
 import { StoreTypes } from './../types'
 
@@ -19,7 +19,7 @@ export const RoutesComponent: React.SFC<Props> = (props) => {
     <Router history={history}>
       <Switch>
         <Route path="/login" component={LoginPage} />
-        <PrivateRoute isLogged={isLogged} path="/friends/list" component={FriendsListPage} />
+        <PrivateRoute isLogged={isLogged} path="/friends/list" component={FriendsPage} />
         <Redirect exact from="/" to="/login" />
       </Switch>
     </Router>
