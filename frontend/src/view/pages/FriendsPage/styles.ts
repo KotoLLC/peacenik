@@ -4,6 +4,7 @@ import Tabs from '@material-ui/core/Tabs'
 import List from '@material-ui/core/List'
 import SearchIcon from '@material-ui/icons/Search'
 import Paper from '@material-ui/core/Paper'
+import IconButton from '@material-ui/core/IconButton'
 
 export const PageWrapper = styled.main`
   display: flex;
@@ -77,7 +78,7 @@ export const ContainerTitle = styled.h3`
   text-transform: uppercase;
 `
 
-export const EmptyFriendsText = styled.div`
+export const EmptyMessage = styled.div`
   padding: 15px;
   width: 100%;
   display: flex;
@@ -92,5 +93,11 @@ export const UserNoteUnderlined = styled.span`
   cursor: pointer;
 `
 export const UserName = styled.span`
-  text-transform: capitalize
+  text-transform: capitalize;
+`
+
+export const IconButtonGreen = styled(IconButton)`
+  && {
+    color: #1fc456;
+  }
 `

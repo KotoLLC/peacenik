@@ -1,7 +1,7 @@
 import React from 'react'
 import Paper from '@material-ui/core/Paper'
 import { TabsWrapper, TabStyled, TabsStyled } from './styles'
-import { FriendsTypes } from './../../../types'
+import { FriendsTypes } from '../../../types'
 
 interface Props {
   onTabClick: (value: FriendsTypes.CurrentTab) => void
@@ -28,6 +28,7 @@ export const Tabs: React.SFC<Props> = React.memo((props) => {
         >
           <TabStyled label="My Friends" onClick={() => onTabClick('friends')}/>
           <TabStyled label="Friends of Friends" onClick={() => onTabClick('friends-of-friends')}/>
+          <TabStyled label="Invitations" onClick={() => onTabClick('invitations')}/>
         </TabsStyled>
       </Paper>
     </TabsWrapper>
