@@ -16,4 +16,8 @@ export declare namespace ApiTypes {
     friends: User[]
   }
 
+  export interface FriendRequest {
+    friend: string
+  }
+
 }

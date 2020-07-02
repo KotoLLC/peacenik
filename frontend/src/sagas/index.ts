@@ -4,7 +4,11 @@ import { Types as AuthorizationTypes } from '@store/authorization/actions'
 import { Types as FriendsTypes } from '@store/friends/actions'
 
 import { watchlogin, watchlogout } from './authorization'
-import { watchGetFriends, watchGetFriendsOfFriends } from './friends'
+import { 
+    watchGetFriends, 
+    watchGetFriendsOfFriends,
+    watchAddFriend,
+} from './friends'
 
 export function* rootSaga() {
     yield all([
@@ -12,5 +16,6 @@ export function* rootSaga() {
         takeEvery(AuthorizationTypes.LOGOUT_REQUEST, watchlogout),
         takeEvery(FriendsTypes.GET_FRIENDS_REQUEST, watchGetFriends),
         takeEvery(FriendsTypes.GET_FRIENDS_OF_FRIENDS_REQUEST, watchGetFriendsOfFriends),
+        takeEvery(FriendsTypes.ADD_FRIEND_REQUEST, watchAddFriend),
     ])
 }
