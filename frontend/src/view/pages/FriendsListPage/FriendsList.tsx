@@ -11,7 +11,11 @@ import Divider from '@material-ui/core/Divider'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemAvatar from '@material-ui/core/ListItemAvatar'
 import Avatar from '@material-ui/core/Avatar'
+import PersonAddIcon from '@material-ui/icons/PersonAdd'
+import IconButton from '@material-ui/core/IconButton'
+import Tooltip from '@material-ui/core/Tooltip'
 import { ApiTypes, FriendsTypes } from './../../../types/index'
+import { capitalizeFirstLetter } from '@services/capitalizeFirstLetter'
 import {
   PageWrapper,
   Header,
@@ -31,6 +35,7 @@ export interface Props {
   friendsOfFriends: ApiTypes.FriendsOfFriend[]
   onGetFriends: () => void
   onGetFriendsOfFriends: () => void
+  onAddFriend: (data: ApiTypes.FriendRequest) => void
 }
 
 interface State {
@@ -73,6 +78,10 @@ export class FriendsList extends React.Component<Props, State> {
     })
   }
 
+  onAddFriend = (value: string) => {
+    this.props.onAddFriend({ friend: value })
+  }
+
   mapFriends = (friends: ApiTypes.User[]) => {
 
     if (!friends.length) {
@@ -113,6 +122,11 @@ export class FriendsList extends React.Component<Props, State> {
                   onClick={() => this.onFriendOfFriendsSelect(user.id)}>
                   You have {friends.length} in common</UserNoteUnderlined> : null}
             />
+            <Tooltip title={`Add ${capitalizeFirstLetter(user.name)} to friends`}>
+              <IconButton onClick={() => this.onAddFriend(user.name)}>
+                <PersonAddIcon />
+              </IconButton>
+            </Tooltip>
           </ListItem>
           <Divider variant="inset" component="li" />
         </div>
@@ -182,7 +196,6 @@ export class FriendsList extends React.Component<Props, State> {
         </List>
       </>
     )
-
   }
 
   componentDidMount() {

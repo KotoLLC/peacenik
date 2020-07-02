@@ -7,6 +7,9 @@ export enum Types {
   
   GET_FRIENDS_OF_FRIENDS_REQUEST = 'GET_FRIENDS_OF_FRIENDS_REQUEST',
   GET_FRIENDS_OF_FRIENDS_SUCCESS = 'GET_FRIENDS_OF_FRIENDS_SUCCESS',
+  
+  ADD_FRIEND_REQUEST = 'ADD_FRIEND_REQUEST',
+  ADD_FRIEND_SUCCESS = 'ADD_FRIEND_SUCCESS',
 }
 
 export const getFriendsRequest = () => ({
@@ -27,9 +30,20 @@ export const getFriendsOfFriendsSucces = (data: ApiTypes.User[]) => ({
   payload: data
 })
 
+export const addFriendRequest = (payload: ApiTypes.FriendRequest) => ({
+  type: Types.ADD_FRIEND_REQUEST,
+  payload
+})
+
+export const addFriendSuccess = () => ({
+  type: Types.ADD_FRIEND_SUCCESS,
+})
+
 export default {
   getFriendsRequest,
   getFriendsSucces,
   getFriendsOfFriendsRequest,
   getFriendsOfFriendsSucces,
+  addFriendRequest,
+  addFriendSuccess,
 }
