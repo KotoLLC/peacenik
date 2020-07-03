@@ -16,6 +16,7 @@ import Tooltip from '@material-ui/core/Tooltip'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import { StoreTypes, ApiTypes } from '../../../types'
+import selectors from '@selectors/index'
 import {
   SidebarWrapper,
   ContentWrapper,
@@ -150,7 +151,7 @@ export class Invitations extends React.Component<Props, State> {
 
 type StateProps = Pick<Props, 'invitations'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  invitations: state.friends.invitations,
+  invitations: selectors.friends.invitations(state),
 })
 
 type DispatchProps = Pick<Props, 'onGetInvitations' | 'onAcceptInvitation'>

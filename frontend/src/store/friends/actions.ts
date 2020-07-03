@@ -58,7 +58,6 @@ export const acceptInvitationRequest = (payload: ApiTypes.AcceptInvitation) => (
   payload
 })
 
-
 export default {
   getFriendsRequest,
   getFriendsSucces,
