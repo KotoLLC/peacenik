@@ -10,6 +10,9 @@ service MessageService {
     rpc Post (MessagePostRequest) returns (Empty);
     rpc Edit (MessageEditRequest) returns (Empty);
     rpc Delete (MessageDeleteRequest) returns (Empty);
+    rpc PostComment (MessagePostCommentRequest) returns (Empty);
+    rpc EditComment (MessageEditCommentRequest) returns (Empty);
+    rpc DeleteComment (MessageDeleteCommentRequest) returns (Empty);
 }
 
 message MessageMessagesRequest {
@@ -33,4 +36,20 @@ message MessageEditRequest {
 
 message MessageDeleteRequest {
     string message_id = 1;
+}
+
+message MessagePostCommentRequest {
+    string token = 1;
+    string message_id = 2;
+    Comment comment = 3;
+}
+
+message MessageEditCommentRequest {
+    string comment_id = 1;
+    string text = 2;
+    string updated_at = 3;
+}
+
+message MessageDeleteCommentRequest {
+    string comment_id = 1;
 }
