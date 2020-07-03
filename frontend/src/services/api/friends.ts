@@ -19,4 +19,16 @@ export default {
       return response
     }).catch(error => ({ error }))
   },
+  
+  getInvitations: async () => {
+    return await axiosInstance.post('/rpc.InviteService/ForMe', {}).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
+  
+  acceptInvitation: async (data: ApiTypes.AcceptInvitation) => {
+    return await axiosInstance.post('/rpc.InviteService/Accept', data).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
 }

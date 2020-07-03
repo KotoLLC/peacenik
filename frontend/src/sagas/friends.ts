@@ -28,6 +28,27 @@ export function* watchAddFriend(action: { type: string, payload: ApiTypes.Friend
 
   if (response.status === 200) {
     yield put(Actions.friends.addFriendSuccess())
+    yield put(Actions.notify.setSuccessNotify('Request sent successfully'))
+  } else {
+    yield put(Actions.notify.setErrorNotify(response.error.response.data.msg || 'Server error'))
+  }
+}
+
+export function* watchGetInvitations() {
+  const response = yield API.friends.getInvitations()
+
+  if (response.status === 200) {
+    yield put(Actions.friends.getInvitationsSuccess(response.data.invites))
+  } else {
+    yield put(Actions.notify.setErrorNotify(response.error.response.data.msg || 'Server error'))
+  }
+}
+
+export function* watchAcceptInvitations(action: { type: string, payload: ApiTypes.AcceptInvitation }) {
+  const response = yield API.friends.acceptInvitation(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.friends.getInvitationsRequest())
   } else {
     yield put(Actions.notify.setErrorNotify(response.error.response.data.msg || 'Server error'))
   }

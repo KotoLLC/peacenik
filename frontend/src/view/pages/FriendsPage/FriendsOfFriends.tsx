@@ -66,11 +66,8 @@ export class FriendsOfFriends extends React.Component<Props, State> {
     })
   }
 
-  onAddFriend = (value: string) => {
-    this.props.onAddFriend({ friend: value })
-  }
-
   mapFriendsList = (friendsOfFriends: ApiTypes.FriendsOfFriend[]) => {
+    const { onAddFriend } = this.props
 
     if (!friendsOfFriends || !friendsOfFriends.length) {
       return this.showEmptyListMessage()
@@ -92,7 +89,7 @@ export class FriendsOfFriends extends React.Component<Props, State> {
                   You have {friends.length} in common</UserNoteUnderlined> : null}
             />
             <Tooltip title={`Add ${capitalizeFirstLetter(user.name)} to friends`}>
-              <IconButton color="primary" onClick={() => this.onAddFriend(user.name)}>
+              <IconButton color="primary" onClick={() => onAddFriend({ friend: user.id })}>
                 <PersonAddIcon />
               </IconButton>
             </Tooltip>
@@ -111,7 +108,6 @@ export class FriendsOfFriends extends React.Component<Props, State> {
       searchValue: value,
       searchResult: friendsOfFriends.filter(item => item.user.name.toLowerCase().includes(value.toLowerCase()))
     })
-
   }
 
   componentDidMount() {

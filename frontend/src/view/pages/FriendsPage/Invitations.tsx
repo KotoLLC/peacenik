@@ -24,60 +24,64 @@ import {
   SearchIconStyled,
   ContainerTitle,
   EmptyMessage,
-  UserNoteUnderlined,
   UserName,
   IconButtonGreen,
 } from './styles'
 
 export interface Props {
-  invitations: ApiTypes.InvitationFriend[]
+  invitations: ApiTypes.Invitation[]
   onGetInvitations: () => void
+  onAcceptInvitation: (data: ApiTypes.AcceptInvitation) => void
 }
 
 interface State {
-  filteredInvitations: ApiTypes.InvitationFriend[]
-  filterValue: string
+  pendingInvitations: ApiTypes.Invitation[]
+  searchResult: ApiTypes.Invitation[]
+  searchValue: string
 }
 
 export class Invitations extends React.Component<Props, State> {
 
   state = {
-    filteredInvitations: [],
-    filterValue: '',
+    searchResult: [],
+    searchValue: '',
+    pendingInvitations: [],
+  }
+
+  static getDerivedStateFromProps(newProps: Props) {
+    return {
+      pendingInvitations: newProps.invitations.length && newProps.invitations.filter(item => (!item.accepted_at))
+    }
   }
 
   showEmptyListMessage = () => {
-    const { filterValue } = this.state
+    const { searchValue } = this.state
 
-    if (filterValue) {
+    if (searchValue) {
       return <EmptyMessage>No one's been found.</EmptyMessage>
     } else {
       return <EmptyMessage>You don't have any invitations yet.</EmptyMessage>
     }
   }
 
-  mapInvitations = (invitations: ApiTypes.InvitationFriend[]) => {
+  mapInvitations = (invitations: ApiTypes.Invitation[]) => {
+    const { onAcceptInvitation } = this.props
 
     if (!invitations || !invitations.length) {
       return this.showEmptyListMessage()
     }
 
     return invitations.map(item => {
-      const { user, friends } = item
+      const { friend_id, friend_name } = item
       return (
-        <div key={user.id}>
-          <ListItem alignItems={friends.length ? 'flex-start' : 'center'}>
+        <div key={friend_id}>
+          <ListItem alignItems="center">
             <ListItemAvatar>
-              <Avatar alt={user.name} />
+              <Avatar alt={friend_name} />
             </ListItemAvatar>
-            <ListItemText
-              primary={<UserName>{user.name}</UserName>}
-              secondary={(friends.length) ?
-                <UserNoteUnderlined>
-                  You have {friends.length} in common</UserNoteUnderlined> : null}
-            />
+            <ListItemText primary={<UserName>{friend_name}</UserName>} />
             <Tooltip title={`Accept the invitation`}>
-              <IconButtonGreen>
+              <IconButtonGreen onClick={() => onAcceptInvitation({inviter_id: friend_id})}>
                 <CheckCircleIcon />
               </IconButtonGreen>
             </Tooltip>
@@ -93,28 +97,26 @@ export class Invitations extends React.Component<Props, State> {
     })
   }
 
-  onInputValueChange = (event: ChangeEvent<HTMLInputElement>) => {
+  onSearch = (event: ChangeEvent<HTMLInputElement>) => {
+    const { pendingInvitations } = this.state
     const { value } = event.currentTarget
 
     this.setState({
-      filterValue: value,
-    })
-
-  }
-
-  setFilteredInvitations = (value: string) => {
-    const { invitations } = this.props
-
-    this.setState({
-      filteredInvitations: invitations.filter(item => item.user.name.toLowerCase().includes(value.toLowerCase()))
+      searchValue: value,
+      searchResult: pendingInvitations.filter(
+        (item: ApiTypes.Invitation) => {
+          return item.friend_name.toLowerCase().includes(value.toLowerCase())
+        }
+      )
     })
   }
 
-  // componentDidMount() {}
+  componentDidMount() {
+    this.props.onGetInvitations()
+  }
 
   render() {
-    const { invitations } = this.props
-    const { filteredInvitations, filterValue } = this.state
+    const { pendingInvitations, searchResult, searchValue } = this.state
 
     return (
       <>
@@ -125,14 +127,14 @@ export class Invitations extends React.Component<Props, State> {
                 <Input
                   id="filter"
                   placeholder="Filter"
-                  onChange={this.onInputValueChange}
-                  value={filterValue}
+                  onChange={this.onSearch}
+                  value={searchValue}
                   startAdornment={<InputAdornment position="start"><SearchIconStyled /></InputAdornment>}
                 />
               </FormControl>
             </SearchWrapper>
             <ListStyled>
-              {this.mapInvitations((filterValue) ? filteredInvitations : invitations)}
+              {this.mapInvitations((searchValue) ? searchResult : pendingInvitations)}
             </ListStyled>
           </Paper>
         </SidebarWrapper>
@@ -148,12 +150,13 @@ export class Invitations extends React.Component<Props, State> {
 
 type StateProps = Pick<Props, 'invitations'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  invitations: [],
+  invitations: state.friends.invitations,
 })
 
-type DispatchProps = Pick<Props, 'onGetInvitations'>
+type DispatchProps = Pick<Props, 'onGetInvitations' | 'onAcceptInvitation'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-    onGetInvitations: () => dispatch(Actions.friends.getFriendsRequest()),
+    onGetInvitations: () => dispatch(Actions.friends.getInvitationsRequest()),
+    onAcceptInvitation: (data: ApiTypes.AcceptInvitation) => dispatch(Actions.friends.acceptInvitationRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Invitations)
