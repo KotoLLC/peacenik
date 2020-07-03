@@ -58,4 +58,42 @@ Content-Type: application/json
   "message_id": "4"
 }
 
+
+### Post comment
+POST http://localhost:12012/rpc.MessageService/PostComment
+Authorization: Bearer AUTH-TOKEN
+Content-Type: application/json
+
+{
+  "token":  "GET-MESSAGES-TOKEN",
+  "message_id": "55",
+  "comment": {
+    "id": "123",
+    "text": "new comment 123",
+    "created_at": "2020-06-12T10:16:40.335Z",
+    "updated_at": "2020-06-12T10:16:40.335Z"
+  }
+}
+
+
+### Edit comment
+POST http://localhost:12012/rpc.MessageService/EditComment
+Authorization: Bearer AUTH-TOKEN
+Content-Type: application/json
+
+{
+  "comment_id": "123",
+  "text": "updated comment 123",
+  "updated_at": "2020-06-29T11:11:11.111Z"
+}
+
+
+### Delete comment
+POST http://localhost:12012/rpc.MessageService/DeleteComment
+Authorization: Bearer AUTH-TOKEN
+Content-Type: application/json
+
+{
+  "comment_id": "123"
+}
 ```
