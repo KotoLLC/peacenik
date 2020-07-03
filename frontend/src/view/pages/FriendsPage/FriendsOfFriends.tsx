@@ -16,6 +16,7 @@ import PersonAddIcon from '@material-ui/icons/PersonAdd'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import { capitalizeFirstLetter } from '@services/capitalizeFirstLetter'
+import selectors from '@selectors/index'
 import {
   SidebarWrapper,
   ContentWrapper,
@@ -161,7 +162,7 @@ export class FriendsOfFriends extends React.Component<Props, State> {
 
 type StateProps = Pick<Props, 'friendsOfFriends'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  friendsOfFriends: state.friends.friendsOfFriends,
+  friendsOfFriends: selectors.friends.friendsOfFriends(state),
 })
 
 type DispatchProps = Pick<Props, 'onGetFriendsOfFriends' | 'onAddFriend'>

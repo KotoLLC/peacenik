@@ -12,6 +12,7 @@ import Avatar from '@material-ui/core/Avatar'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import { StoreTypes, ApiTypes } from '../../../types'
+import selectors from '@selectors/index'
 
 import {
   SidebarWrapper,
@@ -120,7 +121,7 @@ class Friends extends React.Component<Props, State> {
 
 type StateProps = Pick<Props, 'friends'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  friends: state.friends.friends,
+  friends: selectors.friends.friends(state),
 })
 
 type DispatchProps = Pick<Props, 'onGetFriends'>

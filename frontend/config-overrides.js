@@ -8,6 +8,7 @@ module.exports = function override(config, env) {
 		'@store': path.resolve(__dirname, `${paths.appSrc}/store/`),
 		'@sagas': path.resolve(__dirname, `${paths.appSrc}/sagas/`),
 		'@services': path.resolve(__dirname, `${paths.appSrc}/services/`),
+		'@selectors': path.resolve(__dirname, `${paths.appSrc}/selectors/`),
 	})(config, env);
 	return config;
 };
