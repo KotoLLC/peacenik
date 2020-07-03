@@ -16,7 +16,16 @@ export declare namespace ApiTypes {
     friends: User[]
   }
 
-  export interface InvitationFriend extends FriendsOfFriend { }
+  export interface Invitation {
+    friend_id: string
+    friend_name: string
+    created_at: string
+    accepted_at?: string
+  }
+  
+  export interface AcceptInvitation {
+    inviter_id: string
+  }
 
   export interface FriendRequest {
     friend: string

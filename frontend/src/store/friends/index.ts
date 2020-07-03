@@ -4,11 +4,13 @@ import { ApiTypes } from './../../types'
 export interface State {
   friends: ApiTypes.User[],
   friendsOfFriends: ApiTypes.FriendsOfFriend[],
+  invitations: ApiTypes.Invitation[],
 }
 
 const initialState: State = {
   friends: [],
   friendsOfFriends: [],
+  invitations: [],
 }
 
 const reducer = (state = initialState, action) => {
@@ -24,6 +26,13 @@ const reducer = (state = initialState, action) => {
       return {
         ...state, ...{
           friendsOfFriends: action.payload,
+        }
+      }
+    }
+    case Types.GET_INVITATIONS_SUCCESS: {
+      return {
+        ...state, ...{
+          invitations: action.payload,
         }
       }
     }
