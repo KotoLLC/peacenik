@@ -13,4 +13,15 @@ message Message {
     string text = 4;
     string created_at = 5;
     string updated_at = 6;
+
+    repeated Comment comments = 7;
+}
+
+message Comment {
+    string id = 1;
+    string user_id = 2;
+    string user_name = 3;
+    string text = 4;
+    string created_at = 5;
+    string updated_at = 6;
 }

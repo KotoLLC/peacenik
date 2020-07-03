@@ -26,7 +26,7 @@ func NewToken(base *BaseService, tokenGenerator token.Generator) rpc.TokenServic
 func (s *tokenService) Auth(ctx context.Context, _ *rpc.Empty) (*rpc.TokenAuthResponse, error) {
 	user := s.getUser(ctx)
 
-	authToken, err := s.tokenGenerator.Generate(user, "auth", time.Now().Add(time.Minute*10), nil)
+	authToken, err := s.tokenGenerator.Generate(user, "auth", time.Now().Add(time.Minute*60), nil)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
@@ -64,7 +64,7 @@ func (s *tokenService) PostMessage(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 	}
 
 	tokens := make(map[string]string)
-	exp := time.Now().Add(time.Minute * 10)
+	exp := time.Now().Add(time.Minute * 60)
 	for _, node := range nodes {
 		claims := map[string]interface{}{"node": node.Node.Address}
 		nodeToken, err := s.tokenGenerator.Generate(user, "post-message", exp, claims)
@@ -86,7 +86,7 @@ func (s *tokenService) GetMessages(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 		return nil, twirp.InternalErrorWith(err)
 	}
 	tokens := make(map[string]string)
-	exp := time.Now().Add(time.Minute * 10)
+	exp := time.Now().Add(time.Minute * 60)
 	for _, node := range nodes {
 		claims := map[string]interface{}{
 			"node":  node.Node.Address,
