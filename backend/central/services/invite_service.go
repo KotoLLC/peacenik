@@ -86,6 +86,7 @@ func (s *inviteService) FromMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFr
 			FriendName: friendName,
 			CreatedAt:  invite.CreatedAt,
 			AcceptedAt: invite.AcceptedAt,
+			RejectedAt: invite.RejectedAt,
 		}
 	}
 
@@ -107,6 +108,7 @@ func (s *inviteService) ForMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFor
 			FriendName: invite.UserName,
 			CreatedAt:  invite.CreatedAt,
 			AcceptedAt: invite.AcceptedAt,
+			RejectedAt: invite.RejectedAt,
 		}
 	}
 
