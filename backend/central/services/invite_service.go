@@ -56,6 +56,18 @@ func (s *inviteService) Accept(ctx context.Context, r *rpc.InviteAcceptRequest) 
 	return &rpc.Empty{}, nil
 }
 
+func (s *inviteService) Reject(ctx context.Context, r *rpc.InviteRejectRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+	err := s.repos.Invite.RejectInvite(r.InviterId, user.ID, user.Email)
+	if err != nil {
+		if errors.Is(err, repo.ErrInviteNotFound) {
+			return nil, twirp.NotFoundError(err.Error())
+		}
+		return nil, twirp.InternalErrorWith(err)
+	}
+	return &rpc.Empty{}, nil
+}
+
 func (s *inviteService) FromMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFromMeResponse, error) {
 	user := s.getUser(ctx)
 	invites, err := s.repos.Invite.InvitesFromMe(user)

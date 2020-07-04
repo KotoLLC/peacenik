@@ -106,6 +106,15 @@ Content-Type: application/json
 }
 
 
+### Reject invite.
+POST http://localhost:12001//rpc.InviteService/Reject
+Content-Type: application/json
+
+{
+  "inviter_id": "USER-ID"
+}
+
+
 ### List of friends (for current user).
 POST http://localhost:12001/rpc.UserService/Friends
 Content-Type: application/json

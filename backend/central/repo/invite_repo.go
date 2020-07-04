@@ -27,6 +27,7 @@ type Invite struct {
 type InviteRepo interface {
 	AddInvite(userID, friendEmail string) error
 	AcceptInvite(inviterID, friendID, friendEmail string) error
+	RejectInvite(inviterID, friendID, friendEmail string) error
 	InvitesFromMe(user User) ([]Invite, error)
 	InvitesForMe(user User) ([]Invite, error)
 }
@@ -54,7 +55,7 @@ func (r *inviteRepo) AcceptInvite(inviterID, friendID, friendEmail string) error
 	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
 		res, err := tx.Exec(`
 		update invites
-		set accepted_at = $1
+		set accepted_at = $1, rejected_at = ''
 		where user_id = $2 and friend_email = $3`,
 			common.CurrentTimestamp(), inviterID, friendEmail)
 		if err != nil {
@@ -82,6 +83,36 @@ func (r *inviteRepo) AcceptInvite(inviterID, friendID, friendEmail string) error
 			select $1, $2
 			where not exists(select * from friends where user_id = $1 and friend_id = $2)`,
 			friendID, inviterID)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
+
+func (r *inviteRepo) RejectInvite(inviterID, friendID, friendEmail string) error {
+	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+		res, err := tx.Exec(`
+		update invites
+		set rejected_at = $1, accepted_at = ''
+		where user_id = $2 and friend_email = $3`,
+			common.CurrentTimestamp(), inviterID, friendEmail)
+		if err != nil {
+			return err
+		}
+		rowsAffected, err := res.RowsAffected()
+		if err != nil {
+			return err
+		}
+		if rowsAffected == 0 {
+			return ErrInviteNotFound
+		}
+
+		_, err = tx.Exec(`
+			delete from friends
+			where (user_id = $1 and friend_id = $2) or (user_id = $2 and friend_id = $1)`,
+			inviterID, friendID)
 		if err != nil {
 			return err
 		}
