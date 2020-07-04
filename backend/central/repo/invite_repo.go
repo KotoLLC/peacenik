@@ -22,6 +22,7 @@ type Invite struct {
 	FriendEmail string `db:"friend_email"`
 	CreatedAt   string `db:"created_at"`
 	AcceptedAt  string `db:"accepted_at"`
+	RejectedAt  string `db:"rejected_at"`
 }
 
 type InviteRepo interface {
@@ -124,7 +125,8 @@ func (r *inviteRepo) RejectInvite(inviterID, friendID, friendEmail string) error
 func (r *inviteRepo) InvitesFromMe(user User) ([]Invite, error) {
 	var invites []Invite
 	err := r.db.Select(&invites, `
-		select i.id, i.user_id, coalesce(u.id, '') friend_id, coalesce(u.name, '') friend_name, i.friend_email, i.created_at, i.accepted_at
+		select i.id, i.user_id, coalesce(u.id, '') friend_id, coalesce(u.name, '') friend_name, i.friend_email,
+		       i.created_at, i.accepted_at, i.rejected_at
 		from invites i
 			left join users u on u.email = i.friend_email 
 		where i.user_id = $1
@@ -139,7 +141,8 @@ func (r *inviteRepo) InvitesFromMe(user User) ([]Invite, error) {
 func (r *inviteRepo) InvitesForMe(user User) ([]Invite, error) {
 	var invites []Invite
 	err := r.db.Select(&invites, `
-		select i.id, i.user_id, u.name user_name, u.email user_email, i.friend_email, i.created_at, i.accepted_at
+		select i.id, i.user_id, u.name user_name, u.email user_email, i.friend_email,
+		       i.created_at, i.accepted_at, i.rejected_at
 		from invites i
 			inner join users u on u.id = i.user_id
 		where i.friend_email = $1

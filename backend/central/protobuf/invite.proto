@@ -30,6 +30,7 @@ message InviteFriendInvite {
     string friend_name = 2;
     string created_at = 3;
     string accepted_at = 4;
+    string rejected_at = 5;
 }
 
 message InviteFromMeResponse {
