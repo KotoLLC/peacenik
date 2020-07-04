@@ -21,14 +21,18 @@ export declare namespace ApiTypes {
     friend_name: string
     created_at: string
     accepted_at?: string
+    rejected_at?: string
   }
   
   export interface AcceptInvitation {
+    inviter_id: string
+  }
+  
+  export interface RejectInvitation {
     inviter_id: string
   }
 
   export interface FriendRequest {
     friend: string
   }
-
 }

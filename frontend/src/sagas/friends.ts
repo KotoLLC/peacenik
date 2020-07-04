@@ -44,8 +44,18 @@ export function* watchGetInvitations() {
   }
 }
 
-export function* watchAcceptInvitations(action: { type: string, payload: ApiTypes.AcceptInvitation }) {
+export function* watchAcceptInvitation(action: { type: string, payload: ApiTypes.AcceptInvitation }) {
   const response = yield API.friends.acceptInvitation(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.friends.getInvitationsRequest())
+  } else {
+    yield put(Actions.notify.setErrorNotify(response.error.response.data.msg || 'Server error'))
+  }
+}
+
+export function* watchRejectInvitation(action: { type: string, payload: ApiTypes.RejectInvitation }) {
+  const response = yield API.friends.rejectInvitation(action.payload)
 
   if (response.status === 200) {
     yield put(Actions.friends.getInvitationsRequest())

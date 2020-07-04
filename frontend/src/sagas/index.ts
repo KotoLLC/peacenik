@@ -9,7 +9,8 @@ import {
     watchGetFriendsOfFriends,
     watchAddFriend,
     watchGetInvitations,
-    watchAcceptInvitations,
+    watchAcceptInvitation,
+    watchRejectInvitation,
 } from './friends'
 
 export function* rootSaga() {
@@ -20,6 +21,7 @@ export function* rootSaga() {
         takeEvery(FriendsTypes.GET_FRIENDS_OF_FRIENDS_REQUEST, watchGetFriendsOfFriends),
         takeEvery(FriendsTypes.ADD_FRIEND_REQUEST, watchAddFriend),
         takeEvery(FriendsTypes.GET_INVITATIONS_REQUEST, watchGetInvitations),
-        takeEvery(FriendsTypes.ACCEPT_INVITATION_REQUEST, watchAcceptInvitations),
+        takeEvery(FriendsTypes.ACCEPT_INVITATION_REQUEST, watchAcceptInvitation),
+        takeEvery(FriendsTypes.REJECT_INVITATION_REQUEST, watchRejectInvitation),
     ])
 }

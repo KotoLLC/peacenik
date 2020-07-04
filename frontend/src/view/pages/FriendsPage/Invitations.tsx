@@ -33,6 +33,7 @@ export interface Props {
   invitations: ApiTypes.Invitation[]
   onGetInvitations: () => void
   onAcceptInvitation: (data: ApiTypes.AcceptInvitation) => void
+  onRejectInvitation: (data: ApiTypes.RejectInvitation) => void
 }
 
 interface State {
@@ -51,7 +52,9 @@ export class Invitations extends React.Component<Props, State> {
 
   static getDerivedStateFromProps(newProps: Props) {
     return {
-      pendingInvitations: newProps.invitations.length && newProps.invitations.filter(item => (!item.accepted_at))
+      pendingInvitations: newProps.invitations.length && newProps.invitations.filter(
+        item => !item.accepted_at && !item.rejected_at
+      )
     }
   }
 
@@ -66,7 +69,7 @@ export class Invitations extends React.Component<Props, State> {
   }
 
   mapInvitations = (invitations: ApiTypes.Invitation[]) => {
-    const { onAcceptInvitation } = this.props
+    const { onAcceptInvitation, onRejectInvitation } = this.props
 
     if (!invitations || !invitations.length) {
       return this.showEmptyListMessage()
@@ -82,12 +85,12 @@ export class Invitations extends React.Component<Props, State> {
             </ListItemAvatar>
             <ListItemText primary={<UserName>{friend_name}</UserName>} />
             <Tooltip title={`Accept the invitation`}>
-              <IconButtonGreen onClick={() => onAcceptInvitation({inviter_id: friend_id})}>
+              <IconButtonGreen onClick={() => onAcceptInvitation({ inviter_id: friend_id })}>
                 <CheckCircleIcon />
               </IconButtonGreen>
             </Tooltip>
             <Tooltip title={`Decline the invitation`}>
-              <IconButton color="secondary">
+              <IconButton color="secondary" onClick={() => onRejectInvitation({ inviter_id: friend_id })}>
                 <CancelIcon />
               </IconButton>
             </Tooltip>
@@ -140,9 +143,9 @@ export class Invitations extends React.Component<Props, State> {
           </Paper>
         </SidebarWrapper>
         <ContentWrapper>
-        <ContainerTitle>Title</ContainerTitle>
-        <Divider />
-        <List/>
+          <ContainerTitle>Title</ContainerTitle>
+          <Divider />
+          <List />
         </ContentWrapper>
       </>
     )
@@ -154,10 +157,11 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   invitations: selectors.friends.invitations(state),
 })
 
-type DispatchProps = Pick<Props, 'onGetInvitations' | 'onAcceptInvitation'>
+type DispatchProps = Pick<Props, 'onGetInvitations' | 'onAcceptInvitation' | 'onRejectInvitation'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-    onGetInvitations: () => dispatch(Actions.friends.getInvitationsRequest()),
-    onAcceptInvitation: (data: ApiTypes.AcceptInvitation) => dispatch(Actions.friends.acceptInvitationRequest(data)),
+  onGetInvitations: () => dispatch(Actions.friends.getInvitationsRequest()),
+  onAcceptInvitation: (data: ApiTypes.AcceptInvitation) => dispatch(Actions.friends.acceptInvitationRequest(data)),
+  onRejectInvitation: (data: ApiTypes.RejectInvitation) => dispatch(Actions.friends.rejectInvitationRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Invitations)

@@ -31,4 +31,10 @@ export default {
       return response
     }).catch(error => ({ error }))
   },
+  
+  rejectInvitation: async (data: ApiTypes.RejectInvitation) => {
+    return await axiosInstance.post('/rpc.InviteService/Reject', data).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
 }
