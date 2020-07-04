@@ -2,9 +2,10 @@ import React from 'react'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
-import { ButtonStyled } from './styles'
+import { TooltipStyle, IconButtonStyled } from './styles'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
+import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 
 type DispatchProps = Pick<Props, 'onLogout'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
@@ -16,13 +17,17 @@ interface Props {
 }
 
 const TopBar: React.SFC<Props> = React.memo((props) => {
-  const {onLogout} = props
+  const { onLogout } = props
 
   return (
     <AppBar position="fixed" color="primary">
       <Toolbar>
         <Typography variant="h6">Koto</Typography>
-        <ButtonStyled color="inherit" onClick={onLogout}>Logout</ButtonStyled>
+        <TooltipStyle title={`Logout`}>
+          <IconButtonStyled onClick={onLogout}>
+            <ExitToAppIcon />
+          </IconButtonStyled>
+        </TooltipStyle>
       </Toolbar>
     </AppBar>
   )
