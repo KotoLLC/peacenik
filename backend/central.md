@@ -62,7 +62,7 @@ Content-Type: application/json
 }
 
 
-### Get all nodes (admin access)
+### Get all nodes (admin access) or my nodes
 POST http://localhost:12001/rpc.NodeService/Nodes
 Content-Type: application/json
 
@@ -74,6 +74,13 @@ POST http://localhost:12001/rpc.NodeService/Approve
 Content-Type: application/json
 
 {"node_id":  "e60b3ff4-9ac0-4ba4-a45c-626c4eb29f75"}
+
+
+### Remove node
+POST http://localhost:12001/rpc.NodeService/Remove
+Content-Type: application/json
+
+{"node_id":  "ba7c6e53-dfea-46ec-b0ff-208f984393c4"}
 
 
 ### Create invite.
