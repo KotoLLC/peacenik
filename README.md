@@ -49,4 +49,8 @@ We want a functional alternative to Facebook that does not sell advertising or t
 
 ## How you can help
 
-This thing costs money! I am paying for a couple of engineers to help me, plus server costs, etc. So please donate to our [gofundme](https://www.gofundme.com/f/byezuck), send me a donation on [Paypal](https://paypal.me/Mreider), or to my Bitcoin wallet `1Bdgi62pGvaP4ZaY2nGSeNr9UfquvMqQ5P`
+There are a few ways you can help.
+
+If you have some free time, I have all sorts of things you can do. Just get in touch via email at mreider at gmail dot com.
+
+And of course, you can donate money. I am paying for a couple of engineers to help me, plus server costs, etc. So please donate to our [gofundme](https://www.gofundme.com/f/byezuck), send me a donation on [Paypal](https://paypal.me/Mreider), or to my Bitcoin wallet `1Bdgi62pGvaP4ZaY2nGSeNr9UfquvMqQ5P`
