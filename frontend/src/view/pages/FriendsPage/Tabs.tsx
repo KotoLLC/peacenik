@@ -27,7 +27,7 @@ export const Tabs: React.SFC<Props> = React.memo((props) => {
           centered
         >
           <TabStyled label="Friends" onClick={() => onTabClick('friends')}/>
-          <TabStyled label="Potenial friends" onClick={() => onTabClick('friends-of-friends')}/>
+          <TabStyled label="Potential friends" onClick={() => onTabClick('friends-of-friends')}/>
           <TabStyled label="Invites" onClick={() => onTabClick('invitations')}/>
         </TabsStyled>
       </Paper>
