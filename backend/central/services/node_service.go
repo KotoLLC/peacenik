@@ -2,9 +2,11 @@ package services
 
 import (
 	"context"
+	"errors"
 
 	"github.com/twitchtv/twirp"
 
+	"github.com/mreider/koto/backend/central/repo"
 	"github.com/mreider/koto/backend/central/rpc"
 )
 
@@ -35,11 +37,15 @@ func (s *nodeService) Register(ctx context.Context, r *rpc.NodeRegisterRequest) 
 }
 
 func (s *nodeService) Nodes(ctx context.Context, _ *rpc.Empty) (*rpc.NodeNodesResponse, error) {
-	if !s.isAdmin(ctx) {
-		return nil, twirp.NewError(twirp.PermissionDenied, "")
-	}
+	user := s.getUser(ctx)
 
-	nodes, err := s.repos.Node.Nodes()
+	var nodes []repo.Node
+	var err error
+	if s.isAdmin(ctx) {
+		nodes, err = s.repos.Node.AllNodes()
+	} else {
+		nodes, err = s.repos.Node.Nodes(user)
+	}
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
@@ -70,6 +76,28 @@ func (s *nodeService) Approve(ctx context.Context, r *rpc.NodeApproveRequest) (*
 	}
 
 	err := s.repos.Node.ApproveNode(r.NodeId)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+
+	return &rpc.Empty{}, nil
+}
+
+func (s *nodeService) Remove(ctx context.Context, r *rpc.NodeRemoveRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+	node, err := s.repos.Node.Node(r.NodeId)
+	if err != nil {
+		if errors.Is(err, repo.ErrNodeNotFound) {
+			return nil, twirp.NotFoundError(err.Error())
+		}
+		return nil, twirp.InternalErrorWith(err)
+	}
+
+	if !s.isAdmin(ctx) && node.AdminID != user.ID {
+		return nil, twirp.NotFoundError(repo.ErrNodeNotFound.Error())
+	}
+
+	err = s.repos.Node.RemoveNode(r.NodeId)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}

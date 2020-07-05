@@ -39,7 +39,7 @@ func (s *tokenService) Auth(ctx context.Context, _ *rpc.Empty) (*rpc.TokenAuthRe
 func (s *tokenService) PostMessage(ctx context.Context, _ *rpc.Empty) (*rpc.TokenPostMessageResponse, error) {
 	user := s.getUser(ctx)
 
-	nodes, _, err := s.repos.Node.UserNodes(user)
+	nodes, _, err := s.repos.Node.ConnectedNodes(user)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
@@ -81,7 +81,7 @@ func (s *tokenService) PostMessage(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 func (s *tokenService) GetMessages(ctx context.Context, _ *rpc.Empty) (*rpc.TokenGetMessagesResponse, error) {
 	user := s.getUser(ctx)
 
-	nodes, userIDs, err := s.repos.Node.UserNodes(user)
+	nodes, userIDs, err := s.repos.Node.ConnectedNodes(user)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
