@@ -1,10 +1,10 @@
 import React from 'react'
 import Paper from '@material-ui/core/Paper'
 import { TabsWrapper, TabStyled, TabsStyled } from './styles'
-import { FriendsTypes } from '../../../types'
+import { FriendTypes } from '../../../types'
 
 interface Props {
-  onTabClick: (value: FriendsTypes.CurrentTab) => void
+  onTabClick: (value: FriendTypes.CurrentTab) => void
 }
 
 export const Tabs: React.SFC<Props> = React.memo((props) => {

@@ -5,12 +5,14 @@ import { rootSaga } from '@sagas/index'
 import authorization from './authorization'
 import friends from './friends'
 import notify from './notify'
+import nodes from './nodes'
 
 const sagaMiddleware = createSagaMiddleware()
 const rootReducer = combineReducers({
     authorization,
     friends,
     notify,
+    nodes,
 })
 
 const middlewares = composeWithDevTools(applyMiddleware(sagaMiddleware))

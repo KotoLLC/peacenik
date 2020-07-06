@@ -35,4 +35,12 @@ export declare namespace ApiTypes {
   export interface FriendRequest {
     friend: string
   }
+
+  export namespace Nodes {
+    export interface Create {
+      address: string  
+      details: string
+    }
+  }
+
 }

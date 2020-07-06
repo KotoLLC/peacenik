@@ -4,7 +4,7 @@ import FriendsOfFriends from './FriendsOfFriends'
 import Invitations from './Invitations'
 import { Tabs } from './Tabs'
 import TopBar from '@view/shared/TopBar'
-import { FriendsTypes } from '../../../types'
+import { FriendTypes } from '../../../types'
 
 import {
   PageWrapper,
@@ -12,7 +12,7 @@ import {
 } from './styles'
 
 export const FriendsPage = () => {
-  const [currentTab, onTabSwitch] = useState<FriendsTypes.CurrentTab>('friends')
+  const [currentTab, onTabSwitch] = useState<FriendTypes.CurrentTab>('friends')
 
   const renderCurrentTab = () => {
 
