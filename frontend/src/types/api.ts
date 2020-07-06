@@ -11,29 +11,31 @@ export declare namespace ApiTypes {
     name: string
   }
 
-  export interface FriendsOfFriend {
-    user: User
-    friends: User[]
-  }
+  export namespace Friends {
+    export interface Potential {
+      user: User
+      friends: User[]
+    }
 
-  export interface Invitation {
-    friend_id: string
-    friend_name: string
-    created_at: string
-    accepted_at?: string
-    rejected_at?: string
-  }
-  
-  export interface AcceptInvitation {
-    inviter_id: string
-  }
-  
-  export interface RejectInvitation {
-    inviter_id: string
-  }
+    export interface Request {
+      friend: string
+    }
 
-  export interface FriendRequest {
-    friend: string
+    export interface Invitation {
+      friend_id: string
+      friend_name: string
+      created_at: string
+      accepted_at?: string
+      rejected_at?: string
+    }
+
+    export interface InvitationAccept {
+      inviter_id: string
+    }
+    
+    export interface InvitationReject {
+      inviter_id: string
+    }
   }
 
   export namespace Nodes {

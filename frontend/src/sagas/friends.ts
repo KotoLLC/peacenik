@@ -23,7 +23,7 @@ export function* watchGetFriendsOfFriends() {
   }
 }
 
-export function* watchAddFriend(action: { type: string, payload: ApiTypes.FriendRequest }) {
+export function* watchAddFriend(action: { type: string, payload: ApiTypes.Friends.Request }) {
   const response = yield API.friends.addFriend(action.payload)
 
   if (response.status === 200) {
@@ -44,7 +44,7 @@ export function* watchGetInvitations() {
   }
 }
 
-export function* watchAcceptInvitation(action: { type: string, payload: ApiTypes.AcceptInvitation }) {
+export function* watchAcceptInvitation(action: { type: string, payload: ApiTypes.Friends.InvitationAccept }) {
   const response = yield API.friends.acceptInvitation(action.payload)
 
   if (response.status === 200) {
@@ -54,7 +54,7 @@ export function* watchAcceptInvitation(action: { type: string, payload: ApiTypes
   }
 }
 
-export function* watchRejectInvitation(action: { type: string, payload: ApiTypes.RejectInvitation }) {
+export function* watchRejectInvitation(action: { type: string, payload: ApiTypes.Friends.InvitationReject }) {
   const response = yield API.friends.rejectInvitation(action.payload)
 
   if (response.status === 200) {

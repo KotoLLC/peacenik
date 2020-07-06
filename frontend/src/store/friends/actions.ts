@@ -36,7 +36,7 @@ export const getFriendsOfFriendsSucces = (payload: ApiTypes.User[]) => ({
   payload
 })
 
-export const addFriendRequest = (payload: ApiTypes.FriendRequest) => ({
+export const addFriendRequest = (payload: ApiTypes.Friends.Request) => ({
   type: Types.ADD_FRIEND_REQUEST,
   payload
 })
@@ -49,17 +49,17 @@ export const getInvitationsRequest = () => ({
   type: Types.GET_INVITATIONS_REQUEST,
 })
 
-export const getInvitationsSuccess = (payload: ApiTypes.Invitation[]) => ({
+export const getInvitationsSuccess = (payload: ApiTypes.Friends.Invitation[]) => ({
   type: Types.GET_INVITATIONS_SUCCESS,
   payload
 })
 
-export const acceptInvitationRequest = (payload: ApiTypes.AcceptInvitation) => ({
+export const acceptInvitationRequest = (payload: ApiTypes.Friends.InvitationAccept) => ({
   type: Types.ACCEPT_INVITATION_REQUEST,
   payload
 })
 
-export const rejectInvitationRequest = (payload: ApiTypes.RejectInvitation) => ({
+export const rejectInvitationRequest = (payload: ApiTypes.Friends.InvitationReject) => ({
   type: Types.REJECT_INVITATION_REQUEST,
   payload
 })
