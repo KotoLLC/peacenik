@@ -9,10 +9,12 @@ service NodeService {
     rpc Register (NodeRegisterRequest) returns (Empty);
     rpc Nodes (Empty) returns (NodeNodesResponse);
     rpc Approve (NodeApproveRequest) returns (Empty);
+    rpc Remove (NodeRemoveRequest) returns (Empty);
 }
 
 message NodeRegisterRequest {
     string address = 1;
+    string details = 2;
 }
 
 message NodeNodesResponseNode {
@@ -22,6 +24,7 @@ message NodeNodesResponseNode {
     string created_at = 4;
     string approved_at = 5;
     string disabled_at = 6;
+    string details = 7;
 }
 
 message NodeNodesResponse {
@@ -29,5 +32,9 @@ message NodeNodesResponse {
 }
 
 message NodeApproveRequest {
+    string node_id = 1;
+}
+
+message NodeRemoveRequest {
     string node_id = 1;
 }

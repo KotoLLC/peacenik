@@ -40,6 +40,13 @@ Content-Type: application/json
 {"name": "andrey", "password":  "12345"}
 
 
+### Get current user info.
+POST http://localhost:12001/rpc.UserService/Me
+Content-Type: application/json
+
+{}
+
+
 ### Get a short-lived signed authentication token
 POST http://localhost:12001/rpc.TokenService/Auth
 Content-Type: application/json
@@ -58,11 +65,12 @@ POST http://localhost:12001/rpc.NodeService/Register
 Content-Type: application/json
 
 {
-  "address": "http://localhost:12002"
+  "address": "http://localhost:12002",
+  "details": "my cool node"
 }
 
 
-### Get all nodes (admin access)
+### Get all nodes (admin access) or my nodes
 POST http://localhost:12001/rpc.NodeService/Nodes
 Content-Type: application/json
 
@@ -74,6 +82,13 @@ POST http://localhost:12001/rpc.NodeService/Approve
 Content-Type: application/json
 
 {"node_id":  "e60b3ff4-9ac0-4ba4-a45c-626c4eb29f75"}
+
+
+### Remove node
+POST http://localhost:12001/rpc.NodeService/Remove
+Content-Type: application/json
+
+{"node_id":  "ba7c6e53-dfea-46ec-b0ff-208f984393c4"}
 
 
 ### Create invite.

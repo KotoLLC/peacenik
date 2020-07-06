@@ -19,6 +19,7 @@ type Node struct {
 	CreatedAt  string `db:"created_at"`
 	ApprovedAt string `db:"approved_at"`
 	DisabledAt string `db:"disabled_at"`
+	Details    string `db:"details"`
 }
 
 type UserNode struct {
@@ -29,15 +30,22 @@ type UserNode struct {
 
 type NodeRepo interface {
 	NodeExists(address string) (bool, error)
-	AddNode(address string, nodeAdmin User) error
-	Nodes() ([]Node, error)
+	AddNode(address, details string, nodeAdmin User) error
+	AllNodes() ([]Node, error)
+	Nodes(user User) ([]Node, error)
+	Node(nodeID string) (*Node, error)
 	ApproveNode(nodeID string) error
-	UserNodes(user User) ([]UserNode, []string, error)
+	RemoveNode(nodeID string) error
+	ConnectedNodes(user User) ([]UserNode, []string, error)
 }
 
 type nodeRepo struct {
 	db *sqlx.DB
 }
+
+var (
+	ErrNodeNotFound = errors.New("node not found")
+)
 
 func NewNodes(db *sqlx.DB) NodeRepo {
 	return &nodeRepo{
@@ -58,26 +66,52 @@ func (r *nodeRepo) NodeExists(address string) (bool, error) {
 	return true, nil
 }
 
-func (r *nodeRepo) AddNode(address string, nodeAdmin User) error {
+func (r *nodeRepo) AddNode(address, details string, nodeAdmin User) error {
 	nodeID, err := uuid.NewV4()
 	if err != nil {
 		return err
 	}
 
 	_, err = r.db.Exec(`
-		insert into nodes(id, address, admin_id, created_at, approved_at, disabled_at) 
-		VALUES ($1, $2, $3, $4, '', '')`,
-		nodeID, address, nodeAdmin.ID, common.CurrentTimestamp())
+		insert into nodes(id, address, admin_id, created_at, approved_at, disabled_at, details) 
+		VALUES ($1, $2, $3, $4, '', '', $5)`,
+		nodeID, address, nodeAdmin.ID, common.CurrentTimestamp(), details)
 	return err
 }
 
-func (r *nodeRepo) Nodes() ([]Node, error) {
+func (r *nodeRepo) AllNodes() ([]Node, error) {
 	var nodes []Node
 	err := r.db.Select(&nodes, `
-		select id, address, admin_id, created_at, approved_at, disabled_at,
+		select id, address, admin_id, created_at, approved_at, disabled_at, details,
 		       (select name from users where id = nodes.admin_id) admin_name
 		from nodes`)
 	return nodes, err
+}
+
+func (r *nodeRepo) Nodes(user User) ([]Node, error) {
+	var nodes []Node
+	err := r.db.Select(&nodes, `
+		select id, address, admin_id, created_at, approved_at, disabled_at, details,
+			   (select name from users where id = nodes.admin_id) admin_name
+		from nodes
+		where admin_id = $1`, user.ID)
+	return nodes, err
+}
+
+func (r *nodeRepo) Node(nodeID string) (*Node, error) {
+	var node Node
+	err := r.db.Get(&node, `
+		select id, address, admin_id, created_at, approved_at, disabled_at, details
+		from nodes
+		where id = $1`, nodeID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNodeNotFound
+		}
+		return nil, err
+	}
+
+	return &node, nil
 }
 
 func (r *nodeRepo) ApproveNode(nodeID string) error {
@@ -89,7 +123,15 @@ func (r *nodeRepo) ApproveNode(nodeID string) error {
 	return err
 }
 
-func (r *nodeRepo) UserNodes(user User) (userNodes []UserNode, userIDs []string, err error) {
+func (r *nodeRepo) RemoveNode(nodeID string) error {
+	_, err := r.db.Exec(`
+		delete from nodes
+		where id = $1`,
+		nodeID)
+	return err
+}
+
+func (r *nodeRepo) ConnectedNodes(user User) (userNodes []UserNode, userIDs []string, err error) {
 	type friend struct {
 		MinDistance int
 		Count       int
@@ -146,7 +188,7 @@ func (r *nodeRepo) UserNodes(user User) (userNodes []UserNode, userIDs []string,
 
 	var nodes []Node
 	err = r.db.Select(&nodes, `
-		select id, address, admin_id, created_at, approved_at, disabled_at
+		select id, address, admin_id, created_at, approved_at, disabled_at, details
 		from nodes
 		where approved_at <> '' and disabled_at = ''`)
 	if err != nil {
