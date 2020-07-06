@@ -6,6 +6,7 @@ import (
 
 	"github.com/twitchtv/twirp"
 
+	"github.com/mreider/koto/backend/central/repo"
 	"github.com/mreider/koto/backend/central/rpc"
 )
 
@@ -46,8 +47,17 @@ func (s *userService) FriendsOfFriends(ctx context.Context, _ *rpc.Empty) (*rpc.
 		return nil, twirp.InternalErrorWith(err)
 	}
 
+	others := make([]repo.User, 0, len(friendsOfFriends))
+	for other := range friendsOfFriends {
+		others = append(others, other)
+	}
+	inviteStatuses, err := s.repos.Invite.InviteStatuses(user, others)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+
 	rpcFriendsOfFriends := make([]*rpc.UserFriendsOfFriendsResponseFriend, 0, len(friendsOfFriends))
-	for user, friends := range friendsOfFriends {
+	for other, friends := range friendsOfFriends {
 		rpcFriends := make([]*rpc.User, len(friends))
 		for i, friend := range friends {
 			rpcFriends[i] = &rpc.User{
@@ -60,12 +70,14 @@ func (s *userService) FriendsOfFriends(ctx context.Context, _ *rpc.Empty) (*rpc.
 			return rpcFriends[i].Name < rpcFriends[j].Name
 		})
 
+		inviteStatus := inviteStatuses[other.ID]
 		rpcFriendsOfFriends = append(rpcFriendsOfFriends, &rpc.UserFriendsOfFriendsResponseFriend{
 			User: &rpc.User{
-				Id:   user.ID,
-				Name: user.Name,
+				Id:   other.ID,
+				Name: other.Name,
 			},
-			Friends: rpcFriends,
+			InviteStatus: inviteStatus,
+			Friends:      rpcFriends,
 		})
 	}
 
