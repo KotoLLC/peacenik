@@ -44,7 +44,7 @@ export class LoginForm extends React.PureComponent<Props, State> {
   }
 
   static getDerivedStateFromProps(nextProps: Props) {
-    if (nextProps.loginErrorMessage != '') {
+    if (nextProps.loginErrorMessage !== '') {
       return {
         errorMessage: nextProps.loginErrorMessage,
         isRequest: false

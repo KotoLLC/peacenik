@@ -7,7 +7,7 @@ export interface State {
 
 const isLogged = localStorage.getItem('isLogged')
 const initialState: State = {
-  isLogged: (isLogged == 'true') ? true : false,
+  isLogged: (isLogged === 'true') ? true : false,
   loginErrorMessage: '',
 }
 
