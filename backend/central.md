@@ -40,6 +40,13 @@ Content-Type: application/json
 {"name": "andrey", "password":  "12345"}
 
 
+### Get current user info.
+POST http://localhost:12001/rpc.UserService/Me
+Content-Type: application/json
+
+{}
+
+
 ### Get a short-lived signed authentication token
 POST http://localhost:12001/rpc.TokenService/Auth
 Content-Type: application/json
