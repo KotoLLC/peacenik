@@ -24,6 +24,8 @@ type UserService interface {
 	Friends(context.Context, *Empty) (*UserFriendsResponse, error)
 
 	FriendsOfFriends(context.Context, *Empty) (*UserFriendsOfFriendsResponse, error)
+
+	Me(context.Context, *Empty) (*UserMeResponse, error)
 }
 
 // ===========================
@@ -32,7 +34,7 @@ type UserService interface {
 
 type userServiceProtobufClient struct {
 	client HTTPClient
-	urls   [2]string
+	urls   [3]string
 	opts   twirp.ClientOptions
 }
 
@@ -49,9 +51,10 @@ func NewUserServiceProtobufClient(addr string, client HTTPClient, opts ...twirp.
 	}
 
 	prefix := urlBase(addr) + UserServicePathPrefix
-	urls := [2]string{
+	urls := [3]string{
 		prefix + "Friends",
 		prefix + "FriendsOfFriends",
+		prefix + "Me",
 	}
 
 	return &userServiceProtobufClient{
@@ -101,13 +104,33 @@ func (c *userServiceProtobufClient) FriendsOfFriends(ctx context.Context, in *Em
 	return out, nil
 }
 
+func (c *userServiceProtobufClient) Me(ctx context.Context, in *Empty) (*UserMeResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "UserService")
+	ctx = ctxsetters.WithMethodName(ctx, "Me")
+	out := new(UserMeResponse)
+	err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[2], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
 // =======================
 // UserService JSON Client
 // =======================
 
 type userServiceJSONClient struct {
 	client HTTPClient
-	urls   [2]string
+	urls   [3]string
 	opts   twirp.ClientOptions
 }
 
@@ -124,9 +147,10 @@ func NewUserServiceJSONClient(addr string, client HTTPClient, opts ...twirp.Clie
 	}
 
 	prefix := urlBase(addr) + UserServicePathPrefix
-	urls := [2]string{
+	urls := [3]string{
 		prefix + "Friends",
 		prefix + "FriendsOfFriends",
+		prefix + "Me",
 	}
 
 	return &userServiceJSONClient{
@@ -162,6 +186,26 @@ func (c *userServiceJSONClient) FriendsOfFriends(ctx context.Context, in *Empty)
 	ctx = ctxsetters.WithMethodName(ctx, "FriendsOfFriends")
 	out := new(UserFriendsOfFriendsResponse)
 	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[1], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *userServiceJSONClient) Me(ctx context.Context, in *Empty) (*UserMeResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "UserService")
+	ctx = ctxsetters.WithMethodName(ctx, "Me")
+	out := new(UserMeResponse)
+	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[2], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -229,6 +273,9 @@ func (s *userServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 		return
 	case "/rpc.UserService/FriendsOfFriends":
 		s.serveFriendsOfFriends(ctx, resp, req)
+		return
+	case "/rpc.UserService/Me":
+		s.serveMe(ctx, resp, req)
 		return
 	default:
 		msg := fmt.Sprintf("no handler for path %q", req.URL.Path)
@@ -496,6 +543,135 @@ func (s *userServiceServer) serveFriendsOfFriendsProtobuf(ctx context.Context, r
 	callResponseSent(ctx, s.hooks)
 }
 
+func (s *userServiceServer) serveMe(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveMeJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveMeProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *userServiceServer) serveMeJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "Me")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(Empty)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *UserMeResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.UserService.Me(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *UserMeResponse and nil error while calling Me. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *userServiceServer) serveMeProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "Me")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(Empty)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *UserMeResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.UserService.Me(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *UserMeResponse and nil error while calling Me. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
 func (s *userServiceServer) ServiceDescriptor() ([]byte, int) {
 	return twirpFileDescriptor5, 0
 }
@@ -509,7 +685,7 @@ func (s *userServiceServer) PathPrefix() string {
 }
 
 var twirpFileDescriptor5 = []byte{
-	// 207 bytes of a gzipped FileDescriptorProto
+	// 257 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x2a, 0x2d, 0x4e, 0x2d,
 	0xd2, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x2e, 0x2a, 0x48, 0x96, 0xe2, 0xce, 0xcd, 0x4f,
 	0x49, 0xcd, 0x81, 0x88, 0x28, 0x59, 0x71, 0x09, 0x87, 0x16, 0xa7, 0x16, 0xb9, 0x15, 0x65, 0xa6,
@@ -518,9 +694,13 @@ var twirpFileDescriptor5 = []byte{
 	0x4a, 0x83, 0x60, 0x32, 0x4a, 0x19, 0x5c, 0x4a, 0x48, 0x7a, 0xfd, 0xd3, 0xd0, 0x0c, 0x81, 0x70,
 	0x85, 0x64, 0xb9, 0x58, 0x40, 0x2e, 0x90, 0x60, 0x54, 0x60, 0x44, 0x35, 0x07, 0x2c, 0x8c, 0x6c,
 	0x13, 0x13, 0x4e, 0x9b, 0x12, 0xb9, 0x64, 0xf0, 0xd9, 0x24, 0xe4, 0x88, 0xee, 0x5c, 0x75, 0xb8,
-	0x21, 0xf8, 0x5d, 0x07, 0xb7, 0xc2, 0xa8, 0x91, 0x91, 0x8b, 0x1b, 0xa4, 0x3e, 0x38, 0xb5, 0xa8,
-	0x2c, 0x33, 0x39, 0x55, 0x48, 0x9f, 0x8b, 0x1d, 0xaa, 0x43, 0x88, 0x0b, 0x6c, 0x98, 0x6b, 0x6e,
-	0x41, 0x49, 0xa5, 0x94, 0x04, 0xba, 0xc1, 0x48, 0x6e, 0x10, 0x40, 0xb7, 0x0b, 0x45, 0xa7, 0x22,
-	0x41, 0x27, 0x39, 0x71, 0x44, 0xb1, 0xe9, 0xe9, 0xe9, 0x17, 0x15, 0x24, 0x27, 0xb1, 0x81, 0x63,
-	0xc7, 0x18, 0x10, 0x00, 0x00, 0xff, 0xff, 0xed, 0x92, 0x8c, 0x35, 0xbd, 0x01, 0x00, 0x00,
+	0x21, 0xf8, 0x5d, 0x87, 0xb0, 0xc2, 0x8b, 0x8b, 0x0f, 0xa4, 0xdc, 0x37, 0x15, 0x6e, 0x28, 0x01,
+	0x87, 0x4b, 0x72, 0x71, 0x64, 0x16, 0xc7, 0x27, 0xa6, 0xe4, 0x66, 0xe6, 0x49, 0x30, 0x29, 0x30,
+	0x6a, 0x70, 0x04, 0xb1, 0x67, 0x16, 0x3b, 0x82, 0xb8, 0x46, 0x2b, 0x18, 0xb9, 0xb8, 0x41, 0x2a,
+	0x83, 0x53, 0x8b, 0xca, 0x32, 0x93, 0x53, 0x85, 0xf4, 0xb9, 0xd8, 0xa1, 0xb6, 0x0b, 0x71, 0x81,
+	0x8d, 0x71, 0xcd, 0x2d, 0x28, 0xa9, 0x94, 0x92, 0x40, 0x77, 0x24, 0x92, 0x7f, 0x04, 0xd0, 0xdd,
+	0x8d, 0xa2, 0x53, 0x91, 0xa0, 0xf7, 0x84, 0x54, 0xb9, 0x98, 0x7c, 0x53, 0x51, 0x34, 0x09, 0xc3,
+	0x35, 0x21, 0x3c, 0xe9, 0xc4, 0x11, 0xc5, 0xa6, 0xa7, 0xa7, 0x5f, 0x54, 0x90, 0x9c, 0xc4, 0x06,
+	0x4e, 0x10, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0x39, 0xca, 0xc0, 0x27, 0x30, 0x02, 0x00,
+	0x00,
 }

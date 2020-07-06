@@ -77,3 +77,16 @@ func (s *userService) FriendsOfFriends(ctx context.Context, _ *rpc.Empty) (*rpc.
 		Friends: rpcFriendsOfFriends,
 	}, nil
 }
+
+func (s *userService) Me(ctx context.Context, _ *rpc.Empty) (*rpc.UserMeResponse, error) {
+	user := s.getUser(ctx)
+	isAdmin := s.isAdmin(ctx)
+
+	return &rpc.UserMeResponse{
+		User: &rpc.User{
+			Id:   user.ID,
+			Name: user.Email,
+		},
+		IsAdmin: isAdmin,
+	}, nil
+}
