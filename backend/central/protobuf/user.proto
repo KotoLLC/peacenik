@@ -17,7 +17,8 @@ message UserFriendsResponse {
 
 message UserFriendsOfFriendsResponseFriend {
     User user = 1;
-    repeated User friends = 2;
+    string invite_status = 2;
+    repeated User friends = 3;
 }
 
 message UserFriendsOfFriendsResponse {
