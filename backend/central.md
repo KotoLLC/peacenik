@@ -65,7 +65,8 @@ POST http://localhost:12001/rpc.NodeService/Register
 Content-Type: application/json
 
 {
-  "address": "http://localhost:12002"
+  "address": "http://localhost:12002",
+  "details": "my cool node"
 }
 
 

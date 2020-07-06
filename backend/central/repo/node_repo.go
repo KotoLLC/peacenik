@@ -19,6 +19,7 @@ type Node struct {
 	CreatedAt  string `db:"created_at"`
 	ApprovedAt string `db:"approved_at"`
 	DisabledAt string `db:"disabled_at"`
+	Details    string `db:"details"`
 }
 
 type UserNode struct {
@@ -29,7 +30,7 @@ type UserNode struct {
 
 type NodeRepo interface {
 	NodeExists(address string) (bool, error)
-	AddNode(address string, nodeAdmin User) error
+	AddNode(address, details string, nodeAdmin User) error
 	AllNodes() ([]Node, error)
 	Nodes(user User) ([]Node, error)
 	Node(nodeID string) (*Node, error)
@@ -65,23 +66,23 @@ func (r *nodeRepo) NodeExists(address string) (bool, error) {
 	return true, nil
 }
 
-func (r *nodeRepo) AddNode(address string, nodeAdmin User) error {
+func (r *nodeRepo) AddNode(address, details string, nodeAdmin User) error {
 	nodeID, err := uuid.NewV4()
 	if err != nil {
 		return err
 	}
 
 	_, err = r.db.Exec(`
-		insert into nodes(id, address, admin_id, created_at, approved_at, disabled_at) 
-		VALUES ($1, $2, $3, $4, '', '')`,
-		nodeID, address, nodeAdmin.ID, common.CurrentTimestamp())
+		insert into nodes(id, address, admin_id, created_at, approved_at, disabled_at, details) 
+		VALUES ($1, $2, $3, $4, '', '', $5)`,
+		nodeID, address, nodeAdmin.ID, common.CurrentTimestamp(), details)
 	return err
 }
 
 func (r *nodeRepo) AllNodes() ([]Node, error) {
 	var nodes []Node
 	err := r.db.Select(&nodes, `
-		select id, address, admin_id, created_at, approved_at, disabled_at,
+		select id, address, admin_id, created_at, approved_at, disabled_at, details,
 		       (select name from users where id = nodes.admin_id) admin_name
 		from nodes`)
 	return nodes, err
@@ -90,7 +91,7 @@ func (r *nodeRepo) AllNodes() ([]Node, error) {
 func (r *nodeRepo) Nodes(user User) ([]Node, error) {
 	var nodes []Node
 	err := r.db.Select(&nodes, `
-		select id, address, admin_id, created_at, approved_at, disabled_at,
+		select id, address, admin_id, created_at, approved_at, disabled_at, details,
 			   (select name from users where id = nodes.admin_id) admin_name
 		from nodes
 		where admin_id = $1`, user.ID)
@@ -100,7 +101,7 @@ func (r *nodeRepo) Nodes(user User) ([]Node, error) {
 func (r *nodeRepo) Node(nodeID string) (*Node, error) {
 	var node Node
 	err := r.db.Get(&node, `
-		select id, address, admin_id, created_at, approved_at, disabled_at
+		select id, address, admin_id, created_at, approved_at, disabled_at, details
 		from nodes
 		where id = $1`, nodeID)
 	if err != nil {
@@ -187,7 +188,7 @@ func (r *nodeRepo) ConnectedNodes(user User) (userNodes []UserNode, userIDs []st
 
 	var nodes []Node
 	err = r.db.Select(&nodes, `
-		select id, address, admin_id, created_at, approved_at, disabled_at
+		select id, address, admin_id, created_at, approved_at, disabled_at, details
 		from nodes
 		where approved_at <> '' and disabled_at = ''`)
 	if err != nil {
