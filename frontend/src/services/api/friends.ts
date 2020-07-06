@@ -14,7 +14,7 @@ export default {
     }).catch(error => ({ error }))
   },
   
-  addFriend: async (data: ApiTypes.FriendRequest) => {
+  addFriend: async (data: ApiTypes.Friends.Request) => {
     return await axiosInstance.post('/rpc.InviteService/Create', data).then(response => {
       return response
     }).catch(error => ({ error }))
@@ -26,13 +26,13 @@ export default {
     }).catch(error => ({ error }))
   },
   
-  acceptInvitation: async (data: ApiTypes.AcceptInvitation) => {
+  acceptInvitation: async (data: ApiTypes.Friends.InvitationAccept) => {
     return await axiosInstance.post('/rpc.InviteService/Accept', data).then(response => {
       return response
     }).catch(error => ({ error }))
   },
   
-  rejectInvitation: async (data: ApiTypes.RejectInvitation) => {
+  rejectInvitation: async (data: ApiTypes.Friends.InvitationReject) => {
     return await axiosInstance.post('/rpc.InviteService/Reject', data).then(response => {
       return response
     }).catch(error => ({ error }))

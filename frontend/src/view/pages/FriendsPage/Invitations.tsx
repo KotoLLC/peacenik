@@ -30,15 +30,15 @@ import {
 } from './styles'
 
 export interface Props {
-  invitations: ApiTypes.Invitation[]
+  invitations: ApiTypes.Friends.Invitation[]
   onGetInvitations: () => void
-  onAcceptInvitation: (data: ApiTypes.AcceptInvitation) => void
-  onRejectInvitation: (data: ApiTypes.RejectInvitation) => void
+  onAcceptInvitation: (data: ApiTypes.Friends.InvitationAccept) => void
+  onRejectInvitation: (data: ApiTypes.Friends.InvitationReject) => void
 }
 
 interface State {
-  pendingInvitations: ApiTypes.Invitation[]
-  searchResult: ApiTypes.Invitation[]
+  pendingInvitations: ApiTypes.Friends.Invitation[]
+  searchResult: ApiTypes.Friends.Invitation[]
   searchValue: string
 }
 
@@ -68,7 +68,7 @@ export class Invitations extends React.Component<Props, State> {
     }
   }
 
-  mapInvitations = (invitations: ApiTypes.Invitation[]) => {
+  mapInvitations = (invitations: ApiTypes.Friends.Invitation[]) => {
     const { onAcceptInvitation, onRejectInvitation } = this.props
 
     if (!invitations || !invitations.length) {
@@ -108,7 +108,7 @@ export class Invitations extends React.Component<Props, State> {
     this.setState({
       searchValue: value,
       searchResult: pendingInvitations.filter(
-        (item: ApiTypes.Invitation) => {
+        (item: ApiTypes.Friends.Invitation) => {
           return item.friend_name.toLowerCase().includes(value.toLowerCase())
         }
       )
@@ -160,8 +160,8 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
 type DispatchProps = Pick<Props, 'onGetInvitations' | 'onAcceptInvitation' | 'onRejectInvitation'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetInvitations: () => dispatch(Actions.friends.getInvitationsRequest()),
-  onAcceptInvitation: (data: ApiTypes.AcceptInvitation) => dispatch(Actions.friends.acceptInvitationRequest(data)),
-  onRejectInvitation: (data: ApiTypes.RejectInvitation) => dispatch(Actions.friends.rejectInvitationRequest(data)),
+  onAcceptInvitation: (data: ApiTypes.Friends.InvitationAccept) => dispatch(Actions.friends.acceptInvitationRequest(data)),
+  onRejectInvitation: (data: ApiTypes.Friends.InvitationReject) => dispatch(Actions.friends.rejectInvitationRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Invitations)

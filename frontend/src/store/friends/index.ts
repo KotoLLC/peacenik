@@ -3,8 +3,8 @@ import { ApiTypes } from './../../types'
 
 export interface State {
   friends: ApiTypes.User[],
-  friendsOfFriends: ApiTypes.FriendsOfFriend[],
-  invitations: ApiTypes.Invitation[],
+  friendsOfFriends: ApiTypes.Friends.Potential[],
+  invitations: ApiTypes.Friends.Invitation[],
 }
 
 const initialState: State = {

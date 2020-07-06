@@ -30,22 +30,22 @@ import {
 } from './styles'
 
 export interface Props {
-  friendsOfFriends: ApiTypes.FriendsOfFriend[]
+  friendsOfFriends: ApiTypes.Friends.Potential[]
   onGetFriendsOfFriends: () => void
-  onAddFriend: (data: ApiTypes.FriendRequest) => void
+  onAddFriend: (data: ApiTypes.Friends.Request) => void
 }
 
 interface State {
   searchValue: string
-  searchResult: ApiTypes.FriendsOfFriend[]
-  selectedFriend: ApiTypes.FriendsOfFriend | null
+  searchResult: ApiTypes.Friends.Potential[]
+  selectedFriend: ApiTypes.Friends.Potential | null
 }
 
 export class FriendsOfFriends extends React.Component<Props, State> {
 
   state = {
     searchResult: [],
-    selectedFriend: null as ApiTypes.FriendsOfFriend | null,
+    selectedFriend: null as ApiTypes.Friends.Potential | null,
     searchValue: '',
   }
 
@@ -67,7 +67,7 @@ export class FriendsOfFriends extends React.Component<Props, State> {
     })
   }
 
-  mapFriendsList = (friendsOfFriends: ApiTypes.FriendsOfFriend[]) => {
+  mapFriendsList = (friendsOfFriends: ApiTypes.Friends.Potential[]) => {
     const { onAddFriend } = this.props
 
     if (!friendsOfFriends || !friendsOfFriends.length) {
@@ -168,7 +168,7 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
 type DispatchProps = Pick<Props, 'onGetFriendsOfFriends' | 'onAddFriend'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetFriendsOfFriends: () => dispatch(Actions.friends.getFriendsOfFriendsRequest()),
-  onAddFriend: (data: ApiTypes.FriendRequest) => dispatch(Actions.friends.addFriendRequest(data)),
+  onAddFriend: (data: ApiTypes.Friends.Request) => dispatch(Actions.friends.addFriendRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(FriendsOfFriends)
