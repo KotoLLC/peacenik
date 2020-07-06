@@ -11,7 +11,7 @@ export function* watchlogin(action: { type: AuthorizationTypes.LOGIN_REQUEST, pa
     localStorage.setItem('isLogged', 'true')
     yield put(Actions.authorization.loginSucces())
   } else {
-    yield put(Actions.authorization.loginFailed(response.error.response.data.msg || 'Server error'))
+    yield put(Actions.authorization.loginFailed(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
 
