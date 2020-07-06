@@ -18,6 +18,7 @@ func Migrate(db *sqlx.DB, dialect string) (n int, err error) {
 			migration0001h(),
 			migration0001i(),
 			migration0001j(),
+			migration0001k(),
 		},
 	}
 

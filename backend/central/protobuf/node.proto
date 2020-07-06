@@ -14,6 +14,7 @@ service NodeService {
 
 message NodeRegisterRequest {
     string address = 1;
+    string details = 2;
 }
 
 message NodeNodesResponseNode {
@@ -23,6 +24,7 @@ message NodeNodesResponseNode {
     string created_at = 4;
     string approved_at = 5;
     string disabled_at = 6;
+    string details = 7;
 }
 
 message NodeNodesResponse {

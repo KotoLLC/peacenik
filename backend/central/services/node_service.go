@@ -29,7 +29,7 @@ func (s *nodeService) Register(ctx context.Context, r *rpc.NodeRegisterRequest) 
 	if nodeExists {
 		return nil, twirp.NewError(twirp.AlreadyExists, "node already exists")
 	}
-	err = s.repos.Node.AddNode(r.Address, user)
+	err = s.repos.Node.AddNode(r.Address, r.Details, user)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
@@ -62,6 +62,7 @@ func (s *nodeService) Nodes(ctx context.Context, _ *rpc.Empty) (*rpc.NodeNodesRe
 			CreatedAt:  node.CreatedAt,
 			ApprovedAt: node.ApprovedAt,
 			DisabledAt: node.DisabledAt,
+			Details:    node.Details,
 		}
 	}
 
