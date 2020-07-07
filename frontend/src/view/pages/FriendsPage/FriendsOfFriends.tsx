@@ -16,6 +16,7 @@ import PersonAddIcon from '@material-ui/icons/PersonAdd'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import { capitalizeFirstLetter } from '@services/capitalizeFirstLetter'
+import AccessTimeIcon from '@material-ui/icons/AccessTime'
 import selectors from '@selectors/index'
 import {
   SidebarWrapper,
@@ -67,15 +68,35 @@ export class FriendsOfFriends extends React.Component<Props, State> {
     })
   }
 
-  mapFriendsList = (friendsOfFriends: ApiTypes.Friends.Potential[]) => {
+  checkCurrentIcon = (user: ApiTypes.User, status: ApiTypes.Friends.InvitationStatus) => {
     const { onAddFriend } = this.props
 
+    if (status === 'pending') {
+      return (
+        <Tooltip title={`Wait for a reply`}>
+          <IconButton color="primary">
+            <AccessTimeIcon />
+          </IconButton>
+        </Tooltip>
+      )
+    } else {
+      return (
+        <Tooltip title={`Add ${capitalizeFirstLetter(user.name)} to friends`}>
+          <IconButton color="primary" onClick={() => onAddFriend({ friend: user.id })}>
+            <PersonAddIcon />
+          </IconButton>
+        </Tooltip>
+      )
+    }
+  }
+
+  mapFriendsList = (friendsOfFriends: ApiTypes.Friends.Potential[]) => {
     if (!friendsOfFriends || !friendsOfFriends.length) {
       return this.showEmptyListMessage()
     }
 
     return friendsOfFriends.map(item => {
-      const { user, friends } = item
+      const { user, friends, invite_status } = item
       return (
         <div key={user.id}>
           <ListItem alignItems={friends.length ? 'flex-start' : 'center'}>
@@ -89,11 +110,7 @@ export class FriendsOfFriends extends React.Component<Props, State> {
                   onClick={() => this.onFriendSelect(user.id)}>
                   You have {friends.length} in common</UserNoteUnderlined> : null}
             />
-            <Tooltip title={`Add ${capitalizeFirstLetter(user.name)} to friends`}>
-              <IconButton color="primary" onClick={() => onAddFriend({ friend: user.id })}>
-                <PersonAddIcon />
-              </IconButton>
-            </Tooltip>
+            {this.checkCurrentIcon(user, invite_status)}
           </ListItem>
           <Divider variant="inset" component="li" />
         </div>
@@ -147,7 +164,7 @@ export class FriendsOfFriends extends React.Component<Props, State> {
               {selectedFriend.friends.length && selectedFriend.friends.map(item => (
                 <ListItem key={item.id}>
                   <ListItemAvatar>
-                    <Avatar alt={item.name} />
+                    <Avatar alt={item.name}/>
                   </ListItemAvatar>
                   <ListItemText primary={<UserName>{item.name}</UserName>} />
                 </ListItem>

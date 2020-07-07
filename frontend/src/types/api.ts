@@ -15,11 +15,14 @@ export declare namespace ApiTypes {
     export interface Potential {
       user: User
       friends: User[]
+      invite_status: InvitationStatus
     }
 
     export interface Request {
       friend: string
     }
+
+    export type InvitationStatus = 'rejected' | 'pending'
 
     export interface Invitation {
       friend_id: string
