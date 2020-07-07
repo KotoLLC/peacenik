@@ -2,6 +2,9 @@ import styled from 'styled-components'
 import Container from '@material-ui/core/Container'
 import FormControl from '@material-ui/core/FormControl'
 import Button from '@material-ui/core/Button'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import TableCell from '@material-ui/core/TableCell'
+import TableHead from '@material-ui/core/TableHead'
 
 export const ContainerStyled = styled(Container)`
   && {
@@ -35,4 +38,39 @@ export const ButtonStyled = styled(Button)`
 export const TitleWrapper = styled.div`
   text-align: center;
   margin-bottom: 20px;
+`
+
+export const FormControlLabelStyled = styled(FormControlLabel)`
+  && * {
+    font-size: 15px;
+  }
+
+  && {
+    margin-left: 0px;
+  }
+`
+
+export const TableWrapper = styled.div`
+  margin-top: 20px;
+  width: 100%;
+`
+
+export const TableCellStyled = styled(TableCell)`
+  padding: 8px 16px;
+`
+
+export const TableHeadStyled = styled(TableHead)`
+  && * {
+    font-weight: bold;
+  }
+`
+
+export const ApproveButton = styled(Button)`
+  && {
+    background: #34c242;
+
+    &:hover {
+      background: #32ab3d;
+    }
+  }
 `
