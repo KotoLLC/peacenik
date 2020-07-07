@@ -35,7 +35,7 @@ export const TopMenu = () => {
         open={Boolean(anchorEl)}
         onClose={onMenuClose}
       >
-        <MenuItem>
+        <MenuItem disabled>
           <ListItemIconStyled>
             <ForumIcon fontSize="small" />
           </ListItemIconStyled>
@@ -47,13 +47,13 @@ export const TopMenu = () => {
           </ListItemIconStyled>
           <ListItemText primary="Friends" />
         </MenuItem>
-        <MenuItem>
+        <MenuItem disabled>
           <ListItemIconStyled>
             <NotificationsIcon fontSize="small" />
           </ListItemIconStyled>
           <ListItemText primary="Notifications" />
         </MenuItem>
-        <MenuItem>
+        <MenuItem disabled>
           <ListItemIconStyled>
             <AccountCircleIcon fontSize="small" />
           </ListItemIconStyled>
