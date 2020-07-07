@@ -4,8 +4,7 @@ import FriendsOfFriends from './FriendsOfFriends'
 import Invitations from './Invitations'
 import { Tabs } from './Tabs'
 import { FriendTypes } from '../../../types'
-
-import { Header } from './styles'
+import { Header } from '@view/shared/styles'
 
 export const FriendsPage = () => {
   const [currentTab, onTabSwitch] = useState<FriendTypes.CurrentTab>('friends')

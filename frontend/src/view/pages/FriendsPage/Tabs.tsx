@@ -1,6 +1,6 @@
 import React from 'react'
 import Paper from '@material-ui/core/Paper'
-import { TabsWrapper, TabStyled, TabsStyled } from './styles'
+import { TabsWrapper, TabStyled, TabsStyled } from '@view/shared/styles'
 import { FriendTypes } from '../../../types'
 
 interface Props {

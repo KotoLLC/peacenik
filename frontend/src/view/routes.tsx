@@ -3,10 +3,10 @@ import { createBrowserHistory } from 'history'
 import { Router, Switch, Route, Redirect } from 'react-router-dom'
 import LoginPage from '@view/pages/LoginPage'
 import { FriendsPage } from '@view/pages/FriendsPage'
-import NodeCreationPage from '@view/pages/NodeCreationPage'
 import { connect } from 'react-redux'
 import { StoreTypes } from './../types'
 import { AuthContainer } from '@view/shared/AuthContainer'
+import { NodePages } from './pages/NodePages'
 
 const PrivateRoute = ({ component, ...rest }) => {
   const routeComponent = props =>
@@ -23,7 +23,7 @@ export const RoutesComponent: React.SFC<Props> = (props) => {
         <Route path="/login" component={LoginPage} />
         <AuthContainer>
           <PrivateRoute isLogged={isLogged} path="/friends" component={FriendsPage} />
-          <PrivateRoute isLogged={isLogged} path="/nodes/create" component={NodeCreationPage} />
+          <PrivateRoute isLogged={isLogged} path="/nodes" component={NodePages} />
         </AuthContainer>
         <Redirect exact from="/" to="/login" />
       </Switch>

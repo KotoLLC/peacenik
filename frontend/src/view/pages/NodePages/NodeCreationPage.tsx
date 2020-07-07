@@ -4,7 +4,10 @@ import InputLabel from '@material-ui/core/InputLabel'
 import OutlinedInput from '@material-ui/core/OutlinedInput'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import FormHelperText from '@material-ui/core/FormHelperText'
-import { ApiTypes } from '../../../types'
+import { connect } from 'react-redux'
+import selectors from '@selectors/index'
+import Actions from '@store/actions'
+import { StoreTypes, ApiTypes } from '../../../types'
 
 import {
   ContainerStyled,
@@ -24,13 +27,13 @@ interface State {
   description: string
 }
 
-export interface Props {
+interface Props {
   isNodeCreatedSuccessfully: boolean
   onNodeCreate: (data: ApiTypes.Nodes.Create) => void
   onNodeCreationStatusReset: () => void
 }
 
-export class NodeCreation extends React.PureComponent<Props, State> {
+class NodeCreation extends React.PureComponent<Props, State> {
 
   state = {
     isRequested: false,
@@ -167,11 +170,22 @@ export class NodeCreation extends React.PureComponent<Props, State> {
     const { isNodeCreatedSuccessfully } = this.props
 
     return (
-      <>
-        <ContainerStyled maxWidth="sm">
-          { isNodeCreatedSuccessfully ? this.renderSuccessfulyMessage() : this.renderForm()}
-        </ContainerStyled>
-      </>
+      <ContainerStyled maxWidth="sm">
+        {isNodeCreatedSuccessfully ? this.renderSuccessfulyMessage() : this.renderForm()}
+      </ContainerStyled>
     )
   }
 }
+
+type StateProps = Pick<Props, 'isNodeCreatedSuccessfully'>
+const mapStateToProps = (state: StoreTypes): StateProps => ({
+  isNodeCreatedSuccessfully: selectors.nodes.isNodeCreatedSuccessfully(state),
+})
+
+type DispatchProps = Pick<Props, 'onNodeCreate' | 'onNodeCreationStatusReset'>
+const mapDispatchToProps = (dispatch): DispatchProps => ({
+  onNodeCreate: (data: ApiTypes.Nodes.Create) => dispatch(Actions.nodes.nodeCreateRequest(data)),
+  onNodeCreationStatusReset: () => dispatch(Actions.nodes.nodeCreationStatusReset()),
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(NodeCreation)
