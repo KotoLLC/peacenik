@@ -9,7 +9,7 @@ export const ContainerStyled = styled(Container)`
     flex-wrap: wrap;
     align-content: center;
     justify-content: center;
-    min-height: calc(100vh - 70px);
+    margin-top: 60px;
   }
 `
 

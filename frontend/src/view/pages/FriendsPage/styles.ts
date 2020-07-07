@@ -1,31 +1,8 @@
 import styled from 'styled-components'
-import Tab from '@material-ui/core/Tab'
-import Tabs from '@material-ui/core/Tabs'
 import List from '@material-ui/core/List'
 import SearchIcon from '@material-ui/icons/Search'
 import Paper from '@material-ui/core/Paper'
 import IconButton from '@material-ui/core/IconButton'
-
-export const Header = styled.header`
-  display: flex;
-  align-items: flex-end;
-  min-height: 90px;
-  margin-top: 50px;
-  width: 100%;
-  padding-bottom: 20px;
-`
-
-export const TabsWrapper = styled.div`
-  display: inline-flex;
-`
-
-export const TabStyled = styled(Tab)`
-  && {
-    text-transform: none;
-  }
-`
-
-export const TabsStyled = styled(Tabs)``
 
 export const SidebarWrapper = styled.aside`
   max-width: 400px;
