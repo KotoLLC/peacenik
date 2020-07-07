@@ -6,6 +6,7 @@ import { FriendsPage } from '@view/pages/FriendsPage'
 import NodeCreationPage from '@view/pages/NodeCreationPage'
 import { connect } from 'react-redux'
 import { StoreTypes } from './../types'
+import { AuthContainer } from '@view/shared/AuthContainer'
 
 const PrivateRoute = ({ component, ...rest }) => {
   const routeComponent = props =>
@@ -20,8 +21,10 @@ export const RoutesComponent: React.SFC<Props> = (props) => {
     <Router history={history}>
       <Switch>
         <Route path="/login" component={LoginPage} />
-        <PrivateRoute isLogged={isLogged} path="/friends" component={FriendsPage} />
-        <PrivateRoute isLogged={isLogged} path="/nodes/create" component={NodeCreationPage} />
+        <AuthContainer>
+          <PrivateRoute isLogged={isLogged} path="/friends" component={FriendsPage} />
+          <PrivateRoute isLogged={isLogged} path="/nodes/create" component={NodeCreationPage} />
+        </AuthContainer>
         <Redirect exact from="/" to="/login" />
       </Switch>
     </Router>

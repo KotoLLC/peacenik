@@ -6,12 +6,6 @@ import SearchIcon from '@material-ui/icons/Search'
 import Paper from '@material-ui/core/Paper'
 import IconButton from '@material-ui/core/IconButton'
 
-export const PageWrapper = styled.main`
-  display: flex;
-  flex-wrap: wrap;
-  padding: 15px 20px;
-`
-
 export const Header = styled.header`
   display: flex;
   align-items: flex-end;

@@ -1,5 +1,4 @@
 import React, { ChangeEvent, FormEvent } from 'react'
-import TopBar from '@view/shared/TopBar'
 import Typography from '@material-ui/core/Typography'
 import InputLabel from '@material-ui/core/InputLabel'
 import OutlinedInput from '@material-ui/core/OutlinedInput'
@@ -169,7 +168,6 @@ export class NodeCreation extends React.PureComponent<Props, State> {
 
     return (
       <>
-        <TopBar />
         <ContainerStyled maxWidth="sm">
           { isNodeCreatedSuccessfully ? this.renderSuccessfulyMessage() : this.renderForm()}
         </ContainerStyled>
