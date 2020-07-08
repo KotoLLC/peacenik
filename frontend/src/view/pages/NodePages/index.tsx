@@ -4,15 +4,12 @@ import NodeCreationPage from './NodeCreationPage'
 import NodeListPage from './NodeListPage'
 import NodeTabs from './Tabs'
 
-export const NodePages = () => {
-
-  return (
-    <>
-      <NodeTabs />
-      <Switch>
-        <Route path="/nodes/create" exact component={NodeCreationPage} />
-        <Route path="/nodes/list" exact component={NodeListPage} />
-      </Switch>
-    </>
-  )
-}
+export const NodePages = () => (
+  <>
+    <NodeTabs />
+    <Switch>
+      <Route path="/nodes/create" exact component={NodeCreationPage} />
+      <Route path="/nodes/list" exact component={NodeListPage} />
+    </Switch>
+  </>
+)

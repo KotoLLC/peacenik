@@ -41,7 +41,7 @@ export const TopMenu = () => {
           </ListItemIconStyled>
           <ListItemText primary="Messages" />
         </MenuItem>
-        <MenuItem onClick={() => goToPage('/friends')}>
+        <MenuItem onClick={() => goToPage('/friends/all')}>
           <ListItemIconStyled>
             <PeopleIcon fontSize="small" />
           </ListItemIconStyled>
