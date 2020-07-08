@@ -4,16 +4,15 @@ import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
-import DialogContentText from '@material-ui/core/DialogContentText'
 import DeleteIcon from '@material-ui/icons/Delete'
 import IconButton from '@material-ui/core/IconButton'
 import { NodeTypes, ApiTypes } from './../../../types'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
-import { 
-  DialogTextWrapper, 
-  DialogTextLeft, 
-  DialogTextRight, 
+import {
+  DialogTextWrapper,
+  DialogTextLeft,
+  DialogTextRight,
   DialogTitleStyled,
 } from './styles'
 
@@ -28,7 +27,7 @@ const RemoveNodeDialog: React.SFC<Props> = (props) => {
   const onRemove = () => {
     onRemoveNode({ node_id: 'someId' })
     setOpen(false)
-  }    
+  }
 
   return (
     <div>
@@ -43,24 +42,22 @@ const RemoveNodeDialog: React.SFC<Props> = (props) => {
       >
         <DialogTitleStyled id="alert-dialog-title">You really want to remove this node?</DialogTitleStyled>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            <DialogTextWrapper>
-              <DialogTextLeft>IP / Domain:</DialogTextLeft> 
-              <DialogTextRight>{domain}</DialogTextRight>
-            </DialogTextWrapper>
-            <DialogTextWrapper>
-              <DialogTextLeft>Requested by:</DialogTextLeft> 
-              <DialogTextRight>{author}</DialogTextRight>
-            </DialogTextWrapper>
-            <DialogTextWrapper>
-              <DialogTextLeft>Requested:</DialogTextLeft> 
-              <DialogTextRight>{moment(created).format('DD, MMMM YYYY, h:mm a')}</DialogTextRight>
-            </DialogTextWrapper>
-            <DialogTextWrapper>
-              <DialogTextLeft>Description:</DialogTextLeft> 
-              <DialogTextRight>{description}</DialogTextRight>
-            </DialogTextWrapper>
-          </DialogContentText>
+          <DialogTextWrapper>
+            <DialogTextLeft>IP / Domain:</DialogTextLeft>
+            <DialogTextRight>{domain}</DialogTextRight>
+          </DialogTextWrapper>
+          <DialogTextWrapper>
+            <DialogTextLeft>Requested by:</DialogTextLeft>
+            <DialogTextRight>{author}</DialogTextRight>
+          </DialogTextWrapper>
+          <DialogTextWrapper>
+            <DialogTextLeft>Requested:</DialogTextLeft>
+            <DialogTextRight>{moment(created).format('DD, MMMM YYYY, h:mm a')}</DialogTextRight>
+          </DialogTextWrapper>
+          <DialogTextWrapper>
+            <DialogTextLeft>Description:</DialogTextLeft>
+            <DialogTextRight>{description}</DialogTextRight>
+          </DialogTextWrapper>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>

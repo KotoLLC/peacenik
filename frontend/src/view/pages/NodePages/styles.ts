@@ -78,7 +78,6 @@ export const ApproveButton = styled(Button)`
 
 export const DialogTextWrapper = styled.div`
   display: flex;
-  font-size: 0.9em;
   margin-bottom: 5px;
 `
 
