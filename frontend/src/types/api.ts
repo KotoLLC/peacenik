@@ -46,6 +46,14 @@ export declare namespace ApiTypes {
       address: string  
       details: string
     }
+
+    export interface ApproveNode {
+      node_id: string
+    }
+
+    export interface RemoveNode {
+      node_id: string
+    }
   }
 
 }
