@@ -1,4 +1,5 @@
 import React from 'react'
+import moment from 'moment'
 import { connect } from 'react-redux'
 import Switch from '@material-ui/core/Switch'
 import Table from '@material-ui/core/Table'
@@ -8,10 +9,11 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import TablePagination from '@material-ui/core/TablePagination'
-import DeleteIcon from '@material-ui/icons/Delete'
-import IconButton from '@material-ui/core/IconButton'
 import { NodeTypes } from './../../../types'
-import moment from 'moment'
+import Actions from '@store/actions'
+// import selectors from '@selectors/index'
+import { StoreTypes, ApiTypes } from '../../../types'
+import RemoveNodeDialog from './RemoveNodeDialog'
 
 import {
   FormControlLabelStyled,
@@ -26,7 +28,9 @@ function createData(domain: string, author: string, created: string, aproved: st
 }
 
 interface Props {
-  list: NodeTypes.Node[],
+  nodeslist: NodeTypes.Node[]
+  onGetNodes: () => void
+  onApproveNode: (data: ApiTypes.Nodes.ApproveNode) => void
 }
 
 interface State {
@@ -51,7 +55,7 @@ class NodeList extends React.Component<Props, State> {
     })
   }
 
-  handleChangeRowsPerPage = (event) => {
+  onChangeRowsPerPage = (event) => {
     this.setState({
       rowsPerPage: parseInt(event.target.value, 10),
       currentPage: 0
@@ -65,12 +69,12 @@ class NodeList extends React.Component<Props, State> {
   }
 
   onFilterChange = (event) => {
-    const { list } = this.props
+    const { nodeslist } = this.props
     const { checked } = event.target
 
     this.setState({
       isFilterChecked: event.target.checked,
-      showList: (checked) ? list.filter((item: NodeTypes.Node) => item.aproved) : list
+      showList: (checked) ? nodeslist.filter((item: NodeTypes.Node) => !item.aproved) : nodeslist
     })
   }
 
@@ -85,8 +89,10 @@ class NodeList extends React.Component<Props, State> {
   }
 
   componentDidMount() {
+    this.props.onGetNodes()
+
     this.setState({
-      showList: this.sortByDate(this.props.list)
+      showList: this.sortByDate(this.props.nodeslist)
     })
   }
 
@@ -133,14 +139,13 @@ class NodeList extends React.Component<Props, State> {
                         <ApproveButton
                           variant="contained"
                           color="primary"
+                          onClick={() => this.props.onApproveNode({node_id: 'someId'})}
                         >Approve
                       </ApproveButton>
                     }</TableCell>
                     <TableCell align="right">{row.description}</TableCell>
                     <TableCellStyled align="right">
-                      <IconButton color="secondary">
-                        <DeleteIcon />
-                      </IconButton>
+                      <RemoveNodeDialog {...row}/>
                     </TableCellStyled>
                   </TableRow>
                 ))}
@@ -153,7 +158,7 @@ class NodeList extends React.Component<Props, State> {
               rowsPerPage={rowsPerPage}
               page={currentPage}
               onChangePage={this.onChangePage}
-              onChangeRowsPerPage={this.handleChangeRowsPerPage}
+              onChangeRowsPerPage={this.onChangeRowsPerPage}
             />
           </TableContainer>
         </TableWrapper>
@@ -162,15 +167,23 @@ class NodeList extends React.Component<Props, State> {
   }
 }
 
-const mapStateToProps = () => ({
-  list: [
+type StateProps = Pick<Props, 'nodeslist'>
+const mapStateToProps = (state: StoreTypes): StateProps => ({
+  // nodeslist: selectors.nodes.isNodeCreatedSuccessfully(state),
+  nodeslist: [
     createData('440.com', 'info@google.com', '2020-06-10T03:24:00', '2020-06-10T04:24:00', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
     createData('441.com', 'info@google.com', '2020-06-15T03:24:00', '', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
     createData('442.com', 'info@google.com', '2020-05-17T03:24:00', '', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
     createData('443.com', 'info@google.com', '2020-04-14T03:24:00', '2020-04-15T03:24:00', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
     createData('444.com', 'info@google.com', '2020-06-11T03:24:00', '2020-06-12T03:24:00', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
     createData('445.com', 'info@google.com', '2020-06-17T03:24:00', '', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
-  ]
+  ],
 })
 
-export default connect(mapStateToProps)(NodeList)
+type DispatchProps = Pick<Props, 'onGetNodes' | 'onApproveNode'>
+const mapDispatchToProps = (dispatch): DispatchProps => ({
+  onGetNodes: () => dispatch(Actions.nodes.getNodesRequest()),
+  onApproveNode: (data: ApiTypes.Nodes.ApproveNode) => dispatch(Actions.nodes.approveNodeRequest(data)),
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(NodeList)

@@ -14,7 +14,12 @@ import {
     watchRejectInvitation,
 } from './friends'
 
-import { watchNodeCreate } from './nodes'
+import { 
+    watchNodeCreate, 
+    watchGetNodes, 
+    watchApproveNode,
+    watchRemoveNode,
+} from './nodes'
 
 export function* rootSaga() {
     yield all([
@@ -27,5 +32,8 @@ export function* rootSaga() {
         takeEvery(FriendTypes.ACCEPT_INVITATION_REQUEST, watchAcceptInvitation),
         takeEvery(FriendTypes.REJECT_INVITATION_REQUEST, watchRejectInvitation),
         takeEvery(NodeTypes.NODE_CREATE_REQUEST, watchNodeCreate),
+        takeEvery(NodeTypes.GET_NODES_REQUEST, watchGetNodes),
+        takeEvery(NodeTypes.APPROVE_NODE_REQUEST, watchApproveNode),
+        takeEvery(NodeTypes.REMOVE_NODE_REQUEST, watchRemoveNode),
     ])
 }
