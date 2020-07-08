@@ -10,6 +10,7 @@ import Paper from '@material-ui/core/Paper'
 import TablePagination from '@material-ui/core/TablePagination'
 import DeleteIcon from '@material-ui/icons/Delete'
 import IconButton from '@material-ui/core/IconButton'
+import { NodeTypes } from './../../../types'
 
 import {
   FormControlLabelStyled,
@@ -19,29 +20,28 @@ import {
   ApproveButton,
 } from './styles'
 
-function createData(domain, author, created, aproved, description) {
+function createData(domain: string, author: string, created: string, aproved: string, description: string): NodeTypes.Node {
   return { domain, author, created, aproved, description }
 }
 
-const rows = [
-  createData('440.com', 'info@google.com', 'jule 5, 2020', 'jule 6, 2020', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
-  createData('441.com', 'info@google.com', 'jule 5, 2020', '', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
-  createData('442.com', 'info@google.com', 'jule 5, 2020', '', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
-  createData('443.com', 'info@google.com', 'jule 5, 2020', '', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
-  createData('444.com', 'info@google.com', 'jule 5, 2020', '', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
-  createData('445.com', 'info@google.com', 'jule 5, 2020', '', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
-]
+interface Props {
+  list: NodeTypes.Node[],
+}
 
 interface State {
   page: number,
   rowsPerPage: number,
+  showList: NodeTypes.Node[],
+  isFilterChecked: boolean,
 }
 
-class NodeList extends React.Component<{}, State> {
+class NodeList extends React.Component<Props, State> {
 
   state = {
     page: 0,
     rowsPerPage: 5,
+    showList: [],
+    isFilterChecked: false,
   }
 
   handleChangePage = (event, newPage) => {
@@ -57,8 +57,24 @@ class NodeList extends React.Component<{}, State> {
     })
   }
 
+  onFilterChange = (event) => {
+    const { list } = this.props
+    const { checked } = event.target
+
+    this.setState({
+      isFilterChecked: event.target.checked,
+      showList: (checked) ? list.filter((item: NodeTypes.Node) => item.aproved) : list
+    })
+  }
+
+  componentDidMount() {
+    this.setState({
+      showList: this.props.list
+    })
+  }
+
   render() {
-    const { page, rowsPerPage } = this.state
+    const { page, rowsPerPage, showList } = this.state
 
     return (
       <>
@@ -66,7 +82,7 @@ class NodeList extends React.Component<{}, State> {
           label="Filter approved"
           control={
             <Switch
-              // onChange={() => { }}
+              onChange={this.onFilterChange}
               color="primary"
               size="small"
             />
@@ -81,11 +97,11 @@ class NodeList extends React.Component<{}, State> {
                   <TableCell align="center">Requested</TableCell>
                   <TableCell align="center">Approved</TableCell>
                   <TableCell align="right">Description</TableCell>
-                  <TableCell/>
+                  <TableCell />
                 </TableRow>
               </TableHeadStyled>
               <TableBody>
-                {rows.map((row) => (
+                {showList.map((row: NodeTypes.Node) => (
                   <TableRow key={row.domain}>
                     <TableCell component="th" scope="row">
                       {row.domain}
@@ -97,9 +113,9 @@ class NodeList extends React.Component<{}, State> {
                         <ApproveButton
                           variant="contained"
                           color="primary"
-                        >
-                          Approve
-                    </ApproveButton>}</TableCell>
+                        >Approve
+                      </ApproveButton>
+                    }</TableCell>
                     <TableCell align="right">{row.description}</TableCell>
                     <TableCellStyled align="right">
                       <IconButton color="secondary">
@@ -113,7 +129,7 @@ class NodeList extends React.Component<{}, State> {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={rows.length}
+              count={showList.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onChangePage={this.handleChangePage}
@@ -126,4 +142,15 @@ class NodeList extends React.Component<{}, State> {
   }
 }
 
-export default connect()(NodeList)
+const mapStateToProps = () => ({
+  list: [
+    createData('440.com', 'info@google.com', 'jule 5, 2020', 'jule 6, 2020', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
+    createData('441.com', 'info@google.com', 'jule 5, 2020', '', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
+    createData('442.com', 'info@google.com', 'jule 5, 2020', '', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
+    createData('443.com', 'info@google.com', 'jule 5, 2020', 'ule 6, 2020', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
+    createData('444.com', 'info@google.com', 'jule 5, 2020', 'ule 6, 2020', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
+    createData('445.com', 'info@google.com', 'jule 5, 2020', '', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
+  ]
+})
+
+export default connect(mapStateToProps)(NodeList)
