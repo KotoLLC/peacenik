@@ -11,7 +11,7 @@ import Paper from '@material-ui/core/Paper'
 import TablePagination from '@material-ui/core/TablePagination'
 import { NodeTypes } from './../../../types'
 import Actions from '@store/actions'
-// import selectors from '@selectors/index'
+import selectors from '@selectors/index'
 import { StoreTypes, ApiTypes } from '../../../types'
 import RemoveNodeDialog from './RemoveNodeDialog'
 
@@ -22,10 +22,6 @@ import {
   TableHeadStyled,
   ApproveButton,
 } from './styles'
-
-function createData(domain: string, author: string, created: string, aproved: string, description: string): NodeTypes.Node {
-  return { domain, author, created, aproved, description }
-}
 
 interface Props {
   nodeslist: NodeTypes.Node[]
@@ -38,6 +34,7 @@ interface State {
   rowsPerPage: number,
   showList: NodeTypes.Node[],
   isFilterChecked: boolean,
+  isAdmin: boolean
 }
 
 class NodeList extends React.Component<Props, State> {
@@ -47,6 +44,7 @@ class NodeList extends React.Component<Props, State> {
     rowsPerPage: 5,
     showList: [],
     isFilterChecked: false,
+    isAdmin: false,
   }
 
   onChangePage = (event, newPage) => {
@@ -59,12 +57,6 @@ class NodeList extends React.Component<Props, State> {
     this.setState({
       rowsPerPage: parseInt(event.target.value, 10),
       currentPage: 0
-    })
-  }
-
-  sortByDate = (data: NodeTypes.Node[]) => {
-    return data.sort((a, b) => {
-      return moment(b.created).diff(a.created)
     })
   }
 
@@ -88,12 +80,39 @@ class NodeList extends React.Component<Props, State> {
     this.onChangePage(event, currentPage + 1)
   }
 
+  renderApproveButton = (id: string) => {
+    const { isAdmin } = this.state
+
+    if (isAdmin) {
+      return (
+        <ApproveButton
+          variant="contained"
+          color="primary"
+          onClick={() => this.props.onApproveNode({ node_id: id })}
+        >Approve</ApproveButton>
+      )
+    } else {
+      return <>Not approved yet</>
+    }
+  }
+
+  static getDerivedStateFromProps(newProps: Props) {
+
+    const sortByDate = (data: NodeTypes.Node[]) => {
+      return data.sort((a, b) => {
+        return moment(b.created).diff(a.created)
+      })
+    }
+
+    if (!newProps.nodeslist?.length) return {}
+
+    return {
+      showList: sortByDate(newProps.nodeslist)
+    }
+  }
+
   componentDidMount() {
     this.props.onGetNodes()
-
-    this.setState({
-      showList: this.sortByDate(this.props.nodeslist)
-    })
   }
 
   render() {
@@ -134,18 +153,14 @@ class NodeList extends React.Component<Props, State> {
                     </TableCell>
                     <TableCell align="center">{row.author}</TableCell>
                     <TableCell align="center">{moment(row.created).format('DD, MMMM YYYY, h:mm a')}</TableCell>
-                    <TableCell align="center">{
-                      (row.aproved) ?  moment(row.aproved).format('DD, MMMM YYYY, h:mm a') :
-                        <ApproveButton
-                          variant="contained"
-                          color="primary"
-                          onClick={() => this.props.onApproveNode({node_id: 'someId'})}
-                        >Approve
-                      </ApproveButton>
-                    }</TableCell>
+                    <TableCell align="center">
+                      {(row.aproved)
+                        ? moment(row.aproved).format('DD, MMMM YYYY, h:mm a')
+                        : this.renderApproveButton(row.id)
+                      }</TableCell>
                     <TableCell align="right">{row.description}</TableCell>
                     <TableCellStyled align="right">
-                      <RemoveNodeDialog {...row}/>
+                      <RemoveNodeDialog {...row} />
                     </TableCellStyled>
                   </TableRow>
                 ))}
@@ -169,15 +184,7 @@ class NodeList extends React.Component<Props, State> {
 
 type StateProps = Pick<Props, 'nodeslist'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  // nodeslist: selectors.nodes.isNodeCreatedSuccessfully(state),
-  nodeslist: [
-    createData('440.com', 'info@google.com', '2020-06-10T03:24:00', '2020-06-10T04:24:00', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
-    createData('441.com', 'info@google.com', '2020-06-15T03:24:00', '', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
-    createData('442.com', 'info@google.com', '2020-05-17T03:24:00', '', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
-    createData('443.com', 'info@google.com', '2020-04-14T03:24:00', '2020-04-15T03:24:00', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
-    createData('444.com', 'info@google.com', '2020-06-11T03:24:00', '2020-06-12T03:24:00', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
-    createData('445.com', 'info@google.com', '2020-06-17T03:24:00', '', 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, soluta!'),
-  ],
+  nodeslist: selectors.nodes.nodeslist(state),
 })
 
 type DispatchProps = Pick<Props, 'onGetNodes' | 'onApproveNode'>

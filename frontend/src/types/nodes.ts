@@ -6,5 +6,6 @@ export declare namespace NodeTypes {
     created: string, 
     aproved: string, 
     description: string,
+    id: string
   }
 }

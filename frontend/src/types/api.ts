@@ -54,6 +54,14 @@ export declare namespace ApiTypes {
     export interface RemoveNode {
       node_id: string
     }
+
+    export interface Node {
+      address: string
+      created_at: string
+      details: string
+      id: string
+      user: User
+    }
   }
 
 }
