@@ -54,7 +54,7 @@ class Friends extends React.Component<Props, State> {
 
   mapFriends = (friends: ApiTypes.User[]) => {
 
-    if (!friends || !friends.length) {
+    if (!friends || !friends?.length) {
       return this.showEmptyListMessage()
     }
 

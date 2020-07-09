@@ -64,7 +64,7 @@ class NodeCreation extends React.PureComponent<Props, State> {
   onValidate = (): boolean => {
     const { nodeName, description } = this.state
 
-    if (!nodeName.length) {
+    if (!nodeName?.length) {
       this.setState({
         errorMessage: 'Enter your Domain',
         noValideField: 'node-name',
@@ -72,7 +72,7 @@ class NodeCreation extends React.PureComponent<Props, State> {
       return false
     }
 
-    if (!description.length) {
+    if (!description?.length) {
       this.setState({
         errorMessage: 'Enter your node description',
         noValideField: 'description',

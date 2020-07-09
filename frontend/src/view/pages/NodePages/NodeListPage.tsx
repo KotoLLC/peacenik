@@ -170,7 +170,7 @@ class NodeList extends React.Component<Props, State> {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={showList.length}
+              count={showList?.length}
               rowsPerPage={rowsPerPage}
               page={currentPage}
               onChangePage={this.onChangePage}

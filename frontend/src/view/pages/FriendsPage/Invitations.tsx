@@ -71,7 +71,7 @@ export class Invitations extends React.Component<Props, State> {
   mapInvitations = (invitations: ApiTypes.Friends.Invitation[]) => {
     const { onAcceptInvitation, onRejectInvitation } = this.props
 
-    if (!invitations || !invitations.length) {
+    if (!invitations || !invitations?.length) {
       return this.showEmptyListMessage()
     }
 
