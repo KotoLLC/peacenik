@@ -14,6 +14,7 @@ import Actions from '@store/actions'
 import selectors from '@selectors/index'
 import { StoreTypes, ApiTypes } from '../../../types'
 import RemoveNodeDialog from './RemoveNodeDialog'
+import AccessTimeIcon from '@material-ui/icons/AccessTime'
 
 import {
   FormControlLabelStyled,
@@ -21,6 +22,8 @@ import {
   TableCellStyled,
   TableHeadStyled,
   ApproveButton,
+  PendingText,
+  PendingTextWrapper,
 } from './styles'
 
 interface Props {
@@ -91,7 +94,7 @@ class NodeList extends React.Component<Props, State> {
         >Approve</ApproveButton>
       )
     } else {
-      return <>Not approved yet</>
+      return <PendingTextWrapper><AccessTimeIcon/><PendingText>Pending approval</PendingText></PendingTextWrapper>
     }
   }
 

@@ -104,3 +104,14 @@ export const DialogContentStyled = styled(DialogContent)`
     min-width: 500px;
   }
 `
+
+export const PendingTextWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+`
+
+export const PendingText = styled.span`
+  margin-left: 5px;
+`
