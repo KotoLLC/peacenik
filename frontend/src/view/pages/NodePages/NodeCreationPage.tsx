@@ -15,6 +15,8 @@ import {
   FormControlStyled,
   ButtonStyled,
   TitleWrapper,
+  LinkWrapper,
+  LinkStyled,
 } from './styles'
 
 type FieldsType = 'node-name' | 'description' | ''
@@ -138,16 +140,14 @@ class NodeCreation extends React.PureComponent<Props, State> {
             />
           </FormControlStyled>
           <FormControlStyled variant="outlined">
-            <InputLabel htmlFor="name">Pleas tell us about yourself</InputLabel>
             <OutlinedInput
               id="description"
               type={'text'}
               value={description}
               error={(noValideField === 'description') ? true : false}
-              placeholder={''}
-              labelWidth={195}
+              placeholder={'Pleas tell us how you will enforce our code of conduct (100 word maximum)'}
               multiline
-              rows={5}
+              rows={8}
               onChange={this.onDescriptionChange}
             />
           </FormControlStyled>
@@ -162,6 +162,9 @@ class NodeCreation extends React.PureComponent<Props, State> {
           </ButtonStyled>
           {errorMessage && <FormHelperText error>{errorMessage}</FormHelperText>}
         </FormWrapper>
+        <LinkWrapper>
+          <LinkStyled to="/docs/code-of-conduct">Code of conduct</LinkStyled>
+        </LinkWrapper>
       </>
     )
   }

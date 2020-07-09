@@ -5,8 +5,9 @@ import LoginPage from '@view/pages/LoginPage'
 import { FriendsPage } from '@view/pages/FriendsPage'
 import { connect } from 'react-redux'
 import { StoreTypes } from './../types'
-import { AuthContainer } from '@view/shared/AuthContainer'
+import { WithTopBar } from '@view/shared/WithTopBar'
 import { NodePages } from './pages/NodePages'
+import DocsPages from './pages/DocsPages'
 
 const PrivateRoute = ({ component, ...rest }) => {
   const routeComponent = props =>
@@ -21,10 +22,11 @@ export const RoutesComponent: React.SFC<Props> = (props) => {
     <Router history={history}>
       <Switch>
         <Route path="/login" component={LoginPage} />
-        <AuthContainer>
+        <Route path="/docs" component={DocsPages} />
+        <WithTopBar>
           <PrivateRoute isLogged={isLogged} path="/friends" component={FriendsPage} />
           <PrivateRoute isLogged={isLogged} path="/nodes" component={NodePages} />
-        </AuthContainer>
+        </WithTopBar>
         <Redirect exact from="/" to="/login" />
       </Switch>
     </Router>

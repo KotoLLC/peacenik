@@ -94,7 +94,12 @@ class NodeList extends React.Component<Props, State> {
         >Approve</ApproveButton>
       )
     } else {
-      return <PendingTextWrapper><AccessTimeIcon/><PendingText>Pending approval</PendingText></PendingTextWrapper>
+      return (
+        <PendingTextWrapper>
+          <AccessTimeIcon />
+          <PendingText>Pending approval</PendingText>
+        </PendingTextWrapper>
+      )
     }
   }
 
@@ -120,7 +125,7 @@ class NodeList extends React.Component<Props, State> {
 
   render() {
     const { currentPage, rowsPerPage, showList } = this.state
-    
+
     return (
       <>
         <FormControlLabelStyled
