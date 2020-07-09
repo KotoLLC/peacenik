@@ -7,6 +7,7 @@ import TableCell from '@material-ui/core/TableCell'
 import TableHead from '@material-ui/core/TableHead'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
+import { Link } from 'react-router-dom'
 
 export const ContainerStyled = styled(Container)`
   && {
@@ -19,7 +20,7 @@ export const ContainerStyled = styled(Container)`
 `
 
 export const FormWrapper = styled.form`
-  width: 380px;
+  width: 400px;
   margin: 0 auto;
 `
 
@@ -114,4 +115,22 @@ export const PendingTextWrapper = styled.div`
 
 export const PendingText = styled.span`
   margin-left: 5px;
+`
+
+export const LinkWrapper = styled.div`
+  max-width: 400px;
+  width: 100%;
+  text-align: right;
+  margin-top: 30px;
+`
+
+export const LinkStyled = styled(Link)`
+  color: #1976d2;
+  font-size: 1rem;
+  text-decoration: none;
+  display: block;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `

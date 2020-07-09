@@ -4,11 +4,11 @@ import styled from 'styled-components'
 
 export const Footer = () => (
   <Menu>
-    <LinkStyled to="/forgotten-password">Forgotten password</LinkStyled>
-    <LinkStyled to="/register">Register for Koto</LinkStyled>
-    <LinkStyled to="/about">About Koto</LinkStyled>
-    <LinkStyled to="/code-of-conduct">Code of conduct</LinkStyled>
-    <LinkStyled to="/contact-us">Contact us</LinkStyled>
+    <LinkStyled className="disabled" to="/login">Forgotten password</LinkStyled>
+    <LinkStyled className="disabled" to="/login">Register for Koto</LinkStyled>
+    <LinkStyled className="disabled" to="/login">About Koto</LinkStyled>
+    <LinkStyled to="/docs/code-of-conduct">Code of conduct</LinkStyled>
+    <LinkStyled className="disabled" to="/login">Contact us</LinkStyled>
   </Menu>
 )
 
@@ -21,6 +21,19 @@ const LinkStyled = styled(Link)`
   &:hover {
     text-decoration: underline;
   }
+
+  &.disabled {
+    color: grey;
+
+    &:hover {
+      text-decoration: none;     
+      cursor: inherit;
+    }
+  }
+`
+
+const EmptyLink = styled.span`
+  
 `
 
 const Menu = styled.footer`
