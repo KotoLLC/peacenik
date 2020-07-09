@@ -3,7 +3,7 @@ import { ApiTypes, NodeTypes } from '../../types'
 export const nodesListBack2Front = (data: ApiTypes.Nodes.Node[]): NodeTypes.Node[] => {
   let result: NodeTypes.Node[] = []
 
-  if (data && data.length) {
+  if (data && data?.length) {
     result = data.map(item => (
       {
         domain: item.address, 

@@ -91,7 +91,7 @@ export class FriendsOfFriends extends React.Component<Props, State> {
   }
 
   mapFriendsList = (friendsOfFriends: ApiTypes.Friends.Potential[]) => {
-    if (!friendsOfFriends || !friendsOfFriends.length) {
+    if (!friendsOfFriends || !friendsOfFriends?.length) {
       return this.showEmptyListMessage()
     }
 
@@ -99,16 +99,16 @@ export class FriendsOfFriends extends React.Component<Props, State> {
       const { user, friends, invite_status } = item
       return (
         <div key={user.id}>
-          <ListItem alignItems={friends.length ? 'flex-start' : 'center'}>
+          <ListItem alignItems={friends?.length ? 'flex-start' : 'center'}>
             <ListItemAvatar>
               <Avatar alt={user.name} />
             </ListItemAvatar>
             <ListItemText
               primary={<UserName>{user.name}</UserName>}
-              secondary={(friends.length) ?
+              secondary={(friends?.length) ?
                 <UserNoteUnderlined
                   onClick={() => this.onFriendSelect(user.id)}>
-                  You have {friends.length} in common</UserNoteUnderlined> : null}
+                  You have {friends?.length} in common</UserNoteUnderlined> : null}
             />
             {this.checkCurrentIcon(user, invite_status)}
           </ListItem>
@@ -161,7 +161,7 @@ export class FriendsOfFriends extends React.Component<Props, State> {
           <Divider />
           {selectedFriend && (
             <List>
-              {selectedFriend.friends.length && selectedFriend.friends.map(item => (
+              {selectedFriend.friends?.length && selectedFriend.friends.map(item => (
                 <ListItem key={item.id}>
                   <ListItemAvatar>
                     <Avatar alt={item.name}/>
