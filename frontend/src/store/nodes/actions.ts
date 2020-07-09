@@ -1,5 +1,5 @@
 
-import { ApiTypes } from '../../types'
+import { ApiTypes, NodeTypes } from '../../types'
 
 export enum Types {
   NODE_CREATE_REQUEST = 'NODE_CREATE_REQUEST',
@@ -30,7 +30,7 @@ export const getNodesRequest = () => ({
   type: Types.GET_NODES_REQUEST
 })
 
-export const getNodesSuccess = (payload) => ({
+export const getNodesSuccess = (payload: NodeTypes.Node[]) => ({
   type: Types.GET_NODES_SUCCESS,
   payload,
 })
@@ -41,7 +41,7 @@ export const approveNodeRequest = (payload: ApiTypes.Nodes.ApproveNode) => ({
 })
 
 export const removeNodeRequest = (payload: ApiTypes.Nodes.RemoveNode) => ({
-  type: Types.APPROVE_NODE_REQUEST,
+  type: Types.REMOVE_NODE_REQUEST,
   payload,
 })
 

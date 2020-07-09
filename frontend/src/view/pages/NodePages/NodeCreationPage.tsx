@@ -57,7 +57,7 @@ class NodeCreation extends React.PureComponent<Props, State> {
 
   onDescriptionChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     this.setState({
-      description: event.currentTarget.value.trim()
+      description: event.currentTarget.value
     })
   }
 

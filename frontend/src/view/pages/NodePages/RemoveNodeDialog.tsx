@@ -3,7 +3,6 @@ import moment from 'moment'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
 import DeleteIcon from '@material-ui/icons/Delete'
 import IconButton from '@material-ui/core/IconButton'
 import { NodeTypes, ApiTypes } from './../../../types'
@@ -14,6 +13,7 @@ import {
   DialogTextLeft,
   DialogTextRight,
   DialogTitleStyled,
+  DialogContentStyled,
 } from './styles'
 
 interface Props extends NodeTypes.Node {
@@ -22,10 +22,10 @@ interface Props extends NodeTypes.Node {
 
 const RemoveNodeDialog: React.SFC<Props> = (props) => {
   const [open, setOpen] = React.useState(false)
-  const { onRemoveNode, domain, author, created, description } = props
+  const { onRemoveNode, domain, author, created, description, id } = props
 
   const onRemove = () => {
-    onRemoveNode({ node_id: 'someId' })
+    onRemoveNode({ node_id: id })
     setOpen(false)
   }
 
@@ -41,7 +41,7 @@ const RemoveNodeDialog: React.SFC<Props> = (props) => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitleStyled id="alert-dialog-title">You really want to remove this node?</DialogTitleStyled>
-        <DialogContent>
+        <DialogContentStyled>
           <DialogTextWrapper>
             <DialogTextLeft>IP / Domain:</DialogTextLeft>
             <DialogTextRight>{domain}</DialogTextRight>
@@ -58,7 +58,7 @@ const RemoveNodeDialog: React.SFC<Props> = (props) => {
             <DialogTextLeft>Description:</DialogTextLeft>
             <DialogTextRight>{description}</DialogTextRight>
           </DialogTextWrapper>
-        </DialogContent>
+        </DialogContentStyled>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>
             Cancel

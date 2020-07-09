@@ -6,6 +6,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel'
 import TableCell from '@material-ui/core/TableCell'
 import TableHead from '@material-ui/core/TableHead'
 import DialogTitle from '@material-ui/core/DialogTitle'
+import DialogContent from '@material-ui/core/DialogContent'
 
 export const ContainerStyled = styled(Container)`
   && {
@@ -96,4 +97,10 @@ export const DialogTitleStyled = styled(DialogTitle)`
 
 export const DialogStyled = styled(DialogTitle)`
   text-align: center;
+`
+
+export const DialogContentStyled = styled(DialogContent)`
+  && {
+    min-width: 500px;
+  }
 `

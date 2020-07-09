@@ -1,11 +1,14 @@
 import { Types } from './actions'
+import { NodeTypes } from './../../types'
 
 export interface State {
   isNodeCreatedSuccessfully: boolean,
+  nodeslist: NodeTypes.Node[]
 }
 
 const initialState: State = {
   isNodeCreatedSuccessfully: false,
+  nodeslist: [],
 }
 
 const reducer = (state = initialState, action) => {
@@ -21,6 +24,13 @@ const reducer = (state = initialState, action) => {
       return {
         ...state, ...{
           isNodeCreatedSuccessfully: false,
+        }
+      }
+    }
+    case Types.GET_NODES_SUCCESS: {
+      return {
+        ...state, ...{
+          nodeslist: action.payload,
         }
       }
     }
