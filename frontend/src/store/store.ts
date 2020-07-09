@@ -6,23 +6,23 @@ import authorization from './authorization'
 import friends from './friends'
 import notify from './notify'
 import nodes from './nodes'
-
+import profile from './profile'
 
 const appReducer = combineReducers({
     authorization,
     friends,
     notify,
     nodes,
+    profile,
 })
 
 const rootReducer = (state, action) => {
     if (action.type === 'LOGOUT_REQUEST') {
-        state = undefined;
+        state = undefined
     }
 
     return appReducer(state, action)
 }
-
 
 const sagaMiddleware = createSagaMiddleware()
 const middlewares = composeWithDevTools(applyMiddleware(sagaMiddleware))

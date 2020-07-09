@@ -1,14 +1,15 @@
 import { put } from 'redux-saga/effects'
 import Actions from '@store/actions'
 import { ApiTypes } from '../types/index'
-import { API } from '@services/api'
+import { API } from '@services/api' 
 
 export function* watchlogin(action: { type: string, payload: ApiTypes.Login }) {
   const response = yield API.authorization.login(action.payload)
 
   if (response.status === 200) {
-    localStorage.setItem('isLogged', 'true')
+    localStorage.setItem('kotoIsLogged', 'true')
     yield put(Actions.authorization.loginSucces())
+    yield put(Actions.profile.getProfileRequest())
   } else {
     yield put(Actions.authorization.loginFailed(response?.error?.response?.data?.msg || 'Server error'))
   }
@@ -16,9 +17,7 @@ export function* watchlogin(action: { type: string, payload: ApiTypes.Login }) {
 
 export function* watchlogout() {
   const response = yield API.authorization.logout()
-
   if (response.status === 200) {
-    localStorage.clear()
     yield put(Actions.authorization.logoutSucces())
   }
 }

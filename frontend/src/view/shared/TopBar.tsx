@@ -19,6 +19,7 @@ interface Props {
 const TopBar: React.SFC<Props> = React.memo((props) => {
 
   const onLogoutClick = () => {
+    localStorage.clear()
     props.onLogout()
   }
 

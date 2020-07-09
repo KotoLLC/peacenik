@@ -25,6 +25,7 @@ import {
 
 interface Props {
   nodeslist: NodeTypes.Node[]
+  isAdmin: boolean | undefined
   onGetNodes: () => void
   onApproveNode: (data: ApiTypes.Nodes.ApproveNode) => void
 }
@@ -34,7 +35,6 @@ interface State {
   rowsPerPage: number,
   showList: NodeTypes.Node[],
   isFilterChecked: boolean,
-  isAdmin: boolean
 }
 
 class NodeList extends React.Component<Props, State> {
@@ -44,7 +44,6 @@ class NodeList extends React.Component<Props, State> {
     rowsPerPage: 5,
     showList: [],
     isFilterChecked: false,
-    isAdmin: !false,
   }
 
   onChangePage = (event, newPage) => {
@@ -81,7 +80,7 @@ class NodeList extends React.Component<Props, State> {
   }
 
   renderApproveButton = (id: string) => {
-    const { isAdmin } = this.state
+    const { isAdmin } = this.props
 
     if (isAdmin) {
       return (
@@ -105,7 +104,7 @@ class NodeList extends React.Component<Props, State> {
     }
 
     if (!newProps.nodeslist?.length) return {}
-    if(prevState.isFilterChecked) return {}
+    if (prevState.isFilterChecked) return {}
 
     return {
       showList: sortByDate(newProps.nodeslist)
@@ -183,9 +182,10 @@ class NodeList extends React.Component<Props, State> {
   }
 }
 
-type StateProps = Pick<Props, 'nodeslist'>
+type StateProps = Pick<Props, 'nodeslist' | 'isAdmin'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   nodeslist: selectors.nodes.nodeslist(state),
+  isAdmin: selectors.profile.isAdmin(state),
 })
 
 type DispatchProps = Pick<Props, 'onGetNodes' | 'onApproveNode'>

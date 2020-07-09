@@ -65,4 +65,9 @@ export declare namespace ApiTypes {
     }
   }
 
+  export interface Profile {
+    user: User
+    is_admin?: boolean
+  }
+
 }

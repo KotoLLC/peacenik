@@ -5,7 +5,7 @@ export interface State {
   loginErrorMessage: string
 }
 
-const isLogged = localStorage.getItem('isLogged')
+const isLogged = localStorage.getItem('kotoIsLogged')
 const initialState: State = {
   isLogged: (isLogged === 'true') ? true : false,
   loginErrorMessage: '',
