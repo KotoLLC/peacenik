@@ -17,7 +17,11 @@ interface Props {
 }
 
 const TopBar: React.SFC<Props> = React.memo((props) => {
-  const { onLogout } = props
+
+  const onLogoutClick = () => {
+    window.location.reload()
+    props.onLogout()
+  }
 
   return (
     <AppBar position="fixed" color="primary">
@@ -26,7 +30,7 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
         <TopBarRightSide>
           <TopMenu />
           <TooltipStyle title={`Logout`}>
-            <IconButtonStyled onClick={onLogout}>
+            <IconButtonStyled onClick={onLogoutClick}>
               <ExitToAppIcon fontSize="small" />
             </IconButtonStyled>
           </TooltipStyle>
