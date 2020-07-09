@@ -44,7 +44,7 @@ class NodeList extends React.Component<Props, State> {
     rowsPerPage: 5,
     showList: [],
     isFilterChecked: false,
-    isAdmin: false,
+    isAdmin: !false,
   }
 
   onChangePage = (event, newPage) => {
@@ -66,7 +66,7 @@ class NodeList extends React.Component<Props, State> {
 
     this.setState({
       isFilterChecked: event.target.checked,
-      showList: (checked) ? nodeslist.filter((item: NodeTypes.Node) => !item.aproved) : nodeslist
+      showList: (checked) ? nodeslist.filter((item: NodeTypes.Node) => item.aproved === '') : nodeslist
     })
   }
 
@@ -96,7 +96,7 @@ class NodeList extends React.Component<Props, State> {
     }
   }
 
-  static getDerivedStateFromProps(newProps: Props) {
+  static getDerivedStateFromProps(newProps: Props, prevState: State) {
 
     const sortByDate = (data: NodeTypes.Node[]) => {
       return data.sort((a, b) => {
@@ -105,6 +105,7 @@ class NodeList extends React.Component<Props, State> {
     }
 
     if (!newProps.nodeslist?.length) return {}
+    if(prevState.isFilterChecked) return {}
 
     return {
       showList: sortByDate(newProps.nodeslist)
@@ -117,7 +118,7 @@ class NodeList extends React.Component<Props, State> {
 
   render() {
     const { currentPage, rowsPerPage, showList } = this.state
-
+    
     return (
       <>
         <FormControlLabelStyled

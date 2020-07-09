@@ -58,6 +58,7 @@ export declare namespace ApiTypes {
     export interface Node {
       address: string
       created_at: string
+      approved_at?: string
       details: string
       id: string
       user: User

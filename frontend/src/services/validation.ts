@@ -4,7 +4,8 @@ const schema = new passwordValidator()
 export const validate = {
 
     isUserNameValid: function (value: string): boolean {
-        return !/^[A-Z-\s]{2,50}$/i.test(value) ? false : true
+        // return !/^[A-Z-\s]{2,50}$/i.test(value) ? false : true
+        return schema.validate(value) as boolean
     },
 
     isEmailValid: function (value: string): boolean {
@@ -18,8 +19,8 @@ export const validate = {
 
 // password
 schema
-    .is().min(4)                                    // Minimum length 8
-    .is().max(30)                                   // Maximum length 30
+    .is().min(2)                                    // Minimum length
+    .is().max(40)                                   // Maximum length 
     // .has().uppercase()                              // Must have uppercase letters
     // .has().lowercase()                              // Must have lowercase letters
     // .has().digits()                                 // Must have digits

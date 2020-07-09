@@ -52,7 +52,7 @@ export class Invitations extends React.Component<Props, State> {
 
   static getDerivedStateFromProps(newProps: Props) {
     return {
-      pendingInvitations: newProps.invitations.length && newProps.invitations.filter(
+      pendingInvitations: newProps.invitations?.length && newProps.invitations.filter(
         item => !item.accepted_at && !item.rejected_at
       )
     }
