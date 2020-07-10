@@ -24,6 +24,7 @@
 		"react": "16.13.1",
 		"react-app-rewire-aliases": "^0.2.0",
 		"react-app-rewired": "^2.1.6",
+		"react-autosize-textarea": "^7.1.0",
 		"react-cookie": "^4.0.3",
 		"react-dom": "16.13.1",
 		"react-notify-toast": "^0.5.1",

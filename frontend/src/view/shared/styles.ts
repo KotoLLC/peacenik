@@ -69,3 +69,8 @@ export const TabStyled = styled(Tab)`
 `
 
 export const TabsStyled = styled(Tabs)``
+
+export const NotFoundWrapper = styled.div`
+  padding: 100px 20px;
+  text-align: center;
+`
