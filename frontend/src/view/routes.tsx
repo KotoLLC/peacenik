@@ -1,46 +1,40 @@
-import React, { createElement } from 'react'
+import React from 'react'
 import { createBrowserHistory } from 'history'
 import { Router, Switch, Route, Redirect } from 'react-router-dom'
 import LoginPage from '@view/pages/LoginPage'
 import { FriendsPage } from '@view/pages/FriendsPage'
 import { connect } from 'react-redux'
 import { StoreTypes } from './../types'
-import { WithTopBar } from '@view/shared/WithTopBar'
 import { NodePages } from './pages/NodePages'
 import DocsPages from './pages/DocsPages'
 
-const PrivateRoute = ({ component, ...rest }) => {
-  const routeComponent = props =>
-    rest.isLogged ? createElement(component, props) : <Redirect to={{ pathname: '/login' }} />
-  return <Route {...rest} render={routeComponent} />
+const Private = ({ component: Component, ...rest }) => {
+  return (
+    <Route {...rest} render={props => (
+      rest.isLogged ? <Component {...props} /> : <Redirect to="/login" />
+    )} />
+  )
 }
 
-export const RoutesComponent: React.SFC<Props> = (props) => {
-  const { isLogged } = props
+const mapStateToProps = (state: StoreTypes) => ({
+  isLogged: state.authorization.isLogged,
+})
 
+const PrivateRoute = connect(mapStateToProps)(Private)
+
+export const Routes = () => {
   return (
     <Router history={history}>
       <Switch>
+        <Route exact path="/" component={LoginPage} />
         <Route path="/login" component={LoginPage} />
         <Route path="/docs" component={DocsPages} />
-        <WithTopBar>
-          <PrivateRoute isLogged={isLogged} path="/friends" component={FriendsPage} />
-          <PrivateRoute isLogged={isLogged} path="/nodes" component={NodePages} />
-        </WithTopBar>
-        <Redirect exact from="/" to="/login" />
+        <PrivateRoute path="/friends" component={FriendsPage} />
+        <PrivateRoute path="/nodes" component={NodePages} />
+        <Route component={() => <>404 not found</>} />
       </Switch>
     </Router>
   )
 }
 
-type StateProps = Pick<Props, 'isLogged'>
-const mapStateToProps = (state: StoreTypes): StateProps => ({
-  isLogged: state.authorization.isLogged,
-})
-
-interface Props {
-  isLogged: boolean
-}
-
-export const Routes = connect(mapStateToProps)(RoutesComponent)
 export const history = createBrowserHistory()
