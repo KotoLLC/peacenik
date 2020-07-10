@@ -35,7 +35,7 @@ export const TopMenu = () => {
         open={Boolean(anchorEl)}
         onClose={onMenuClose}
       >
-        <MenuItem disabled>
+        <MenuItem onClick={() => goToPage('/messages')}>
           <ListItemIconStyled>
             <ForumIcon fontSize="small" />
           </ListItemIconStyled>

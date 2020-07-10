@@ -6,6 +6,7 @@ import { FriendsPage } from '@view/pages/FriendsPage'
 import { connect } from 'react-redux'
 import { StoreTypes } from './../types'
 import { NodePages } from './pages/NodePages'
+import { MessagesPage } from './pages/MessagesPage'
 import DocsPages from './pages/DocsPages'
 
 const Private = ({ component: Component, ...rest }) => {
@@ -31,6 +32,7 @@ export const Routes = () => {
         <Route path="/docs" component={DocsPages} />
         <PrivateRoute path="/friends" component={FriendsPage} />
         <PrivateRoute path="/nodes" component={NodePages} />
+        <PrivateRoute path="/messages" component={MessagesPage} />
         <Route component={() => <>404 not found</>} />
       </Switch>
     </Router>
