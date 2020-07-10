@@ -32,10 +32,6 @@ const LinkStyled = styled(Link)`
   }
 `
 
-const EmptyLink = styled.span`
-  
-`
-
 const Menu = styled.footer`
   width: 70%;
   padding: 50px 0 30px;
