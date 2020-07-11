@@ -35,8 +35,7 @@ Authorization: Bearer AUTH-TOKEN
 Content-Type: application/json
 
 {
-  "token":  GET-MESSAGES-TOKEN,
-  "from": "2020-07-01"
+  "token":  GET-MESSAGES-TOKEN
 }
 
 
