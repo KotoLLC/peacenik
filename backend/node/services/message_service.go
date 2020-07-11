@@ -71,7 +71,7 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 	for i, rawUserID := range rawUserIDs {
 		userIDs[i] = rawUserID.(string)
 	}
-	messages, err := s.repos.Message.Messages(userIDs)
+	messages, err := s.repos.Message.Messages(userIDs, r.From, r.Until)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
