@@ -34,7 +34,7 @@ type Comment struct {
 }
 
 type MessageRepo interface {
-	Messages(userIDs []string) ([]Message, error)
+	Messages(userIDs []string, from, until string) ([]Message, error)
 	Message(messageID string) (Message, error)
 	AddMessage(message Message) error
 	EditMessage(userID, messageID, text, updatedAt string) error
@@ -55,12 +55,18 @@ func NewMessages(db *sqlx.DB) MessageRepo {
 	}
 }
 
-func (r *messageRepo) Messages(userIDs []string) ([]Message, error) {
+func (r *messageRepo) Messages(userIDs []string, from, until string) ([]Message, error) {
+	if until == "" {
+		until = "9999-99-99T99:99:99.999Z"
+	}
+
 	var messages []Message
 	query, args, err := sqlx.In(`
 		select id, user_id, user_name, text, created_at, updated_at
 		from messages
-		where user_id in (?)`, userIDs)
+		where user_id in (?)
+			and created_at >= ? and created_at < ?
+		order by created_at, "id"`, userIDs, from, until)
 	if err != nil {
 		return nil, err
 	}

@@ -10,6 +10,7 @@ func Migrate(db *sqlx.DB, dialect string) (n int, err error) {
 		Migrations: []*migrate.Migration{
 			migration0001a(),
 			migration0001b(),
+			migration0001c(),
 		},
 	}
 
