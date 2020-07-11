@@ -29,7 +29,7 @@ Content-Type: application/json
 }
 
 
-### Get messages
+### Get all messages
 POST http://localhost:12002/rpc.MessageService/Messages
 Authorization: Bearer AUTH-TOKEN
 Content-Type: application/json
@@ -37,6 +37,30 @@ Content-Type: application/json
 {
   "token":  GET-MESSAGES-TOKEN
 }
+
+
+### Get messages from date/time (created_at >= date)
+POST http://localhost:12002/rpc.MessageService/Messages
+Authorization: Bearer AUTH-TOKEN
+Content-Type: application/json
+
+{
+  "token":  GET-MESSAGES-TOKEN,
+  "from": "2020-07-01"
+}
+
+
+### Get messages from date/time until date/time (created_at >= date1 and created_at < date2)
+POST http://localhost:12002/rpc.MessageService/Messages
+Authorization: Bearer AUTH-TOKEN
+Content-Type: application/json
+
+{
+  "token":  GET-MESSAGES-TOKEN,
+  "from": "2020-07-01",
+  "until": "2020-08-01"
+}
+
 
 ### Edit message
 POST http://localhost:12002/rpc.MessageService/Edit
