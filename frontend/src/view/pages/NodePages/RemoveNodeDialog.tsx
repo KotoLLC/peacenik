@@ -14,7 +14,7 @@ import {
   DialogTextRight,
   DialogTitleStyled,
   DialogContentStyled,
-} from './styles'
+} from '@view/shared/styles'
 
 interface Props extends NodeTypes.Node {
   onRemoveNode: (data: ApiTypes.Nodes.RemoveNode) => void
