@@ -5,8 +5,6 @@ import Button from '@material-ui/core/Button'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import TableCell from '@material-ui/core/TableCell'
 import TableHead from '@material-ui/core/TableHead'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import DialogContent from '@material-ui/core/DialogContent'
 import { Link } from 'react-router-dom'
 
 export const ContainerStyled = styled(Container)`
@@ -75,34 +73,6 @@ export const ApproveButton = styled(Button)`
     &:hover {
       background: #32ab3d;
     }
-  }
-`
-
-export const DialogTextWrapper = styled.div`
-  display: flex;
-  margin-bottom: 5px;
-`
-
-export const DialogTextLeft = styled.div`
-  width: 25%;
-  font-weight: bold;
-`
-
-export const DialogTextRight = styled.div`
-  width: 75%;
-`
-
-export const DialogTitleStyled = styled(DialogTitle)`
-  text-align: center;
-`
-
-export const DialogStyled = styled(DialogTitle)`
-  text-align: center;
-`
-
-export const DialogContentStyled = styled(DialogContent)`
-  && {
-    min-width: 500px;
   }
 `
 

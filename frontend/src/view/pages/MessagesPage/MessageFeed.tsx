@@ -1,13 +1,15 @@
 import React from 'react'
 import { ContainerStyled } from './styles'
-import { CreateMessage } from './CreateMessage'
+import { Editor } from './Editor'
+import { Message } from './Message'
 
-export class Messages extends React.Component {
+export class MessageFeed extends React.Component {
 
   render() {
     return (
       <ContainerStyled maxWidth="md">
-        <CreateMessage/>
+        <Message/>
+        <Editor/>
       </ContainerStyled>
     )
   }
