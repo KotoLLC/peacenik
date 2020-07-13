@@ -4,8 +4,10 @@ import (
 	"context"
 	"errors"
 
+	"github.com/gofrs/uuid"
 	"github.com/twitchtv/twirp"
 
+	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/node/repo"
 	"github.com/mreider/koto/backend/node/rpc"
 	"github.com/mreider/koto/backend/token"
@@ -21,7 +23,7 @@ func NewMessage(base *BaseService) rpc.MessageService {
 	}
 }
 
-func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*rpc.Empty, error) {
+func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*rpc.MessagePostResponse, error) {
 	user := s.getUser(ctx)
 
 	_, claims, err := s.tokenParser.Parse(r.Token, "post-message")
@@ -36,19 +38,35 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
 	}
 
-	err = s.repos.Message.AddMessage(repo.Message{
-		ID:        r.Message.Id,
-		UserID:    claims["id"].(string),
-		UserName:  claims["name"].(string),
-		Text:      r.Message.Text,
-		CreatedAt: r.Message.CreatedAt,
-		UpdatedAt: r.Message.UpdatedAt,
-	})
+	messageID, err := uuid.NewV4()
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
 
-	return &rpc.Empty{}, nil
+	now := common.CurrentTimestamp()
+	msg := repo.Message{
+		ID:        messageID.String(),
+		UserID:    claims["id"].(string),
+		UserName:  claims["name"].(string),
+		Text:      r.Text,
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
+	err = s.repos.Message.AddMessage(msg)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+
+	return &rpc.MessagePostResponse{
+		Message: &rpc.Message{
+			Id:        msg.ID,
+			UserId:    msg.UserID,
+			UserName:  msg.UserName,
+			Text:      msg.Text,
+			CreatedAt: msg.CreatedAt,
+			UpdatedAt: msg.UpdatedAt,
+		},
+	}, nil
 }
 
 func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesRequest) (*rpc.MessageMessagesResponse, error) {
@@ -113,16 +131,34 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 	}, nil
 }
 
-func (s *messageService) Edit(ctx context.Context, r *rpc.MessageEditRequest) (*rpc.Empty, error) {
+func (s *messageService) Edit(ctx context.Context, r *rpc.MessageEditRequest) (*rpc.MessageEditResponse, error) {
 	user := s.getUser(ctx)
-	err := s.repos.Message.EditMessage(user.ID, r.MessageId, r.Text, r.UpdatedAt)
+	err := s.repos.Message.EditMessage(user.ID, r.MessageId, r.Text, common.CurrentTimestamp())
 	if err != nil {
 		if errors.Is(err, repo.ErrMessageNotFound) {
 			return nil, twirp.NotFoundError(err.Error())
 		}
 		return nil, twirp.InternalErrorWith(err)
 	}
-	return &rpc.Empty{}, nil
+
+	msg, err := s.repos.Message.Message(r.MessageId)
+	if err != nil {
+		if errors.Is(err, repo.ErrMessageNotFound) {
+			return nil, twirp.NotFoundError(err.Error())
+		}
+		return nil, twirp.InternalErrorWith(err)
+	}
+
+	return &rpc.MessageEditResponse{
+		Message: &rpc.Message{
+			Id:        msg.ID,
+			UserId:    msg.UserID,
+			UserName:  msg.UserName,
+			Text:      msg.Text,
+			CreatedAt: msg.CreatedAt,
+			UpdatedAt: msg.UpdatedAt,
+		},
+	}, nil
 }
 
 func (s *messageService) Delete(ctx context.Context, r *rpc.MessageDeleteRequest) (*rpc.Empty, error) {
@@ -137,7 +173,7 @@ func (s *messageService) Delete(ctx context.Context, r *rpc.MessageDeleteRequest
 	return &rpc.Empty{}, nil
 }
 
-func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostCommentRequest) (*rpc.Empty, error) {
+func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostCommentRequest) (*rpc.MessagePostCommentResponse, error) {
 	user := s.getUser(ctx)
 
 	_, claims, err := s.tokenParser.Parse(r.Token, "get-messages")
@@ -174,32 +210,65 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 		return nil, twirp.NotFoundError(repo.ErrMessageNotFound.Error())
 	}
 
-	err = s.repos.Message.AddComment(repo.Comment{
-		ID:        r.Comment.Id,
-		MessageID: r.MessageId,
-		UserID:    claims["id"].(string),
-		UserName:  claims["name"].(string),
-		Text:      r.Comment.Text,
-		CreatedAt: r.Comment.CreatedAt,
-		UpdatedAt: r.Comment.UpdatedAt,
-	})
+	commentID, err := uuid.NewV4()
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
 
-	return &rpc.Empty{}, nil
+	now := common.CurrentTimestamp()
+
+	comment := repo.Comment{
+		ID:        commentID.String(),
+		MessageID: r.MessageId,
+		UserID:    claims["id"].(string),
+		UserName:  claims["name"].(string),
+		Text:      r.Text,
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
+	err = s.repos.Message.AddComment(comment)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+
+	return &rpc.MessagePostCommentResponse{
+		Comment: &rpc.Comment{
+			Id:        comment.ID,
+			UserId:    comment.UserID,
+			UserName:  comment.UserName,
+			Text:      comment.Text,
+			CreatedAt: comment.CreatedAt,
+			UpdatedAt: comment.UpdatedAt,
+		},
+	}, nil
 }
 
-func (s *messageService) EditComment(ctx context.Context, r *rpc.MessageEditCommentRequest) (*rpc.Empty, error) {
+func (s *messageService) EditComment(ctx context.Context, r *rpc.MessageEditCommentRequest) (*rpc.MessageEditCommentResponse, error) {
 	user := s.getUser(ctx)
-	err := s.repos.Message.EditComment(user.ID, r.CommentId, r.Text, r.UpdatedAt)
+	err := s.repos.Message.EditComment(user.ID, r.CommentId, r.Text, common.CurrentTimestamp())
 	if err != nil {
 		if errors.Is(err, repo.ErrCommentNotFound) {
 			return nil, twirp.NotFoundError(err.Error())
 		}
 		return nil, twirp.InternalErrorWith(err)
 	}
-	return &rpc.Empty{}, nil
+	comment, err := s.repos.Message.Comment(r.CommentId)
+	if err != nil {
+		if errors.Is(err, repo.ErrCommentNotFound) {
+			return nil, twirp.NotFoundError(err.Error())
+		}
+		return nil, twirp.InternalErrorWith(err)
+	}
+	return &rpc.MessageEditCommentResponse{
+		Comment: &rpc.Comment{
+			Id:        comment.ID,
+			UserId:    comment.UserID,
+			UserName:  comment.UserName,
+			Text:      comment.Text,
+			CreatedAt: comment.CreatedAt,
+			UpdatedAt: comment.UpdatedAt,
+		},
+	}, nil
 }
 
 func (s *messageService) DeleteComment(ctx context.Context, r *rpc.MessageDeleteCommentRequest) (*rpc.Empty, error) {
