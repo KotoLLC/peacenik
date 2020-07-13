@@ -9,7 +9,7 @@ export const axiosInstance = axios.create({
   baseURL: 'http://localhost:12001',
   withCredentials: true,
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   }
 })
 

@@ -16,7 +16,7 @@ export const getMessagesRequest = () => ({
   type: Types.GET_MESSAGES_REQUEST,
 })
 
-export const getMessagesSucces = (payload: ApiTypes.Token[]) => ({
+export const getMessagesSucces = (payload: NodeTypes.CurrentNode[]) => ({
   type: Types.GET_MESSAGES_SUCCESS,
   payload
 })
@@ -35,8 +35,9 @@ export const postMessageRequest = (payload: ApiTypes.Messages.PostMessage) => ({
   payload
 })
 
-export const postMessageSucces = () => ({
+export const postMessageSucces = (payload: boolean) => ({
   type: Types.POST_MESSAGE_SUCCESS,
+  payload,
 })
 
 export default {

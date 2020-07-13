@@ -4,15 +4,16 @@ import { ApiTypes, NodeTypes } from '../../types'
 export interface State {
   messageTokens: ApiTypes.Token[]
   currentNode: NodeTypes.CurrentNode
+  isPostMessageSuccess: boolean
 }
 
-const messageTokens = localStorage.getItem('messageTokens')
 const initialState: State = {
-  messageTokens: messageTokens ? JSON.parse(messageTokens) : [],
+  messageTokens: [],
   currentNode: {
     host: '',
     token: '',
   },
+  isPostMessageSuccess: false,
 }
 
 const reducer = (state = initialState, action) => {
@@ -25,6 +26,11 @@ const reducer = (state = initialState, action) => {
     case Types.GET_CURRENT_NODE_SUCCESS: {
       return {
         ...state, ...{ currentNode: action.payload }
+      }
+    }
+    case Types.POST_MESSAGE_SUCCESS: {
+      return {
+        ...state, ...{ isPostMessageSuccess: action.payload }
       }
     }
     default: return state
