@@ -13,4 +13,10 @@ export default {
       return response
     }).catch(error => ({ error }))
   },
+
+  getAuthToken: async () => {
+    return await axiosInstance.post('/rpc.TokenService/Auth', {}).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
 }

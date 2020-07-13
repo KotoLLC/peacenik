@@ -9,6 +9,9 @@ export enum Types {
 
   LOGOUT_REQUEST = 'LOGOUT_REQUEST',
   LOGOUT_SUCCESS = 'LOGOUT_SUCCESS',
+  
+  GET_AUTH_TOKEN_REQUEST = 'GET_AUTH_TOKEN_REQUEST',
+  GET_AUTH_TOKEN_SUCCESS = 'GET_AUTH_TOKEN_SUCCESS',
 }
 
 export const loginRequest = (payload: ApiTypes.Login) => ({
@@ -37,6 +40,15 @@ export const logoutSucces = () => ({
   type: Types.LOGOUT_SUCCESS
 })
 
+export const getAuthTokenRequest = () => ({
+  type: Types.GET_AUTH_TOKEN_REQUEST,
+})
+
+export const getAuthTokenSucces = (payload: string) => ({
+  type: Types.GET_AUTH_TOKEN_SUCCESS,
+  payload,
+})
+
 export default {
   loginRequest,
   loginSucces,
@@ -44,4 +56,6 @@ export default {
   resetLoginFailedMessage,
   logoutRequest,
   logoutSucces,
+  getAuthTokenRequest,
+  getAuthTokenSucces,
 }

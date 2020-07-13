@@ -70,4 +70,8 @@ export declare namespace ApiTypes {
     is_admin?: boolean
   }
 
+  export interface Token {
+    [key: string]: string
+  }
+
 }

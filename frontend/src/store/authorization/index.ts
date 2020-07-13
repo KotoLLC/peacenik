@@ -3,12 +3,16 @@ import { Types } from './actions'
 export interface State {
   isLogged: boolean,
   loginErrorMessage: string
+  authToken: string
 }
 
 const isLogged = localStorage.getItem('kotoIsLogged')
+const authToken = localStorage.getItem('kotoAuthToken')
+
 const initialState: State = {
   isLogged: (isLogged === 'true') ? true : false,
   loginErrorMessage: '',
+  authToken: authToken ? authToken : ''
 }
 
 const reducer = (state = initialState, action) => {
@@ -33,6 +37,11 @@ const reducer = (state = initialState, action) => {
     case Types.LOGOUT_SUCCESS: {
       return { ...state, ...{ 
         isLogged: false, 
+      } }
+    }
+    case Types.GET_AUTH_TOKEN_SUCCESS: {
+      return { ...state, ...{ 
+        authToken: action.payload, 
       } }
     }
     default: return state
