@@ -43,6 +43,7 @@ type MessageRepo interface {
 	AddComment(comment Comment) error
 	EditComment(userID, commentID, text, updatedAt string) error
 	DeleteComment(userID, commentID string) error
+	Comment(commentID string) (Comment, error)
 }
 
 type messageRepo struct {
@@ -220,4 +221,19 @@ func (r *messageRepo) DeleteComment(userID, commentID string) error {
 	}
 
 	return nil
+}
+
+func (r *messageRepo) Comment(commentID string) (Comment, error) {
+	var comment Comment
+	err := r.db.Get(&comment, `
+		select id, message_id, user_id, user_name, text, created_at, updated_at
+		from comments
+		where id = $1`, commentID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return comment, ErrCommentNotFound
+		}
+		return comment, err
+	}
+	return comment, nil
 }
