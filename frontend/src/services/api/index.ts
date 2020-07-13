@@ -3,6 +3,7 @@ import authorization from './authorization'
 import friends from './friends'
 import nodes from './nodes'
 import profile from './profile'
+import messages from './messages'
 
 export const axiosInstance = axios.create({
   baseURL: 'http://localhost:12001',
@@ -17,4 +18,5 @@ export const API = {
   friends,
   nodes,
   profile,
+  messages,
 }

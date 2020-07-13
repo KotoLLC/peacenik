@@ -3,8 +3,13 @@ import { Types as AuthorizationTypes } from '@store/authorization/actions'
 import { Types as FriendTypes } from '@store/friends/actions'
 import { Types as NodeTypes } from '@store/nodes/actions'
 import { Types as ProfileTypes } from '@store/profile/actions'
+import { Types as MessagesTypes } from '@store/messages/actions'
 
-import { watchlogin, watchlogout } from './authorization'
+import { 
+    watchlogin, 
+    watchlogout,
+    watchGetAuthToken,
+} from './authorization'
 import { 
     watchGetFriends, 
     watchGetFriendsOfFriends,
@@ -20,11 +25,16 @@ import {
     watchRemoveNode,
 } from './nodes'
 import { watchGetProfile } from './profile'
+import { 
+    watchGetMessages, 
+    watchGetNodeToken, 
+} from './messages'
 
 export function* rootSaga() {
     yield all([
         takeEvery(AuthorizationTypes.LOGIN_REQUEST, watchlogin),
         takeEvery(AuthorizationTypes.LOGOUT_REQUEST, watchlogout),
+        takeEvery(AuthorizationTypes.GET_AUTH_TOKEN_REQUEST, watchGetAuthToken),
         takeEvery(FriendTypes.GET_FRIENDS_REQUEST, watchGetFriends),
         takeEvery(FriendTypes.GET_FRIENDS_OF_FRIENDS_REQUEST, watchGetFriendsOfFriends),
         takeEvery(FriendTypes.ADD_FRIEND_REQUEST, watchAddFriend),
@@ -36,5 +46,7 @@ export function* rootSaga() {
         takeEvery(NodeTypes.APPROVE_NODE_REQUEST, watchApproveNode),
         takeEvery(NodeTypes.REMOVE_NODE_REQUEST, watchRemoveNode),
         takeEvery(ProfileTypes.GET_PROFILE_REQUEST, watchGetProfile),
+        takeEvery(MessagesTypes.GET_MESSAGES_REQUEST, watchGetMessages),
+        takeEvery(MessagesTypes.GET_CURRENT_TOKEN_REQUEST, watchGetNodeToken),
     ])
 }

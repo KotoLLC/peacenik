@@ -7,6 +7,7 @@ import friends from './friends'
 import notify from './notify'
 import nodes from './nodes'
 import profile from './profile'
+import messages from './messages'
 
 const appReducer = combineReducers({
     authorization,
@@ -14,6 +15,7 @@ const appReducer = combineReducers({
     notify,
     nodes,
     profile,
+    messages,
 })
 
 const rootReducer = (state, action) => {
