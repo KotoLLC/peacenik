@@ -59,6 +59,7 @@ func (s *Server) setupMiddlewares(r *chi.Mux) {
 			return true
 		},
 		AllowedMethods: []string{http.MethodGet, http.MethodPost, http.MethodDelete},
+		AllowedHeaders: []string{"*"},
 	}
 	r.Use(cors.New(corsOptions).Handler)
 }
