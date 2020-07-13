@@ -8,4 +8,9 @@ export declare namespace NodeTypes {
     description: string,
     id: string
   }
+
+  export interface CurrentNode {
+    host: string,
+    token: string,
+  }
 }

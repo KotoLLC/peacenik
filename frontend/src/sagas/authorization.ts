@@ -30,6 +30,6 @@ export function* watchGetAuthToken() {
     localStorage.setItem('kotoAuthToken', JSON.stringify(response.data?.token))
     yield put(Actions.authorization.getAuthTokenSucces(response.data?.token))
   } else {
-    yield put(Actions.authorization.loginFailed(response?.error?.response?.data?.msg || 'Server error'))
+    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }

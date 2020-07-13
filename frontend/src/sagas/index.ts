@@ -27,7 +27,8 @@ import {
 import { watchGetProfile } from './profile'
 import { 
     watchGetMessages, 
-    watchGetNodeToken, 
+    watchGetCurrentNode, 
+    watchPostMessage,
 } from './messages'
 
 export function* rootSaga() {
@@ -47,6 +48,7 @@ export function* rootSaga() {
         takeEvery(NodeTypes.REMOVE_NODE_REQUEST, watchRemoveNode),
         takeEvery(ProfileTypes.GET_PROFILE_REQUEST, watchGetProfile),
         takeEvery(MessagesTypes.GET_MESSAGES_REQUEST, watchGetMessages),
-        takeEvery(MessagesTypes.GET_CURRENT_TOKEN_REQUEST, watchGetNodeToken),
+        takeEvery(MessagesTypes.GET_CURRENT_NODE_REQUEST, watchGetCurrentNode),
+        takeEvery(MessagesTypes.POST_MESSAGE_REQUEST, watchPostMessage),
     ])
 }
