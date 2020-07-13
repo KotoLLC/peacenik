@@ -58,8 +58,8 @@ func (s *Server) setupMiddlewares(r *chi.Mux) {
 		AllowOriginFunc: func(r *http.Request, origin string) bool {
 			return true
 		},
-		AllowCredentials: true,
-		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodDelete},
+		AllowedMethods: []string{http.MethodGet, http.MethodPost, http.MethodDelete},
+		AllowedHeaders: []string{"*"},
 	}
 	r.Use(cors.New(corsOptions).Handler)
 }
