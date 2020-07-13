@@ -1,15 +1,18 @@
 import { Types } from './actions'
-import { ApiTypes } from '../../types'
+import { ApiTypes, NodeTypes } from '../../types'
 
 export interface State {
   messageTokens: ApiTypes.Token[]
-  currentToken: ApiTypes.Token
+  currentNode: NodeTypes.CurrentNode
 }
 
 const messageTokens = localStorage.getItem('messageTokens')
 const initialState: State = {
   messageTokens: messageTokens ? JSON.parse(messageTokens) : [],
-  currentToken: {},
+  currentNode: {
+    host: '',
+    token: '',
+  },
 }
 
 const reducer = (state = initialState, action) => {
@@ -19,9 +22,9 @@ const reducer = (state = initialState, action) => {
         ...state, ...{ messageTokens: action.payload }
       }
     }
-    case Types.GET_CURRENT_TOKEN_SUCCESS: {
+    case Types.GET_CURRENT_NODE_SUCCESS: {
       return {
-        ...state, ...{ currentToken: action.payload }
+        ...state, ...{ currentNode: action.payload }
       }
     }
     default: return state

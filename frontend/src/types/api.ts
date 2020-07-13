@@ -35,7 +35,7 @@ export declare namespace ApiTypes {
     export interface InvitationAccept {
       inviter_id: string
     }
-    
+
     export interface InvitationReject {
       inviter_id: string
     }
@@ -43,7 +43,7 @@ export declare namespace ApiTypes {
 
   export namespace Nodes {
     export interface Create {
-      address: string  
+      address: string
       details: string
     }
 
@@ -72,6 +72,17 @@ export declare namespace ApiTypes {
 
   export interface Token {
     [key: string]: string
+  }
+
+  export namespace Messages {
+
+    export interface PostMessage {
+      host: string,
+      body: {
+        token: string,
+        text: string,
+      }
+    }
   }
 
 }
