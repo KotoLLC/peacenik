@@ -83,6 +83,13 @@ export declare namespace ApiTypes {
         text: string,
       }
     }
+
+    export interface MessagesFromNode {
+      host: string,
+      body: {
+        token: string,
+      }
+    }
   }
 
 }

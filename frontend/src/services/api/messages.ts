@@ -15,14 +15,27 @@ export default {
   },
  
   postMessage: async (data: ApiTypes.Messages.PostMessage) => {
-    const authToken = localStorage.getItem('kotoAuthToken')
+    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
     const config = {
+      withCredentials: false,
       headers: {
         Authorization: `Bearer ${authToken}`,
-        withCredentials: true,
       }
     }
     return await axiosInstance.post(`${data.host}/rpc.MessageService/Post`, data.body, config).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
+  
+  getMessagesFromNode: async (data: ApiTypes.Messages.MessagesFromNode) => {
+    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const config = {
+      withCredentials: false,
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      }
+    }
+    return await axiosInstance.post(`${data.host}/rpc.MessageService/Messages`, data.body, config).then(response => {
       return response
     }).catch(error => ({ error }))
   },

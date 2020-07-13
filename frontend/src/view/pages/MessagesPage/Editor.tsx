@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Avatar from '@material-ui/core/Avatar'
 import SendIcon from '@material-ui/icons/Send'
 import { connect } from 'react-redux'
@@ -19,11 +19,15 @@ import {
 interface Props {
   authToken: string
   currentNode: NodeTypes.CurrentNode
+  isPostMessageSuccess: boolean
   onMessagePost: (data: ApiTypes.Messages.PostMessage) => void
+  onPostMessageSucces: (value: boolean) => void
 }
 
 const Editor: React.SFC<Props> = (props) => {
   const [value, onValueChange] = useState<string>('')
+
+  const { isPostMessageSuccess, onPostMessageSucces } = props
 
   const onMessageSend = () => {
     if (!value) return
@@ -38,6 +42,13 @@ const Editor: React.SFC<Props> = (props) => {
 
     props.onMessagePost(data)
   }
+
+  useEffect(() => {
+    if (isPostMessageSuccess) {
+      onValueChange('')
+    }
+    onPostMessageSucces(false)
+  }, [isPostMessageSuccess])
 
   return (
     <MessageSticky>
@@ -60,15 +71,17 @@ const Editor: React.SFC<Props> = (props) => {
   )
 }
 
-type StateProps = Pick<Props, 'authToken' | 'currentNode'>
+type StateProps = Pick<Props, 'authToken' | 'currentNode' | 'isPostMessageSuccess'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   authToken: state.authorization.authToken,
   currentNode: selectors.messages.currentNode(state),
+  isPostMessageSuccess: selectors.messages.isPostMessageSuccess(state),
 })
 
-type DispatchProps = Pick<Props, 'onMessagePost'>
+type DispatchProps = Pick<Props, 'onMessagePost' | 'onPostMessageSucces'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onMessagePost: (data: ApiTypes.Messages.PostMessage) => dispatch(Actions.messages.postMessageRequest(data))
+  onMessagePost: (data: ApiTypes.Messages.PostMessage) => dispatch(Actions.messages.postMessageRequest(data)),
+  onPostMessageSucces: (value: boolean) => dispatch(Actions.messages.postMessageSucces(value)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Editor)

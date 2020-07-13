@@ -12,7 +12,7 @@ const authToken = localStorage.getItem('kotoAuthToken')
 const initialState: State = {
   isLogged: (isLogged === 'true') ? true : false,
   loginErrorMessage: '',
-  authToken: authToken ? authToken : ''
+  authToken: authToken ? JSON.parse(authToken) : ''
 }
 
 const reducer = (state = initialState, action) => {
