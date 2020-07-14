@@ -1,16 +1,28 @@
-import { put } from 'redux-saga/effects'
+import { put, all, call } from 'redux-saga/effects'
 import Actions from '@store/actions'
 import { API } from '@services/api'
 import { ApiTypes } from './../types'
 import { currentNodeBack2Front } from '@services/dataTransforms/currentNodeTransform'
 import { nodesForMessagesBack2Front } from '@services/dataTransforms/nodesForMessagesTransform'
-// import { checkUniqMessage } from '@services/dataTransforms/checkUniqMessage'
+import { Types as MessagesTypes } from '@store/messages/actions'
 
 export function* watchGetMessages() {
   const response = yield API.messages.getMessages()
 
   if (response.status === 200) {
-    yield put(Actions.messages.getMessagesSucces(nodesForMessagesBack2Front(response.data?.tokens)))
+    const messageTokens = nodesForMessagesBack2Front(response.data?.tokens)
+    yield put(Actions.messages.getMessagesSucces(messageTokens))
+
+    yield all(messageTokens.map(item => call(watchGetMessagesFromNode, {
+      type: MessagesTypes.GET_MESSAGES_FROM_NODE_REQUEST,
+      payload: {
+        host: item.host,
+        body: {
+          token: item.token,
+        }
+      },
+    })))
+
   } else {
     yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
@@ -21,16 +33,6 @@ export function* watchGetCurrentNode() {
 
   if (response.status === 200) {
     yield put(Actions.messages.getCurrentNodeSucces(currentNodeBack2Front(response.data?.tokens)))
-  } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
-  }
-}
-
-export function* watchPostMessage(action: { type: string, payload: ApiTypes.Messages.PostMessage }) {
-  const response = yield API.messages.postMessage(action.payload)
-
-  if (response.status === 200) {
-    yield put(Actions.messages.postMessageSucces(true))
   } else {
     yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
@@ -48,8 +50,19 @@ export function* watchGetMessagesFromNode(action: { type: string, payload: ApiTy
         return item
       })
     }
-    
+
     yield put(Actions.messages.getMessagesFromNodeSucces(resultData))
+  } else {
+    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
+export function* watchPostMessage(action: { type: string, payload: ApiTypes.Messages.PostMessage }) {
+  const response = yield API.messages.postMessage(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.messages.postMessageSucces(true))
+    yield put(Actions.messages.getMessagesRequest())
   } else {
     yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
@@ -60,6 +73,7 @@ export function* watchDeleteMessage(action: { type: string, payload: ApiTypes.Me
 
   if (response.status === 200) {
     yield put(Actions.messages.deleteMessageSucces())
+    yield put(Actions.messages.getMessagesRequest())
   } else {
     yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }

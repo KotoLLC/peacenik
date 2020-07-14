@@ -70,7 +70,7 @@ const RemoveMessageDialog: React.SFC<Props> = (props) => {
 
 type DispatchProps = Pick<Props, 'onDeleteMessage'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onDeleteMessage: (data: ApiTypes.Messages.DeleteMessage) => dispatch(Actions.messages.deleteMessageRequest(data))
+  onDeleteMessage: (data: ApiTypes.Messages.DeleteMessage) => dispatch(Actions.messages.deleteMessageRequest(data)),
 })
 
 export default connect(null, mapDispatchToProps)(RemoveMessageDialog)

@@ -20,6 +20,8 @@
 		"axios": "^0.19.2",
 		"core-js": "^3.6.5",
 		"lodash.isequal": "^4.5.0",
+		"lodash.unionwith": "^4.6.0",
+		"lodash.uniqby": "^4.7.0",
 		"moment": "^2.27.0",
 		"password-validator": "^5.0.3",
 		"react": "16.13.1",

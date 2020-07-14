@@ -21,25 +21,17 @@ interface Props {
 
 class MessageFeed extends React.Component<Props> {
 
-  componentDidUpdate(prevProps: Props) {
-    const { messageTokens, onGetMessagesFromNode } = this.props
-
-    if (messageTokens?.length !== prevProps.messageTokens?.length) {
-      messageTokens.forEach((item) => {
-        onGetMessagesFromNode({
-          host: item.host,
-          body: {
-            token: item.token,
-          }
-        })
-      })
-    }
-  }
+  timerId
 
   componentDidMount() {
     const { onGetMessages, onGetCurrentNode } = this.props
     onGetMessages()
     onGetCurrentNode()
+    this.timerId = setInterval(onGetMessages, 10000)
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerId)
   }
 
   mapMessages = (messages: ApiTypes.Messages.Message[]) => {
