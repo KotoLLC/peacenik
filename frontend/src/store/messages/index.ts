@@ -36,6 +36,11 @@ const reducer = (state = initialState, action) => {
         ...state, ...{ isMessagePostedSuccess: action.payload }
       }
     }
+    case Types.DELETE_MESSAGE_REQUEST: {
+      return {
+        ...state, ...{ messages: state.messages.filter(item => item.id !== action.payload.body.message_id) }
+      }
+    }
     case Types.GET_MESSAGES_FROM_NODE_SUCCESS: {
       return {
         ...state, ...{ 
