@@ -1,10 +1,11 @@
 import { Types } from './actions'
-import { ApiTypes, NodeTypes } from '../../types'
+import { NodeTypes, ApiTypes } from '../../types'
 
 export interface State {
-  messageTokens: ApiTypes.Token[]
+  messageTokens: NodeTypes.CurrentNode[]
   currentNode: NodeTypes.CurrentNode
-  isPostMessageSuccess: boolean
+  isMessagePostedSuccess: boolean
+  messages: ApiTypes.Messages.Message[]
 }
 
 const initialState: State = {
@@ -13,7 +14,8 @@ const initialState: State = {
     host: '',
     token: '',
   },
-  isPostMessageSuccess: false,
+  isMessagePostedSuccess: false,
+  messages: []
 }
 
 const reducer = (state = initialState, action) => {
@@ -30,7 +32,14 @@ const reducer = (state = initialState, action) => {
     }
     case Types.POST_MESSAGE_SUCCESS: {
       return {
-        ...state, ...{ isPostMessageSuccess: action.payload }
+        ...state, ...{ isMessagePostedSuccess: action.payload }
+      }
+    }
+    case Types.GET_MESSAGES_FROM_NODE_SUCCESS: {
+      return {
+        ...state, ...{ 
+          messages: [...state.messages, ...action.payload]
+        }
       }
     }
     default: return state

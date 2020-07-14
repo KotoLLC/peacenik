@@ -19,15 +19,14 @@ import {
 interface Props {
   authToken: string
   currentNode: NodeTypes.CurrentNode
-  isPostMessageSuccess: boolean
+  isMessagePostedSuccess: boolean
   onMessagePost: (data: ApiTypes.Messages.PostMessage) => void
   onPostMessageSucces: (value: boolean) => void
 }
 
 const Editor: React.SFC<Props> = (props) => {
   const [value, onValueChange] = useState<string>('')
-
-  const { isPostMessageSuccess, onPostMessageSucces } = props
+  const { isMessagePostedSuccess, onPostMessageSucces } = props
 
   const onMessageSend = () => {
     if (!value) return
@@ -39,16 +38,15 @@ const Editor: React.SFC<Props> = (props) => {
         text: value,
       }
     }
-
     props.onMessagePost(data)
   }
 
   useEffect(() => {
-    if (isPostMessageSuccess) {
+    if (isMessagePostedSuccess) {
       onValueChange('')
     }
     onPostMessageSucces(false)
-  }, [isPostMessageSuccess])
+  }, [isMessagePostedSuccess])
 
   return (
     <MessageSticky>
@@ -71,11 +69,11 @@ const Editor: React.SFC<Props> = (props) => {
   )
 }
 
-type StateProps = Pick<Props, 'authToken' | 'currentNode' | 'isPostMessageSuccess'>
+type StateProps = Pick<Props, 'authToken' | 'currentNode' | 'isMessagePostedSuccess'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   authToken: state.authorization.authToken,
   currentNode: selectors.messages.currentNode(state),
-  isPostMessageSuccess: selectors.messages.isPostMessageSuccess(state),
+  isMessagePostedSuccess: selectors.messages.isMessagePostedSuccess(state),
 })
 
 type DispatchProps = Pick<Props, 'onMessagePost' | 'onPostMessageSucces'>

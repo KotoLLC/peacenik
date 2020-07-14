@@ -90,6 +90,15 @@ export declare namespace ApiTypes {
         token: string,
       }
     }
+
+    export interface Message {
+      id: string
+      text: string
+      user_id: string
+      user_name: string
+      created_at: string
+      updated_at: string
+    }
   }
 
 }

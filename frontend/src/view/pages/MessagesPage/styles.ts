@@ -113,3 +113,8 @@ export const MessageSticky = styled.div`
   bottom: 0;
   z-index: 100;
 `
+
+export const EmptyMessage = styled.div`
+  text-align: center;
+  font-weight: bold;
+`
