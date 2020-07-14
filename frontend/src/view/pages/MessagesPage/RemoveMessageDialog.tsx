@@ -6,8 +6,8 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import IconButton from '@material-ui/core/IconButton'
 import { connect } from 'react-redux'
 import Tooltip from '@material-ui/core/Tooltip'
-// import { NodeTypes, ApiTypes } from '../../../types'
-// import Actions from '@store/actions'
+import { ApiTypes } from '../../../types'
+import Actions from '@store/actions'
 import {
   DialogTextWrapper,
   DialogTitleStyled,
@@ -17,15 +17,22 @@ import { CroppedText } from './styles'
 
 interface Props {
   message: string
-  onRemoveMessage: () => void
+  id: string
+  sourceHost: string
+  onDeleteMessage: (data: ApiTypes.Messages.DeleteMessage) => void
 }
 
 const RemoveMessageDialog: React.SFC<Props> = (props) => {
   const [open, setOpen] = React.useState(false)
-  const { message } = props
+  const { message, onDeleteMessage, id, sourceHost } = props
 
   const onRemove = () => {
-    // onRemoveMessage({id: id})
+    onDeleteMessage({
+      host: sourceHost,
+      body: {
+        message_id: id
+      }
+    })
     setOpen(false)
   }
 
@@ -61,9 +68,9 @@ const RemoveMessageDialog: React.SFC<Props> = (props) => {
   )
 }
 
-type DispatchProps = Pick<Props, 'onRemoveMessage'>
+type DispatchProps = Pick<Props, 'onDeleteMessage'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onRemoveMessage: () => {},
+  onDeleteMessage: (data: ApiTypes.Messages.DeleteMessage) => dispatch(Actions.messages.deleteMessageRequest(data))
 })
 
 export default connect(null, mapDispatchToProps)(RemoveMessageDialog)

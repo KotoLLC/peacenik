@@ -13,6 +13,9 @@ export enum Types {
 
   POST_MESSAGE_REQUEST = 'POST_MESSAGE_REQUEST',
   POST_MESSAGE_SUCCESS = 'POST_MESSAGE_SUCCESS',
+  
+  DELETE_MESSAGE_REQUEST = 'DELETE_MESSAGE_REQUEST',
+  DELETE_MESSAGE_SUCCESS = 'DELETE_MESSAGE_SUCCESS',
 }
 
 export const getMessagesRequest = () => ({
@@ -38,7 +41,7 @@ export const getMessagesFromNodeRequest = (payload: ApiTypes.Messages.MessagesFr
   payload,
 })
 
-export const getMessagesFromNodeSucces = (payload) => ({
+export const getMessagesFromNodeSucces = (payload: ApiTypes.Messages.Message[]) => ({
   type: Types.GET_MESSAGES_FROM_NODE_SUCCESS,
   payload
 })
@@ -53,6 +56,15 @@ export const postMessageSucces = (payload: boolean) => ({
   payload,
 })
 
+export const deleteMessageRequest = (payload: ApiTypes.Messages.DeleteMessage) => ({
+  type: Types.DELETE_MESSAGE_REQUEST,
+  payload
+})
+
+export const deleteMessageSucces = () => ({
+  type: Types.DELETE_MESSAGE_SUCCESS,
+})
+
 export default {
   getMessagesRequest,
   getMessagesSucces,
@@ -62,4 +74,6 @@ export default {
   postMessageSucces,
   getMessagesFromNodeRequest,
   getMessagesFromNodeSucces,
+  deleteMessageRequest,
+  deleteMessageSucces,
 }
