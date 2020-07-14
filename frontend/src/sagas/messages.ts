@@ -40,7 +40,26 @@ export function* watchGetMessagesFromNode(action: { type: string, payload: ApiTy
   const response = yield API.messages.getMessagesFromNode(action.payload)
 
   if (response.status === 200) {
-    yield put(Actions.messages.getMessagesFromNodeSucces(response.data?.messages))
+    let resultData = []
+
+    if (response.data?.messages?.length) {
+      resultData = response.data?.messages.map(item => {
+        item.sourceHost = action.payload.host
+        return item
+      })
+    }
+    
+    yield put(Actions.messages.getMessagesFromNodeSucces(resultData))
+  } else {
+    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
+export function* watchDeleteMessage(action: { type: string, payload: ApiTypes.Messages.DeleteMessage }) {
+  const response = yield API.messages.deleteMessage(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.messages.deleteMessageSucces())
   } else {
     yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }

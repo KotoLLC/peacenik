@@ -83,6 +83,13 @@ export declare namespace ApiTypes {
         text: string,
       }
     }
+    
+    export interface DeleteMessage {
+      host: string,
+      body: {
+        message_id: string,
+      }
+    }
 
     export interface MessagesFromNode {
       host: string,
@@ -92,6 +99,7 @@ export declare namespace ApiTypes {
     }
 
     export interface Message {
+      sourceHost: string
       id: string
       text: string
       user_id: string

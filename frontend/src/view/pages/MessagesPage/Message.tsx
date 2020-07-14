@@ -25,7 +25,7 @@ interface Props extends ApiTypes.Messages.Message {
 }
 
 export const Message: React.SFC<Props> = (props) => {
-  const { text, user_name, created_at, isAuthor } = props
+  const { text, user_name, created_at, isAuthor, id, sourceHost } = props
   const [isEditer, setEditor] = useState<boolean>(false)
   const [message, onMessageChange] = useState<string>(text)
 
@@ -45,7 +45,7 @@ export const Message: React.SFC<Props> = (props) => {
               <EditIcon />
             </IconButton>
           </Tooltip>
-          <RemoveMessageDialog message={message} />
+          <RemoveMessageDialog {...{message, id, sourceHost}} />
         </ButtonsWrapper>}
       </MessageHeader>
       {
@@ -60,7 +60,6 @@ export const Message: React.SFC<Props> = (props) => {
           </EditMessageWrapper>
           : <MessageContent>{message}</MessageContent>
       }
-
     </PaperStyled>
   )
 }
