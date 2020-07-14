@@ -1,5 +1,6 @@
 import { Types } from './actions'
 import { NodeTypes, ApiTypes } from '../../types'
+import uniqBy from 'lodash.uniqby'
 
 export interface State {
   messageTokens: NodeTypes.CurrentNode[]
@@ -38,7 +39,7 @@ const reducer = (state = initialState, action) => {
     case Types.GET_MESSAGES_FROM_NODE_SUCCESS: {
       return {
         ...state, ...{ 
-          messages: [...state.messages, ...action.payload]
+          messages: uniqBy([...state.messages, ...action.payload], 'id')
         }
       }
     }
