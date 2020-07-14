@@ -12,6 +12,7 @@ go build -o node-service ./node/cmd/
 cd ..
 cd frontend
 npm install
-npm run start &
-
+npm run build
+npm install -g serve
+serve -s build &
 wait
