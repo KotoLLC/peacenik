@@ -18,10 +18,16 @@ import {
   EditMessageWrapper,
   ButtonSend,
 } from './styles'
+import { ApiTypes } from './../../../types'
 
-export const Message = () => {
+interface Props extends ApiTypes.Messages.Message {
+  isAuthor: boolean
+}
+
+export const Message: React.SFC<Props> = (props) => {
+  const { text, user_name, created_at, isAuthor } = props
   const [isEditer, setEditor] = useState<boolean>(false)
-  const [message, onMessageChange] = useState<string>('Lorem, ipsum dolor sit amet consectetur adipisicing elit. Tenetur consequatur quis saepe numquam! Voluptates fugit rerum nisi impedit deserunt quae quam tempora dolorum, ipsam modi ut animi optio quo quibusdam quos est enim facere? Natus ratione, dolorem ipsa doloremque harum, exercitationem, beatae ea accusantium incidunt consequatur magnam hic veniam. Quas?')
+  const [message, onMessageChange] = useState<string>(text)
 
   return (
     <PaperStyled>
@@ -29,18 +35,18 @@ export const Message = () => {
         <UserInfo>
           <Avatar variant="rounded" />
           <UserNameWrapper>
-            <UserName>User Name</UserName>
-            <MessageDate>{moment('2020-07-11').fromNow()}</MessageDate>
+            <UserName>{user_name}</UserName>
+            <MessageDate>{moment(created_at).fromNow()}</MessageDate>
           </UserNameWrapper>
         </UserInfo>
-        <ButtonsWrapper>
+        {isAuthor && <ButtonsWrapper>
           <Tooltip title={`Edit`}>
             <IconButton onClick={() => setEditor(!isEditer)} color="inherit">
               <EditIcon />
             </IconButton>
           </Tooltip>
-          <RemoveMessageDialog message={message}/>
-        </ButtonsWrapper>
+          <RemoveMessageDialog message={message} />
+        </ButtonsWrapper>}
       </MessageHeader>
       {
         isEditer ?

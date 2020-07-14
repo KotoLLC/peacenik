@@ -4,6 +4,7 @@ import { API } from '@services/api'
 import { ApiTypes } from './../types'
 import { currentNodeBack2Front } from '@services/dataTransforms/currentNodeTransform'
 import { nodesForMessagesBack2Front } from '@services/dataTransforms/nodesForMessagesTransform'
+// import { checkUniqMessage } from '@services/dataTransforms/checkUniqMessage'
 
 export function* watchGetMessages() {
   const response = yield API.messages.getMessages()
@@ -30,6 +31,16 @@ export function* watchPostMessage(action: { type: string, payload: ApiTypes.Mess
 
   if (response.status === 200) {
     yield put(Actions.messages.postMessageSucces(true))
+  } else {
+    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
+export function* watchGetMessagesFromNode(action: { type: string, payload: ApiTypes.Messages.MessagesFromNode }) {
+  const response = yield API.messages.getMessagesFromNode(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.messages.getMessagesFromNodeSucces(response.data?.messages))
   } else {
     yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }

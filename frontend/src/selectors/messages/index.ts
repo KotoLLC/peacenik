@@ -1,13 +1,15 @@
 import { createSelector } from 'reselect'
 import { selector, deepEqualSelector } from '../common'
 
-const messages = createSelector(selector, data => data.messages)
-const messageTokens = createSelector(messages, data => data.messageTokens)
-const currentNode = deepEqualSelector(messages, data => data.currentNode)
-const isPostMessageSuccess = deepEqualSelector(messages, data => data.isPostMessageSuccess)
+const state = createSelector(selector, data => data.messages)
+const messageTokens = deepEqualSelector(state, data => data.messageTokens)
+const currentNode = deepEqualSelector(state, data => data.currentNode)
+const isMessagePostedSuccess = deepEqualSelector(state, data => data.isMessagePostedSuccess)
+const messages = deepEqualSelector(state, data => data.messages)
 
 export default {
   messageTokens,
   currentNode,
-  isPostMessageSuccess,
+  isMessagePostedSuccess,
+  messages,
 }

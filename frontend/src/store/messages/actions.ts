@@ -8,6 +8,9 @@ export enum Types {
   GET_CURRENT_NODE_REQUEST = 'GET_CURRENT_NODE_REQUEST',
   GET_CURRENT_NODE_SUCCESS = 'GET_CURRENT_NODE_SUCCESS',
 
+  GET_MESSAGES_FROM_NODE_REQUEST = 'GET_MESSAGES_FROM_NODE_REQUEST',
+  GET_MESSAGES_FROM_NODE_SUCCESS = 'GET_MESSAGES_FROM_NODE_SUCCESS',
+
   POST_MESSAGE_REQUEST = 'POST_MESSAGE_REQUEST',
   POST_MESSAGE_SUCCESS = 'POST_MESSAGE_SUCCESS',
 }
@@ -30,6 +33,16 @@ export const getCurrentNodeSucces = (payload: NodeTypes.CurrentNode) => ({
   payload
 })
 
+export const getMessagesFromNodeRequest = (payload: ApiTypes.Messages.MessagesFromNode) => ({
+  type: Types.GET_MESSAGES_FROM_NODE_REQUEST,
+  payload,
+})
+
+export const getMessagesFromNodeSucces = (payload) => ({
+  type: Types.GET_MESSAGES_FROM_NODE_SUCCESS,
+  payload
+})
+
 export const postMessageRequest = (payload: ApiTypes.Messages.PostMessage) => ({
   type: Types.POST_MESSAGE_REQUEST,
   payload
@@ -47,4 +60,6 @@ export default {
   getCurrentNodeSucces,
   postMessageRequest,
   postMessageSucces,
+  getMessagesFromNodeRequest,
+  getMessagesFromNodeSucces,
 }
