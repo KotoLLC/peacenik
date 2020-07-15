@@ -156,6 +156,10 @@ func (r *messageRepo) DeleteMessage(userID, messageID string) error {
 }
 
 func (r *messageRepo) Comments(messageIDs []string) ([]Comment, error) {
+	if len(messageIDs) == 0 {
+		return nil, nil
+	}
+
 	var comments []Comment
 	query, args, err := sqlx.In(`
 		select id, message_id, user_id, user_name, text, created_at, updated_at
