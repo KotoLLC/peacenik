@@ -1,10 +1,12 @@
-import React, { useState } from 'react'
+import React, { useState, KeyboardEvent } from 'react'
 import Avatar from '@material-ui/core/Avatar'
 import EditIcon from '@material-ui/icons/Edit'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import RemoveMessageDialog from './RemoveMessageDialog'
 import moment from 'moment'
+import { connect } from 'react-redux'
+import Actions from '@store/actions'
 import {
   PaperStyled,
   MessageHeader,
@@ -22,12 +24,30 @@ import { ApiTypes } from './../../../types'
 
 interface Props extends ApiTypes.Messages.Message {
   isAuthor: boolean
+  onMessageEdit: (data: ApiTypes.Messages.EditMessage) => void
 }
 
-export const Message: React.SFC<Props> = (props) => {
+const Message: React.SFC<Props> = (props) => {
   const { text, user_name, created_at, isAuthor, id, sourceHost } = props
   const [isEditer, setEditor] = useState<boolean>(false)
   const [message, onMessageChange] = useState<string>(text)
+
+  const onMessageSave = () => {
+    setEditor(false)
+    props.onMessageEdit({
+      host: sourceHost,
+      body: {
+        message_id: id,
+        text: message,
+      }
+    })
+  }
+
+  const onComandEnterDown = (event) => {
+    if (event.keyCode === 13 && (event.metaKey || event.ctrlKey)) {
+      onMessageSave()
+    }
+  }
 
   return (
     <PaperStyled>
@@ -45,17 +65,20 @@ export const Message: React.SFC<Props> = (props) => {
               <EditIcon />
             </IconButton>
           </Tooltip>
-          <RemoveMessageDialog {...{message, id, sourceHost}} />
+          <RemoveMessageDialog {...{ message, id, sourceHost }} />
         </ButtonsWrapper>}
       </MessageHeader>
       {
         isEditer ?
           <EditMessageWrapper>
-            <TextareaAutosizeStyled value={message} onChange={(evant) => onMessageChange(evant.currentTarget.value)} />
+            <TextareaAutosizeStyled
+              onKeyDown={onComandEnterDown}
+              value={message}
+              onChange={(evant) => onMessageChange(evant.currentTarget.value)} />
             <ButtonSend
               variant="contained"
               color="primary"
-              onClick={() => setEditor(false)}
+              onClick={onMessageSave}
             >Save</ButtonSend>
           </EditMessageWrapper>
           : <MessageContent>{message}</MessageContent>
@@ -63,3 +86,10 @@ export const Message: React.SFC<Props> = (props) => {
     </PaperStyled>
   )
 }
+
+type DispatchProps = Pick<Props, 'onMessageEdit'>
+const mapDispatchToProps = (dispatch): DispatchProps => ({
+  onMessageEdit: (data: ApiTypes.Messages.EditMessage) => dispatch(Actions.messages.editMessageRequest(data))
+})
+
+export default connect(null, mapDispatchToProps)(Message)

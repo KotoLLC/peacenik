@@ -78,3 +78,13 @@ export function* watchDeleteMessage(action: { type: string, payload: ApiTypes.Me
     yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
+
+export function* watchEditMessage(action: { type: string, payload: ApiTypes.Messages.EditMessage }) {
+  const response = yield API.messages.editMessage(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.messages.deleteMessageSucces())
+  } else {
+    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}

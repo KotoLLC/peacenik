@@ -90,6 +90,14 @@ export declare namespace ApiTypes {
         message_id: string,
       }
     }
+    
+    export interface EditMessage {
+      host: string,
+      body: {
+        message_id: string,
+        text: string,
+      }
+    }
 
     export interface MessagesFromNode {
       host: string,
