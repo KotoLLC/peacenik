@@ -1,7 +1,7 @@
 import React from 'react'
 import { ContainerStyled, EmptyMessage } from './styles'
 import Editor from './Editor'
-import { Message } from './Message'
+import Message from './Message'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'

@@ -31,6 +31,7 @@ import {
     watchPostMessage,
     watchGetMessagesFromNode,
     watchDeleteMessage,
+    watchEditMessage,
 } from './messages'
 
 export function* rootSaga() {
@@ -54,5 +55,6 @@ export function* rootSaga() {
         takeEvery(MessagesTypes.POST_MESSAGE_REQUEST, watchPostMessage),
         takeEvery(MessagesTypes.GET_MESSAGES_FROM_NODE_REQUEST, watchGetMessagesFromNode),
         takeEvery(MessagesTypes.DELETE_MESSAGE_REQUEST, watchDeleteMessage),
+        takeEvery(MessagesTypes.EDIT_MESSAGE_REQUEST, watchEditMessage),
     ])
 }

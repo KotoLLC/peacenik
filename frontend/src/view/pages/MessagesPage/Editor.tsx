@@ -41,6 +41,12 @@ const Editor: React.SFC<Props> = (props) => {
     props.onMessagePost(data)
   }
 
+  const onComandEnterDown = (event) => {
+    if (event.keyCode === 13 && (event.metaKey || event.ctrlKey)) {
+      onMessageSend()
+    }
+  }
+
   useEffect(() => {
     if (isMessagePostedSuccess) {
       onValueChange('')
@@ -55,7 +61,10 @@ const Editor: React.SFC<Props> = (props) => {
           <Avatar variant="rounded" />
           <EditorWrapper>
             <TextareaTitle className={value.length ? 'active' : ''}>Post a message to your friend</TextareaTitle>
-            <TextareaAutosizeStyled value={value} onChange={(evant) => onValueChange(evant.currentTarget.value)} />
+            <TextareaAutosizeStyled 
+              value={value} 
+              onKeyDown={onComandEnterDown}
+              onChange={(evant) => onValueChange(evant.currentTarget.value)} />
             <ButtonSend
               variant="contained"
               color="primary"
