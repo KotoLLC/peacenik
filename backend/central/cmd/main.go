@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/mreider/koto/backend/central"
 	"github.com/mreider/koto/backend/central/migrate"
@@ -17,11 +18,13 @@ func main() {
 	var dbPath string
 	var privateKeyPath string
 	var adminList string
+	var tokenDurationSeconds int
 
 	flag.StringVar(&listenAddress, "address", ":12001", "http address to listen")
 	flag.StringVar(&dbPath, "db", "central.db", "path to Sqlite DB file")
 	flag.StringVar(&privateKeyPath, "key", "central.rsa", "path to private key file")
 	flag.StringVar(&adminList, "admin", "", "administrator names (comma-separated)")
+	flag.IntVar(&tokenDurationSeconds, "token-duration", 60*60, "token duration (seconds)")
 	flag.Parse()
 
 	admins := make(map[string]bool)
@@ -52,7 +55,7 @@ func main() {
 		Node:   repo.NewNodes(db),
 	}
 
-	server := central.NewServer(listenAddress, string(publicKeyPEM), admins, repos, tokenGenerator)
+	server := central.NewServer(listenAddress, string(publicKeyPEM), admins, repos, tokenGenerator, time.Second*time.Duration(tokenDurationSeconds))
 	err = server.Run()
 	if err != nil {
 		log.Fatalln(err)

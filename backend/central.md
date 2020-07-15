@@ -13,7 +13,7 @@ go build -o central-service ./central/cmd/
 # Run
 
 ```
-./central-service -address ":12001" -db central.db -key central.rsa -admin admin@mail.org
+./central-service -address ":12001" -db central.db -key central.rsa -admin admin@mail.org [-token-duration 3600]
 ```
 
 # API
