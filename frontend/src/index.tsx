@@ -1,12 +1,15 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import { Provider } from 'react-redux'
+import { Provider, connect } from 'react-redux'
 import { ErrorBoundary } from '@view/ErrorBoundary'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
 import { CssBaseline } from '@material-ui/core'
 import { store } from '@store/store'
 import { Routes } from '@view/routes'
 import Notify from '@view/shared/Notify'
+import { StoreTypes } from './types'
+import selectors from '@selectors/index'
+import Actions from '@store/actions'
 
 const theme = createMuiTheme({
   typography: {
@@ -14,21 +17,47 @@ const theme = createMuiTheme({
   },
 })
 
-class App extends React.Component<{}> {
+interface Props {
+  isLogged: boolean
+  onGetAuthToken: () => void
+}
+
+class AppComponent extends React.Component<Props> {
+
+  componentDidMount() {
+    setInterval(() => {
+      const { isLogged, onGetAuthToken } = this.props
+      if (isLogged) {
+        onGetAuthToken()
+      }
+    }, 1200 * 1000)
+  }
 
   render() {
     return (
-      <Provider store={store}>
-        <ErrorBoundary>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <Routes/>
-            <Notify/>
-          </ThemeProvider>
-        </ErrorBoundary>
-      </Provider>
+      <ErrorBoundary>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Routes />
+          <Notify />
+        </ThemeProvider>
+      </ErrorBoundary>
     )
   }
 }
 
-ReactDOM.render(<App />, document.getElementById('root') as HTMLElement)
+type StateProps = Pick<Props, 'isLogged'>
+const mapStateToProps = (state: StoreTypes): StateProps => ({
+  isLogged: selectors.authorization.isLogged(state),
+})
+
+type DispatchProps = Pick<Props, 'onGetAuthToken'>
+const mapDispatchToProps = (dispatch): DispatchProps => ({
+  onGetAuthToken: () => dispatch(Actions.authorization.getAuthTokenRequest())
+})
+
+const App = connect(mapStateToProps, mapDispatchToProps)(AppComponent)
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>, document.getElementById('root') as HTMLElement)
