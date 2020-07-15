@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -30,10 +31,11 @@ type Server struct {
 	admins         map[string]bool
 	repos          repo.Repos
 	tokenGenerator token.Generator
+	tokenDuration  time.Duration
 	sessionStore   *sessions.CookieStore
 }
 
-func NewServer(listenAddr, pubKeyPEM string, admins map[string]bool, repos repo.Repos, tokenGenerator token.Generator) *Server {
+func NewServer(listenAddr, pubKeyPEM string, admins map[string]bool, repos repo.Repos, tokenGenerator token.Generator, tokenDuration time.Duration) *Server {
 	sessionStore := sessions.NewCookieStore([]byte(cookieAuthenticationKey))
 	sessionStore.Options.HttpOnly = true
 	sessionStore.Options.MaxAge = 0
@@ -44,6 +46,7 @@ func NewServer(listenAddr, pubKeyPEM string, admins map[string]bool, repos repo.
 		admins:         admins,
 		repos:          repos,
 		tokenGenerator: tokenGenerator,
+		tokenDuration:  tokenDuration,
 		sessionStore:   sessionStore,
 	}
 }
@@ -65,7 +68,7 @@ func (s *Server) Run() error {
 	infoServiceHandler := rpc.NewInfoServiceServer(infoService, rpcHooks)
 	r.Handle(infoServiceHandler.PathPrefix()+"*", infoServiceHandler)
 
-	tokenService := services.NewToken(baseService, s.tokenGenerator)
+	tokenService := services.NewToken(baseService, s.tokenGenerator, s.tokenDuration)
 	tokenServiceHandler := rpc.NewTokenServiceServer(tokenService, rpcHooks)
 	r.Handle(tokenServiceHandler.PathPrefix()+"*", s.checkAuth(tokenServiceHandler))
 
