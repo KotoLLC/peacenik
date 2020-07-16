@@ -8,7 +8,7 @@ import { TopMenu } from './TopMenu'
 import { 
   TooltipStyle, 
   IconButtonStyled, 
-  TypographyStyled, 
+  LogoWrapper, 
   TopBarRightSide 
 } from './styles'
 
@@ -27,7 +27,7 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
   return (
     <AppBar position="fixed" color="primary">
       <Toolbar>
-        <TypographyStyled variant="h6">Koto</TypographyStyled>
+        <LogoWrapper to="/messages">Koto</LogoWrapper>
         <TopBarRightSide>
           <TopMenu />
           <TooltipStyle title={`Logout`}>

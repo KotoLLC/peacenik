@@ -49,10 +49,10 @@ class MessageFeed extends React.Component<Props> {
 
     return (
       <ContainerStyled maxWidth="md">
-        {this.mapMessages(messages)}
         {(currentNode.host)
           ? <Editor />
           : <EmptyMessage>To send messages you need to <Link to="/nodes/create">register the node</Link></EmptyMessage>}
+        {this.mapMessages(messages)}
       </ContainerStyled>
     )
   }

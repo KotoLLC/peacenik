@@ -10,6 +10,7 @@ import Notify from '@view/shared/Notify'
 import { StoreTypes } from './types'
 import selectors from '@selectors/index'
 import Actions from '@store/actions'
+import moment from 'moment'
 
 const theme = createMuiTheme({
   typography: {
@@ -24,13 +25,34 @@ interface Props {
 
 class AppComponent extends React.Component<Props> {
 
-  componentDidMount() {
-    setInterval(() => {
-      const { isLogged, onGetAuthToken } = this.props
-      if (isLogged) {
-        onGetAuthToken()
+  checkTokenTime = () => {
+    const authTokenDate = localStorage.getItem('kotoAuthTokenDate')
+
+    if (authTokenDate) {
+      const lastTokenDate = moment(JSON.parse(authTokenDate))
+      const dateNow = new Date()
+      const diffTime = moment(dateNow).diff(lastTokenDate) / 1000 // in seconds
+
+      if (diffTime > 1800) {
+        this.props.onGetAuthToken()  
       }
-    }, 1200 * 1000)
+
+    } else {
+      this.props.onGetAuthToken()
+    }
+  }
+
+  componentDidMount() {  
+    
+    if (this.props.isLogged) {
+      this.checkTokenTime()
+    }
+
+    setInterval(() => {
+      if (this.props.isLogged) {
+        this.checkTokenTime()
+      }
+    }, 5000)
   }
 
   render() {
