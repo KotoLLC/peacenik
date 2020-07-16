@@ -12,7 +12,7 @@ export function* watchlogin(action: { type: string, payload: ApiTypes.Login }) {
     yield put(Actions.profile.getProfileRequest())
     yield put(Actions.authorization.getAuthTokenRequest())
   } else {
-    yield put(Actions.authorization.loginFailed(response?.error?.response?.data?.msg || 'Server error'))
+    yield put(Actions.authorization.loginFailed(response?.error?.response?.data || 'Server error'))
   }
 }
 
@@ -28,8 +28,9 @@ export function* watchGetAuthToken() {
 
   if (response.status === 200) {
     localStorage.setItem('kotoAuthToken', JSON.stringify(response.data?.token))
+    localStorage.setItem('kotoAuthTokenDate', JSON.stringify(new Date()))
     yield put(Actions.authorization.getAuthTokenSucces(response.data?.token))
   } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
   }
 }

@@ -1,4 +1,4 @@
-import React, { useState, KeyboardEvent } from 'react'
+import React, { useState } from 'react'
 import Avatar from '@material-ui/core/Avatar'
 import EditIcon from '@material-ui/icons/Edit'
 import IconButton from '@material-ui/core/IconButton'

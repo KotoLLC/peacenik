@@ -109,9 +109,9 @@ export const CroppedText = styled.p`
 `
 
 export const MessageSticky = styled.div`
-  position: sticky;
-  bottom: 0;
-  z-index: 100;
+  /* position: sticky; */
+  /* bottom: 0; */
+  /* z-index: 100; */
 `
 
 export const EmptyMessage = styled.div`

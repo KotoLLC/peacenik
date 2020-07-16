@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
@@ -8,6 +7,7 @@ import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
+import { Link } from 'react-router-dom'
 
 export const TooltipStyle = styled(Tooltip)`
   && {
@@ -21,10 +21,11 @@ export const IconButtonStyled = styled(IconButton)`
   }
 `
 
-export const TypographyStyled = styled(Typography)`
-  && {
-    font-weight: bold;
-  }
+export const LogoWrapper = styled(Link)`
+  font-size: 1.25rem;
+  font-weight: bold;
+  text-decoration: none;
+  color: #fff;
 `
 
 export const ListItemIconStyled = styled(ListItemIcon)`
