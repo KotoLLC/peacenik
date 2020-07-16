@@ -4,6 +4,7 @@ import Paper from '@material-ui/core/Paper'
 import TextareaAutosize from 'react-autosize-textarea'
 import Button from '@material-ui/core/Button'
 import Link from '@material-ui/core/Link'
+import IconButton from '@material-ui/core/IconButton'
 
 export const ContainerStyled = styled(Container)`
   && {
@@ -117,4 +118,11 @@ export const MessageSticky = styled.div`
 export const EmptyMessage = styled.div`
   text-align: center;
   font-weight: bold;
+`
+
+export const UpButton = styled(IconButton)`
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 1000;
 `
