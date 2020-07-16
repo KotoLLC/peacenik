@@ -1,13 +1,18 @@
 import React from 'react'
-import { ContainerStyled, EmptyMessage } from './styles'
 import Editor from './Editor'
 import Message from './Message'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'
-import { StoreTypes, ApiTypes, NodeTypes } from './../../../types'
 import { Link } from 'react-router-dom'
+import { StoreTypes, ApiTypes, NodeTypes } from './../../../types'
+import {
+  ContainerStyled,
+  EmptyMessage,
+  UpButton
+} from './styles'
 import { sortByDate } from '@services/sortByDate'
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 
 interface Props {
   messageTokens: NodeTypes.CurrentNode[]
@@ -22,6 +27,8 @@ interface Props {
 class MessageFeed extends React.Component<Props> {
 
   timerId
+  
+  editorRef = React.createRef<HTMLDivElement>()
 
   componentDidMount() {
     const { onGetMessages, onGetCurrentNode } = this.props
@@ -44,15 +51,22 @@ class MessageFeed extends React.Component<Props> {
     )
   }
 
+  onScrollUp = () => {
+    this.editorRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+  }
+    
   render() {
     const { currentNode, messages } = this.props
 
     return (
       <ContainerStyled maxWidth="md">
         {(currentNode.host)
-          ? <Editor />
+          ? <div ref={this.editorRef}><Editor /></div>
           : <EmptyMessage>To send messages you need to <Link to="/nodes/create">register the node</Link></EmptyMessage>}
         {this.mapMessages(messages)}
+        <UpButton color="inherit" onClick={this.onScrollUp}>
+          <ArrowUpwardIcon />
+        </UpButton>
       </ContainerStyled>
     )
   }
