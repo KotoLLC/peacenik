@@ -46,6 +46,7 @@ export function* watchGetMessagesFromNode(action: { type: string, payload: ApiTy
     if (response.data?.messages?.length) {
       resultData = response.data?.messages.map(item => {
         item.sourceHost = action.payload.host
+        item.messageToken = action.payload.body.token
         return item
       })
     }
@@ -82,6 +83,17 @@ export function* watchEditMessage(action: { type: string, payload: ApiTypes.Mess
 
   if (response.status === 200) {
     yield put(Actions.messages.deleteMessageSucces())
+  } else {
+    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
+  }
+}
+
+export function* watchPostComment(action: { type: string, payload: ApiTypes.Messages.PostComment }) {
+  const response = yield API.messages.postComment(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.messages.postCommentSucces(true))
+    yield put(Actions.messages.getMessagesRequest())
   } else {
     yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
   }

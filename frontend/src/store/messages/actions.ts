@@ -19,6 +19,9 @@ export enum Types {
   
   EDIT_MESSAGE_REQUEST = 'EDIT_MESSAGE_REQUEST',
   EDIT_MESSAGE_SUCCESS = 'EDIT_MESSAGE_SUCCESS',
+
+  POST_COMMENT_REQUEST = 'POST_COMMENT_REQUEST',
+  POST_COMMENT_SUCCESS = 'POST_COMMENT_SUCCESS',
 }
 
 export const getMessagesRequest = () => ({
@@ -77,6 +80,16 @@ export const editMessageSucces = () => ({
   type: Types.EDIT_MESSAGE_SUCCESS,
 })
 
+export const postCommentRequest = (payload: ApiTypes.Messages.PostComment) => ({
+  type: Types.POST_COMMENT_REQUEST,
+  payload
+})
+
+export const postCommentSucces = (payload: boolean) => ({
+  type: Types.POST_COMMENT_SUCCESS,
+  payload,
+})
+
 export default {
   getMessagesRequest,
   getMessagesSucces,
@@ -90,4 +103,6 @@ export default {
   deleteMessageSucces,
   editMessageRequest,
   editMessageSucces,
+  postCommentRequest,
+  postCommentSucces,
 }

@@ -39,7 +39,7 @@ const RemoveMessageDialog: React.SFC<Props> = (props) => {
   return (
     <div>
       <Tooltip title={`Delete`}>
-        <IconButton onClick={() => setOpen(true)} color="inherit">
+        <IconButton onClick={() => setOpen(true)}>
           <DeleteIcon />
         </IconButton>
       </Tooltip>

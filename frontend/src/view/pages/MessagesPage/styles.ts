@@ -19,6 +19,21 @@ export const PaperStyled = styled(Paper)`
   }
 `
 
+export const CommentsWrapepr = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+`
+
+export const CommentWrapper = styled(Paper)`
+  && {
+    background: #EEEEEE;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    width: calc(100% - 80px);
+  }
+`
+
 export const CreateWrapper = styled.div`
   display: flex;
 `
@@ -40,6 +55,7 @@ export const TextareaAutosizeStyled = styled(TextareaAutosize)`
   line-height: 1.5;
   margin-top: 5px;
   margin-bottom: 5px;
+  background: transparent;
 `
 
 export const ButtonSend = styled(Button)`
@@ -125,4 +141,15 @@ export const UpButton = styled(IconButton)`
   right: 20px;
   bottom: 20px;
   z-index: 1000;
+`
+
+export const CommentsLinkWrapper = styled.div`
+  text-align: right;
+`
+
+export const CommentsLink = styled(Link)`
+  && {
+    cursor: pointer;
+    color: #1976d2;
+  }
 `

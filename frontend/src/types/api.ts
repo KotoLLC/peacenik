@@ -84,6 +84,15 @@ export declare namespace ApiTypes {
       }
     }
     
+    export interface PostComment {
+      host: string,
+      body: {
+        token: string,
+        text: string,
+        message_id: string,
+      }
+    }
+    
     export interface DeleteMessage {
       host: string,
       body: {
@@ -107,6 +116,18 @@ export declare namespace ApiTypes {
     }
 
     export interface Message {
+      sourceHost: string
+      messageToken: string
+      id: string
+      text: string
+      user_id: string
+      user_name: string
+      created_at: string
+      updated_at: string
+      comments?: Comment[] 
+    }
+    
+    export interface Comment {
       sourceHost: string
       id: string
       text: string
