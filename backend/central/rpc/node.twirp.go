@@ -849,7 +849,7 @@ func (s *nodeServiceServer) serveRemoveProtobuf(ctx context.Context, resp http.R
 }
 
 func (s *nodeServiceServer) ServiceDescriptor() ([]byte, int) {
-	return twirpFileDescriptor3, 0
+	return twirpFileDescriptor4, 0
 }
 
 func (s *nodeServiceServer) ProtocGenTwirpVersion() string {
@@ -860,7 +860,7 @@ func (s *nodeServiceServer) PathPrefix() string {
 	return NodeServicePathPrefix
 }
 
-var twirpFileDescriptor3 = []byte{
+var twirpFileDescriptor4 = []byte{
 	// 360 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x52, 0xc1, 0x6a, 0xea, 0x40,
 	0x14, 0x25, 0x51, 0x13, 0xbd, 0x81, 0x07, 0x6f, 0x1e, 0x4f, 0x43, 0x40, 0x2a, 0x59, 0x09, 0xb5,
