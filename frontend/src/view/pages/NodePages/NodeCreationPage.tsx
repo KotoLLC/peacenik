@@ -129,7 +129,9 @@ class NodeCreation extends React.PureComponent<Props, State> {
         </TitleWrapper>
         <FormWrapper onSubmit={this.onFormSubmit}>
           <FormControlStyled variant="outlined">
-            <InputLabel htmlFor="name">Domain or IP address</InputLabel>
+            <InputLabel 
+              htmlFor="name" 
+              color={(noValideField === 'node-name') ? 'secondary' : 'primary'}>Domain or IP address</InputLabel>
             <OutlinedInput
               id="node-name"
               type={'text'}
