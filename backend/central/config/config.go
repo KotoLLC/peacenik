@@ -1,0 +1,68 @@
+package config
+
+import (
+	"fmt"
+	"io"
+	"time"
+
+	"gopkg.in/yaml.v2"
+)
+
+var (
+	defaultListenAddress        = ":12001"
+	defaultDBPath               = "central.db"
+	defaultPrivateKeyPath       = "central.rsa"
+	defaultTokenDurationSeconds = 3600
+)
+
+type Config struct {
+	ListenAddress        string   `yaml:"address"`
+	DBPath               string   `yaml:"db"`
+	PrivateKeyPath       string   `yaml:"private_key_path"`
+	Admins               []string `yaml:"admins"`
+	TokenDurationSeconds int      `yaml:"token_duration"`
+
+	S3 struct {
+		Endpoint string `yaml:"endpoint"`
+		Region   string `yaml:"region"`
+		Key      string `yaml:"key"`
+		Secret   string `yaml:"secret"`
+		Bucket   string `yaml:"bucket"`
+	} `yaml:"s3"`
+}
+
+func Read(r io.Reader) (Config, error) {
+	var cfg Config
+	err := yaml.NewDecoder(r).Decode(&cfg)
+	if err != nil {
+		return Config{}, fmt.Errorf("can't parse config file: %w", err)
+	}
+
+	if cfg.ListenAddress == "" {
+		cfg.ListenAddress = defaultListenAddress
+	}
+	if cfg.DBPath == "" {
+		cfg.DBPath = defaultDBPath
+	}
+	if cfg.PrivateKeyPath == "" {
+		cfg.PrivateKeyPath = defaultPrivateKeyPath
+	}
+	if cfg.TokenDurationSeconds == 0 {
+		cfg.TokenDurationSeconds = defaultTokenDurationSeconds
+	}
+
+	return cfg, nil
+}
+
+func (cfg Config) TokenDuration() time.Duration {
+	return time.Duration(cfg.TokenDurationSeconds) * time.Second
+}
+
+func (cfg Config) IsAdmin(user string) bool {
+	for _, admin := range cfg.Admins {
+		if admin == user {
+			return true
+		}
+	}
+	return false
+}

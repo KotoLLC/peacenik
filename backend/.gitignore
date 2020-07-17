@@ -19,3 +19,4 @@
 *.rsa
 /central-service
 /node-service
+central-config.yml

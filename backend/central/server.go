@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -13,9 +12,11 @@ import (
 	"github.com/twitchtv/twirp"
 
 	"github.com/mreider/koto/backend/central/bcrypt"
+	"github.com/mreider/koto/backend/central/config"
 	"github.com/mreider/koto/backend/central/repo"
 	"github.com/mreider/koto/backend/central/rpc"
 	"github.com/mreider/koto/backend/central/services"
+	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/token"
 )
 
@@ -26,27 +27,25 @@ const (
 )
 
 type Server struct {
-	listenAddr     string
+	cfg            config.Config
 	pubKeyPEM      string
-	admins         map[string]bool
 	repos          repo.Repos
 	tokenGenerator token.Generator
-	tokenDuration  time.Duration
+	s3Storage      *common.S3Storage
 	sessionStore   *sessions.CookieStore
 }
 
-func NewServer(listenAddr, pubKeyPEM string, admins map[string]bool, repos repo.Repos, tokenGenerator token.Generator, tokenDuration time.Duration) *Server {
+func NewServer(cfg config.Config, pubKeyPEM string, repos repo.Repos, tokenGenerator token.Generator, s3Storage *common.S3Storage) *Server {
 	sessionStore := sessions.NewCookieStore([]byte(cookieAuthenticationKey))
 	sessionStore.Options.HttpOnly = true
 	sessionStore.Options.MaxAge = 0
 
 	return &Server{
-		listenAddr:     listenAddr,
+		cfg:            cfg,
 		pubKeyPEM:      pubKeyPEM,
-		admins:         admins,
 		repos:          repos,
 		tokenGenerator: tokenGenerator,
-		tokenDuration:  tokenDuration,
+		s3Storage:      s3Storage,
 		sessionStore:   sessionStore,
 	}
 }
@@ -68,7 +67,7 @@ func (s *Server) Run() error {
 	infoServiceHandler := rpc.NewInfoServiceServer(infoService, rpcHooks)
 	r.Handle(infoServiceHandler.PathPrefix()+"*", infoServiceHandler)
 
-	tokenService := services.NewToken(baseService, s.tokenGenerator, s.tokenDuration)
+	tokenService := services.NewToken(baseService, s.tokenGenerator, s.cfg.TokenDuration())
 	tokenServiceHandler := rpc.NewTokenServiceServer(tokenService, rpcHooks)
 	r.Handle(tokenServiceHandler.PathPrefix()+"*", s.checkAuth(tokenServiceHandler))
 
@@ -84,8 +83,12 @@ func (s *Server) Run() error {
 	inviteServiceHandler := rpc.NewInviteServiceServer(inviteService, rpcHooks)
 	r.Handle(inviteServiceHandler.PathPrefix()+"*", s.checkAuth(inviteServiceHandler))
 
-	log.Println("started on " + s.listenAddr)
-	return http.ListenAndServe(s.listenAddr, r)
+	blobService := services.NewBlob(baseService, s.s3Storage)
+	blobServiceHandler := rpc.NewBlobServiceServer(blobService, rpcHooks)
+	r.Handle(blobServiceHandler.PathPrefix()+"*", s.checkAuth(blobServiceHandler))
+
+	log.Println("started on " + s.cfg.ListenAddress)
+	return http.ListenAndServe(s.cfg.ListenAddress, r)
 }
 
 func (s *Server) setupMiddlewares(r *chi.Mux) {
@@ -123,7 +126,7 @@ func (s *Server) checkAuth(next http.Handler) http.Handler {
 		}
 
 		ctx := context.WithValue(r.Context(), services.ContextUserKey, *user)
-		ctx = context.WithValue(ctx, services.ContextIsAdminKey, s.admins[user.Name] || s.admins[user.Email])
+		ctx = context.WithValue(ctx, services.ContextIsAdminKey, s.cfg.IsAdmin(user.Name) || s.cfg.IsAdmin(user.Email))
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

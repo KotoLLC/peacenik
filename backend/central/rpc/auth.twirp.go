@@ -7,6 +7,7 @@ This code was generated with github.com/twitchtv/twirp/protoc-gen-twirp v5.12.0.
 
 It is generated from these files:
 	auth.proto
+	blob.proto
 	info.proto
 	invite.proto
 	model.proto
