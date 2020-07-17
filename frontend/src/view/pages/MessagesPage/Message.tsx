@@ -91,6 +91,7 @@ const Message: React.SFC<Props> = (props) => {
 
   const onCommentSave = () => {
     setCommentsEditor(false)
+    onCommentChange('')
     props.onCommentPost({
       host: sourceHost,
       body: {

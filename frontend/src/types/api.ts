@@ -115,6 +115,13 @@ export declare namespace ApiTypes {
         text: string,
       }
     }
+  
+    export interface DeleteComment {
+      host: string,
+      body: {
+        comment_id: string,
+      }
+    }
 
     export interface MessagesFromNode {
       host: string,
