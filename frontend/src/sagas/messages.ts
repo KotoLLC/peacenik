@@ -98,3 +98,13 @@ export function* watchPostComment(action: { type: string, payload: ApiTypes.Mess
     yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
   }
 }
+
+export function* watchEditComment(action: { type: string, payload: ApiTypes.Messages.EditComment }) {
+  const response = yield API.messages.editComment(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.messages.editCommentSucces())
+  } else {
+    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
+  }
+}

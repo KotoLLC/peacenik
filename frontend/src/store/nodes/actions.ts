@@ -13,34 +13,34 @@ export enum Types {
   REMOVE_NODE_REQUEST = 'REMOVE_NODE_REQUEST',
 }
 
-export const nodeCreateRequest = (payload: ApiTypes.Nodes.Create) => ({
+const nodeCreateRequest = (payload: ApiTypes.Nodes.Create) => ({
   type: Types.NODE_CREATE_REQUEST,
   payload
 })
 
-export const nodeCreateSucces = () => ({
+const nodeCreateSucces = () => ({
   type: Types.NODE_CREATE_SUCCESS
 })
 
-export const nodeCreationStatusReset = () => ({
+const nodeCreationStatusReset = () => ({
   type: Types.NODE_CREATION_STATUS_RESET
 })
 
-export const getNodesRequest = () => ({
+const getNodesRequest = () => ({
   type: Types.GET_NODES_REQUEST
 })
 
-export const getNodesSuccess = (payload: NodeTypes.Node[]) => ({
+const getNodesSuccess = (payload: NodeTypes.Node[]) => ({
   type: Types.GET_NODES_SUCCESS,
   payload,
 })
 
-export const approveNodeRequest = (payload: ApiTypes.Nodes.ApproveNode) => ({
+const approveNodeRequest = (payload: ApiTypes.Nodes.ApproveNode) => ({
   type: Types.APPROVE_NODE_REQUEST,
   payload,
 })
 
-export const removeNodeRequest = (payload: ApiTypes.Nodes.RemoveNode) => ({
+const removeNodeRequest = (payload: ApiTypes.Nodes.RemoveNode) => ({
   type: Types.REMOVE_NODE_REQUEST,
   payload,
 })
