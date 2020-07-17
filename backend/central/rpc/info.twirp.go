@@ -321,7 +321,7 @@ func (s *infoServiceServer) servePublicKeyProtobuf(ctx context.Context, resp htt
 }
 
 func (s *infoServiceServer) ServiceDescriptor() ([]byte, int) {
-	return twirpFileDescriptor1, 0
+	return twirpFileDescriptor2, 0
 }
 
 func (s *infoServiceServer) ProtocGenTwirpVersion() string {
@@ -332,7 +332,7 @@ func (s *infoServiceServer) PathPrefix() string {
 	return InfoServicePathPrefix
 }
 
-var twirpFileDescriptor1 = []byte{
+var twirpFileDescriptor2 = []byte{
 	// 149 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0xca, 0xcc, 0x4b, 0xcb,
 	0xd7, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x2e, 0x2a, 0x48, 0x96, 0xe2, 0xce, 0xcd, 0x4f,

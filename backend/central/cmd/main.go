@@ -1,12 +1,21 @@
 package main
 
 import (
+	"bytes"
+	"context"
 	"flag"
+	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
 	"strings"
-	"time"
+
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 
 	"github.com/mreider/koto/backend/central"
+	"github.com/mreider/koto/backend/central/config"
 	"github.com/mreider/koto/backend/central/migrate"
 	"github.com/mreider/koto/backend/central/repo"
 	"github.com/mreider/koto/backend/common"
@@ -14,34 +23,25 @@ import (
 )
 
 func main() {
-	var listenAddress string
-	var dbPath string
-	var privateKeyPath string
-	var adminList string
-	var tokenDurationSeconds int
+	execDir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
 
-	flag.StringVar(&listenAddress, "address", ":12001", "http address to listen")
-	flag.StringVar(&dbPath, "db", "central.db", "path to Sqlite DB file")
-	flag.StringVar(&privateKeyPath, "key", "central.rsa", "path to private key file")
-	flag.StringVar(&adminList, "admin", "", "administrator names (comma-separated)")
-	flag.IntVar(&tokenDurationSeconds, "token-duration", 60*60, "token duration (seconds)")
-	flag.Parse()
-
-	admins := make(map[string]bool)
-	for _, admin := range strings.Split(adminList, ",") {
-		admin = strings.TrimSpace(admin)
-		if admin != "" {
-			admins[admin] = true
-		}
-	}
-
-	db, n, err := common.OpenDatabase(dbPath, migrate.Migrate)
+	cfg, err := loadConfig(execDir)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	log.Printf("Applied %d migrations to %s\n", n, dbPath)
 
-	privateKey, _, publicKeyPEM, err := token.RSAKeysFromPrivateKeyFile(privateKeyPath)
+	db, n, err := common.OpenDatabase(cfg.DBPath, migrate.Migrate)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Printf("Applied %d migrations to %s\n", n, cfg.DBPath)
+
+	s3Storage, err := createS3Storage(cfg)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	privateKey, _, publicKeyPEM, err := token.RSAKeysFromPrivateKeyFile(cfg.PrivateKeyPath)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -55,9 +55,97 @@ func main() {
 		Node:   repo.NewNodes(db),
 	}
 
-	server := central.NewServer(listenAddress, string(publicKeyPEM), admins, repos, tokenGenerator, time.Second*time.Duration(tokenDurationSeconds))
+	server := central.NewServer(cfg, string(publicKeyPEM), repos, tokenGenerator, s3Storage)
 	err = server.Run()
 	if err != nil {
 		log.Fatalln(err)
 	}
+}
+
+func createS3Storage(cfg config.Config) (*common.S3Storage, error) {
+	if cfg.S3.Endpoint == "" {
+		return nil, nil
+	}
+
+	s3Endpoint := cfg.S3.Endpoint
+	s3Secure := false
+	if strings.HasPrefix(s3Endpoint, "https://") {
+		s3Endpoint = strings.TrimPrefix(s3Endpoint, "https://")
+		s3Secure = true
+	} else {
+		s3Endpoint = strings.TrimPrefix(s3Endpoint, "http://")
+	}
+
+	minioClient, err := minio.New(s3Endpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(cfg.S3.Key, cfg.S3.Secret, ""),
+		Region: cfg.S3.Region,
+		Secure: s3Secure,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	s3Storage := common.NewS3Storage(minioClient, cfg.S3.Bucket)
+	err = s3Storage.CreateBucketIfNotExist(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	return s3Storage, nil
+}
+
+func loadConfig(execDir string) (config.Config, error) {
+	var configPath string
+	var listenAddress string
+	var dbPath string
+	var privateKeyPath string
+	var adminList string
+	var tokenDurationSeconds int
+
+	flag.StringVar(&configPath, "config", "central-config.yml", "config path")
+	flag.StringVar(&listenAddress, "address", "", "http address to listen")
+	flag.StringVar(&dbPath, "db", "", "path to Sqlite DB file")
+	flag.StringVar(&privateKeyPath, "key", "", "path to private key file")
+	flag.StringVar(&adminList, "admin", "", "administrator names (comma-separated)")
+	flag.IntVar(&tokenDurationSeconds, "token-duration", 0, "token duration (seconds)")
+	flag.Parse()
+
+	if !filepath.IsAbs(configPath) {
+		configPath = filepath.Join(execDir, configPath)
+	}
+
+	var cfg config.Config
+	data, err := ioutil.ReadFile(configPath)
+	if err != nil && !os.IsNotExist(err) {
+		return config.Config{}, fmt.Errorf("can't read config file: %w", err)
+	} else if err == nil {
+		cfg, err = config.Read(bytes.NewReader(data))
+		if err != nil {
+			return config.Config{}, err
+		}
+	}
+
+	if listenAddress != "" {
+		cfg.ListenAddress = listenAddress
+	}
+	if dbPath != "" {
+		cfg.DBPath = dbPath
+	}
+	if privateKeyPath != "" {
+		cfg.PrivateKeyPath = privateKeyPath
+	}
+	if adminList != "" {
+		var admins []string
+		for _, admin := range strings.Split(adminList, ",") {
+			admin = strings.TrimSpace(admin)
+			if admin != "" {
+				admins = append(admins, admin)
+			}
+		}
+		cfg.Admins = admins
+	}
+	if tokenDurationSeconds != 0 {
+		cfg.TokenDurationSeconds = tokenDurationSeconds
+	}
+
+	return cfg, nil
 }

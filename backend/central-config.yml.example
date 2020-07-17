@@ -1,0 +1,10 @@
+address: :12001
+admins:
+  - andrey9
+
+s3:
+  endpoint: http://127.0.0.1:9000
+  region:
+  key: minioadmin
+  secret: minioadmin
+  bucket: koto-central
