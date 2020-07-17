@@ -107,6 +107,14 @@ export declare namespace ApiTypes {
         text: string,
       }
     }
+    
+    export interface EditComment {
+      host: string,
+      body: {
+        comment_id: string,
+        text: string,
+      }
+    }
 
     export interface MessagesFromNode {
       host: string,

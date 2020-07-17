@@ -22,72 +22,84 @@ export enum Types {
 
   POST_COMMENT_REQUEST = 'POST_COMMENT_REQUEST',
   POST_COMMENT_SUCCESS = 'POST_COMMENT_SUCCESS',
+  
+  EDIT_COMMENT_REQUEST = 'EDIT_COMMENT_REQUEST',
+  EDIT_COMMENT_SUCCESS = 'EDIT_COMMENT_SUCCESS',
 }
 
-export const getMessagesRequest = () => ({
+const getMessagesRequest = () => ({
   type: Types.GET_MESSAGES_REQUEST,
 })
 
-export const getMessagesSucces = (payload: NodeTypes.CurrentNode[]) => ({
+const getMessagesSucces = (payload: NodeTypes.CurrentNode[]) => ({
   type: Types.GET_MESSAGES_SUCCESS,
   payload
 })
 
-export const getCurrentNodeRequest = () => ({
+const getCurrentNodeRequest = () => ({
   type: Types.GET_CURRENT_NODE_REQUEST,
 })
 
-export const getCurrentNodeSucces = (payload: NodeTypes.CurrentNode) => ({
+const getCurrentNodeSucces = (payload: NodeTypes.CurrentNode) => ({
   type: Types.GET_CURRENT_NODE_SUCCESS,
   payload
 })
 
-export const getMessagesFromNodeRequest = (payload: ApiTypes.Messages.MessagesFromNode) => ({
+const getMessagesFromNodeRequest = (payload: ApiTypes.Messages.MessagesFromNode) => ({
   type: Types.GET_MESSAGES_FROM_NODE_REQUEST,
   payload,
 })
 
-export const getMessagesFromNodeSucces = (payload: ApiTypes.Messages.Message[]) => ({
+const getMessagesFromNodeSucces = (payload: ApiTypes.Messages.Message[]) => ({
   type: Types.GET_MESSAGES_FROM_NODE_SUCCESS,
   payload
 })
 
-export const postMessageRequest = (payload: ApiTypes.Messages.PostMessage) => ({
+const postMessageRequest = (payload: ApiTypes.Messages.PostMessage) => ({
   type: Types.POST_MESSAGE_REQUEST,
   payload
 })
 
-export const postMessageSucces = (payload: boolean) => ({
+const postMessageSucces = (payload: boolean) => ({
   type: Types.POST_MESSAGE_SUCCESS,
   payload,
 })
 
-export const deleteMessageRequest = (payload: ApiTypes.Messages.DeleteMessage) => ({
+const deleteMessageRequest = (payload: ApiTypes.Messages.DeleteMessage) => ({
   type: Types.DELETE_MESSAGE_REQUEST,
   payload
 })
 
-export const deleteMessageSucces = () => ({
+const deleteMessageSucces = () => ({
   type: Types.DELETE_MESSAGE_SUCCESS,
 })
 
-export const editMessageRequest = (payload: ApiTypes.Messages.EditMessage) => ({
+const editMessageRequest = (payload: ApiTypes.Messages.EditMessage) => ({
   type: Types.EDIT_MESSAGE_REQUEST,
   payload
 })
 
-export const editMessageSucces = () => ({
+const editMessageSucces = () => ({
   type: Types.EDIT_MESSAGE_SUCCESS,
 })
 
-export const postCommentRequest = (payload: ApiTypes.Messages.PostComment) => ({
+const postCommentRequest = (payload: ApiTypes.Messages.PostComment) => ({
   type: Types.POST_COMMENT_REQUEST,
   payload
 })
 
-export const postCommentSucces = (payload: boolean) => ({
+const postCommentSucces = (payload: boolean) => ({
   type: Types.POST_COMMENT_SUCCESS,
   payload,
+})
+
+const editCommentRequest = (payload: ApiTypes.Messages.EditComment) => ({
+  type: Types.EDIT_COMMENT_REQUEST,
+  payload
+})
+
+const editCommentSucces = () => ({
+  type: Types.EDIT_COMMENT_SUCCESS,
 })
 
 export default {
@@ -105,4 +117,6 @@ export default {
   editMessageSucces,
   postCommentRequest,
   postCommentSucces,
+  editCommentRequest,
+  editCommentSucces,
 }

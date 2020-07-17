@@ -14,37 +14,37 @@ export enum Types {
   GET_AUTH_TOKEN_SUCCESS = 'GET_AUTH_TOKEN_SUCCESS',
 }
 
-export const loginRequest = (payload: ApiTypes.Login) => ({
+const loginRequest = (payload: ApiTypes.Login) => ({
   type: Types.LOGIN_REQUEST,
   payload
 })
 
-export const loginSucces = () => ({
+const loginSucces = () => ({
   type: Types.LOGIN_SUCCESS
 })
 
-export const loginFailed = (payload: string) => ({
+const loginFailed = (payload: string) => ({
   type: Types.LOGIN_FAILED,
   payload
 })
 
-export const resetLoginFailedMessage = () => ({
+const resetLoginFailedMessage = () => ({
   type: Types.RESET_LOGIN_FAILED_MESSAGE
 })
 
-export const logoutRequest = () => ({
+const logoutRequest = () => ({
   type: Types.LOGOUT_REQUEST,
 })
 
-export const logoutSucces = () => ({
+const logoutSucces = () => ({
   type: Types.LOGOUT_SUCCESS
 })
 
-export const getAuthTokenRequest = () => ({
+const getAuthTokenRequest = () => ({
   type: Types.GET_AUTH_TOKEN_REQUEST,
 })
 
-export const getAuthTokenSucces = (payload: string) => ({
+const getAuthTokenSucces = (payload: string) => ({
   type: Types.GET_AUTH_TOKEN_SUCCESS,
   payload,
 })

@@ -78,4 +78,17 @@ export default {
       return response
     }).catch(error => ({ error }))
   },
+
+  editComment: async (data: ApiTypes.Messages.EditComment) => {
+    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const config = {
+      withCredentials: false,
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      }
+    }
+    return await axiosInstance.post(`${data.host}/rpc.MessageService/EditComment`, data.body, config).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
 }

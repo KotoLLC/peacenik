@@ -3,7 +3,7 @@ import Avatar from '@material-ui/core/Avatar'
 import EditIcon from '@material-ui/icons/Edit'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
-import RemoveMessageDialog from './RemoveMessageDialog'
+// import RemoveMessageDialog from './RemoveMessageDialog'
 import moment from 'moment'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
@@ -25,22 +25,23 @@ import { ApiTypes, StoreTypes } from '../../../types'
 
 interface Props extends ApiTypes.Messages.Comment {
   userId: string
+  onCommentEdit: (data: ApiTypes.Messages.EditComment) => void
 }
 
 const Comment: React.SFC<Props> = (props) => {
   const { text, user_name, created_at, id, user_id, sourceHost, userId } = props
   const [isEditer, setEditor] = useState<boolean>(false)
-  const [message, onMessageChange] = useState<string>(text)
+  const [comment, onCommentChange] = useState<string>(text)
 
   const onMessageSave = () => {
     setEditor(false)
-    // props.onMessageEdit({
-    //   host: sourceHost,
-    //   body: {
-    //     message_id: id,
-    //     text: message,
-    //   }
-    // })
+    props.onCommentEdit({
+      host: sourceHost,
+      body: {
+        comment_id: id,
+        text: comment,
+      }
+    })
   }
 
   const onComandEnterDown = (event) => {
@@ -81,15 +82,15 @@ const Comment: React.SFC<Props> = (props) => {
           <EditMessageWrapper>
             <TextareaAutosizeStyled
               onKeyDown={onComandEnterDown}
-              value={message}
-              onChange={(evant) => onMessageChange(evant.currentTarget.value)} />
+              value={comment}
+              onChange={(evant) => onCommentChange(evant.currentTarget.value)} />
             <ButtonSend
               variant="contained"
               color="primary"
               onClick={onMessageSave}
             >Save</ButtonSend>
           </EditMessageWrapper>
-          : <MessageContent>{message}</MessageContent>
+          : <MessageContent>{comment}</MessageContent>
       }
     </CommentWrapper>
   )
@@ -100,9 +101,9 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   userId: selectors.profile.userId(state),
 })
 
-// type DispatchProps = Pick<Props, ''>
-// const mapDispatchToProps = (dispatch): DispatchProps => ({
-//   onCommentEdit: (data: ApiTypes.Messages.EditMessage) => dispatch(Actions.messages.editMessageRequest(data)),
-// })
+type DispatchProps = Pick<Props, 'onCommentEdit'>
+const mapDispatchToProps = (dispatch): DispatchProps => ({
+  onCommentEdit: (data: ApiTypes.Messages.EditComment) => dispatch(Actions.messages.editCommentRequest(data)),
+})
 
-export default connect(mapStateToProps, {})(Comment)
+export default connect(mapStateToProps, mapDispatchToProps)(Comment)

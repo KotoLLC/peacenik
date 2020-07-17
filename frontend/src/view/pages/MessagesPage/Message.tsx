@@ -106,7 +106,7 @@ const Message: React.SFC<Props> = (props) => {
       return (
         <CommentsWrapepr>
           {comments?.map(item => (
-            <Comment {...item} key={item.id}/>
+            <Comment {...item} key={item.id} sourceHost={sourceHost}/>
           ))}
         </CommentsWrapepr>
       )

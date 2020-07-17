@@ -18,48 +18,48 @@ export enum Types {
   REJECT_INVITATION_REQUEST = 'REJECT_INVITATION_REQUEST',
 }
 
-export const getFriendsRequest = () => ({
+const getFriendsRequest = () => ({
   type: Types.GET_FRIENDS_REQUEST,
 })
 
-export const getFriendsSucces = (payload: ApiTypes.User[]) => ({
+const getFriendsSucces = (payload: ApiTypes.User[]) => ({
   type: Types.GET_FRIENDS_SUCCESS,
   payload
 })
 
-export const getFriendsOfFriendsRequest = () => ({
+const getFriendsOfFriendsRequest = () => ({
   type: Types.GET_FRIENDS_OF_FRIENDS_REQUEST,
 })
 
-export const getFriendsOfFriendsSucces = (payload: ApiTypes.User[]) => ({
+const getFriendsOfFriendsSucces = (payload: ApiTypes.User[]) => ({
   type: Types.GET_FRIENDS_OF_FRIENDS_SUCCESS,
   payload
 })
 
-export const addFriendRequest = (payload: ApiTypes.Friends.Request) => ({
+const addFriendRequest = (payload: ApiTypes.Friends.Request) => ({
   type: Types.ADD_FRIEND_REQUEST,
   payload
 })
 
-export const addFriendSuccess = () => ({
+const addFriendSuccess = () => ({
   type: Types.ADD_FRIEND_SUCCESS,
 })
 
-export const getInvitationsRequest = () => ({
+const getInvitationsRequest = () => ({
   type: Types.GET_INVITATIONS_REQUEST,
 })
 
-export const getInvitationsSuccess = (payload: ApiTypes.Friends.Invitation[]) => ({
+const getInvitationsSuccess = (payload: ApiTypes.Friends.Invitation[]) => ({
   type: Types.GET_INVITATIONS_SUCCESS,
   payload
 })
 
-export const acceptInvitationRequest = (payload: ApiTypes.Friends.InvitationAccept) => ({
+const acceptInvitationRequest = (payload: ApiTypes.Friends.InvitationAccept) => ({
   type: Types.ACCEPT_INVITATION_REQUEST,
   payload
 })
 
-export const rejectInvitationRequest = (payload: ApiTypes.Friends.InvitationReject) => ({
+const rejectInvitationRequest = (payload: ApiTypes.Friends.InvitationReject) => ({
   type: Types.REJECT_INVITATION_REQUEST,
   payload
 })
