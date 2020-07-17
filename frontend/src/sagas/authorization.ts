@@ -8,9 +8,9 @@ export function* watchlogin(action: { type: string, payload: ApiTypes.Login }) {
 
   if (response.status === 200) {
     localStorage.setItem('kotoIsLogged', 'true')
-    yield put(Actions.authorization.loginSucces())
     yield put(Actions.profile.getProfileRequest())
     yield put(Actions.authorization.getAuthTokenRequest())
+    yield put(Actions.authorization.loginSucces())
   } else {
     yield put(Actions.authorization.loginFailed(response?.error?.response?.data || 'Server error'))
   }

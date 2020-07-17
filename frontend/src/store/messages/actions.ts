@@ -25,6 +25,9 @@ export enum Types {
   
   EDIT_COMMENT_REQUEST = 'EDIT_COMMENT_REQUEST',
   EDIT_COMMENT_SUCCESS = 'EDIT_COMMENT_SUCCESS',
+  
+  DELETE_COMMENT_REQUEST = 'DELETE_COMMENT_REQUEST',
+  DELETE_COMMENT_SUCCESS = 'DELETE_COMMENT_SUCCESS',
 }
 
 const getMessagesRequest = () => ({
@@ -102,6 +105,15 @@ const editCommentSucces = () => ({
   type: Types.EDIT_COMMENT_SUCCESS,
 })
 
+const deleteCommentRequest = (payload: ApiTypes.Messages.DeleteComment) => ({
+  type: Types.DELETE_COMMENT_REQUEST,
+  payload
+})
+
+const deleteCommentSucces = () => ({
+  type: Types.DELETE_COMMENT_SUCCESS,
+})
+
 export default {
   getMessagesRequest,
   getMessagesSucces,
@@ -119,4 +131,6 @@ export default {
   postCommentSucces,
   editCommentRequest,
   editCommentSucces,
+  deleteCommentRequest,
+  deleteCommentSucces,
 }

@@ -34,6 +34,7 @@ import {
     watchEditMessage,
     watchPostComment,
     watchEditComment,
+    watchDeleteComment,
 } from './messages'
 
 export function* rootSaga() {
@@ -64,5 +65,6 @@ export function* rootSaga() {
         takeEvery(MessagesTypes.EDIT_MESSAGE_REQUEST, watchEditMessage),
         takeEvery(MessagesTypes.POST_COMMENT_REQUEST, watchPostComment),
         takeEvery(MessagesTypes.EDIT_COMMENT_REQUEST, watchEditComment),
+        takeEvery(MessagesTypes.DELETE_COMMENT_REQUEST, watchDeleteComment),
     ])
 }

@@ -3,7 +3,7 @@ import Avatar from '@material-ui/core/Avatar'
 import EditIcon from '@material-ui/icons/Edit'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
-// import RemoveMessageDialog from './RemoveMessageDialog'
+import RemoveCommentDialog from './RemoveCommentDialog'
 import moment from 'moment'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
@@ -26,6 +26,7 @@ import { ApiTypes, StoreTypes } from '../../../types'
 interface Props extends ApiTypes.Messages.Comment {
   userId: string
   onCommentEdit: (data: ApiTypes.Messages.EditComment) => void
+  onCommentDelete: (data: ApiTypes.Messages.DeleteComment) => void
 }
 
 const Comment: React.SFC<Props> = (props) => {
@@ -59,7 +60,7 @@ const Comment: React.SFC<Props> = (props) => {
               <EditIcon />
             </IconButton>
           </Tooltip>
-          {/* <RemoveMessageDialog {...{ message, id, sourceHost }} /> */}
+          <RemoveCommentDialog {...{ comment, id, sourceHost }} />
         </ButtonsWrapper>
       )
     }
@@ -101,9 +102,10 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   userId: selectors.profile.userId(state),
 })
 
-type DispatchProps = Pick<Props, 'onCommentEdit'>
+type DispatchProps = Pick<Props, 'onCommentEdit' | 'onCommentDelete'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onCommentEdit: (data: ApiTypes.Messages.EditComment) => dispatch(Actions.messages.editCommentRequest(data)),
+  onCommentDelete: (data: ApiTypes.Messages.DeleteComment) => dispatch(Actions.messages.deleteCommentRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Comment)

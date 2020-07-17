@@ -82,7 +82,8 @@ export function* watchEditMessage(action: { type: string, payload: ApiTypes.Mess
   const response = yield API.messages.editMessage(action.payload)
 
   if (response.status === 200) {
-    yield put(Actions.messages.deleteMessageSucces())
+    yield put(Actions.messages.editMessageSucces())
+    yield put(Actions.messages.getMessagesRequest())
   } else {
     yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
   }
@@ -104,6 +105,18 @@ export function* watchEditComment(action: { type: string, payload: ApiTypes.Mess
 
   if (response.status === 200) {
     yield put(Actions.messages.editCommentSucces())
+    yield put(Actions.messages.getMessagesRequest())
+  } else {
+    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
+  }
+}
+
+export function* watchDeleteComment(action: { type: string, payload: ApiTypes.Messages.DeleteComment }) {
+  const response = yield API.messages.deleteComment(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.messages.deleteCommentSucces())
+    yield put(Actions.messages.getMessagesRequest())
   } else {
     yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
   }

@@ -91,4 +91,17 @@ export default {
       return response
     }).catch(error => ({ error }))
   },
+  
+  deleteComment: async (data: ApiTypes.Messages.DeleteComment) => {
+    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const config = {
+      withCredentials: false,
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      }
+    }
+    return await axiosInstance.post(`${data.host}/rpc.MessageService/DeleteComment`, data.body, config).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
 }
