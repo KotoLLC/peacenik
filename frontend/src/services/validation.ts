@@ -9,7 +9,7 @@ export const validate = {
     },
 
     isEmailValid: function (value: string): boolean {
-        return !/^[A-Z0-9._+-]+@[A-Z0-9.-]+\.[A-Z]{2,20}$/i.test(value) ? false : true
+        return !/^[A-Z0-9._+-]+@[A-Z0-9.-]+\.[A-Z]{2,30}$/i.test(value) ? false : true
     },
 
     isPasswordValid: function (value: string): boolean {

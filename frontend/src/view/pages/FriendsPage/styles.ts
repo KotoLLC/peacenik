@@ -3,6 +3,9 @@ import List from '@material-ui/core/List'
 import SearchIcon from '@material-ui/icons/Search'
 import Paper from '@material-ui/core/Paper'
 import IconButton from '@material-ui/core/IconButton'
+import Container from '@material-ui/core/Container'
+import FormControl from '@material-ui/core/FormControl'
+import Button from '@material-ui/core/Button'
 
 export const SidebarWrapper = styled.aside`
   max-width: 400px;
@@ -71,4 +74,44 @@ export const IconButtonGreen = styled(IconButton)`
   && {
     color: #1fc456;
   }
+`
+
+export const LinkWrapper = styled.div`
+  text-align: center;
+  margin-top: 10px;
+  width: 100%;
+`
+
+export const ContainerStyled = styled(Container)`
+  && {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    margin-top: 100px;
+  }
+`
+
+export const FormWrapper = styled.form`
+  width: 350px;
+  margin: 0 auto;
+`
+
+export const FormControlStyled = styled(FormControl)`
+  && {
+    margin: 0 0 15px; 
+    width: 100%;
+  }
+`
+
+export const ButtonStyled = styled(Button)`
+  && {
+    height: 42px;
+    min-width: 150px;
+  }
+`
+
+export const TitleWrapper = styled.div`
+  text-align: center;
+  margin-bottom: 20px;
 `

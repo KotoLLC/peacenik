@@ -2,17 +2,33 @@ import React from 'react'
 import Friends from './Friends'
 import FriendsOfFriends from './FriendsOfFriends'
 import Invitations from './Invitations'
+import FriendInvite from './FriendInvite'
 import FriendTabs from './Tabs'
-import { Switch, Route } from 'react-router-dom'
+import { Switch, Route, RouteComponentProps } from 'react-router-dom'
 import { WithTopBar } from '@view/shared/WithTopBar'
+import { Header } from '@view/shared/styles'
+import GroupAddIcon from '@material-ui/icons/GroupAdd'
+import IconButton from '@material-ui/core/IconButton'
+import Tooltip from '@material-ui/core/Tooltip'
 
-export const FriendsPage = () => (
-  <WithTopBar>
-    <FriendTabs />
-    <Switch>
-      <Route path="/friends/all" exact component={Friends} />
-      <Route path="/friends/potential" exact component={FriendsOfFriends} />
-      <Route path="/friends/invitations" exact component={Invitations} />
-    </Switch>
-  </WithTopBar>
-)
+export const FriendsPage: React.SFC<RouteComponentProps> = (props) => {
+
+  return (
+    <WithTopBar>
+      <Header>
+        <FriendTabs />
+        <Tooltip title={`Send invitations`}>
+          <IconButton color="primary" onClick={() => props.history.push('/friends/invite')}>
+            <GroupAddIcon />
+          </IconButton>
+        </Tooltip>
+      </Header>
+      <Switch>
+        <Route path="/friends/all" exact component={Friends} />
+        <Route path="/friends/potential" exact component={FriendsOfFriends} />
+        <Route path="/friends/invitations" exact component={Invitations} />
+        <Route path="/friends/invite" exact component={FriendInvite} />
+      </Switch>
+    </WithTopBar>
+  )
+}

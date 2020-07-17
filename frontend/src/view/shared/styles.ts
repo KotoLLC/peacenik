@@ -55,6 +55,7 @@ export const PageWrapper = styled.main`
 export const Header = styled.header`
   display: flex;
   align-items: flex-end;
+  justify-content: space-between;
   min-height: 90px;
   margin-top: 50px;
   width: 100%;

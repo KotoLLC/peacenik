@@ -135,18 +135,24 @@ export class LoginForm extends React.PureComponent<Props, State> {
         </Header>
         <FormWrapper onSubmit={this.onFormSubmit}>
           <FormControlStyled variant="outlined">
-            <InputLabel htmlFor="name">Email</InputLabel>
+            <InputLabel 
+              htmlFor="name"
+              color={(noValideField === 'name') ? 'secondary' : 'primary'}
+              >Name / Email</InputLabel>
             <OutlinedInput
               id="name"
               type={'text'}
               value={name}
               error={(noValideField === 'name') ? true : false}
               onChange={this.onEmailChange}
-              labelWidth={70}
+              labelWidth={98}
             />
           </FormControlStyled>
           <FormControlStyled variant="outlined">
-            <InputLabel htmlFor="password">Password</InputLabel>
+            <InputLabel 
+              htmlFor="password"
+              color={(noValideField === 'password') ? 'secondary' : 'primary'}
+              >Password</InputLabel>
             <OutlinedInput
               id="password"
               type={isPasswordVisible ? 'text' : 'password'}
