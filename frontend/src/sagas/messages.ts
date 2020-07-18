@@ -50,9 +50,17 @@ export function* watchGetMessagesFromNode(action: { type: string, payload: ApiTy
         return item
       })
     }
+    
     yield put(Actions.messages.getMessagesFromNodeSucces(resultData))
   } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
+
+    if (response.error.response.status === 400) {
+      yield put(Actions.authorization.getAuthTokenRequest())
+      yield put(Actions.messages.getMessagesRequest())
+    } else {
+      yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
+    }
+    
   }
 }
 
