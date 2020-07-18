@@ -17,6 +17,7 @@ import {
     watchGetInvitations,
     watchAcceptInvitation,
     watchRejectInvitation,
+    watchCreateInviteByEmail,
 } from './friends'
 import { 
     watchNodeCreate, 
@@ -49,6 +50,7 @@ export function* rootSaga() {
         takeEvery(FriendTypes.GET_INVITATIONS_REQUEST, watchGetInvitations),
         takeEvery(FriendTypes.ACCEPT_INVITATION_REQUEST, watchAcceptInvitation),
         takeEvery(FriendTypes.REJECT_INVITATION_REQUEST, watchRejectInvitation),
+        takeEvery(FriendTypes.INVITE_BY_EMAIL_REQUEST, watchCreateInviteByEmail),
         
         takeEvery(NodeTypes.NODE_CREATE_REQUEST, watchNodeCreate),
         takeEvery(NodeTypes.GET_NODES_REQUEST, watchGetNodes),
