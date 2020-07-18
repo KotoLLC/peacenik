@@ -63,3 +63,13 @@ export function* watchRejectInvitation(action: { type: string, payload: ApiTypes
     yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
   }
 }
+
+export function* watchCreateInviteByEmail(action: { type: string, payload: ApiTypes.Friends.Request }) {
+  const response = yield API.friends.addFriend(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.friends.inviteByEmailSuccess(true))
+  } else {
+    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
+  }
+}

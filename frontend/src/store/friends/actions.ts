@@ -14,6 +14,9 @@ export enum Types {
   GET_INVITATIONS_REQUEST = 'GET_INVITATIONS_REQUEST',
   GET_INVITATIONS_SUCCESS = 'GET_INVITATIONS_SUCCESS',
   
+  INVITE_BY_EMAIL_REQUEST = 'INVITE_BY_EMAIL_REQUEST',
+  INVITE_BY_EMAIL_SUCCESS = 'INVITE_BY_EMAIL_SUCCESS',
+  
   ACCEPT_INVITATION_REQUEST = 'ACCEPT_INVITATION_REQUEST',
   REJECT_INVITATION_REQUEST = 'REJECT_INVITATION_REQUEST',
 }
@@ -64,6 +67,16 @@ const rejectInvitationRequest = (payload: ApiTypes.Friends.InvitationReject) => 
   payload
 })
 
+const inviteByEmailRequest = (payload: ApiTypes.Friends.Request) => ({
+  type: Types.INVITE_BY_EMAIL_REQUEST,
+  payload
+})
+
+const inviteByEmailSuccess = (payload: boolean) => ({
+  type: Types.INVITE_BY_EMAIL_SUCCESS,
+  payload
+})
+
 export default {
   getFriendsRequest,
   getFriendsSucces,
@@ -75,4 +88,6 @@ export default {
   getInvitationsSuccess,
   acceptInvitationRequest,
   rejectInvitationRequest,
+  inviteByEmailRequest,
+  inviteByEmailSuccess,
 }

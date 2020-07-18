@@ -5,11 +5,12 @@ import OutlinedInput from '@material-ui/core/OutlinedInput'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import { connect } from 'react-redux'
-import { StoreTypes } from '../../../types'
+import { StoreTypes, ApiTypes } from '../../../types'
 import { validate } from '@services/validation'
 import Link from '@material-ui/core/Link'
-// import selectors from '@selectors/index'
-// import Actions from '@store/actions'
+import selectors from '@selectors/index'
+import Actions from '@store/actions'
+
 import {
   ContainerStyled,
   FormWrapper,
@@ -20,31 +21,30 @@ import {
 } from './styles'
 
 interface State {
-  isRequested: boolean
-  isSended: boolean
+  isRequestSend: boolean
   errorMessage: string
   email: string
 }
 
 interface Props {
-  isInviteSuccessfully: boolean
+  isInviteByEmailSuccess: boolean
+  onInviteByEmail: (data: ApiTypes.Friends.Request) => void
+  onInviteByEmailResult: (value: boolean) => void
 }
 
 class FriendInvite extends React.PureComponent<Props, State> {
 
   state = {
-    isRequested: false,
-    isSended: false,
+    isRequestSend: false,
     errorMessage: '',
     email: '',
   }
 
-  // static getDerivedStateFromProps(newProps: Props) {
-  //   return {
-  //     isRequested: newProps.isInviteSuccessfully ? false : false,
-  //     isSended: newProps.isInviteSuccessfully,
-  //   }
-  // }
+  static getDerivedStateFromProps() {
+    return {
+      isRequestSend: false,
+    }
+  }
 
   onEmailChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     this.setState({
@@ -77,23 +77,26 @@ class FriendInvite extends React.PureComponent<Props, State> {
     const { email } = this.state
     if (!this.onValidate()) return
 
+    this.props.onInviteByEmail({
+      friend: email
+    })
+
     this.setState({
-      isRequested: true,
-      isSended: true,
+      isRequestSend: true,
       errorMessage: '',
     })
   }
 
   swithToFormScreen = () => {
+    this.props.onInviteByEmailResult(false)
     this.setState({
-      isSended: false,
-      isRequested: false,
+      isRequestSend: false,
       email: '',
     })
   }
 
   componentWillUnmount() {
-    // this.props.onNodeCreationStatusReset()
+    this.props.onInviteByEmailResult(false)
   }
 
   renderSuccessfulyMessage = () => (
@@ -111,7 +114,7 @@ class FriendInvite extends React.PureComponent<Props, State> {
 
   renderForm = () => {
     const {
-      isRequested,
+      isRequestSend,
       errorMessage,
       email,
     } = this.state
@@ -144,7 +147,7 @@ class FriendInvite extends React.PureComponent<Props, State> {
             type="submit"
             onClick={this.onFormSubmit}
           >
-            {isRequested ? <CircularProgress size={25} color={'inherit'} /> : 'Send invitation'}
+            {isRequestSend ? <CircularProgress size={25} color={'inherit'} /> : 'Send invitation'}
           </ButtonStyled>
           {errorMessage && <FormHelperText error>{errorMessage}</FormHelperText>}
         </FormWrapper>
@@ -153,23 +156,25 @@ class FriendInvite extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { isSended } = this.state
+    const { isInviteByEmailSuccess } = this.props
 
     return (
       <ContainerStyled maxWidth="sm">
-        {isSended ? this.renderSuccessfulyMessage() : this.renderForm()}
+        {isInviteByEmailSuccess ? this.renderSuccessfulyMessage() : this.renderForm()}
       </ContainerStyled>
     )
   }
 }
 
-type StateProps = Pick<Props, 'isInviteSuccessfully'>
+type StateProps = Pick<Props, 'isInviteByEmailSuccess'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  isInviteSuccessfully: false
+  isInviteByEmailSuccess: selectors.friends.isInviteByEmailSuccess(state),
 })
 
-// type DispatchProps = Pick<Props, ''>
-// const mapDispatchToProps = (dispatch): DispatchProps => ({
-// })
+type DispatchProps = Pick<Props, 'onInviteByEmail' | 'onInviteByEmailResult'>
+const mapDispatchToProps = (dispatch): DispatchProps => ({
+  onInviteByEmail: (data: ApiTypes.Friends.Request) => dispatch(Actions.friends.inviteByEmailRequest(data)),
+  onInviteByEmailResult: (value: boolean) => dispatch(Actions.friends.inviteByEmailSuccess(value)),
+})
 
-export default connect(mapStateToProps, null)(FriendInvite)
+export default connect(mapStateToProps, mapDispatchToProps)(FriendInvite)
