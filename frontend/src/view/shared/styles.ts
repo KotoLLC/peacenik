@@ -106,3 +106,18 @@ export const DialogContentStyled = styled(DialogContent)`
     min-width: 500px;
   }
 `
+
+export const NotificationsWrapper = styled(Link)`
+  display: flex;
+  cursor: pointer;
+  color: #fff;
+  margin-right: 10px;
+
+  &:hover {
+    text-decoration: none;
+  }
+`  
+
+export const NotificationsCounter = styled.div`
+  margin-left: 5px;
+`  

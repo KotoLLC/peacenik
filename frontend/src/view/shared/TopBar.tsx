@@ -5,11 +5,14 @@ import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import { TopMenu } from './TopMenu'
+import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive'
 import { 
   TooltipStyle, 
   IconButtonStyled, 
   LogoWrapper, 
-  TopBarRightSide 
+  TopBarRightSide,
+  NotificationsCounter,
+  NotificationsWrapper,
 } from './styles'
 
 interface Props {
@@ -29,6 +32,10 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
       <Toolbar>
         <LogoWrapper to="/messages">Koto</LogoWrapper>
         <TopBarRightSide>
+          <NotificationsWrapper to="/notifications">
+            <NotificationsActiveIcon fontSize="small"/>
+            <NotificationsCounter>10 notifications</NotificationsCounter>
+          </NotificationsWrapper>
           <TopMenu />
           <TooltipStyle title={`Logout`}>
             <IconButtonStyled onClick={onLogoutClick}>
