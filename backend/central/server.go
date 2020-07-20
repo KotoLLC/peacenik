@@ -55,7 +55,7 @@ func (s *Server) Run() error {
 	s.setupMiddlewares(r)
 
 	rpcHooks := &twirp.ServerHooks{}
-	baseService := services.NewBase(s.repos)
+	baseService := services.NewBase(s.repos, s.s3Storage)
 
 	passwordHash := bcrypt.NewPasswordHash()
 
@@ -83,7 +83,7 @@ func (s *Server) Run() error {
 	inviteServiceHandler := rpc.NewInviteServiceServer(inviteService, rpcHooks)
 	r.Handle(inviteServiceHandler.PathPrefix()+"*", s.checkAuth(inviteServiceHandler))
 
-	blobService := services.NewBlob(baseService, s.s3Storage)
+	blobService := services.NewBlob(baseService)
 	blobServiceHandler := rpc.NewBlobServiceServer(blobService, rpcHooks)
 	r.Handle(blobServiceHandler.PathPrefix()+"*", s.checkAuth(blobServiceHandler))
 

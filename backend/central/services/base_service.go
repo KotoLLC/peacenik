@@ -2,17 +2,21 @@ package services
 
 import (
 	"context"
+	"time"
 
 	"github.com/mreider/koto/backend/central/repo"
+	"github.com/mreider/koto/backend/common"
 )
 
 type BaseService struct {
-	repos repo.Repos
+	repos     repo.Repos
+	s3Storage *common.S3Storage
 }
 
-func NewBase(repos repo.Repos) *BaseService {
+func NewBase(repos repo.Repos, s3Storage *common.S3Storage) *BaseService {
 	return &BaseService{
-		repos: repos,
+		repos:     repos,
+		s3Storage: s3Storage,
 	}
 }
 
@@ -22,4 +26,12 @@ func (s *BaseService) getUser(ctx context.Context) repo.User {
 
 func (s *BaseService) isAdmin(ctx context.Context) bool {
 	return ctx.Value(ContextIsAdminKey).(bool)
+}
+
+func (s *BaseService) createAvatarLink(ctx context.Context, avatarBlobID string) (string, error) {
+	if avatarBlobID == "" {
+		return "", nil
+	}
+
+	return s.s3Storage.CreateLink(ctx, avatarBlobID, time.Hour*24)
 }

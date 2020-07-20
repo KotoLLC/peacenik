@@ -9,6 +9,7 @@ service UserService {
     rpc Friends (Empty) returns (UserFriendsResponse);
     rpc FriendsOfFriends (Empty) returns (UserFriendsOfFriendsResponse);
     rpc Me (Empty) returns (UserMeResponse);
+    rpc SetAvatar (UserSetAvatarRequest) returns (Empty);
 }
 
 message UserFriendsResponse {
@@ -28,4 +29,8 @@ message UserFriendsOfFriendsResponse {
 message UserMeResponse {
     User user = 1;
     bool is_admin = 2;
+}
+
+message UserSetAvatarRequest {
+    string avatar_id = 1;
 }
