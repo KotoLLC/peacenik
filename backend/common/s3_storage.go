@@ -67,8 +67,10 @@ func (s *S3Storage) Read(ctx context.Context, blobID string, w io.Writer) error 
 	return nil
 }
 
-func (s *S3Storage) CreateLink(ctx context.Context, blobID string) (string, error) {
-	expiration := defaultLinkExpiration
+func (s *S3Storage) CreateLink(ctx context.Context, blobID string, expiration time.Duration) (string, error) {
+	if expiration <= 0 {
+		expiration = defaultLinkExpiration
+	}
 
 	s.cachedLinksMu.Lock()
 	defer s.cachedLinksMu.Unlock()
@@ -100,7 +102,7 @@ func (s *S3Storage) PutObject(ctx context.Context, blobID string, content []byte
 	return nil
 }
 
-func (s *S3Storage) CreateUploadLink(ctx context.Context, blobID string, contentType string) (uploadLink string, formData map[string]string, err error) {
+func (s *S3Storage) CreateUploadLink(ctx context.Context, blobID, contentType string, metadata map[string]string) (uploadLink string, formData map[string]string, err error) {
 	expiration := defaultLinkExpiration
 
 	policy := minio.NewPostPolicy()
@@ -120,10 +122,26 @@ func (s *S3Storage) CreateUploadLink(ctx context.Context, blobID string, content
 	if err != nil {
 		return "", nil, fmt.Errorf("can't SetContentType for policy: %w", err)
 	}
+
+	for key, value := range metadata {
+		err = policy.SetUserMetadata(key, value)
+		if err != nil {
+			return "", nil, fmt.Errorf("can't SetContentType for policy: %w", err)
+		}
+	}
+
 	link, formData, err := s.client.PresignedPostPolicy(ctx, policy)
 	if err != nil {
 		return "", nil, fmt.Errorf("can't Presign: %w", err)
 	}
 
 	return link.String(), formData, nil
+}
+
+func (s *S3Storage) RemoveObject(ctx context.Context, blobID string) error {
+	err := s.client.RemoveObject(ctx, s.bucket, blobID, minio.RemoveObjectOptions{})
+	if err != nil {
+		return fmt.Errorf("can't RemoveObject: %w", err)
+	}
+	return nil
 }

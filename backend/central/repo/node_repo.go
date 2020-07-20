@@ -12,14 +12,15 @@ import (
 )
 
 type Node struct {
-	ID         string `db:"id"`
-	Address    string `db:"address"`
-	AdminID    string `db:"admin_id"`
-	AdminName  string `db:"admin_name"`
-	CreatedAt  string `db:"created_at"`
-	ApprovedAt string `db:"approved_at"`
-	DisabledAt string `db:"disabled_at"`
-	Details    string `db:"details"`
+	ID            string `db:"id"`
+	Address       string `db:"address"`
+	AdminID       string `db:"admin_id"`
+	AdminName     string `db:"admin_name"`
+	AdminAvatarID string `db:"admin_avatar_id"`
+	CreatedAt     string `db:"created_at"`
+	ApprovedAt    string `db:"approved_at"`
+	DisabledAt    string `db:"disabled_at"`
+	Details       string `db:"details"`
 }
 
 type UserNode struct {
@@ -82,19 +83,21 @@ func (r *nodeRepo) AddNode(address, details string, nodeAdmin User) error {
 func (r *nodeRepo) AllNodes() ([]Node, error) {
 	var nodes []Node
 	err := r.db.Select(&nodes, `
-		select id, address, admin_id, created_at, approved_at, disabled_at, details,
-		       (select name from users where id = nodes.admin_id) admin_name
-		from nodes`)
+			select n.id, n.address, n.admin_id, n.created_at, n.approved_at, n.disabled_at, n.details,
+				   u.name admin_name, u.avatar_thumbnail_id admin_avatar_id
+			from nodes n
+				inner join users u on u.id = n.admin_id`)
 	return nodes, err
 }
 
 func (r *nodeRepo) Nodes(user User) ([]Node, error) {
 	var nodes []Node
 	err := r.db.Select(&nodes, `
-		select id, address, admin_id, created_at, approved_at, disabled_at, details,
-			   (select name from users where id = nodes.admin_id) admin_name
-		from nodes
-		where admin_id = $1`, user.ID)
+		select n.id, n.address, n.admin_id, n.created_at, n.approved_at, n.disabled_at, n.details,
+				   u.name admin_name, u.avatar_thumbnail_id admin_avatar_id
+		from nodes n
+			inner join users u on u.id = n.admin_id
+		where n.admin_id = $1`, user.ID)
 	return nodes, err
 }
 

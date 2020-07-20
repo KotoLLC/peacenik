@@ -9,4 +9,6 @@ message Empty {
 message User {
     string id = 1;
     string name = 2;
+    string avatar_original = 3;
+    string avatar_thumbnail = 4;
 }
