@@ -215,5 +215,15 @@ Content-Type: application/json
 {
   "content_type": "image/png"
 }
+```
 
+## Set avatar image for current user
+
+```
+POST http://localhost:12001/rpc.UserService/SetAvatar
+Content-Type: application/json
+
+{
+  "avatar_id": "BLOB_ID"
+}
 ```

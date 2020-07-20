@@ -6,27 +6,30 @@ import (
 	"github.com/gofrs/uuid"
 
 	"github.com/mreider/koto/backend/central/rpc"
-	"github.com/mreider/koto/backend/common"
 )
 
 type blobService struct {
 	*BaseService
-	s3Storage *common.S3Storage
 }
 
-func NewBlob(base *BaseService, s3Storage *common.S3Storage) rpc.BlobService {
+func NewBlob(base *BaseService) rpc.BlobService {
 	return &blobService{
 		BaseService: base,
-		s3Storage:   s3Storage,
 	}
 }
 
 func (s *blobService) UploadLink(ctx context.Context, r *rpc.BlobUploadLinkRequest) (*rpc.BlobUploadLinkResponse, error) {
+	user := s.getUser(ctx)
+
 	blobID, err := uuid.NewV4()
 	if err != nil {
 		return nil, err
 	}
-	uploadLink, formData, err := s.s3Storage.CreateUploadLink(ctx, blobID.String(), r.ContentType)
+	uploadLink, formData, err := s.s3Storage.CreateUploadLink(ctx, blobID.String(), r.ContentType,
+		map[string]string{
+			"user-id":   user.ID,
+			"user-name": user.Name,
+		})
 	if err != nil {
 		return nil, err
 	}

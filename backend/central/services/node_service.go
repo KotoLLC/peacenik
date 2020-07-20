@@ -52,12 +52,18 @@ func (s *nodeService) Nodes(ctx context.Context, _ *rpc.Empty) (*rpc.NodeNodesRe
 
 	rpcNodes := make([]*rpc.NodeNodesResponseNode, len(nodes))
 	for i, node := range nodes {
+		avatarThumbnailLink, err := s.createAvatarLink(ctx, node.AdminAvatarID)
+		if err != nil {
+			return nil, twirp.InternalErrorWith(err)
+		}
+
 		rpcNodes[i] = &rpc.NodeNodesResponseNode{
 			Id:      node.ID,
 			Address: node.Address,
 			User: &rpc.User{
-				Id:   node.AdminID,
-				Name: node.AdminName,
+				Id:              node.AdminID,
+				Name:            node.AdminName,
+				AvatarThumbnail: avatarThumbnailLink,
 			},
 			CreatedAt:  node.CreatedAt,
 			ApprovedAt: node.ApprovedAt,
