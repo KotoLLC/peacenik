@@ -71,7 +71,7 @@ func (s *Server) Run() error {
 	tokenServiceHandler := rpc.NewTokenServiceServer(tokenService, rpcHooks)
 	r.Handle(tokenServiceHandler.PathPrefix()+"*", s.checkAuth(tokenServiceHandler))
 
-	userService := services.NewUser(baseService)
+	userService := services.NewUser(baseService, passwordHash)
 	userServiceHandler := rpc.NewUserServiceServer(userService, rpcHooks)
 	r.Handle(userServiceHandler.PathPrefix()+"*", s.checkAuth(userServiceHandler))
 

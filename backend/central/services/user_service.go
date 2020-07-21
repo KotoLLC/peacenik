@@ -22,11 +22,13 @@ const (
 
 type userService struct {
 	*BaseService
+	passwordHash PasswordHash
 }
 
-func NewUser(base *BaseService) rpc.UserService {
+func NewUser(base *BaseService, passwordHash PasswordHash) rpc.UserService {
 	return &userService{
-		BaseService: base,
+		BaseService:  base,
+		passwordHash: passwordHash,
 	}
 }
 
@@ -130,18 +132,58 @@ func (s *userService) Me(ctx context.Context, _ *rpc.Empty) (*rpc.UserMeResponse
 	return &rpc.UserMeResponse{
 		User: &rpc.User{
 			Id:              user.ID,
-			Name:            user.Email,
+			Name:            user.Name,
 			AvatarThumbnail: avatarThumbnailLink,
+			Email:           user.Email,
 		},
 		IsAdmin: isAdmin,
 	}, nil
 }
 
-func (s *userService) SetAvatar(ctx context.Context, r *rpc.UserSetAvatarRequest) (*rpc.Empty, error) {
+func (s *userService) EditProfile(ctx context.Context, r *rpc.UserEditProfileRequest) (*rpc.Empty, error) {
 	user := s.getUser(ctx)
 
-	if user.AvatarOriginalID == r.AvatarId {
-		return &rpc.Empty{}, nil
+	if r.EmailChanged {
+		if r.Email == "" {
+			return nil, twirp.InvalidArgumentError("email", "is empty")
+		}
+		if r.Email != user.Email {
+			err := s.repos.User.SetEmail(user.ID, r.Email)
+			if err != nil {
+				return nil, twirp.InternalErrorWith(err)
+			}
+		}
+	}
+
+	if r.PasswordChanged {
+		if r.Password == "" {
+			return nil, twirp.InvalidArgumentError("password", "is empty")
+		}
+
+		passwordHash, err := s.passwordHash.GenerateHash(r.Password)
+		if err != nil {
+			return nil, twirp.InternalErrorWith(err)
+		}
+
+		err = s.repos.User.SetPassword(user.ID, passwordHash)
+		if err != nil {
+			return nil, twirp.InternalErrorWith(err)
+		}
+	}
+
+	if r.AvatarChanged {
+		err := s.setAvatar(ctx, user, r.AvatarId)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &rpc.Empty{}, nil
+}
+
+func (s *userService) setAvatar(ctx context.Context, user repo.User, avatarID string) error {
+	if user.AvatarOriginalID == avatarID {
+		return nil
 	}
 
 	defer func() {
@@ -159,50 +201,50 @@ func (s *userService) SetAvatar(ctx context.Context, r *rpc.UserSetAvatarRequest
 		}
 	}()
 
-	if r.AvatarId == "" {
+	if avatarID == "" {
 		err := s.repos.User.SetAvatar(user.ID, "", "")
 		if err != nil {
-			return nil, twirp.InternalErrorWith(err)
+			return twirp.InternalErrorWith(err)
 		}
-		return &rpc.Empty{}, nil
+		return nil
 	}
 
 	var buf bytes.Buffer
-	err := s.s3Storage.Read(ctx, r.AvatarId, &buf)
+	err := s.s3Storage.Read(ctx, avatarID, &buf)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return twirp.InternalErrorWith(err)
 	}
 	dataType, err := filetype.Match(buf.Bytes())
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return twirp.InternalErrorWith(err)
 	}
 	if dataType.MIME.Type != "image" {
-		return nil, twirp.NewError(twirp.InvalidArgument, "not image")
+		return twirp.NewError(twirp.InvalidArgument, "not image")
 	}
 
 	original, err := imaging.Decode(&buf)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return twirp.InternalErrorWith(err)
 	}
 	thumbnail := imaging.Thumbnail(original, avatarThumbnailWidth, avatarThumbnailHeight, imaging.Lanczos)
 	buf.Reset()
 	err = imaging.Encode(&buf, thumbnail, imaging.JPEG)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return twirp.InternalErrorWith(err)
 	}
 
 	thumbnailID, err := uuid.NewV4()
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return twirp.InternalErrorWith(err)
 	}
 	err = s.s3Storage.PutObject(ctx, thumbnailID.String(), buf.Bytes(), "image/jpeg")
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return twirp.InternalErrorWith(err)
 	}
 
-	err = s.repos.User.SetAvatar(user.ID, r.AvatarId, thumbnailID.String())
+	err = s.repos.User.SetAvatar(user.ID, avatarID, thumbnailID.String())
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return twirp.InternalErrorWith(err)
 	}
-	return &rpc.Empty{}, nil
+	return nil
 }

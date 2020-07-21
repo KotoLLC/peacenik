@@ -217,13 +217,16 @@ Content-Type: application/json
 }
 ```
 
-## Set avatar image for current user
+## Edit profile information for current user
 
 ```
-POST http://localhost:12001/rpc.UserService/SetAvatar
+POST http://localhost:12001/rpc.UserService/EditProfile
 Content-Type: application/json
 
 {
-  "avatar_id": "BLOB_ID"
+  "email_changed": true,
+  "email": "andrey5@mmmail.com",
+  "avatar_changed": true,
+  "avatar_id": "BLOB-ID"
 }
 ```

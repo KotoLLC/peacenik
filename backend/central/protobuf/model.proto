@@ -11,4 +11,5 @@ message User {
     string name = 2;
     string avatar_original = 3;
     string avatar_thumbnail = 4;
+    string email = 5;
 }
