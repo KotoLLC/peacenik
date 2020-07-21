@@ -29,6 +29,8 @@ type UserRepo interface {
 	AddUser(id, name, email, passwordHash string) error
 	UserCount() (int, error)
 	SetAvatar(userID, avatarOriginalID, avatarThumbnailID string) error
+	SetEmail(userID, email string) error
+	SetPassword(userID, passwordHash string) error
 }
 
 type userRepo struct {
@@ -135,5 +137,23 @@ func (r *userRepo) SetAvatar(userID, avatarOriginalID, avatarThumbnailID string)
 		set avatar_original_id = $1, avatar_thumbnail_id = $2, updated_at = $3
 		where id = $4;`,
 		avatarOriginalID, avatarThumbnailID, common.CurrentTimestamp(), userID)
+	return err
+}
+
+func (r *userRepo) SetEmail(userID, email string) error {
+	_, err := r.db.Exec(`
+		update users
+		set email = $1, updated_at = $2
+		where id = $3;`,
+		email, common.CurrentTimestamp(), userID)
+	return err
+}
+
+func (r *userRepo) SetPassword(userID, passwordHash string) error {
+	_, err := r.db.Exec(`
+		update users
+		set password_hash = $1, updated_at = $2
+		where id = $3;`,
+		passwordHash, common.CurrentTimestamp(), userID)
 	return err
 }
