@@ -48,6 +48,9 @@ func (s *S3Storage) CreateBucketIfNotExist(ctx context.Context) error {
 func (s *S3Storage) Exists(ctx context.Context, blobID string) (bool, error) {
 	info, err := s.client.StatObject(ctx, s.bucket, blobID, minio.StatObjectOptions{})
 	if err != nil {
+		if minioErr, ok := err.(minio.ErrorResponse); ok && minioErr.Code == "NoSuchKey" {
+			return false, nil
+		}
 		return false, fmt.Errorf("can't StatObject: %w", err)
 	}
 	return info.Key != "", nil
