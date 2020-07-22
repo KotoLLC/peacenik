@@ -11,6 +11,10 @@ export declare namespace ApiTypes {
     name: string
   }
 
+  export interface Profile extends User {
+    email: string
+  }
+
   export namespace Friends {
     export interface Potential {
       user: User

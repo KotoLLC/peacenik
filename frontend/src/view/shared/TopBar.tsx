@@ -32,10 +32,10 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
       <Toolbar>
         <LogoWrapper to="/messages">Koto</LogoWrapper>
         <TopBarRightSide>
-          <NotificationsWrapper to="/notifications">
+          {false && <NotificationsWrapper to="/notifications">
             <NotificationsActiveIcon fontSize="small"/>
             <NotificationsCounter>10 notifications</NotificationsCounter>
-          </NotificationsWrapper>
+          </NotificationsWrapper>}
           <TopMenu />
           <TooltipStyle title={`Logout`}>
             <IconButtonStyled onClick={onLogoutClick}>
