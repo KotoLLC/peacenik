@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import Avatar from '@material-ui/core/Avatar'
-import SendIcon from '@material-ui/icons/Send'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import { ApiTypes, StoreTypes, NodeTypes } from './../../../types'
@@ -69,8 +68,7 @@ const Editor: React.SFC<Props> = (props) => {
               variant="contained"
               color="primary"
               onClick={onMessageSend}
-              endIcon={<SendIcon />}
-            >Send</ButtonSend>
+            >Post</ButtonSend>
           </EditorWrapper>
         </CreateWrapper>
       </PaperStyled>

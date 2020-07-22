@@ -7,7 +7,7 @@ import RemoveMessageDialog from './RemoveMessageDialog'
 import moment from 'moment'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
-import AddCommentIcon from '@material-ui/icons/AddComment'
+import ChatBubbleOutlineIcon from '@material-ui/icons/ChatBubbleOutline'
 import Comment from './Comment'
 import { ApiTypes } from './../../../types'
 import {
@@ -81,7 +81,7 @@ const Message: React.SFC<Props> = (props) => {
         <ButtonsWrapper>
           <Tooltip title={`Comment`}>
             <IconButton onClick={() => setCommentsEditor(!isCommentsEditer)}>
-              <AddCommentIcon />
+              <ChatBubbleOutlineIcon /> 
             </IconButton>
           </Tooltip>
         </ButtonsWrapper>
