@@ -25,7 +25,7 @@ export const NotificationsPage = React.memo(() => {
 
   return (
     <WithTopBar>
-      <ContainerStyled maxWidth="md">
+      <ContainerStyled >
         <NotificationsWrapper>
           <Header>
             <Title>Notifications</Title>

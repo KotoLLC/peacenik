@@ -2,15 +2,16 @@ import { Types } from './actions'
 import { ApiTypes } from './../../types'
 
 const profile = localStorage.getItem('kotoProfile')
-const user = profile ? JSON.parse(profile)?.user : {
+const user: ApiTypes.Profile = profile ? JSON.parse(profile)?.user : {
   id: '',
   name: '',
+  emial: '',
 }
 
 export interface State extends ApiTypes.Profile {}
 
 const initialState: State = {
-  user: user,
+  ...user,
 }
 
 const reducer = (state = initialState, action) => {

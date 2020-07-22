@@ -47,13 +47,13 @@ export const TopMenu = () => {
           </ListItemIconStyled>
           <ListItemText primary="Friends" />
         </MenuItem>
-        <MenuItem disabled>
+        <MenuItem onClick={() => goToPage('/notifications')}>
           <ListItemIconStyled>
             <NotificationsIcon fontSize="small" />
           </ListItemIconStyled>
           <ListItemText primary="Notifications" />
         </MenuItem>
-        <MenuItem disabled>
+        <MenuItem onClick={() => goToPage('/user-profile')}>
           <ListItemIconStyled>
             <AccountCircleIcon fontSize="small" />
           </ListItemIconStyled>

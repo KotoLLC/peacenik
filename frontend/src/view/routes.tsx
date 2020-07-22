@@ -8,6 +8,7 @@ import { StoreTypes } from './../types'
 import { NodePages } from './pages/NodePages'
 import { MessagesPage } from './pages/MessagesPage'
 import { NotificationsPage } from './pages/NotificationsPage'
+import UserProfilePage from './pages/UserProfilePage'
 import DocsPages from './pages/DocsPages'
 
 const Private = ({ component: Component, ...rest }) => {
@@ -35,6 +36,7 @@ export const Routes = () => {
         <PrivateRoute path="/nodes" component={NodePages} />
         <PrivateRoute path="/messages" component={MessagesPage} />
         <PrivateRoute path="/notifications" component={NotificationsPage} />
+        <PrivateRoute path="/user-profile" component={UserProfilePage} />
         <Route component={() => <>404 not found</>} />
       </Switch>
     </Router>
