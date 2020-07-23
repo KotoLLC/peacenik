@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/twitchtv/twirp"
 
+	"github.com/mreider/koto/backend/node/config"
 	"github.com/mreider/koto/backend/node/repo"
 	"github.com/mreider/koto/backend/node/rpc"
 	"github.com/mreider/koto/backend/node/services"
@@ -18,18 +19,16 @@ import (
 )
 
 type Server struct {
-	internalAddr    string
-	externalAddress string
-	repos           repo.Repos
-	tokenParser     token.Parser
+	cfg         config.Config
+	repos       repo.Repos
+	tokenParser token.Parser
 }
 
-func NewServer(internalAddr, externalAddress string, repos repo.Repos, tokenParser token.Parser) *Server {
+func NewServer(cfg config.Config, repos repo.Repos, tokenParser token.Parser) *Server {
 	return &Server{
-		internalAddr:    internalAddr,
-		externalAddress: externalAddress,
-		repos:           repos,
-		tokenParser:     tokenParser,
+		cfg:         cfg,
+		repos:       repos,
+		tokenParser: tokenParser,
 	}
 }
 
@@ -38,14 +37,14 @@ func (s *Server) Run() error {
 	s.setupMiddlewares(r)
 
 	rpcHooks := &twirp.ServerHooks{}
-	baseService := services.NewBase(s.repos, s.tokenParser, s.externalAddress)
+	baseService := services.NewBase(s.repos, s.tokenParser, s.cfg.ExternalAddress)
 
 	messageService := services.NewMessage(baseService)
 	messageServiceHandler := rpc.NewMessageServiceServer(messageService, rpcHooks)
 	r.Handle(messageServiceHandler.PathPrefix()+"*", s.checkAuth(messageServiceHandler))
 
-	log.Println("started on " + s.internalAddr)
-	return http.ListenAndServe(s.internalAddr, r)
+	log.Println("started on " + s.cfg.ListenAddress)
+	return http.ListenAndServe(s.cfg.ListenAddress, r)
 }
 
 func (s *Server) setupMiddlewares(r *chi.Mux) {
