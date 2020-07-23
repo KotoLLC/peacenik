@@ -4,10 +4,29 @@
 go build -o node-service ./node/cmd/
 ```
 
+# Configure
+
+Rename `node-config.yml.example` to `node-12002-config.yml` and change values.
+
+```yaml
+address: :12002
+external_address: http://localhost:12002
+db: node12002.db
+central_address: http://localhost:12001
+
+s3:
+  endpoint: http://127.0.0.1:9010
+  region:
+  key: minioadmin
+  secret: minioadmin
+  bucket: koto-node-12002
+
+``` 
+
 # Run
 
 ```
-./node-service -address ":12002" -external "http://localhost:12002" -db node12002.db -central "http://localhost:12001"
+./node-service -config node-12002-config.yml
 ```
 
 # API
