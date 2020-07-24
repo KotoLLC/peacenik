@@ -13,6 +13,22 @@ export declare namespace ApiTypes {
 
   export interface Profile extends User {
     email: string
+    is_admin?: boolean
+  }
+
+  export interface UploadLink {
+    blob_id: string
+    form_data: FormData
+    link: string
+  }
+
+  export interface Avatar {
+    form_data: FormData
+    link: string
+  }
+
+  export interface Token {
+    [key: string]: string
   }
 
   export namespace Friends {
@@ -67,15 +83,6 @@ export declare namespace ApiTypes {
       id: string
       user: User
     }
-  }
-
-  export interface Profile {
-    user: User
-    is_admin?: boolean
-  }
-
-  export interface Token {
-    [key: string]: string
   }
 
   export namespace Messages {
