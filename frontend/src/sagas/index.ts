@@ -25,7 +25,11 @@ import {
     watchApproveNode,
     watchRemoveNode,
 } from './nodes'
-import { watchGetProfile } from './profile'
+import { 
+    watchGetProfile,
+    watchGetUploadLink,
+    watchSetAvatar,
+} from './profile'
 import { 
     watchGetMessages, 
     watchGetCurrentNode, 
@@ -58,6 +62,8 @@ export function* rootSaga() {
         takeEvery(NodeTypes.REMOVE_NODE_REQUEST, watchRemoveNode),
         
         takeEvery(ProfileTypes.GET_PROFILE_REQUEST, watchGetProfile),
+        takeEvery(ProfileTypes.GET_UPLOAD_LINK_REQUEST, watchGetUploadLink),
+        takeEvery(ProfileTypes.SET_AVATAR_REQUEST, watchSetAvatar),
         
         takeEvery(MessagesTypes.GET_MESSAGES_REQUEST, watchGetMessages),
         takeEvery(MessagesTypes.GET_CURRENT_NODE_REQUEST, watchGetCurrentNode),

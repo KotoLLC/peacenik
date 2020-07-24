@@ -2,7 +2,7 @@ import React, { ChangeEvent, FormEvent } from 'react'
 import { WithTopBar } from '@view/shared/WithTopBar'
 import { connect } from 'react-redux'
 import selectors from '@selectors/index'
-import { StoreTypes } from './../../../types'
+import { StoreTypes, ApiTypes } from './../../../types'
 import PersonIcon from '@material-ui/icons/Person'
 import InputLabel from '@material-ui/core/InputLabel'
 import OutlinedInput from '@material-ui/core/OutlinedInput'
@@ -10,7 +10,7 @@ import Button from '@material-ui/core/Button'
 import Tooltip from '@material-ui/core/Tooltip'
 import { validate } from '@services/validation'
 import FormHelperText from '@material-ui/core/FormHelperText'
-// import Actions from '@store/actions'
+import Actions from '@store/actions'
 import {
   ContainerStyled,
   ProfileWrapper,
@@ -28,12 +28,17 @@ import {
 interface Props {
   userName: string
   userEmail: string
+  uploadLink: ApiTypes.UploadLink | null
+  onGetUploadLink: (value: string) => void
+  onSetAvatar: (data: ApiTypes.Avatar) => void
 }
 
 interface State {
   email: string,
   isRequestSend: boolean,
   errorMessage: string,
+  isFileUploaded: boolean
+  file: File | null
 }
 
 class UserProfile extends React.PureComponent<Props, State> {
@@ -42,8 +47,8 @@ class UserProfile extends React.PureComponent<Props, State> {
     email: this.props.userEmail || '',
     isRequestSend: false,
     errorMessage: '',
+    isFileUploaded: false,
     file: null,
-    // file: this.props.userAvatar || ''
   }
 
   onEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -84,15 +89,49 @@ class UserProfile extends React.PureComponent<Props, State> {
   }
 
   onAvatarUpload = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files 
+    const { onGetUploadLink } = this.props
+
+    this.setState({
+      isFileUploaded: false,
+    })
+
+    const file = event.target.files
     if (file && file[0]) {
-      // console.log(file[0])
+      onGetUploadLink(file[0].type)
+      this.setState({
+        file: file[0],
+      })
     }
+  }
+
+  static getDerivedStateFromProps(newProps: Props, prevState: State) {
+
+    if (newProps?.uploadLink && prevState?.file && !prevState.isFileUploaded) {
+
+      const { form_data } = newProps?.uploadLink
+      const data = new FormData()
+
+      data.append('file', prevState?.file, prevState?.file.name)
+
+      for (let key in form_data) {
+        data.append(key, form_data[key])
+      }
+      
+      newProps.onSetAvatar({
+        link: newProps?.uploadLink.link,
+        form_data: data,
+      })
+
+      return {
+        isFileUploaded: true
+      }
+    }
+    return null
   }
 
   render() {
     const { userName } = this.props
-    const { errorMessage, email } = this.state
+    const { errorMessage, email, file } = this.state
 
     return (
       <WithTopBar>
@@ -105,7 +144,6 @@ class UserProfile extends React.PureComponent<Props, State> {
               <AvatarWrapper>
                 <Tooltip title={`Upload your avatar`}>
                   <Avatart htmlFor="file">
-                    <PersonIcon fontSize="large" color="action" />
                     <UploadInput
                       type="file"
                       id="file"
@@ -113,6 +151,7 @@ class UserProfile extends React.PureComponent<Props, State> {
                       onChange={this.onAvatarUpload}
                       accept="image/x-png,image/gif,image/jpeg"
                     />
+                    {file ? <img src={URL.createObjectURL(file)} alt=""/> : <PersonIcon fontSize="large" color="action" />}
                   </Avatart>
                 </Tooltip>
               </AvatarWrapper>
@@ -143,17 +182,19 @@ class UserProfile extends React.PureComponent<Props, State> {
       </WithTopBar>
     )
   }
-
 }
 
-type StateProps = Pick<Props, 'userName' | 'userEmail'>
+type StateProps = Pick<Props, 'userName' | 'userEmail' | 'uploadLink'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   userName: selectors.profile.userName(state),
   userEmail: selectors.profile.userEmail(state),
+  uploadLink: state.profile.uploadLink,
 })
 
-// type DispatchProps = Pick<Props, ''>
-// const mapDispatchToProps = (dispatch): DispatchProps => ({
-// })
+type DispatchProps = Pick<Props, 'onGetUploadLink' | 'onSetAvatar'>
+const mapDispatchToProps = (dispatch): DispatchProps => ({
+  onGetUploadLink: (value: string) => dispatch(Actions.profile.getUploadLinkRequest(value)),
+  onSetAvatar: (data: ApiTypes.Avatar) => dispatch(Actions.profile.setAvatarRequest(data)),
+})
 
-export default connect(mapStateToProps)(UserProfile)
+export default connect(mapStateToProps, mapDispatchToProps)(UserProfile)

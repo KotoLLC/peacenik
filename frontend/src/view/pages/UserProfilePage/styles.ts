@@ -47,6 +47,7 @@ export const Avatart = styled.label`
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  border: 1px solid #ccc;
 
   img {
     width: 100%;
