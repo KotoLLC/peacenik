@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"gopkg.in/yaml.v2"
+
+	"github.com/mreider/koto/backend/common"
 )
 
 var (
@@ -22,13 +24,7 @@ type Config struct {
 	Admins               []string `yaml:"admins"`
 	TokenDurationSeconds int      `yaml:"token_duration"`
 
-	S3 struct {
-		Endpoint string `yaml:"endpoint"`
-		Region   string `yaml:"region"`
-		Key      string `yaml:"key"`
-		Secret   string `yaml:"secret"`
-		Bucket   string `yaml:"bucket"`
-	} `yaml:"s3"`
+	S3 common.S3Config `yaml:"s3"`
 }
 
 func Read(r io.Reader) (Config, error) {

@@ -1,11 +1,18 @@
 package main
 
 import (
+	"bytes"
+	"context"
 	"crypto/rsa"
 	"encoding/json"
+	"errors"
 	"flag"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
@@ -14,6 +21,7 @@ import (
 
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/node"
+	"github.com/mreider/koto/backend/node/config"
 	"github.com/mreider/koto/backend/node/migrate"
 	"github.com/mreider/koto/backend/node/repo"
 	"github.com/mreider/koto/backend/token"
@@ -21,40 +29,26 @@ import (
 
 var (
 	portRegex = regexp.MustCompile(`:(\d+)`)
+
+	errConfigPathIsEmpty           = errors.New("config path should be specified")
+	errCentralServerAddressIsEmpty = errors.New("central server address should be specified")
 )
 
 func main() {
-	var internalAddress string
-	var externalAddress string
-	var dbPath string
-	var centralServerAddress string
+	execDir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
 
-	flag.StringVar(&internalAddress, "address", ":12002", "http address to listen")
-	flag.StringVar(&externalAddress, "external", "http://localhost:12002", "external http address")
-	flag.StringVar(&dbPath, "db", "", "path to Sqlite DB file")
-	flag.StringVar(&centralServerAddress, "central", "http://localhost:12001", "central server address")
-	flag.Parse()
-
-	if dbPath == "" {
-		match := portRegex.FindStringSubmatch(internalAddress)
-		if match == nil {
-			log.Fatalf("can't determine port in the listen address '%s'\n", internalAddress)
-		}
-		dbPath = "node" + match[1] + ".db"
-	}
-
-	centralServerAddress = strings.TrimSuffix(centralServerAddress, "/")
-	if centralServerAddress == "" {
-		log.Fatalln("central server address should be specified")
-	}
-
-	db, n, err := common.OpenDatabase(dbPath, migrate.Migrate)
+	cfg, err := loadConfig(execDir)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	log.Printf("Applied %d migrations to %s\n", n, dbPath)
 
-	centralPublicKey, err := loadCentralPublicKey(centralServerAddress)
+	db, n, err := common.OpenDatabase(cfg.DBPath, migrate.Migrate)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Printf("Applied %d migrations to %s\n", n, cfg.DBPath)
+
+	centralPublicKey, err := loadCentralPublicKey(context.TODO(), cfg.CentralServerAddress)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -64,19 +58,25 @@ func main() {
 		Message: repo.NewMessages(db),
 	}
 
-	server := node.NewServer(internalAddress, externalAddress, repos, tokenParser)
+	server := node.NewServer(cfg, repos, tokenParser)
 	err = server.Run()
 	if err != nil {
 		log.Fatalln(err)
 	}
 }
 
-func loadCentralPublicKey(centralServerAddress string) (*rsa.PublicKey, error) {
+func loadCentralPublicKey(ctx context.Context, centralServerAddress string) (*rsa.PublicKey, error) {
 	client := &http.Client{
 		Timeout: time.Second * 30,
 	}
 
-	resp, err := client.Post(centralServerAddress+"/rpc.InfoService/PublicKey", "application/json", strings.NewReader("{}"))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, centralServerAddress+"/rpc.InfoService/PublicKey", strings.NewReader("{}"))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -94,4 +94,65 @@ func loadCentralPublicKey(centralServerAddress string) (*rsa.PublicKey, error) {
 		return nil, err
 	}
 	return key, nil
+}
+
+func loadConfig(execDir string) (config.Config, error) {
+	var configPath string
+	var listenAddress string
+	var externalAddress string
+	var dbPath string
+	var centralServerAddress string
+
+	flag.StringVar(&configPath, "config", "", "config path")
+	flag.StringVar(&listenAddress, "address", "", "http address to listen")
+	flag.StringVar(&externalAddress, "external", "", "external http address")
+	flag.StringVar(&dbPath, "db", "", "path to Sqlite DB file")
+	flag.StringVar(&centralServerAddress, "central", "", "central server address")
+	flag.Parse()
+
+	if configPath == "" {
+		return config.Config{}, errConfigPathIsEmpty
+	}
+
+	if !filepath.IsAbs(configPath) {
+		configPath = filepath.Join(execDir, configPath)
+	}
+
+	var cfg config.Config
+	data, err := ioutil.ReadFile(configPath)
+	if err != nil && !os.IsNotExist(err) {
+		return config.Config{}, fmt.Errorf("can't read config file: %w", err)
+	} else if err == nil {
+		cfg, err = config.Read(bytes.NewReader(data))
+		if err != nil {
+			return config.Config{}, err
+		}
+	}
+
+	if listenAddress != "" {
+		cfg.ListenAddress = listenAddress
+	}
+	if externalAddress != "" {
+		cfg.ExternalAddress = externalAddress
+	}
+	if dbPath != "" {
+		cfg.DBPath = dbPath
+	}
+
+	if cfg.DBPath == "" {
+		match := portRegex.FindStringSubmatch(cfg.ListenAddress)
+		if match == nil {
+			log.Fatalf("can't determine port in the listen address '%s'\n", cfg.ListenAddress)
+		}
+		cfg.DBPath = "node" + match[1] + ".db"
+	}
+
+	if cfg.CentralServerAddress != "" {
+		cfg.CentralServerAddress = strings.TrimSuffix(cfg.CentralServerAddress, "/")
+		if cfg.CentralServerAddress == "" {
+			return config.Config{}, errCentralServerAddressIsEmpty
+		}
+	}
+
+	return cfg, nil
 }

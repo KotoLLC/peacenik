@@ -11,9 +11,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/credentials"
-
 	"github.com/mreider/koto/backend/central"
 	"github.com/mreider/koto/backend/central/config"
 	"github.com/mreider/koto/backend/central/migrate"
@@ -36,7 +33,7 @@ func main() {
 	}
 	log.Printf("Applied %d migrations to %s\n", n, cfg.DBPath)
 
-	s3Storage, err := createS3Storage(cfg)
+	s3Storage, err := cfg.S3.CreateStorage(context.TODO())
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -60,37 +57,6 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-}
-
-func createS3Storage(cfg config.Config) (*common.S3Storage, error) {
-	if cfg.S3.Endpoint == "" {
-		return nil, nil
-	}
-
-	s3Endpoint := cfg.S3.Endpoint
-	s3Secure := false
-	if strings.HasPrefix(s3Endpoint, "https://") {
-		s3Endpoint = strings.TrimPrefix(s3Endpoint, "https://")
-		s3Secure = true
-	} else {
-		s3Endpoint = strings.TrimPrefix(s3Endpoint, "http://")
-	}
-
-	minioClient, err := minio.New(s3Endpoint, &minio.Options{
-		Creds:  credentials.NewStaticV4(cfg.S3.Key, cfg.S3.Secret, ""),
-		Region: cfg.S3.Region,
-		Secure: s3Secure,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	s3Storage := common.NewS3Storage(minioClient, cfg.S3.Bucket)
-	err = s3Storage.CreateBucketIfNotExist(context.Background())
-	if err != nil {
-		return nil, err
-	}
-	return s3Storage, nil
 }
 
 func loadConfig(execDir string) (config.Config, error) {

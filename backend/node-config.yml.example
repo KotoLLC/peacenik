@@ -1,0 +1,10 @@
+address: :12012
+external_address: http://localhost:12012
+central_address: http://localhost:12001
+
+s3:
+  endpoint: http://127.0.0.1:9000
+  region:
+  key: minioadmin
+  secret: minioadmin
+  bucket: koto-node-12012
