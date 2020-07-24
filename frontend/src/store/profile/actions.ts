@@ -10,13 +10,16 @@ export enum Types {
 
   SET_AVATAR_REQUEST = 'SET_AVATAR_REQUEST',
   SET_AVATAR_SUCCESS = 'SET_AVATAR_SUCCESS',
+
+  EDIT_PROFILE_REQUEST = 'EDIT_PROFILE_REQUEST',
+  EDIT_PROFILE_SUCCESS = 'EDIT_PROFILE_SUCCESS',
 }
 
 const getProfileRequest = () => ({
   type: Types.GET_PROFILE_REQUEST,
 })
 
-const getProfileSucces = (payload: ApiTypes.Profile) => ({
+const getProfileSucces = (payload: ApiTypes.Profile.UserProfile) => ({
   type: Types.GET_PROFILE_SUCCESS,
   payload
 })
@@ -31,13 +34,22 @@ const getUploadLinkSucces = (payload: ApiTypes.UploadLink) => ({
   payload
 })
 
-const setAvatarRequest = (payload: ApiTypes.Avatar) => ({
+const setAvatarRequest = (payload: ApiTypes.Profile.Avatar) => ({
   type: Types.SET_AVATAR_REQUEST,
   payload,
 })
 
 const setAvatarSuccess = () => ({
   type: Types.SET_AVATAR_SUCCESS,
+})
+
+const editProfileRequest = (payload: ApiTypes.Profile.EditProfile) => ({
+  type: Types.EDIT_PROFILE_REQUEST,
+  payload,
+})
+
+const editProfileSucces = () => ({
+  type: Types.GET_PROFILE_SUCCESS,
 })
 
 export default {
@@ -47,4 +59,6 @@ export default {
   getUploadLinkSucces, 
   setAvatarRequest,
   setAvatarSuccess,
+  editProfileRequest,
+  editProfileSucces,
 }

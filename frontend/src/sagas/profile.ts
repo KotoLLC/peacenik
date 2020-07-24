@@ -8,7 +8,7 @@ export function* watchGetProfile() {
 
   if (response.status === 200) {
     localStorage.setItem('kotoProfile', JSON.stringify(response.data))
-    yield put(Actions.profile.getProfileSucces(response.data))
+    yield put(Actions.profile.getProfileSucces(response.data.user))
   } else {
     yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
   }
@@ -24,10 +24,22 @@ export function* watchGetUploadLink(action: { type: string, payload: string }) {
   }
 }
 
-export function* watchSetAvatar(action: { type: string, payload: ApiTypes.Avatar}) {
+export function* watchSetAvatar(action: { type: string, payload: ApiTypes.Profile.Avatar}) {
   const response = yield API.profile.setAvatar(action.payload.link, action.payload.form_data)
+  
   if (response.status === 204 || response.status === 200) {
     yield put(Actions.profile.setAvatarSuccess())
+  } else {
+    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
+  }
+}
+
+export function* watchEditProfile(action: { type: string, payload: ApiTypes.Profile.EditProfile}) {
+  const response = yield API.profile.editProfile(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.profile.getProfileRequest())
+    yield put(Actions.notify.setSuccessNotify('Changes have been saved'))
   } else {
     yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
   }

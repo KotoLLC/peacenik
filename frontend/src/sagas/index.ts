@@ -29,6 +29,7 @@ import {
     watchGetProfile,
     watchGetUploadLink,
     watchSetAvatar,
+    watchEditProfile,
 } from './profile'
 import { 
     watchGetMessages, 
@@ -64,6 +65,7 @@ export function* rootSaga() {
         takeEvery(ProfileTypes.GET_PROFILE_REQUEST, watchGetProfile),
         takeEvery(ProfileTypes.GET_UPLOAD_LINK_REQUEST, watchGetUploadLink),
         takeEvery(ProfileTypes.SET_AVATAR_REQUEST, watchSetAvatar),
+        takeEvery(ProfileTypes.EDIT_PROFILE_REQUEST, watchEditProfile),
         
         takeEvery(MessagesTypes.GET_MESSAGES_REQUEST, watchGetMessages),
         takeEvery(MessagesTypes.GET_CURRENT_NODE_REQUEST, watchGetCurrentNode),
