@@ -28,9 +28,12 @@ import {
 interface Props {
   userName: string
   userEmail: string
+  userAvatar: string
   uploadLink: ApiTypes.UploadLink | null
   onGetUploadLink: (value: string) => void
-  onSetAvatar: (data: ApiTypes.Avatar) => void
+  onSetAvatar: (data: ApiTypes.Profile.Avatar) => void
+  onEditProfile: (data: ApiTypes.Profile.EditProfile) => void
+  onGetProfile: () => void
 }
 
 interface State {
@@ -80,7 +83,29 @@ class UserProfile extends React.PureComponent<Props, State> {
   onFormSubmit = (event: FormEvent) => {
     event.preventDefault()
     const { email } = this.state
+    const { uploadLink, userEmail, onEditProfile } = this.props
+
     if (!this.onValidate()) return
+
+    let avatarData = {}
+    let emailData = {}
+
+    if (uploadLink?.blob_id) {
+      avatarData = {
+        avatar_changed: true,
+        avatar_id: uploadLink.blob_id
+      }
+    }
+
+    if (email !== userEmail) {
+      emailData = {
+        email_changed: true,
+        email: email,
+      }
+    }
+
+    const data = { ...emailData, ...avatarData }
+    onEditProfile(data)
 
     this.setState({
       isRequestSend: true,
@@ -116,7 +141,7 @@ class UserProfile extends React.PureComponent<Props, State> {
       for (let key in form_data) {
         data.append(key, form_data[key])
       }
-      
+
       newProps.onSetAvatar({
         link: newProps?.uploadLink.link,
         form_data: data,
@@ -129,9 +154,28 @@ class UserProfile extends React.PureComponent<Props, State> {
     return null
   }
 
+  renderAvatar = () => {
+    const { file } = this.state
+    const { userAvatar, userName } = this.props
+
+    if (file) {
+      return <img src={URL.createObjectURL(file)} alt={userName} />
+    }
+
+    if (userAvatar) {
+      return <img src={userAvatar} alt={userName} />
+    }
+
+    return <PersonIcon fontSize="large" color="action" />
+  }
+
+  componentDidMount() {
+    this.props.onGetProfile()
+  }
+
   render() {
     const { userName } = this.props
-    const { errorMessage, email, file } = this.state
+    const { errorMessage, email } = this.state
 
     return (
       <WithTopBar>
@@ -151,7 +195,7 @@ class UserProfile extends React.PureComponent<Props, State> {
                       onChange={this.onAvatarUpload}
                       accept="image/x-png,image/gif,image/jpeg"
                     />
-                    {file ? <img src={URL.createObjectURL(file)} alt=""/> : <PersonIcon fontSize="large" color="action" />}
+                    {this.renderAvatar()}
                   </Avatart>
                 </Tooltip>
               </AvatarWrapper>
@@ -184,17 +228,20 @@ class UserProfile extends React.PureComponent<Props, State> {
   }
 }
 
-type StateProps = Pick<Props, 'userName' | 'userEmail' | 'uploadLink'>
+type StateProps = Pick<Props, 'userName' | 'userEmail' | 'uploadLink' | 'userAvatar'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   userName: selectors.profile.userName(state),
   userEmail: selectors.profile.userEmail(state),
   uploadLink: state.profile.uploadLink,
+  userAvatar: selectors.profile.userAvatar(state)!,
 })
 
-type DispatchProps = Pick<Props, 'onGetUploadLink' | 'onSetAvatar'>
+type DispatchProps = Pick<Props, 'onGetUploadLink' | 'onSetAvatar' | 'onEditProfile' | 'onGetProfile'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetUploadLink: (value: string) => dispatch(Actions.profile.getUploadLinkRequest(value)),
-  onSetAvatar: (data: ApiTypes.Avatar) => dispatch(Actions.profile.setAvatarRequest(data)),
+  onSetAvatar: (data: ApiTypes.Profile.Avatar) => dispatch(Actions.profile.setAvatarRequest(data)),
+  onEditProfile: (data: ApiTypes.Profile.EditProfile) => dispatch(Actions.profile.editProfileRequest(data)),
+  onGetProfile: () => dispatch(Actions.profile.getProfileRequest()),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserProfile)

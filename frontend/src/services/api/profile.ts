@@ -1,4 +1,5 @@
 import { axiosInstance } from './index'
+import { ApiTypes } from './../../types'
 
 export default {
   getProfile: async () => {
@@ -15,13 +16,19 @@ export default {
     }).catch(error => ({ error }))
   },
  
-  setAvatar: async (host, data) => {
+  setAvatar: async (host: string, data: FormData) => {
     const config = {
       headers: {
         'Content-Type': 'multipart/form-data',
       }
     }
     return await axiosInstance.post(host, data, config).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
+
+  editProfile: async (data: ApiTypes.Profile.EditProfile) => {
+    return await axiosInstance.post('/rpc.UserService/EditProfile', data).then(response => {
       return response
     }).catch(error => ({ error }))
   },

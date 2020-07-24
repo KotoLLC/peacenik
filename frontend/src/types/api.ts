@@ -9,11 +9,8 @@ export declare namespace ApiTypes {
   export interface User {
     id: string
     name: string
-  }
-
-  export interface Profile extends User {
     email: string
-    is_admin?: boolean
+    avatar_thumbnail?: string
   }
 
   export interface UploadLink {
@@ -22,13 +19,28 @@ export declare namespace ApiTypes {
     link: string
   }
 
-  export interface Avatar {
-    form_data: FormData
-    link: string
-  }
-
   export interface Token {
     [key: string]: string
+  }
+
+  export namespace Profile {
+
+    export interface Avatar {
+      form_data: FormData
+      link: string
+    }
+
+    export interface UserProfile extends User {
+      email: string
+      is_admin?: boolean
+    }
+
+    export interface EditProfile {
+      email_changed?: boolean
+      email?: string
+      avatar_changed?: boolean
+      avatar_id?: string
+    }
   }
 
   export namespace Friends {
