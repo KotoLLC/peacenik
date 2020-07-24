@@ -101,7 +101,7 @@ export class FriendsOfFriends extends React.Component<Props, State> {
         <div key={user.id}>
           <ListItem alignItems={friends?.length ? 'flex-start' : 'center'}>
             <ListItemAvatar>
-              <Avatar alt={user.name} />
+              <Avatar alt={user.name} src={user.avatar_thumbnail} />
             </ListItemAvatar>
             <ListItemText
               primary={<UserName>{user.name}</UserName>}

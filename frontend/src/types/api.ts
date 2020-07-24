@@ -62,6 +62,7 @@ export declare namespace ApiTypes {
       created_at: string
       accepted_at?: string
       rejected_at?: string
+      avatar_thumbnail?: string
     }
 
     export interface InvitationAccept {
@@ -163,6 +164,7 @@ export declare namespace ApiTypes {
       created_at: string
       updated_at: string
       comments?: Comment[] 
+      avatar_thumbnail?: string
     }
     
     export interface Comment {
@@ -173,6 +175,7 @@ export declare namespace ApiTypes {
       user_name: string
       created_at: string
       updated_at: string
+      avatar_thumbnail?: string
     }
   }
 

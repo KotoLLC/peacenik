@@ -30,7 +30,7 @@ interface Props extends ApiTypes.Messages.Comment {
 }
 
 const Comment: React.SFC<Props> = (props) => {
-  const { text, user_name, created_at, id, user_id, sourceHost, userId } = props
+  const { text, user_name, created_at, id, user_id, sourceHost, userId, avatar_thumbnail } = props
   const [isEditer, setEditor] = useState<boolean>(false)
   const [comment, onCommentChange] = useState<string>(text)
 
@@ -70,7 +70,7 @@ const Comment: React.SFC<Props> = (props) => {
     <CommentWrapper>
       <MessageHeader>
         <UserInfo>
-          <Avatar variant="rounded" />
+          <Avatar variant="rounded" src={avatar_thumbnail}/>
           <UserNameWrapper>
             <UserName>{user_name}</UserName>
             <MessageDate>{moment(created_at).fromNow()}</MessageDate>
