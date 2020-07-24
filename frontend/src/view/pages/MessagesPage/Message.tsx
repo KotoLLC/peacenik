@@ -34,7 +34,7 @@ interface Props extends ApiTypes.Messages.Message {
 }
 
 const Message: React.SFC<Props> = (props) => {
-  const { text, user_name, created_at, isAuthor, id, sourceHost, messageToken, comments } = props
+  const { text, user_name, created_at, isAuthor, id, sourceHost, messageToken, comments, avatar_thumbnail } = props
   const [isEditer, setEditor] = useState<boolean>(false)
   const [isCommentsEditer, setCommentsEditor] = useState<boolean>(false)
   const [message, onMessageChange] = useState<string>(text)
@@ -119,7 +119,7 @@ const Message: React.SFC<Props> = (props) => {
       <PaperStyled>
         <MessageHeader>
           <UserInfo>
-            <Avatar variant="rounded" />
+            <Avatar variant="rounded" src={avatar_thumbnail} />
             <UserNameWrapper>
               <UserName>{user_name}</UserName>
               <MessageDate>{moment(created_at).fromNow()}</MessageDate>

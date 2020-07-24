@@ -62,7 +62,7 @@ class Friends extends React.Component<Props, State> {
       <div key={item.id}>
         <ListItem>
           <ListItemAvatar>
-            <Avatar alt={item.name} />
+            <Avatar alt={item.name} src={item.avatar_thumbnail} />
           </ListItemAvatar>
           <ListItemText primary={<UserName>{item.name}</UserName>} />
         </ListItem>
