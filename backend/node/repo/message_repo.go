@@ -3,6 +3,7 @@ package repo
 import (
 	"database/sql"
 	"errors"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 
@@ -12,36 +13,38 @@ import (
 var (
 	ErrMessageNotFound = errors.New("message not found")
 	ErrCommentNotFound = errors.New("comment not found")
+
+	maxTimestamp = time.Date(9999, 12, 31, 23, 59, 59, 999999999, time.Local)
 )
 
 type Message struct {
-	ID        string `json:"id" db:"id"`
-	UserID    string `json:"user_id" db:"user_id"`
-	UserName  string `json:"user_name" db:"user_name"`
-	Text      string `json:"text" db:"text"`
-	CreatedAt string `json:"created_at" db:"created_at"`
-	UpdatedAt string `json:"updated_at" db:"updated_at"`
+	ID        string    `json:"id" db:"id"`
+	UserID    string    `json:"user_id" db:"user_id"`
+	UserName  string    `json:"user_name" db:"user_name"`
+	Text      string    `json:"text" db:"text"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
 
 type Comment struct {
-	ID        string `json:"id" db:"id"`
-	MessageID string `json:"message_id" db:"message_id"`
-	UserID    string `json:"user_id" db:"user_id"`
-	UserName  string `json:"user_name" db:"user_name"`
-	Text      string `json:"text" db:"text"`
-	CreatedAt string `json:"created_at" db:"created_at"`
-	UpdatedAt string `json:"updated_at" db:"updated_at"`
+	ID        string    `json:"id" db:"id"`
+	MessageID string    `json:"message_id" db:"message_id"`
+	UserID    string    `json:"user_id" db:"user_id"`
+	UserName  string    `json:"user_name" db:"user_name"`
+	Text      string    `json:"text" db:"text"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
 
 type MessageRepo interface {
-	Messages(userIDs []string, from, until string) ([]Message, error)
+	Messages(userIDs []string, from, until time.Time) ([]Message, error)
 	Message(messageID string) (Message, error)
 	AddMessage(message Message) error
-	EditMessage(userID, messageID, text, updatedAt string) error
+	EditMessage(userID, messageID, text string, updatedAt time.Time) error
 	DeleteMessage(userID, messageID string) error
 	Comments(messageIDs []string) ([]Comment, error)
 	AddComment(comment Comment) error
-	EditComment(userID, commentID, text, updatedAt string) error
+	EditComment(userID, commentID, text string, updatedAt time.Time) error
 	DeleteComment(userID, commentID string) error
 	Comment(commentID string) (Comment, error)
 }
@@ -56,9 +59,9 @@ func NewMessages(db *sqlx.DB) MessageRepo {
 	}
 }
 
-func (r *messageRepo) Messages(userIDs []string, from, until string) ([]Message, error) {
-	if until == "" {
-		until = "9999-99-99T99:99:99.999Z"
+func (r *messageRepo) Messages(userIDs []string, from, until time.Time) ([]Message, error) {
+	if until.IsZero() {
+		until = maxTimestamp
 	}
 
 	var messages []Message
@@ -106,7 +109,7 @@ func (r *messageRepo) AddMessage(message Message) error {
 	return nil
 }
 
-func (r *messageRepo) EditMessage(userID, messageID, text, updatedAt string) error {
+func (r *messageRepo) EditMessage(userID, messageID, text string, updatedAt time.Time) error {
 	res, err := r.db.Exec(`
 		update messages
 		set text = $1, updated_at = $2
@@ -189,7 +192,7 @@ func (r *messageRepo) AddComment(comment Comment) error {
 	return nil
 }
 
-func (r *messageRepo) EditComment(userID, commentID, text, updatedAt string) error {
+func (r *messageRepo) EditComment(userID, commentID, text string, updatedAt time.Time) error {
 	res, err := r.db.Exec(`
 		update comments
 		set text = $1, updated_at = $2

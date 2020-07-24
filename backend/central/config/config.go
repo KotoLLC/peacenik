@@ -12,19 +12,18 @@ import (
 
 var (
 	defaultListenAddress        = ":12001"
-	defaultDBPath               = "central.db"
 	defaultPrivateKeyPath       = "central.rsa"
 	defaultTokenDurationSeconds = 3600
 )
 
 type Config struct {
 	ListenAddress        string   `yaml:"address"`
-	DBPath               string   `yaml:"db"`
 	PrivateKeyPath       string   `yaml:"private_key_path"`
 	Admins               []string `yaml:"admins"`
 	TokenDurationSeconds int      `yaml:"token_duration"`
 
-	S3 common.S3Config `yaml:"s3"`
+	DB common.DatabaseConfig `yaml:"db"`
+	S3 common.S3Config       `yaml:"s3"`
 }
 
 func Read(r io.Reader) (Config, error) {
@@ -36,9 +35,6 @@ func Read(r io.Reader) (Config, error) {
 
 	if cfg.ListenAddress == "" {
 		cfg.ListenAddress = defaultListenAddress
-	}
-	if cfg.DBPath == "" {
-		cfg.DBPath = defaultDBPath
 	}
 	if cfg.PrivateKeyPath == "" {
 		cfg.PrivateKeyPath = defaultPrivateKeyPath

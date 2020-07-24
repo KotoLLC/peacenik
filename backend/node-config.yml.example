@@ -1,10 +1,18 @@
-address: :12012
-external_address: http://localhost:12012
+address: :12002
+external_address: http://localhost:12002
 central_address: http://localhost:12001
+
+db:
+  host: localhost
+  port: 5432
+  ssl_mode: disable
+  user: postgres
+  password: docker
+  db_name: koto-node-12002
 
 s3:
   endpoint: http://127.0.0.1:9000
   region:
   key: minioadmin
   secret: minioadmin
-  bucket: koto-node-12012
+  bucket: koto-node-12002

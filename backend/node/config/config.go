@@ -18,10 +18,10 @@ var (
 type Config struct {
 	ListenAddress        string `yaml:"address"`
 	ExternalAddress      string `yaml:"external_address"`
-	DBPath               string `yaml:"db"`
 	CentralServerAddress string `yaml:"central_address"`
 
-	S3 common.S3Config `yaml:"s3"`
+	DB common.DatabaseConfig `yaml:"db"`
+	S3 common.S3Config       `yaml:"s3"`
 }
 
 func Read(r io.Reader) (Config, error) {

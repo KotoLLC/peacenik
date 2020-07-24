@@ -54,7 +54,7 @@ func (s *tokenService) PostMessage(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 			return true
 		}
 
-		if nodes[i].Node.ApprovedAt > nodes[j].Node.ApprovedAt {
+		if nodes[j].Node.ApprovedAt.Time.Before(nodes[i].Node.ApprovedAt.Time) {
 			return true
 		}
 

@@ -8,19 +8,7 @@ import (
 func Migrate(db *sqlx.DB, dialect string) (n int, err error) {
 	migrationSource := &migrate.MemoryMigrationSource{
 		Migrations: []*migrate.Migration{
-			migration0001a(),
-			migration0001b(),
-			migration0001c(),
-			migration0001d(),
-			migration0001e(),
-			migration0001f(),
-			migration0001g(),
-			migration0001h(),
-			migration0001i(),
-			migration0001j(),
-			migration0001k(),
-			migration0001l(),
-			migration0001m(),
+			migration0002a(),
 		},
 	}
 

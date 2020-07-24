@@ -3,6 +3,7 @@ package repo
 import (
 	"database/sql"
 	"errors"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 
@@ -10,14 +11,14 @@ import (
 )
 
 type User struct {
-	ID                string `json:"id" db:"id"`
-	Name              string `json:"name" db:"name"`
-	Email             string `json:"email,omitempty" db:"email"`
-	PasswordHash      string `json:"-" db:"password_hash"`
-	AvatarOriginalID  string `json:"avatar_original_id" db:"avatar_original_id"`
-	AvatarThumbnailID string `json:"avatar_thumbnail_id" db:"avatar_thumbnail_id"`
-	CreatedAt         string `json:"created_at,omitempty" db:"created_at"`
-	UpdatedAt         string `json:"updated_at,omitempty" db:"updated_at"`
+	ID                string    `json:"id" db:"id"`
+	Name              string    `json:"name" db:"name"`
+	Email             string    `json:"email,omitempty" db:"email"`
+	PasswordHash      string    `json:"-" db:"password_hash"`
+	AvatarOriginalID  string    `json:"avatar_original_id" db:"avatar_original_id"`
+	AvatarThumbnailID string    `json:"avatar_thumbnail_id" db:"avatar_thumbnail_id"`
+	CreatedAt         time.Time `json:"created_at,omitempty" db:"created_at"`
+	UpdatedAt         time.Time `json:"updated_at,omitempty" db:"updated_at"`
 }
 
 type UserRepo interface {
