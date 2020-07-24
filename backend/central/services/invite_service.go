@@ -8,6 +8,7 @@ import (
 
 	"github.com/mreider/koto/backend/central/repo"
 	"github.com/mreider/koto/backend/central/rpc"
+	"github.com/mreider/koto/backend/common"
 )
 
 type inviteService struct {
@@ -84,9 +85,9 @@ func (s *inviteService) FromMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFr
 		rpcInvites[i] = &rpc.InviteFriendInvite{
 			FriendId:   invite.FriendID,
 			FriendName: friendName,
-			CreatedAt:  invite.CreatedAt,
-			AcceptedAt: invite.AcceptedAt,
-			RejectedAt: invite.RejectedAt,
+			CreatedAt:  common.TimeToRpcString(invite.CreatedAt),
+			AcceptedAt: common.NullTimeToRpcString(invite.AcceptedAt),
+			RejectedAt: common.NullTimeToRpcString(invite.RejectedAt),
 		}
 	}
 
@@ -106,9 +107,9 @@ func (s *inviteService) ForMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFor
 		rpcInvites[i] = &rpc.InviteFriendInvite{
 			FriendId:   invite.UserID,
 			FriendName: invite.UserName,
-			CreatedAt:  invite.CreatedAt,
-			AcceptedAt: invite.AcceptedAt,
-			RejectedAt: invite.RejectedAt,
+			CreatedAt:  common.TimeToRpcString(invite.CreatedAt),
+			AcceptedAt: common.NullTimeToRpcString(invite.AcceptedAt),
+			RejectedAt: common.NullTimeToRpcString(invite.RejectedAt),
 		}
 	}
 

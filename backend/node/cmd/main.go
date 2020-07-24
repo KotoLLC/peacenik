@@ -13,7 +13,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"time"
 
@@ -28,8 +27,6 @@ import (
 )
 
 var (
-	portRegex = regexp.MustCompile(`:(\d+)`)
-
 	errConfigPathIsEmpty           = errors.New("config path should be specified")
 	errCentralServerAddressIsEmpty = errors.New("central server address should be specified")
 )
@@ -42,11 +39,16 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	db, n, err := common.OpenDatabase(cfg.DBPath, migrate.Migrate)
+	err = common.CreateDatabaseIfNotExist(cfg.DB)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	log.Printf("Applied %d migrations to %s\n", n, cfg.DBPath)
+
+	db, n, err := common.OpenDatabase(cfg.DB, migrate.Migrate)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Printf("Applied %d migrations to %s\n", n, cfg.DB.DBName)
 
 	centralPublicKey, err := loadCentralPublicKey(context.TODO(), cfg.CentralServerAddress)
 	if err != nil {
@@ -98,16 +100,8 @@ func loadCentralPublicKey(ctx context.Context, centralServerAddress string) (*rs
 
 func loadConfig(execDir string) (config.Config, error) {
 	var configPath string
-	var listenAddress string
-	var externalAddress string
-	var dbPath string
-	var centralServerAddress string
 
 	flag.StringVar(&configPath, "config", "", "config path")
-	flag.StringVar(&listenAddress, "address", "", "http address to listen")
-	flag.StringVar(&externalAddress, "external", "", "external http address")
-	flag.StringVar(&dbPath, "db", "", "path to Sqlite DB file")
-	flag.StringVar(&centralServerAddress, "central", "", "central server address")
 	flag.Parse()
 
 	if configPath == "" {
@@ -127,24 +121,6 @@ func loadConfig(execDir string) (config.Config, error) {
 		if err != nil {
 			return config.Config{}, err
 		}
-	}
-
-	if listenAddress != "" {
-		cfg.ListenAddress = listenAddress
-	}
-	if externalAddress != "" {
-		cfg.ExternalAddress = externalAddress
-	}
-	if dbPath != "" {
-		cfg.DBPath = dbPath
-	}
-
-	if cfg.DBPath == "" {
-		match := portRegex.FindStringSubmatch(cfg.ListenAddress)
-		if match == nil {
-			log.Fatalf("can't determine port in the listen address '%s'\n", cfg.ListenAddress)
-		}
-		cfg.DBPath = "node" + match[1] + ".db"
 	}
 
 	if cfg.CentralServerAddress != "" {

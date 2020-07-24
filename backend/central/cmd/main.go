@@ -3,13 +3,13 @@ package main
 import (
 	"bytes"
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/mreider/koto/backend/central"
 	"github.com/mreider/koto/backend/central/config"
@@ -17,6 +17,10 @@ import (
 	"github.com/mreider/koto/backend/central/repo"
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/token"
+)
+
+var (
+	errConfigPathIsEmpty = errors.New("config path should be specified")
 )
 
 func main() {
@@ -27,11 +31,16 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	db, n, err := common.OpenDatabase(cfg.DBPath, migrate.Migrate)
+	err = common.CreateDatabaseIfNotExist(cfg.DB)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	log.Printf("Applied %d migrations to %s\n", n, cfg.DBPath)
+
+	db, n, err := common.OpenDatabase(cfg.DB, migrate.Migrate)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Printf("Applied %d migrations to %s\n", n, cfg.DB.DBName)
 
 	s3Storage, err := cfg.S3.CreateStorage(context.TODO())
 	if err != nil {
@@ -61,19 +70,13 @@ func main() {
 
 func loadConfig(execDir string) (config.Config, error) {
 	var configPath string
-	var listenAddress string
-	var dbPath string
-	var privateKeyPath string
-	var adminList string
-	var tokenDurationSeconds int
 
-	flag.StringVar(&configPath, "config", "central-config.yml", "config path")
-	flag.StringVar(&listenAddress, "address", "", "http address to listen")
-	flag.StringVar(&dbPath, "db", "", "path to Sqlite DB file")
-	flag.StringVar(&privateKeyPath, "key", "", "path to private key file")
-	flag.StringVar(&adminList, "admin", "", "administrator names (comma-separated)")
-	flag.IntVar(&tokenDurationSeconds, "token-duration", 0, "token duration (seconds)")
+	flag.StringVar(&configPath, "config", "", "config path")
 	flag.Parse()
+
+	if configPath == "" {
+		return config.Config{}, errConfigPathIsEmpty
+	}
 
 	if !filepath.IsAbs(configPath) {
 		configPath = filepath.Join(execDir, configPath)
@@ -88,29 +91,6 @@ func loadConfig(execDir string) (config.Config, error) {
 		if err != nil {
 			return config.Config{}, err
 		}
-	}
-
-	if listenAddress != "" {
-		cfg.ListenAddress = listenAddress
-	}
-	if dbPath != "" {
-		cfg.DBPath = dbPath
-	}
-	if privateKeyPath != "" {
-		cfg.PrivateKeyPath = privateKeyPath
-	}
-	if adminList != "" {
-		var admins []string
-		for _, admin := range strings.Split(adminList, ",") {
-			admin = strings.TrimSpace(admin)
-			if admin != "" {
-				admins = append(admins, admin)
-			}
-		}
-		cfg.Admins = admins
-	}
-	if tokenDurationSeconds != 0 {
-		cfg.TokenDurationSeconds = tokenDurationSeconds
 	}
 
 	return cfg, nil

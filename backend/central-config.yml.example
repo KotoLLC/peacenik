@@ -2,6 +2,14 @@ address: :12001
 admins:
   - andrey9
 
+db:
+  host: localhost
+  port: 5432
+  ssl_mode: disable
+  user: postgres
+  password: docker
+  db_name: koto-central
+
 s3:
   endpoint: http://127.0.0.1:9000
   region:

@@ -1,9 +1,11 @@
 package repo
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 
@@ -15,16 +17,16 @@ var (
 )
 
 type Invite struct {
-	ID          int    `db:"id"`
-	UserID      string `db:"user_id"`
-	UserName    string `db:"user_name"`
-	UserEmail   string `db:"user_email"`
-	FriendID    string `db:"friend_id"`
-	FriendName  string `db:"friend_name"`
-	FriendEmail string `db:"friend_email"`
-	CreatedAt   string `db:"created_at"`
-	AcceptedAt  string `db:"accepted_at"`
-	RejectedAt  string `db:"rejected_at"`
+	ID          int          `db:"id"`
+	UserID      string       `db:"user_id"`
+	UserName    string       `db:"user_name"`
+	UserEmail   string       `db:"user_email"`
+	FriendID    string       `db:"friend_id"`
+	FriendName  string       `db:"friend_name"`
+	FriendEmail string       `db:"friend_email"`
+	CreatedAt   time.Time    `db:"created_at"`
+	AcceptedAt  sql.NullTime `db:"accepted_at"`
+	RejectedAt  sql.NullTime `db:"rejected_at"`
 }
 
 type InviteRepo interface {
@@ -48,9 +50,9 @@ func NewInvites(db *sqlx.DB) InviteRepo {
 
 func (r *inviteRepo) AddInvite(inviterID, friendEmail string) error {
 	_, err := r.db.Exec(`
-		insert into invites(user_id, friend_email, created_at, accepted_at, rejected_at)
-		select $1, $2, $3, '', ''
-		where not exists(select * from invites where user_id = $1 and friend_email = $2 and rejected_at = '')`,
+		insert into invites(user_id, friend_email, created_at)
+		select $1, $2, $3
+		where not exists(select * from invites where user_id = $1 and friend_email = $2 and rejected_at is null)`,
 		inviterID, friendEmail, common.CurrentTimestamp())
 	return err
 }
@@ -60,7 +62,7 @@ func (r *inviteRepo) AcceptInvite(inviterID, friendID, friendEmail string) error
 		res, err := tx.Exec(`
 		update invites
 		set accepted_at = $1
-		where user_id = $2 and friend_email = $3 and rejected_at = ''`,
+		where user_id = $2 and friend_email = $3 and rejected_at is null`,
 			common.CurrentTimestamp(), inviterID, friendEmail)
 		if err != nil {
 			return err
@@ -99,8 +101,8 @@ func (r *inviteRepo) RejectInvite(inviterID, friendID, friendEmail string) error
 	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
 		res, err := tx.Exec(`
 		update invites
-		set rejected_at = $1, accepted_at = ''
-		where user_id = $2 and friend_email = $3 and rejected_at = ''`,
+		set rejected_at = $1, accepted_at = null
+		where user_id = $2 and friend_email = $3 and rejected_at is null`,
 			common.CurrentTimestamp(), inviterID, friendEmail)
 		if err != nil {
 			return err
@@ -185,8 +187,8 @@ with t as (
 )
 select user_id,
        case
-           when rejected_at <> '' then 'rejected'
-           when accepted_at <> '' then 'accepted'
+           when rejected_at is not null then 'rejected'
+           when accepted_at is not null then 'accepted'
            else 'pending'
            end status
 from t
@@ -213,8 +215,8 @@ with t as (
 )
 select user_id,
        case
-           when rejected_at <> '' then 'rejected'
-           when accepted_at <> '' then 'accepted'
+           when rejected_at is not null then 'rejected'
+           when accepted_at is not null then 'accepted'
            else 'pending'
            end status
 from t

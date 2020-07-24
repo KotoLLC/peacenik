@@ -74,7 +74,7 @@ func TestAuthService_Register_NameWithSpaces(t *testing.T) {
 }
 
 func TestAuthService_Register_Duplicated(t *testing.T) {
-	te := NewTestEnvironment()
+	te := NewTestEnvironment("auth")
 	defer te.Cleanup()
 
 	repos := repo.Repos{
@@ -108,7 +108,7 @@ func TestAuthService_Register_Duplicated(t *testing.T) {
 }
 
 func TestAuthService_Register(t *testing.T) {
-	te := NewTestEnvironment()
+	te := NewTestEnvironment("auth")
 	defer te.Cleanup()
 
 	repos := repo.Repos{
@@ -153,7 +153,7 @@ func TestAuthService_Register(t *testing.T) {
 }
 
 func TestAuthService_Login(t *testing.T) {
-	te := NewTestEnvironment()
+	te := NewTestEnvironment("auth")
 	defer te.Cleanup()
 
 	repos := repo.Repos{
@@ -196,7 +196,7 @@ func TestAuthService_Login(t *testing.T) {
 }
 
 func TestAuthService_Logout(t *testing.T) {
-	te := NewTestEnvironment()
+	te := NewTestEnvironment("auth")
 	defer te.Cleanup()
 
 	repos := repo.Repos{}

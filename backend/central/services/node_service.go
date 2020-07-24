@@ -8,6 +8,7 @@ import (
 
 	"github.com/mreider/koto/backend/central/repo"
 	"github.com/mreider/koto/backend/central/rpc"
+	"github.com/mreider/koto/backend/common"
 )
 
 type nodeService struct {
@@ -65,9 +66,9 @@ func (s *nodeService) Nodes(ctx context.Context, _ *rpc.Empty) (*rpc.NodeNodesRe
 				Name:            node.AdminName,
 				AvatarThumbnail: avatarThumbnailLink,
 			},
-			CreatedAt:  node.CreatedAt,
-			ApprovedAt: node.ApprovedAt,
-			DisabledAt: node.DisabledAt,
+			CreatedAt:  common.TimeToRpcString(node.CreatedAt),
+			ApprovedAt: common.NullTimeToRpcString(node.ApprovedAt),
+			DisabledAt: common.NullTimeToRpcString(node.DisabledAt),
 			Details:    node.Details,
 		}
 	}

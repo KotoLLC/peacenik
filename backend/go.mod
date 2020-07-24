@@ -13,7 +13,7 @@ require (
 	github.com/gorilla/sessions v1.2.0
 	github.com/h2non/filetype v1.1.0
 	github.com/jmoiron/sqlx v1.2.0
-	github.com/mattn/go-sqlite3 v2.0.3+incompatible
+	github.com/lib/pq v1.7.1
 	github.com/minio/minio-go/v7 v7.0.1
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rubenv/sql-migrate v0.0.0-20200616145509-8d140a17f351

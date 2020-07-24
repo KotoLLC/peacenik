@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/gofrs/uuid"
 	"github.com/twitchtv/twirp"
@@ -63,8 +64,8 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 			UserId:    msg.UserID,
 			UserName:  msg.UserName,
 			Text:      msg.Text,
-			CreatedAt: msg.CreatedAt,
-			UpdatedAt: msg.UpdatedAt,
+			CreatedAt: common.TimeToRpcString(msg.CreatedAt),
+			UpdatedAt: common.TimeToRpcString(msg.UpdatedAt),
 		},
 	}, nil
 }
@@ -89,7 +90,22 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 	for i, rawUserID := range rawUserIDs {
 		userIDs[i] = rawUserID.(string)
 	}
-	messages, err := s.repos.Message.Messages(userIDs, r.From, r.Until)
+
+	var from, until time.Time
+	if r.From != "" {
+		from, err = common.RpcStringToTime(r.From)
+		if err != nil {
+			return nil, twirp.InvalidArgumentError("from", err.Error())
+		}
+	}
+	if r.Until != "" {
+		until, err = common.RpcStringToTime(r.Until)
+		if err != nil {
+			return nil, twirp.InvalidArgumentError("until", err.Error())
+		}
+	}
+
+	messages, err := s.repos.Message.Messages(userIDs, from, until)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
@@ -104,8 +120,8 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 			UserId:    message.UserID,
 			UserName:  message.UserName,
 			Text:      message.Text,
-			CreatedAt: message.CreatedAt,
-			UpdatedAt: message.UpdatedAt,
+			CreatedAt: common.TimeToRpcString(message.CreatedAt),
+			UpdatedAt: common.TimeToRpcString(message.UpdatedAt),
 		}
 		rpcMessageMap[message.ID] = rpcMessages[i]
 	}
@@ -120,8 +136,8 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 			UserId:    comment.UserID,
 			UserName:  comment.UserName,
 			Text:      comment.Text,
-			CreatedAt: comment.CreatedAt,
-			UpdatedAt: comment.UpdatedAt,
+			CreatedAt: common.TimeToRpcString(comment.CreatedAt),
+			UpdatedAt: common.TimeToRpcString(comment.UpdatedAt),
 		}
 		rpcMessageMap[comment.MessageID].Comments = append(rpcMessageMap[comment.MessageID].Comments, rpcComment)
 	}
@@ -155,8 +171,8 @@ func (s *messageService) Edit(ctx context.Context, r *rpc.MessageEditRequest) (*
 			UserId:    msg.UserID,
 			UserName:  msg.UserName,
 			Text:      msg.Text,
-			CreatedAt: msg.CreatedAt,
-			UpdatedAt: msg.UpdatedAt,
+			CreatedAt: common.TimeToRpcString(msg.CreatedAt),
+			UpdatedAt: common.TimeToRpcString(msg.UpdatedAt),
 		},
 	}, nil
 }
@@ -237,8 +253,8 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 			UserId:    comment.UserID,
 			UserName:  comment.UserName,
 			Text:      comment.Text,
-			CreatedAt: comment.CreatedAt,
-			UpdatedAt: comment.UpdatedAt,
+			CreatedAt: common.TimeToRpcString(comment.CreatedAt),
+			UpdatedAt: common.TimeToRpcString(comment.UpdatedAt),
 		},
 	}, nil
 }
@@ -265,8 +281,8 @@ func (s *messageService) EditComment(ctx context.Context, r *rpc.MessageEditComm
 			UserId:    comment.UserID,
 			UserName:  comment.UserName,
 			Text:      comment.Text,
-			CreatedAt: comment.CreatedAt,
-			UpdatedAt: comment.UpdatedAt,
+			CreatedAt: common.TimeToRpcString(comment.CreatedAt),
+			UpdatedAt: common.TimeToRpcString(comment.UpdatedAt),
 		},
 	}, nil
 }

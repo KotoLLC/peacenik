@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"sort"
+	"time"
 
 	"github.com/gofrs/uuid"
 	"github.com/jmoiron/sqlx"
@@ -12,15 +13,15 @@ import (
 )
 
 type Node struct {
-	ID            string `db:"id"`
-	Address       string `db:"address"`
-	AdminID       string `db:"admin_id"`
-	AdminName     string `db:"admin_name"`
-	AdminAvatarID string `db:"admin_avatar_id"`
-	CreatedAt     string `db:"created_at"`
-	ApprovedAt    string `db:"approved_at"`
-	DisabledAt    string `db:"disabled_at"`
-	Details       string `db:"details"`
+	ID            string       `db:"id"`
+	Address       string       `db:"address"`
+	AdminID       string       `db:"admin_id"`
+	AdminName     string       `db:"admin_name"`
+	AdminAvatarID string       `db:"admin_avatar_id"`
+	CreatedAt     time.Time    `db:"created_at"`
+	ApprovedAt    sql.NullTime `db:"approved_at"`
+	DisabledAt    sql.NullTime `db:"disabled_at"`
+	Details       string       `db:"details"`
 }
 
 type UserNode struct {
@@ -74,8 +75,8 @@ func (r *nodeRepo) AddNode(address, details string, nodeAdmin User) error {
 	}
 
 	_, err = r.db.Exec(`
-		insert into nodes(id, address, admin_id, created_at, approved_at, disabled_at, details) 
-		VALUES ($1, $2, $3, $4, '', '', $5)`,
+		insert into nodes(id, address, admin_id, created_at, details) 
+		VALUES ($1, $2, $3, $4, $5)`,
 		nodeID, address, nodeAdmin.ID, common.CurrentTimestamp(), details)
 	return err
 }
@@ -193,7 +194,7 @@ func (r *nodeRepo) ConnectedNodes(user User) (userNodes []UserNode, userIDs []st
 	err = r.db.Select(&nodes, `
 		select id, address, admin_id, created_at, approved_at, disabled_at, details
 		from nodes
-		where approved_at <> '' and disabled_at = ''`)
+		where approved_at is not null and disabled_at is null`)
 	if err != nil {
 		return nil, nil, err
 	}
