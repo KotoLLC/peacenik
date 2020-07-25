@@ -14,12 +14,12 @@ const (
 )
 
 type DatabaseConfig struct {
-	Host     string `yaml:"host"`
-	Port     int    `yaml:"port"`
-	SSLMode  string `yaml:"ssl_mode"`
-	DBName   string `yaml:"db_name"`
-	User     string `yaml:"user"`
-	Password string `yaml:"password"`
+	Host     string `yaml:"host" required:"true" env:"KOTO_DB_HOST"`
+	Port     int    `yaml:"port" default:"5432" env:"KOTO_DB_PORT"`
+	SSLMode  string `yaml:"ssl_mode" env:"KOTO_DB_SSL_MODE"`
+	DBName   string `yaml:"db_name" required:"true" env:"KOTO_DB_NAME"`
+	User     string `yaml:"user" required:"true" env:"KOTO_DB_USER"`
+	Password string `yaml:"password" required:"true" env:"KOTO_DB_PASSWORD"`
 }
 
 func OpenDatabase(cfg DatabaseConfig, migrations ...func(db *sqlx.DB, dialect string) (n int, err error)) (db *sqlx.DB, migrationsCount int, err error) {

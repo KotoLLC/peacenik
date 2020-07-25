@@ -9,11 +9,11 @@ import (
 )
 
 type S3Config struct {
-	Endpoint string `yaml:"endpoint"`
-	Region   string `yaml:"region"`
-	Key      string `yaml:"key"`
-	Secret   string `yaml:"secret"`
-	Bucket   string `yaml:"bucket"`
+	Endpoint string `yaml:"endpoint" required:"true" env:"KOTO_S3_ENDPOINT"`
+	Region   string `yaml:"region" env:"KOTO_S3_REGION"`
+	Key      string `yaml:"key" required:"true" env:"KOTO_S3_KEY"`
+	Secret   string `yaml:"secret" required:"true" env:"KOTO_S3_SECRET"`
+	Bucket   string `yaml:"bucket" required:"true" env:"KOTO_S3_BUCKET"`
 }
 
 func (cfg S3Config) CreateStorage(ctx context.Context) (*S3Storage, error) {

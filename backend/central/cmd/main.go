@@ -1,12 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"context"
-	"errors"
 	"flag"
-	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -17,10 +13,6 @@ import (
 	"github.com/mreider/koto/backend/central/repo"
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/token"
-)
-
-var (
-	errConfigPathIsEmpty = errors.New("config path should be specified")
 )
 
 func main() {
@@ -74,23 +66,15 @@ func loadConfig(execDir string) (config.Config, error) {
 	flag.StringVar(&configPath, "config", "", "config path")
 	flag.Parse()
 
-	if configPath == "" {
-		return config.Config{}, errConfigPathIsEmpty
-	}
-
-	if !filepath.IsAbs(configPath) {
-		configPath = filepath.Join(execDir, configPath)
-	}
-
-	var cfg config.Config
-	data, err := ioutil.ReadFile(configPath)
-	if err != nil && !os.IsNotExist(err) {
-		return config.Config{}, fmt.Errorf("can't read config file: %w", err)
-	} else if err == nil {
-		cfg, err = config.Read(bytes.NewReader(data))
-		if err != nil {
-			return config.Config{}, err
+	if configPath != "" {
+		if !filepath.IsAbs(configPath) {
+			configPath = filepath.Join(execDir, configPath)
 		}
+	}
+
+	cfg, err := config.Load(configPath)
+	if err != nil {
+		return config.Config{}, err
 	}
 
 	return cfg, nil
