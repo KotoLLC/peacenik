@@ -1,14 +1,10 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"crypto/rsa"
 	"encoding/json"
-	"errors"
 	"flag"
-	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -24,11 +20,6 @@ import (
 	"github.com/mreider/koto/backend/node/migrate"
 	"github.com/mreider/koto/backend/node/repo"
 	"github.com/mreider/koto/backend/token"
-)
-
-var (
-	errConfigPathIsEmpty           = errors.New("config path should be specified")
-	errCentralServerAddressIsEmpty = errors.New("central server address should be specified")
 )
 
 func main() {
@@ -104,30 +95,19 @@ func loadConfig(execDir string) (config.Config, error) {
 	flag.StringVar(&configPath, "config", "", "config path")
 	flag.Parse()
 
-	if configPath == "" {
-		return config.Config{}, errConfigPathIsEmpty
-	}
-
-	if !filepath.IsAbs(configPath) {
-		configPath = filepath.Join(execDir, configPath)
-	}
-
-	var cfg config.Config
-	data, err := ioutil.ReadFile(configPath)
-	if err != nil && !os.IsNotExist(err) {
-		return config.Config{}, fmt.Errorf("can't read config file: %w", err)
-	} else if err == nil {
-		cfg, err = config.Read(bytes.NewReader(data))
-		if err != nil {
-			return config.Config{}, err
+	if configPath != "" {
+		if !filepath.IsAbs(configPath) {
+			configPath = filepath.Join(execDir, configPath)
 		}
+	}
+
+	cfg, err := config.Load(configPath)
+	if err != nil {
+		return config.Config{}, err
 	}
 
 	if cfg.CentralServerAddress != "" {
 		cfg.CentralServerAddress = strings.TrimSuffix(cfg.CentralServerAddress, "/")
-		if cfg.CentralServerAddress == "" {
-			return config.Config{}, errCentralServerAddressIsEmpty
-		}
 	}
 
 	return cfg, nil

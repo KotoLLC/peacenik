@@ -2,47 +2,34 @@ package config
 
 import (
 	"fmt"
-	"io"
 	"time"
 
-	"gopkg.in/yaml.v2"
+	"github.com/jinzhu/configor"
 
 	"github.com/mreider/koto/backend/common"
 )
 
-var (
-	defaultListenAddress        = ":12001"
-	defaultPrivateKeyPath       = "central.rsa"
-	defaultTokenDurationSeconds = 3600
-)
-
 type Config struct {
-	ListenAddress        string   `yaml:"address"`
-	PrivateKeyPath       string   `yaml:"private_key_path"`
-	Admins               []string `yaml:"admins"`
-	TokenDurationSeconds int      `yaml:"token_duration"`
+	ListenAddress        string   `yaml:"address" default:":12001" env:"KOTO_LISTEN_ADDRESS"`
+	PrivateKeyPath       string   `yaml:"private_key_path" default:"central.rsa" env:"KOTO_PRIVATE_KEY"`
+	Admins               []string `yaml:"admins" env:"KOTO_ADMINS"`
+	TokenDurationSeconds int      `yaml:"token_duration" default:"3600" env:"KOTO_TOKEN_DURATION"`
 
 	DB common.DatabaseConfig `yaml:"db"`
 	S3 common.S3Config       `yaml:"s3"`
 }
 
-func Read(r io.Reader) (Config, error) {
+func Load(cfgPath string) (Config, error) {
+	cfgPaths := make([]string, 0, 1)
+	if cfgPath != "" {
+		cfgPaths = append(cfgPaths, cfgPath)
+	}
+
 	var cfg Config
-	err := yaml.NewDecoder(r).Decode(&cfg)
+	err := configor.Load(&cfg, cfgPaths...)
 	if err != nil {
-		return Config{}, fmt.Errorf("can't parse config file: %w", err)
+		return Config{}, fmt.Errorf("can't load config: %w", err)
 	}
-
-	if cfg.ListenAddress == "" {
-		cfg.ListenAddress = defaultListenAddress
-	}
-	if cfg.PrivateKeyPath == "" {
-		cfg.PrivateKeyPath = defaultPrivateKeyPath
-	}
-	if cfg.TokenDurationSeconds == 0 {
-		cfg.TokenDurationSeconds = defaultTokenDurationSeconds
-	}
-
 	return cfg, nil
 }
 
