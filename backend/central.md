@@ -47,7 +47,7 @@ docker run --name minio-koto -p 9000:9000 -e MINIO_ACCESS_KEY=minioadmin -e MINI
 
 ## Central Service
 ```
-./central-service
+./central-service -config central-config.yml
 ```
 
 # API
