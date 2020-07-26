@@ -5,12 +5,10 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-
-	"github.com/mreider/koto/backend/central/repo"
 )
 
 type Generator interface {
-	Generate(user repo.User, scope string, exp time.Time, claims map[string]interface{}) (token string, err error)
+	Generate(userID, userName, scope string, exp time.Time, claims map[string]interface{}) (token string, err error)
 }
 
 type generator struct {
@@ -23,14 +21,14 @@ func NewGenerator(privateKey *rsa.PrivateKey) Generator {
 	}
 }
 
-func (g *generator) Generate(user repo.User, scope string, exp time.Time, claims map[string]interface{}) (token string, err error) {
+func (g *generator) Generate(userID, userName, scope string, exp time.Time, claims map[string]interface{}) (token string, err error) {
 	tokenClaims := jwt.MapClaims{}
 	for k, v := range claims {
 		tokenClaims[k] = v
 	}
 
-	tokenClaims["id"] = user.ID
-	tokenClaims["name"] = user.Name
+	tokenClaims["id"] = userID
+	tokenClaims["name"] = userName
 	tokenClaims["scope"] = scope
 	tokenClaims["exp"] = exp.Unix()
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodRS256, tokenClaims)

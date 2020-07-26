@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"log"
 	"os"
@@ -34,7 +33,7 @@ func main() {
 	}
 	log.Printf("Applied %d migrations to %s\n", n, cfg.DB.DBName)
 
-	s3Storage, err := cfg.S3.CreateStorage(context.TODO())
+	s3Storage, err := cfg.S3.CreateStorage()
 	if err != nil {
 		log.Fatalln(err)
 	}

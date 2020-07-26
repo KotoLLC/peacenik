@@ -66,7 +66,7 @@ func CreateDatabaseIfNotExist(cfg DatabaseConfig) error {
 	}
 	defer func() { _ = db.Close() }()
 
-	_, err = db.Exec(fmt.Sprintf("create database %s;", dbName))
+	_, err = db.Exec(fmt.Sprintf(`create database "%s";`, dbName))
 	if err != nil {
 		return fmt.Errorf("can't create the database: %w", err)
 	}

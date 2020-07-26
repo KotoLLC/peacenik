@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"sync"
 	"time"
 
@@ -16,8 +17,9 @@ const (
 )
 
 type S3Storage struct {
-	client *minio.Client
-	bucket string
+	client     *minio.Client
+	bucket     string
+	bucketOnce sync.Once
 
 	cachedLinks   map[string]string
 	cachedTimes   map[string]time.Time
@@ -33,19 +35,27 @@ func NewS3Storage(client *minio.Client, bucket string) *S3Storage {
 	}
 }
 
-func (s *S3Storage) CreateBucketIfNotExist(ctx context.Context) error {
-	exists, err := s.client.BucketExists(ctx, s.bucket)
-	if err != nil {
-		return err
-	}
-	if exists {
-		return nil
-	}
+func (s *S3Storage) createBucketIfNotExist(ctx context.Context) {
+	s.bucketOnce.Do(func() {
+		exists, err := s.client.BucketExists(ctx, s.bucket)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		if exists {
+			return
+		}
 
-	return s.client.MakeBucket(ctx, s.bucket, minio.MakeBucketOptions{})
+		err = s.client.MakeBucket(ctx, s.bucket, minio.MakeBucketOptions{})
+		if err != nil {
+			log.Println(err)
+		}
+	})
 }
 
 func (s *S3Storage) Exists(ctx context.Context, blobID string) (bool, error) {
+	s.createBucketIfNotExist(ctx)
+
 	info, err := s.client.StatObject(ctx, s.bucket, blobID, minio.StatObjectOptions{})
 	if err != nil {
 		if minioErr, ok := err.(minio.ErrorResponse); ok && minioErr.Code == "NoSuchKey" {
@@ -57,6 +67,8 @@ func (s *S3Storage) Exists(ctx context.Context, blobID string) (bool, error) {
 }
 
 func (s *S3Storage) Read(ctx context.Context, blobID string, w io.Writer) error {
+	s.createBucketIfNotExist(ctx)
+
 	result, err := s.client.GetObject(ctx, s.bucket, blobID, minio.GetObjectOptions{})
 	if err != nil {
 		return fmt.Errorf("can't GetObject: %w", err)
@@ -71,6 +83,8 @@ func (s *S3Storage) Read(ctx context.Context, blobID string, w io.Writer) error 
 }
 
 func (s *S3Storage) CreateLink(ctx context.Context, blobID string, expiration time.Duration) (string, error) {
+	s.createBucketIfNotExist(ctx)
+
 	if expiration <= 0 {
 		expiration = defaultLinkExpiration
 	}
@@ -96,6 +110,8 @@ func (s *S3Storage) CreateLink(ctx context.Context, blobID string, expiration ti
 }
 
 func (s *S3Storage) PutObject(ctx context.Context, blobID string, content []byte, contentType string) error {
+	s.createBucketIfNotExist(ctx)
+
 	_, err := s.client.PutObject(ctx, s.bucket, blobID, bytes.NewReader(content), int64(len(content)), minio.PutObjectOptions{
 		ContentType: contentType,
 	})
@@ -106,6 +122,8 @@ func (s *S3Storage) PutObject(ctx context.Context, blobID string, content []byte
 }
 
 func (s *S3Storage) CreateUploadLink(ctx context.Context, blobID, contentType string, metadata map[string]string) (uploadLink string, formData map[string]string, err error) {
+	s.createBucketIfNotExist(ctx)
+
 	expiration := defaultLinkExpiration
 
 	policy := minio.NewPostPolicy()
@@ -142,6 +160,8 @@ func (s *S3Storage) CreateUploadLink(ctx context.Context, blobID, contentType st
 }
 
 func (s *S3Storage) RemoveObject(ctx context.Context, blobID string) error {
+	s.createBucketIfNotExist(ctx)
+
 	err := s.client.RemoveObject(ctx, s.bucket, blobID, minio.RemoveObjectOptions{})
 	if err != nil {
 		return fmt.Errorf("can't RemoveObject: %w", err)

@@ -89,7 +89,7 @@ func (te *TestEnvironment) cloneTemplateDB() (*sqlx.DB, string) {
 
 	dbName := fmt.Sprintf("test_%d", time.Now().UnixNano())
 
-	_, err = db.Exec(fmt.Sprintf("create database %s template %s;", dbName, templateDBName))
+	_, err = db.Exec(fmt.Sprintf(`create database "%s" template %s;`, dbName, templateDBName))
 	if err != nil {
 		panic(err)
 	}
@@ -117,7 +117,7 @@ func (te *TestEnvironment) createTemplateDB() string {
 
 	_, _ = db.Exec(fmt.Sprintf("drop database %s;", templateDBName))
 
-	_, err = db.Exec(fmt.Sprintf("create database %s;", templateDBName))
+	_, err = db.Exec(fmt.Sprintf(`create database "%s";`, templateDBName))
 	if err != nil {
 		panic(err)
 	}

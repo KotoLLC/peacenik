@@ -28,7 +28,7 @@ func NewToken(base *BaseService, tokenGenerator token.Generator, tokenDuration t
 func (s *tokenService) Auth(ctx context.Context, _ *rpc.Empty) (*rpc.TokenAuthResponse, error) {
 	user := s.getUser(ctx)
 
-	authToken, err := s.tokenGenerator.Generate(user, "auth", time.Now().Add(s.tokenDuration), nil)
+	authToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "auth", time.Now().Add(s.tokenDuration), nil)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
@@ -69,7 +69,7 @@ func (s *tokenService) PostMessage(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 	exp := time.Now().Add(s.tokenDuration)
 	for _, node := range nodes {
 		claims := map[string]interface{}{"node": node.Node.Address}
-		nodeToken, err := s.tokenGenerator.Generate(user, "post-message", exp, claims)
+		nodeToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "post-message", exp, claims)
 		if err != nil {
 			return nil, err
 		}
@@ -94,7 +94,7 @@ func (s *tokenService) GetMessages(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 			"node":  node.Node.Address,
 			"users": userIDs,
 		}
-		nodeToken, err := s.tokenGenerator.Generate(user, "get-messages", exp, claims)
+		nodeToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "get-messages", exp, claims)
 		if err != nil {
 			return nil, err
 		}
