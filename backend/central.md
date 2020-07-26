@@ -16,11 +16,18 @@ Rename `central-config.yml.example` to `central-config.yml` and change values.
 
 ```yaml
 address: :12001
-db: central.db
 private_key_path: central.rsa
 admins:
   - admin@mail.org
 token_duration: 3600
+
+db:
+  host: localhost
+  port: 5432
+  ssl_mode: disable
+  user: postgres
+  password: docker
+  db_name: koto-central
 
 s3:
   endpoint: http://127.0.0.1:9000
