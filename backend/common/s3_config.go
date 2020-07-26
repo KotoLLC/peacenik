@@ -1,7 +1,6 @@
 package common
 
 import (
-	"context"
 	"strings"
 
 	"github.com/minio/minio-go/v7"
@@ -16,7 +15,7 @@ type S3Config struct {
 	Bucket   string `yaml:"bucket" required:"true" env:"KOTO_S3_BUCKET"`
 }
 
-func (cfg S3Config) CreateStorage(ctx context.Context) (*S3Storage, error) {
+func (cfg S3Config) CreateStorage() (*S3Storage, error) {
 	if cfg.Endpoint == "" {
 		return nil, nil
 	}
@@ -40,9 +39,5 @@ func (cfg S3Config) CreateStorage(ctx context.Context) (*S3Storage, error) {
 	}
 
 	s3Storage := NewS3Storage(minioClient, cfg.Bucket)
-	err = s3Storage.CreateBucketIfNotExist(ctx)
-	if err != nil {
-		return nil, err
-	}
 	return s3Storage, nil
 }
