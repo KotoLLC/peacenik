@@ -11,8 +11,15 @@ Rename `node-config.yml.example` to `node-12002-config.yml` and change values.
 ```yaml
 address: :12002
 external_address: http://localhost:12002
-db: node12002.db
 central_address: http://localhost:12001
+
+db:
+  host: localhost
+  port: 5432
+  ssl_mode: disable
+  user: postgres
+  password: docker
+  db_name: koto-node-12002
 
 s3:
   endpoint: http://127.0.0.1:9010
