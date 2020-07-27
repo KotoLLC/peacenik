@@ -28,9 +28,10 @@ message InviteRejectRequest {
 message InviteFriendInvite {
     string friend_id = 1;
     string friend_name = 2;
-    string created_at = 3;
-    string accepted_at = 4;
-    string rejected_at = 5;
+    string friend_avatar = 3;
+    string created_at = 4;
+    string accepted_at = 5;
+    string rejected_at = 6;
 }
 
 message InviteFromMeResponse {

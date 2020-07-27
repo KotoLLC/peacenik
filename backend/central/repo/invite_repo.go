@@ -15,16 +15,18 @@ var (
 )
 
 type Invite struct {
-	ID          int          `db:"id"`
-	UserID      string       `db:"user_id"`
-	UserName    string       `db:"user_name"`
-	UserEmail   string       `db:"user_email"`
-	FriendID    string       `db:"friend_id"`
-	FriendName  string       `db:"friend_name"`
-	FriendEmail string       `db:"friend_email"`
-	CreatedAt   time.Time    `db:"created_at"`
-	AcceptedAt  sql.NullTime `db:"accepted_at"`
-	RejectedAt  sql.NullTime `db:"rejected_at"`
+	ID             int          `db:"id"`
+	UserID         string       `db:"user_id"`
+	UserName       string       `db:"user_name"`
+	UserEmail      string       `db:"user_email"`
+	UserAvatarID   string       `db:"user_avatar_id"`
+	FriendID       string       `db:"friend_id"`
+	FriendName     string       `db:"friend_name"`
+	FriendEmail    string       `db:"friend_email"`
+	FriendAvatarID string       `db:"friend_avatar_id"`
+	CreatedAt      time.Time    `db:"created_at"`
+	AcceptedAt     sql.NullTime `db:"accepted_at"`
+	RejectedAt     sql.NullTime `db:"rejected_at"`
 }
 
 type InviteRepo interface {
@@ -129,6 +131,7 @@ func (r *inviteRepo) InvitesFromMe(user User) ([]Invite, error) {
 	var invites []Invite
 	err := r.db.Select(&invites, `
 		select i.id, i.user_id, coalesce(u.id, '') friend_id, coalesce(u.name, '') friend_name, i.friend_email,
+		       coalesce(u.avatar_thumbnail_id, '') friend_avatar_id,
 		       i.created_at, i.accepted_at, i.rejected_at
 		from invites i
 			left join users u on u.email = i.friend_email 
@@ -144,8 +147,8 @@ func (r *inviteRepo) InvitesFromMe(user User) ([]Invite, error) {
 func (r *inviteRepo) InvitesForMe(user User) ([]Invite, error) {
 	var invites []Invite
 	err := r.db.Select(&invites, `
-		select i.id, i.user_id, u.name user_name, u.email user_email, i.friend_email,
-		       i.created_at, i.accepted_at, i.rejected_at
+		select i.id, i.user_id, u.name user_name, u.email user_email, u.avatar_thumbnail_id user_avatar_id,
+		       i.friend_email, i.created_at, i.accepted_at, i.rejected_at
 		from invites i
 			inner join users u on u.id = i.user_id
 		where i.friend_email = $1
