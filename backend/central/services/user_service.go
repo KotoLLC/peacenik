@@ -34,24 +34,61 @@ func NewUser(base *BaseService, passwordHash PasswordHash) rpc.UserService {
 
 func (s *userService) Friends(ctx context.Context, _ *rpc.Empty) (*rpc.UserFriendsResponse, error) {
 	user := s.getUser(ctx)
-	friends, err := s.repos.Friend.Friends(user)
+	friendMap, err := s.repos.Friend.Friends(user)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
 
-	rpcFriends := make([]*rpc.User, len(friends))
-	for i, friend := range friends {
+	inviteStatuses, err := s.repos.Invite.InviteStatuses(user)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+
+	rpcFriends := make([]*rpc.UserFriendsFriend, 0, len(friendMap))
+	for friend, users := range friendMap {
+		rpcUsers := make([]*rpc.UserFriendsFriendOfFriend, 0, len(users))
+		for _, u := range users {
+			if u.ID == user.ID {
+				continue
+			}
+
+			avatarThumbnailLink, err := s.createAvatarLink(ctx, u.AvatarThumbnailID)
+			if err != nil {
+				return nil, twirp.InternalErrorWith(err)
+			}
+
+			rpcUsers = append(rpcUsers, &rpc.UserFriendsFriendOfFriend{
+				User: &rpc.User{
+					Id:              u.ID,
+					Name:            u.Name,
+					AvatarThumbnail: avatarThumbnailLink,
+				},
+				InviteStatus: inviteStatuses[u.ID],
+			})
+		}
+
+		sort.Slice(rpcUsers, func(i, j int) bool {
+			return rpcUsers[i].User.Name < rpcUsers[j].User.Name
+		})
+
 		avatarThumbnailLink, err := s.createAvatarLink(ctx, friend.AvatarThumbnailID)
 		if err != nil {
 			return nil, twirp.InternalErrorWith(err)
 		}
 
-		rpcFriends[i] = &rpc.User{
-			Id:              friend.ID,
-			Name:            friend.Name,
-			AvatarThumbnail: avatarThumbnailLink,
-		}
+		rpcFriends = append(rpcFriends, &rpc.UserFriendsFriend{
+			User: &rpc.User{
+				Id:              friend.ID,
+				Name:            friend.Name,
+				AvatarThumbnail: avatarThumbnailLink,
+			},
+			Friends: rpcUsers,
+		})
 	}
+
+	sort.Slice(rpcFriends, func(i, j int) bool {
+		return rpcFriends[i].User.Name < rpcFriends[j].User.Name
+	})
 
 	return &rpc.UserFriendsResponse{
 		Friends: rpcFriends,
@@ -65,11 +102,7 @@ func (s *userService) FriendsOfFriends(ctx context.Context, _ *rpc.Empty) (*rpc.
 		return nil, twirp.InternalErrorWith(err)
 	}
 
-	others := make([]repo.User, 0, len(friendsOfFriends))
-	for other := range friendsOfFriends {
-		others = append(others, other)
-	}
-	inviteStatuses, err := s.repos.Invite.InviteStatuses(user, others)
+	inviteStatuses, err := s.repos.Invite.InviteStatuses(user)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}

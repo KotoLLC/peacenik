@@ -85,9 +85,9 @@ func (s *inviteService) FromMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFr
 		rpcInvites[i] = &rpc.InviteFriendInvite{
 			FriendId:   invite.FriendID,
 			FriendName: friendName,
-			CreatedAt:  common.TimeToRpcString(invite.CreatedAt),
-			AcceptedAt: common.NullTimeToRpcString(invite.AcceptedAt),
-			RejectedAt: common.NullTimeToRpcString(invite.RejectedAt),
+			CreatedAt:  common.TimeToRPCString(invite.CreatedAt),
+			AcceptedAt: common.NullTimeToRPCString(invite.AcceptedAt),
+			RejectedAt: common.NullTimeToRPCString(invite.RejectedAt),
 		}
 	}
 
@@ -107,9 +107,9 @@ func (s *inviteService) ForMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFor
 		rpcInvites[i] = &rpc.InviteFriendInvite{
 			FriendId:   invite.UserID,
 			FriendName: invite.UserName,
-			CreatedAt:  common.TimeToRpcString(invite.CreatedAt),
-			AcceptedAt: common.NullTimeToRpcString(invite.AcceptedAt),
-			RejectedAt: common.NullTimeToRpcString(invite.RejectedAt),
+			CreatedAt:  common.TimeToRPCString(invite.CreatedAt),
+			AcceptedAt: common.NullTimeToRPCString(invite.AcceptedAt),
+			RejectedAt: common.NullTimeToRPCString(invite.RejectedAt),
 		}
 	}
 
