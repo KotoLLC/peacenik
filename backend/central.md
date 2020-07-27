@@ -237,3 +237,15 @@ Content-Type: application/json
   "avatar_id": "BLOB-ID"
 }
 ```
+
+## Users
+
+```
+### Get users info.
+POST http://localhost:12001/rpc.UserService/Users
+Content-Type: application/json
+
+{
+  "user_ids": ["bec79fab-a8ce-47c8-a826-47f08a06ff6f", "b002054c-2612-4906-b741-67f19e131126", "7b786381-00e6-4765-bc1f-8730c64d432d"]
+}
+```

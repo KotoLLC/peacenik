@@ -32,6 +32,7 @@ type UserRepo interface {
 	SetAvatar(userID, avatarOriginalID, avatarThumbnailID string) error
 	SetEmail(userID, email string) error
 	SetPassword(userID, passwordHash string) error
+	FindUsers(ids []string) ([]User, error)
 }
 
 type userRepo struct {
@@ -157,4 +158,25 @@ func (r *userRepo) SetPassword(userID, passwordHash string) error {
 		where id = $3;`,
 		passwordHash, common.CurrentTimestamp(), userID)
 	return err
+}
+
+func (r *userRepo) FindUsers(ids []string) ([]User, error) {
+	if len(ids) == 0 {
+		return nil, nil
+	}
+
+	query, args, err := sqlx.In(`
+		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at
+		from users
+		where id in (?)`, ids)
+	if err != nil {
+		return nil, err
+	}
+	query = r.db.Rebind(query)
+	var users []User
+	err = r.db.Select(&users, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
 }
