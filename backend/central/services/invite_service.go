@@ -82,12 +82,18 @@ func (s *inviteService) FromMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFr
 			friendName = invite.FriendEmail
 		}
 
+		friendAvatarLink, err := s.createAvatarLink(ctx, invite.FriendAvatarID)
+		if err != nil {
+			return nil, twirp.InternalErrorWith(err)
+		}
+
 		rpcInvites[i] = &rpc.InviteFriendInvite{
-			FriendId:   invite.FriendID,
-			FriendName: friendName,
-			CreatedAt:  common.TimeToRPCString(invite.CreatedAt),
-			AcceptedAt: common.NullTimeToRPCString(invite.AcceptedAt),
-			RejectedAt: common.NullTimeToRPCString(invite.RejectedAt),
+			FriendId:     invite.FriendID,
+			FriendName:   friendName,
+			FriendAvatar: friendAvatarLink,
+			CreatedAt:    common.TimeToRPCString(invite.CreatedAt),
+			AcceptedAt:   common.NullTimeToRPCString(invite.AcceptedAt),
+			RejectedAt:   common.NullTimeToRPCString(invite.RejectedAt),
 		}
 	}
 
@@ -104,12 +110,18 @@ func (s *inviteService) ForMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFor
 	}
 	rpcInvites := make([]*rpc.InviteFriendInvite, len(invites))
 	for i, invite := range invites {
+		userAvatarLink, err := s.createAvatarLink(ctx, invite.UserAvatarID)
+		if err != nil {
+			return nil, twirp.InternalErrorWith(err)
+		}
+
 		rpcInvites[i] = &rpc.InviteFriendInvite{
-			FriendId:   invite.UserID,
-			FriendName: invite.UserName,
-			CreatedAt:  common.TimeToRPCString(invite.CreatedAt),
-			AcceptedAt: common.NullTimeToRPCString(invite.AcceptedAt),
-			RejectedAt: common.NullTimeToRPCString(invite.RejectedAt),
+			FriendId:     invite.UserID,
+			FriendName:   invite.UserName,
+			FriendAvatar: userAvatarLink,
+			CreatedAt:    common.TimeToRPCString(invite.CreatedAt),
+			AcceptedAt:   common.NullTimeToRPCString(invite.AcceptedAt),
+			RejectedAt:   common.NullTimeToRPCString(invite.RejectedAt),
 		}
 	}
 
