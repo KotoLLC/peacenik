@@ -281,3 +281,27 @@ func (s *userService) setAvatar(ctx context.Context, user repo.User, avatarID st
 	}
 	return nil
 }
+
+func (s *userService) Users(ctx context.Context, r *rpc.UserUsersRequest) (*rpc.UserUsersResponse, error) {
+	users, err := s.repos.User.FindUsers(r.UserIds)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+	rpcUsers := make([]*rpc.User, len(users))
+	for i, user := range users {
+		avatarThumbnailLink, err := s.createAvatarLink(ctx, user.AvatarThumbnailID)
+		if err != nil {
+			return nil, twirp.InternalErrorWith(err)
+		}
+
+		rpcUsers[i] = &rpc.User{
+			Id:              user.ID,
+			Name:            user.Name,
+			AvatarThumbnail: avatarThumbnailLink,
+		}
+	}
+
+	return &rpc.UserUsersResponse{
+		Users: rpcUsers,
+	}, nil
+}

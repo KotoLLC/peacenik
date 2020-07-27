@@ -10,6 +10,7 @@ service UserService {
     rpc FriendsOfFriends (Empty) returns (UserFriendsOfFriendsResponse);
     rpc Me (Empty) returns (UserMeResponse);
     rpc EditProfile (UserEditProfileRequest) returns (Empty);
+    rpc Users (UserUsersRequest) returns (UserUsersResponse);
 }
 
 message UserFriendsFriendOfFriend {
@@ -48,4 +49,12 @@ message UserEditProfileRequest {
     string password = 4;
     bool avatar_changed = 5;
     string avatar_id = 6;
+}
+
+message UserUsersRequest {
+    repeated string user_ids = 1;
+}
+
+message UserUsersResponse {
+    repeated User users = 1;
 }
