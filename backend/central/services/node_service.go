@@ -66,9 +66,9 @@ func (s *nodeService) Nodes(ctx context.Context, _ *rpc.Empty) (*rpc.NodeNodesRe
 				Name:            node.AdminName,
 				AvatarThumbnail: avatarThumbnailLink,
 			},
-			CreatedAt:  common.TimeToRpcString(node.CreatedAt),
-			ApprovedAt: common.NullTimeToRpcString(node.ApprovedAt),
-			DisabledAt: common.NullTimeToRpcString(node.DisabledAt),
+			CreatedAt:  common.TimeToRPCString(node.CreatedAt),
+			ApprovedAt: common.NullTimeToRPCString(node.ApprovedAt),
+			DisabledAt: common.NullTimeToRPCString(node.DisabledAt),
 			Details:    node.Details,
 		}
 	}

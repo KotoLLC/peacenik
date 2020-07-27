@@ -64,8 +64,8 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 			UserId:    msg.UserID,
 			UserName:  msg.UserName,
 			Text:      msg.Text,
-			CreatedAt: common.TimeToRpcString(msg.CreatedAt),
-			UpdatedAt: common.TimeToRpcString(msg.UpdatedAt),
+			CreatedAt: common.TimeToRPCString(msg.CreatedAt),
+			UpdatedAt: common.TimeToRPCString(msg.UpdatedAt),
 		},
 	}, nil
 }
@@ -93,13 +93,13 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 
 	var from, until time.Time
 	if r.From != "" {
-		from, err = common.RpcStringToTime(r.From)
+		from, err = common.RPCStringToTime(r.From)
 		if err != nil {
 			return nil, twirp.InvalidArgumentError("from", err.Error())
 		}
 	}
 	if r.Until != "" {
-		until, err = common.RpcStringToTime(r.Until)
+		until, err = common.RPCStringToTime(r.Until)
 		if err != nil {
 			return nil, twirp.InvalidArgumentError("until", err.Error())
 		}
@@ -120,8 +120,8 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 			UserId:    message.UserID,
 			UserName:  message.UserName,
 			Text:      message.Text,
-			CreatedAt: common.TimeToRpcString(message.CreatedAt),
-			UpdatedAt: common.TimeToRpcString(message.UpdatedAt),
+			CreatedAt: common.TimeToRPCString(message.CreatedAt),
+			UpdatedAt: common.TimeToRPCString(message.UpdatedAt),
 		}
 		rpcMessageMap[message.ID] = rpcMessages[i]
 	}
@@ -136,8 +136,8 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 			UserId:    comment.UserID,
 			UserName:  comment.UserName,
 			Text:      comment.Text,
-			CreatedAt: common.TimeToRpcString(comment.CreatedAt),
-			UpdatedAt: common.TimeToRpcString(comment.UpdatedAt),
+			CreatedAt: common.TimeToRPCString(comment.CreatedAt),
+			UpdatedAt: common.TimeToRPCString(comment.UpdatedAt),
 		}
 		rpcMessageMap[comment.MessageID].Comments = append(rpcMessageMap[comment.MessageID].Comments, rpcComment)
 	}
@@ -171,8 +171,8 @@ func (s *messageService) Edit(ctx context.Context, r *rpc.MessageEditRequest) (*
 			UserId:    msg.UserID,
 			UserName:  msg.UserName,
 			Text:      msg.Text,
-			CreatedAt: common.TimeToRpcString(msg.CreatedAt),
-			UpdatedAt: common.TimeToRpcString(msg.UpdatedAt),
+			CreatedAt: common.TimeToRPCString(msg.CreatedAt),
+			UpdatedAt: common.TimeToRPCString(msg.UpdatedAt),
 		},
 	}, nil
 }
@@ -253,8 +253,8 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 			UserId:    comment.UserID,
 			UserName:  comment.UserName,
 			Text:      comment.Text,
-			CreatedAt: common.TimeToRpcString(comment.CreatedAt),
-			UpdatedAt: common.TimeToRpcString(comment.UpdatedAt),
+			CreatedAt: common.TimeToRPCString(comment.CreatedAt),
+			UpdatedAt: common.TimeToRPCString(comment.UpdatedAt),
 		},
 	}, nil
 }
@@ -281,8 +281,8 @@ func (s *messageService) EditComment(ctx context.Context, r *rpc.MessageEditComm
 			UserId:    comment.UserID,
 			UserName:  comment.UserName,
 			Text:      comment.Text,
-			CreatedAt: common.TimeToRpcString(comment.CreatedAt),
-			UpdatedAt: common.TimeToRpcString(comment.UpdatedAt),
+			CreatedAt: common.TimeToRPCString(comment.CreatedAt),
+			UpdatedAt: common.TimeToRPCString(comment.UpdatedAt),
 		},
 	}, nil
 }

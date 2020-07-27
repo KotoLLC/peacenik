@@ -13,6 +13,10 @@ const (
 	MasterDBName = "postgres"
 )
 
+var (
+	errDatabaseNameIsEmpty = errors.New("database name should be specified")
+)
+
 type DatabaseConfig struct {
 	Host     string `yaml:"host" required:"true" env:"KOTO_DB_HOST"`
 	Port     int    `yaml:"port" default:"5432" env:"KOTO_DB_PORT"`
@@ -24,7 +28,7 @@ type DatabaseConfig struct {
 
 func OpenDatabase(cfg DatabaseConfig, migrations ...func(db *sqlx.DB, dialect string) (n int, err error)) (db *sqlx.DB, migrationsCount int, err error) {
 	if cfg.DBName == "" {
-		return nil, 0, errors.New("database name should be specified")
+		return nil, 0, errDatabaseNameIsEmpty
 	}
 
 	connectionStr := cfg.ConnectionString()

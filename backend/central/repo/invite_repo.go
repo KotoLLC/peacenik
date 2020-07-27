@@ -3,8 +3,6 @@ package repo
 import (
 	"database/sql"
 	"errors"
-	"fmt"
-	"strings"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -35,7 +33,7 @@ type InviteRepo interface {
 	RejectInvite(inviterID, friendID, friendEmail string) error
 	InvitesFromMe(user User) ([]Invite, error)
 	InvitesForMe(user User) ([]Invite, error)
-	InviteStatuses(user User, others []User) (map[string]string, error)
+	InviteStatuses(user User) (map[string]string, error)
 }
 
 type inviteRepo struct {
@@ -159,22 +157,13 @@ func (r *inviteRepo) InvitesForMe(user User) ([]Invite, error) {
 	return invites, nil
 }
 
-func (r *inviteRepo) InviteStatuses(user User, others []User) (map[string]string, error) {
-	if len(others) == 0 {
-		return nil, nil
-	}
-
-	otherIDs := make([]string, len(others))
-	for i, other := range others {
-		otherIDs[i] = "'" + other.ID + "'"
-	}
-
+func (r *inviteRepo) InviteStatuses(user User) (map[string]string, error) {
 	var items []struct {
 		UserID string `db:"user_id"`
 		Status string `db:"status"`
 	}
 
-	err := r.db.Select(&items, fmt.Sprintf(`
+	err := r.db.Select(&items, `
 with t as (
     select u.id user_id,
            i.accepted_at,
@@ -182,8 +171,7 @@ with t as (
            row_number() over (partition by i.friend_email order by i.created_at desc) rn
     from invites i
              inner join users u on u.email = i.friend_email
-    where i.user_id = '%s'
-      and u.id in (%s)
+    where i.user_id = $1
 )
 select user_id,
        case
@@ -193,7 +181,7 @@ select user_id,
            end status
 from t
 where rn = 1;
-`, user.ID, strings.Join(otherIDs, ",")))
+`, user.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -203,15 +191,14 @@ where rn = 1;
 		result[item.UserID] = item.Status
 	}
 
-	err = r.db.Select(&items, fmt.Sprintf(`
+	err = r.db.Select(&items, `
 with t as (
     select i.user_id,
            i.accepted_at,
            i.rejected_at,
            row_number() over (partition by i.friend_email order by i.created_at desc) rn
     from invites i
-    where i.friend_email = '%s'
-      and i.user_id in (%s)
+    where i.friend_email = $1
 )
 select user_id,
        case
@@ -221,7 +208,7 @@ select user_id,
            end status
 from t
 where rn = 1
-`, user.Email, strings.Join(otherIDs, ",")))
+`, user.Email)
 	if err != nil {
 		return nil, err
 	}
