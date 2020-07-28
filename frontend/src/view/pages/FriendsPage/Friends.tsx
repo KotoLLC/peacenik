@@ -17,6 +17,7 @@ import Tooltip from '@material-ui/core/Tooltip'
 import { capitalizeFirstLetter } from '@services/capitalizeFirstLetter'
 import AccessTimeIcon from '@material-ui/icons/AccessTime'
 import PersonAddIcon from '@material-ui/icons/PersonAdd'
+import RemoveFriendDialog from './RemoveFriendDialog'
 import {
   UsersWrapper,
   ContentWrapper,
@@ -62,11 +63,21 @@ class Friends extends React.Component<Props, State> {
   checkCurrentIcon = (user: ApiTypes.User, status: ApiTypes.Friends.InvitationStatus) => {
     const { onAddFriend } = this.props
 
-    if (status === 'pending') {
-      return (
-        <Tooltip title={`Wait for a reply`}>
+    if (status === 'accepted') return null
+
+    if (status === 'pending') return (
+      <Tooltip title={`Wait for a reply`}>
           <IconButton color="primary">
             <AccessTimeIcon />
+          </IconButton>
+        </Tooltip>
+    )
+
+    if (status === 'rejected') {
+      return (
+        <Tooltip title={`Add ${capitalizeFirstLetter(user.name)} to friends`}>
+          <IconButton color="primary" onClick={() => onAddFriend({ friend: user.id })}>
+            <PersonAddIcon />
           </IconButton>
         </Tooltip>
       )
@@ -89,7 +100,7 @@ class Friends extends React.Component<Props, State> {
     }
 
     return selectedFriend.friends.map(item => {
-      const { user, invite_status } = item 
+      const { user, invite_status } = item
 
       return (
         <div key={user.id}>
@@ -97,7 +108,7 @@ class Friends extends React.Component<Props, State> {
             <ListItemAvatar>
               <Avatar alt={user.name} src={user.avatar_thumbnail} />
             </ListItemAvatar>
-            <ListItemText primary={<UserName>{user.name}</UserName>}/>
+            <ListItemText primary={<UserName>{user.name}</UserName>} />
             {this.checkCurrentIcon(user, invite_status)}
           </ListItem>
           <Divider variant="inset" />
@@ -129,6 +140,7 @@ class Friends extends React.Component<Props, State> {
             <Avatar alt={item.user.name} src={item.user.avatar_thumbnail} />
           </ListItemAvatar>
           <ListItemText primary={<UserName>{item.user.name}</UserName>} />
+          <RemoveFriendDialog {...item} />
         </ListItem>
         <Divider variant="inset" component="li" />
       </ListItemWrapper>
@@ -190,8 +202,8 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
 
 type DispatchProps = Pick<Props, 'onGetFriends' | 'onAddFriend'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-    onGetFriends: () => dispatch(Actions.friends.getFriendsRequest()),
-    onAddFriend: (data: ApiTypes.Friends.Request) => dispatch(Actions.friends.addFriendRequest(data)),
+  onGetFriends: () => dispatch(Actions.friends.getFriendsRequest()),
+  onAddFriend: (data: ApiTypes.Friends.Request) => dispatch(Actions.friends.addFriendRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Friends)

@@ -59,6 +59,7 @@ export function* watchRejectInvitation(action: { type: string, payload: ApiTypes
 
   if (response.status === 200) {
     yield put(Actions.friends.getInvitationsRequest())
+    yield put(Actions.friends.getFriendsRequest())
   } else {
     yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
