@@ -11,14 +11,15 @@ import (
 )
 
 type User struct {
-	ID                string    `json:"id" db:"id"`
-	Name              string    `json:"name" db:"name"`
-	Email             string    `json:"email,omitempty" db:"email"`
-	PasswordHash      string    `json:"-" db:"password_hash"`
-	AvatarOriginalID  string    `json:"avatar_original_id" db:"avatar_original_id"`
-	AvatarThumbnailID string    `json:"avatar_thumbnail_id" db:"avatar_thumbnail_id"`
-	CreatedAt         time.Time `json:"created_at,omitempty" db:"created_at"`
-	UpdatedAt         time.Time `json:"updated_at,omitempty" db:"updated_at"`
+	ID                string       `json:"id" db:"id"`
+	Name              string       `json:"name" db:"name"`
+	Email             string       `json:"email,omitempty" db:"email"`
+	PasswordHash      string       `json:"-" db:"password_hash"`
+	AvatarOriginalID  string       `json:"avatar_original_id" db:"avatar_original_id"`
+	AvatarThumbnailID string       `json:"avatar_thumbnail_id" db:"avatar_thumbnail_id"`
+	CreatedAt         time.Time    `json:"created_at,omitempty" db:"created_at"`
+	UpdatedAt         time.Time    `json:"updated_at,omitempty" db:"updated_at"`
+	ConfirmedAt       sql.NullTime `json:"confirmed_at,omitempty" db:"confirmed_at"`
 }
 
 type UserRepo interface {
@@ -33,6 +34,7 @@ type UserRepo interface {
 	SetEmail(userID, email string) error
 	SetPassword(userID, passwordHash string) error
 	FindUsers(ids []string) ([]User, error)
+	ConfirmUser(userID string) error
 }
 
 type userRepo struct {
@@ -62,7 +64,7 @@ func (r *userRepo) FindUser(value string) (*User, error) {
 func (r *userRepo) FindUserByID(id string) (*User, error) {
 	var user User
 	err := r.db.Get(&user, `
-		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at
+		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
 		from users
 		where id = $1`, id)
 	if err != nil {
@@ -77,7 +79,7 @@ func (r *userRepo) FindUserByID(id string) (*User, error) {
 func (r *userRepo) FindUserByEmail(email string) (*User, error) {
 	var user User
 	err := r.db.Get(&user, `
-		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at
+		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
 		from users
 		where email = $1`, email)
 	if err != nil {
@@ -92,7 +94,7 @@ func (r *userRepo) FindUserByEmail(email string) (*User, error) {
 func (r *userRepo) FindUserByName(name string) (*User, error) {
 	var user User
 	err := r.db.Get(&user, `
-		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at
+		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
 		from users
 		where name = $1`, name)
 	if err != nil {
@@ -107,7 +109,7 @@ func (r *userRepo) FindUserByName(name string) (*User, error) {
 func (r *userRepo) FindUserByNameOrEmail(value string) (*User, error) {
 	var user User
 	err := r.db.Get(&user, `
-		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at
+		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
 		from users
 		where name = $1 or email = $1`, value)
 	if err != nil {
@@ -166,7 +168,7 @@ func (r *userRepo) FindUsers(ids []string) ([]User, error) {
 	}
 
 	query, args, err := sqlx.In(`
-		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at
+		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
 		from users
 		where id in (?)`, ids)
 	if err != nil {
@@ -179,4 +181,13 @@ func (r *userRepo) FindUsers(ids []string) ([]User, error) {
 		return nil, err
 	}
 	return users, nil
+}
+
+func (r *userRepo) ConfirmUser(userID string) error {
+	_, err := r.db.Exec(`
+		update users
+		set confirmed_at = $1
+		where id = $2 and confirmed_at is null`,
+		common.CurrentTimestamp(), userID)
+	return err
 }

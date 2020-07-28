@@ -12,4 +12,5 @@ message User {
     string avatar_original = 3;
     string avatar_thumbnail = 4;
     string email = 5;
+    bool is_confirmed = 6;
 }

@@ -1,4 +1,5 @@
 address: :12001
+frontend: http://localhost:3000
 admins:
   - andrey9
 
@@ -16,3 +17,10 @@ s3:
   key: minioadmin
   secret: minioadmin
   bucket: koto-central
+
+smtp:
+  host: smtp.mailtrap.io
+  port: 587
+  user: 23423423423423
+  password: 4534534terer
+  from: admin@koto.org

@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/mreider/koto/backend/central"
 	"github.com/mreider/koto/backend/central/config"
@@ -38,12 +39,13 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	privateKey, _, publicKeyPEM, err := token.RSAKeysFromPrivateKeyFile(cfg.PrivateKeyPath)
+	privateKey, publicKey, publicKeyPEM, err := token.RSAKeysFromPrivateKeyFile(cfg.PrivateKeyPath)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	tokenGenerator := token.NewGenerator(privateKey)
+	tokenParser := token.NewParser(publicKey)
 
 	repos := repo.Repos{
 		User:   repo.NewUsers(db),
@@ -52,7 +54,7 @@ func main() {
 		Node:   repo.NewNodes(db),
 	}
 
-	server := central.NewServer(cfg, string(publicKeyPEM), repos, tokenGenerator, s3Storage)
+	server := central.NewServer(cfg, string(publicKeyPEM), repos, tokenGenerator, tokenParser, s3Storage)
 	err = server.Run()
 	if err != nil {
 		log.Fatalln(err)
@@ -75,6 +77,8 @@ func loadConfig(execDir string) (config.Config, error) {
 	if err != nil {
 		return config.Config{}, err
 	}
+
+	cfg.FrontendAddress = strings.TrimSuffix(cfg.FrontendAddress, "/")
 
 	return cfg, nil
 }

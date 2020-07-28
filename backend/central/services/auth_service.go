@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"log"
 	"strings"
 	"unicode"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/twitchtv/twirp"
 
 	"github.com/mreider/koto/backend/central/rpc"
+	"github.com/mreider/koto/backend/central/services/user"
 )
 
 type PasswordHash interface {
@@ -18,15 +20,17 @@ type PasswordHash interface {
 
 type authService struct {
 	*BaseService
-	sessionUserKey string
-	passwordHash   PasswordHash
+	sessionUserKey   string
+	passwordHash     PasswordHash
+	userConfirmation *user.Confirmation
 }
 
-func NewAuth(base *BaseService, sessionUserKey string, passwordHash PasswordHash) rpc.AuthService {
+func NewAuth(base *BaseService, sessionUserKey string, passwordHash PasswordHash, userConfirmation *user.Confirmation) rpc.AuthService {
 	return &authService{
-		BaseService:    base,
-		sessionUserKey: sessionUserKey,
-		passwordHash:   passwordHash,
+		BaseService:      base,
+		sessionUserKey:   sessionUserKey,
+		passwordHash:     passwordHash,
+		userConfirmation: userConfirmation,
 	}
 }
 
@@ -44,19 +48,19 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 		return nil, twirp.InvalidArgumentError("name", "shouldn't contain spaces")
 	}
 
-	user, err := s.repos.User.FindUserByName(r.Name)
+	u, err := s.repos.User.FindUserByName(r.Name)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
-	if user != nil {
+	if u != nil {
 		return nil, twirp.NewError(twirp.AlreadyExists, "user already exists")
 	}
 
-	user, err = s.repos.User.FindUserByEmail(r.Email)
+	u, err = s.repos.User.FindUserByEmail(r.Email)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
-	if user != nil {
+	if u != nil {
 		return nil, twirp.NewError(twirp.AlreadyExists, "user already exists")
 	}
 
@@ -75,24 +79,34 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 		return nil, err
 	}
 
+	u, err = s.repos.User.FindUserByID(userID.String())
+	if err != nil {
+		return nil, err
+	}
+	if s.userConfirmation != nil {
+		err = s.userConfirmation.SendConfirmLink(*u)
+		if err != nil {
+			log.Printf("can't send email to %s: %s\n", u.Email, err)
+		}
+	}
 	return &rpc.Empty{}, nil
 }
 
 func (s *authService) Login(ctx context.Context, r *rpc.AuthLoginRequest) (*rpc.Empty, error) {
-	user, err := s.repos.User.FindUserByNameOrEmail(r.Name)
+	u, err := s.repos.User.FindUserByNameOrEmail(r.Name)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
-	if user == nil {
+	if u == nil {
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid name or password")
 	}
 
-	if !s.passwordHash.CompareHashAndPassword(user.PasswordHash, r.Password) {
+	if !s.passwordHash.CompareHashAndPassword(u.PasswordHash, r.Password) {
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid name or password")
 	}
 
 	session := s.getAuthSession(ctx)
-	session.SetValue(s.sessionUserKey, user.ID)
+	session.SetValue(s.sessionUserKey, u.ID)
 	err = session.Save()
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
@@ -113,4 +127,24 @@ func (s *authService) Logout(ctx context.Context, _ *rpc.Empty) (*rpc.Empty, err
 func (s *authService) getAuthSession(ctx context.Context) Session {
 	session, _ := ctx.Value(ContextSession).(Session)
 	return session
+}
+
+func (s *authService) Confirm(_ context.Context, r *rpc.AuthConfirmRequest) (*rpc.Empty, error) {
+	err := s.userConfirmation.Confirm(r.Token)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+	return &rpc.Empty{}, nil
+}
+
+func (s *authService) SendConfirmLink(ctx context.Context, _ *rpc.Empty) (*rpc.Empty, error) {
+	if !s.hasUser(ctx) {
+		return nil, twirp.NewError(twirp.Unauthenticated, "")
+	}
+	u := s.getUser(ctx)
+	err := s.userConfirmation.SendConfirmLink(u)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+	return &rpc.Empty{}, nil
 }

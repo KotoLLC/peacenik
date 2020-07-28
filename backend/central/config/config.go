@@ -14,9 +14,11 @@ type Config struct {
 	PrivateKeyPath       string   `yaml:"private_key_path" default:"central.rsa" env:"KOTO_PRIVATE_KEY"`
 	Admins               []string `yaml:"admins" env:"KOTO_ADMINS"`
 	TokenDurationSeconds int      `yaml:"token_duration" default:"3600" env:"KOTO_TOKEN_DURATION"`
+	FrontendAddress      string   `yaml:"frontend" default:"http://localhost:3000" env:"KOTO_FRONTEND_ADDRESS"`
 
-	DB common.DatabaseConfig `yaml:"db"`
-	S3 common.S3Config       `yaml:"s3"`
+	DB   common.DatabaseConfig `yaml:"db"`
+	S3   common.S3Config       `yaml:"s3"`
+	SMTP common.SMTPConfig     `yaml:"smtp"`
 }
 
 func Load(cfgPath string) (Config, error) {

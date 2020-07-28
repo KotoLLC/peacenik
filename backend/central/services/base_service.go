@@ -24,6 +24,11 @@ func (s *BaseService) getUser(ctx context.Context) repo.User {
 	return ctx.Value(ContextUserKey).(repo.User)
 }
 
+func (s *BaseService) hasUser(ctx context.Context) bool {
+	_, ok := ctx.Value(ContextUserKey).(repo.User)
+	return ok
+}
+
 func (s *BaseService) isAdmin(ctx context.Context) bool {
 	return ctx.Value(ContextIsAdminKey).(bool)
 }
