@@ -12,7 +12,7 @@ export function* watchlogin(action: { type: string, payload: ApiTypes.Login }) {
     yield put(Actions.authorization.getAuthTokenRequest())
     yield put(Actions.authorization.loginSucces())
   } else {
-    yield put(Actions.authorization.loginFailed(response?.error?.response?.data || 'Server error'))
+    yield put(Actions.authorization.loginFailed(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
 
@@ -31,6 +31,6 @@ export function* watchGetAuthToken() {
     localStorage.setItem('kotoAuthTokenDate', JSON.stringify(new Date()))
     yield put(Actions.authorization.getAuthTokenSucces(response.data?.token))
   } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
+    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
