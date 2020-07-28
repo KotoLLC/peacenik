@@ -72,7 +72,7 @@ export declare namespace ApiTypes {
       created_at: string
       accepted_at?: string
       rejected_at?: string
-      avatar_thumbnail?: string
+      friend_avatar?: string
     }
 
     export interface InvitationAccept {

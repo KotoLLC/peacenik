@@ -6,7 +6,6 @@ import IconButton from '@material-ui/core/IconButton'
 import Container from '@material-ui/core/Container'
 import FormControl from '@material-ui/core/FormControl'
 import Button from '@material-ui/core/Button'
-import ListItem from '@material-ui/core/ListItem'
 
 export const PageWrapper = styled.div`
   display: flex;

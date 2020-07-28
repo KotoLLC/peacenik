@@ -82,7 +82,7 @@ export class Invitations extends React.Component<Props, State> {
         <div key={friend_id}>
           <ListItem alignItems="center">
             <ListItemAvatar>
-              <Avatar alt={friend_name} src={item.avatar_thumbnail} />
+              <Avatar alt={friend_name} src={item.friend_avatar} />
             </ListItemAvatar>
             <ListItemText primary={<UserName>{friend_name}</UserName>} />
             <Tooltip title={`Accept the invitation`}>
