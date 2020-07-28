@@ -18,7 +18,7 @@ import Actions from '@store/actions'
 import { StoreTypes, ApiTypes } from '../../../types'
 import selectors from '@selectors/index'
 import {
-  SidebarWrapper,
+  UsersWrapper,
   ContentWrapper,
   ListStyled,
   SearchWrapper,
@@ -27,6 +27,7 @@ import {
   EmptyMessage,
   UserName,
   IconButtonGreen,
+  PageWrapper,
 } from './styles'
 
 export interface Props {
@@ -123,8 +124,8 @@ export class Invitations extends React.Component<Props, State> {
     const { pendingInvitations, searchResult, searchValue } = this.state
 
     return (
-      <>
-        <SidebarWrapper>
+      <PageWrapper>
+        <UsersWrapper>
           <Paper>
             <SearchWrapper>
               <FormControl fullWidth>
@@ -141,13 +142,13 @@ export class Invitations extends React.Component<Props, State> {
               {this.mapInvitations((searchValue) ? searchResult : pendingInvitations)}
             </ListStyled>
           </Paper>
-        </SidebarWrapper>
+        </UsersWrapper>
         <ContentWrapper>
           <ContainerTitle>Title</ContainerTitle>
           <Divider />
           <List />
         </ContentWrapper>
-      </>
+      </PageWrapper>
     )
   }
 }

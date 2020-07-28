@@ -27,7 +27,7 @@ export const Title = styled.h3`
   margin: 0;
 `
 
-export const ContentWrapper = styled.div`
+export const UserContentWrapper = styled.div`
   margin-top: 10px;
   display: flex;
   justify-content: center;

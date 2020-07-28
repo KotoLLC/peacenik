@@ -19,7 +19,7 @@ import { capitalizeFirstLetter } from '@services/capitalizeFirstLetter'
 import AccessTimeIcon from '@material-ui/icons/AccessTime'
 import selectors from '@selectors/index'
 import {
-  SidebarWrapper,
+  UsersWrapper,
   ContentWrapper,
   ListStyled,
   SearchWrapper,
@@ -28,6 +28,7 @@ import {
   EmptyMessage,
   UserNoteUnderlined,
   UserName,
+  PageWrapper,
 } from './styles'
 
 export interface Props {
@@ -137,8 +138,8 @@ export class FriendsOfFriends extends React.Component<Props, State> {
     const { searchResult, searchValue, selectedFriend } = this.state
 
     return (
-      <>
-        <SidebarWrapper>
+      <PageWrapper>
+        <UsersWrapper>
           <Paper>
             <SearchWrapper>
               <FormControl fullWidth>
@@ -155,7 +156,7 @@ export class FriendsOfFriends extends React.Component<Props, State> {
               {this.mapFriendsList((searchValue) ? searchResult : friendsOfFriends)}
             </ListStyled>
           </Paper>
-        </SidebarWrapper>
+        </UsersWrapper>
         <ContentWrapper>
           <ContainerTitle>{(selectedFriend) ? `${selectedFriend.user.name}\`s common friends` : 'Title'}</ContainerTitle>
           <Divider />
@@ -172,7 +173,7 @@ export class FriendsOfFriends extends React.Component<Props, State> {
             </List>
           )}
         </ContentWrapper>
-      </>
+      </PageWrapper>
     )
   }
 }

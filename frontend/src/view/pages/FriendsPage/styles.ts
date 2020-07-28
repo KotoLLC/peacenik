@@ -6,23 +6,33 @@ import IconButton from '@material-ui/core/IconButton'
 import Container from '@material-ui/core/Container'
 import FormControl from '@material-ui/core/FormControl'
 import Button from '@material-ui/core/Button'
+import ListItem from '@material-ui/core/ListItem'
 
-export const SidebarWrapper = styled.aside`
-  max-width: 400px;
+export const PageWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+  max-width: 1000px;
+  width: 100%;
+`
+
+export const UsersWrapper = styled.div`
+  max-width: 450px;
   width: 100%;
   margin-right: 20px;
 
   @media (max-width: 1024px) {
-    max-width: 350px;
+    max-width: 400px;
   }
 `
 
 export const ContentWrapper = styled(Paper)`
-  width: calc(100% - 420px);
+  max-width: 450px;
+  width: 100%;
   padding: 10px 15px;
 
   @media (max-width: 1024px) {
-    width: calc(100% - 370px);
+    max-width: 400px;
   }
 `
 
@@ -114,4 +124,8 @@ export const ButtonStyled = styled(Button)`
 export const TitleWrapper = styled.div`
   text-align: center;
   margin-bottom: 20px;
+`
+
+export const ListItemWrapper = styled.div`
+  cursor: pointer;
 `

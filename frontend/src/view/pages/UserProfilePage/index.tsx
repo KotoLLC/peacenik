@@ -16,7 +16,7 @@ import {
   ProfileWrapper,
   Header,
   Title,
-  ContentWrapper,
+  UserContentWrapper,
   AvatarWrapper,
   FormWrapper,
   Avatart,
@@ -184,7 +184,7 @@ class UserProfile extends React.PureComponent<Props, State> {
             <Header>
               <Title>Profile</Title>
             </Header>
-            <ContentWrapper>
+            <UserContentWrapper>
               <AvatarWrapper>
                 <Tooltip title={`Upload your avatar`}>
                   <Avatart htmlFor="file">
@@ -220,7 +220,7 @@ class UserProfile extends React.PureComponent<Props, State> {
                 <Button variant="contained" color="primary" onClick={this.onFormSubmit}>Save</Button>
                 {errorMessage && <FormHelperText error>{errorMessage}</FormHelperText>}
               </FormWrapper>
-            </ContentWrapper>
+            </UserContentWrapper>
           </ProfileWrapper>
         </ContainerStyled>
       </WithTopBar>
