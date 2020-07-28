@@ -30,8 +30,8 @@ export declare namespace ApiTypes {
       link: string
     }
 
-    export interface UserProfile extends User {
-      email: string
+    export interface UserProfile {
+      user: User
       is_admin?: boolean
     }
 
