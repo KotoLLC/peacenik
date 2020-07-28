@@ -44,6 +44,16 @@ export declare namespace ApiTypes {
   }
 
   export namespace Friends {
+
+    export interface Friend {
+      user: User
+      friends: { 
+        user: User 
+        invite_status: InvitationStatus
+      }[]
+      invite_status: InvitationStatus
+    }
+
     export interface Potential {
       user: User
       friends: User[]

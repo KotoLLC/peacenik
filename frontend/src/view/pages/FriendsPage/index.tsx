@@ -1,6 +1,5 @@
 import React from 'react'
 import Friends from './Friends'
-import FriendsOfFriends from './FriendsOfFriends'
 import Invitations from './Invitations'
 import FriendInvite from './FriendInvite'
 import FriendTabs from './Tabs'
@@ -25,7 +24,6 @@ export const FriendsPage: React.SFC<RouteComponentProps> = (props) => {
       </Header>
       <Switch>
         <Route path="/friends/all" exact component={Friends} />
-        <Route path="/friends/potential" exact component={FriendsOfFriends} />
         <Route path="/friends/invitations" exact component={Invitations} />
         <Route path="/friends/invite" exact component={FriendInvite} />
       </Switch>

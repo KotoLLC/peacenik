@@ -4,7 +4,6 @@ import InputAdornment from '@material-ui/core/InputAdornment'
 import FormControl from '@material-ui/core/FormControl'
 import Input from '@material-ui/core/Input'
 import Paper from '@material-ui/core/Paper'
-import List from '@material-ui/core/List'
 import Divider from '@material-ui/core/Divider'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemAvatar from '@material-ui/core/ListItemAvatar'
@@ -13,9 +12,13 @@ import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import { StoreTypes, ApiTypes } from '../../../types'
 import selectors from '@selectors/index'
-
+import IconButton from '@material-ui/core/IconButton'
+import Tooltip from '@material-ui/core/Tooltip'
+import { capitalizeFirstLetter } from '@services/capitalizeFirstLetter'
+import AccessTimeIcon from '@material-ui/icons/AccessTime'
+import PersonAddIcon from '@material-ui/icons/PersonAdd'
 import {
-  SidebarWrapper,
+  UsersWrapper,
   ContentWrapper,
   ListStyled,
   SearchWrapper,
@@ -23,16 +26,21 @@ import {
   ContainerTitle,
   EmptyMessage,
   UserName,
+  PageWrapper,
+  ListItemWrapper,
 } from './styles'
 
 export interface Props {
-  friends: ApiTypes.User[]
+  friends: ApiTypes.Friends.Friend[]
   onGetFriends: () => void
+  onAddFriend: (data: ApiTypes.Friends.Request) => void
 }
 
 interface State {
   searchValue: string
-  searchResult: ApiTypes.User[]
+  searchResult: ApiTypes.Friends.Friend[]
+  selectedFriendId: string
+  selectedFriendName: string
 }
 
 class Friends extends React.Component<Props, State> {
@@ -40,6 +48,62 @@ class Friends extends React.Component<Props, State> {
   state = {
     searchValue: '',
     searchResult: [],
+    selectedFriendId: '',
+    selectedFriendName: '',
+  }
+
+  onFriendSelect = (id: string, name: string) => {
+    this.setState({
+      selectedFriendId: id,
+      selectedFriendName: name,
+    })
+  }
+
+  checkCurrentIcon = (user: ApiTypes.User, status: ApiTypes.Friends.InvitationStatus) => {
+    const { onAddFriend } = this.props
+
+    if (status === 'pending') {
+      return (
+        <Tooltip title={`Wait for a reply`}>
+          <IconButton color="primary">
+            <AccessTimeIcon />
+          </IconButton>
+        </Tooltip>
+      )
+    } else {
+      return (
+        <Tooltip title={`Add ${capitalizeFirstLetter(user.name)} to friends`}>
+          <IconButton color="primary" onClick={() => onAddFriend({ friend: user.id })}>
+            <PersonAddIcon />
+          </IconButton>
+        </Tooltip>
+      )
+    }
+  }
+
+  mapPotentialFriendsList = (id: string, friends) => {
+    const selectedFriend = friends.find(item => item.user.id === id) || null
+
+    if (!selectedFriend?.friends) {
+      return this.showEmptyListMessage()
+    }
+
+    return selectedFriend.friends.map(item => {
+      const { user, invite_status } = item 
+
+      return (
+        <div key={user.id}>
+          <ListItem>
+            <ListItemAvatar>
+              <Avatar alt={user.name} src={user.avatar_thumbnail} />
+            </ListItemAvatar>
+            <ListItemText primary={<UserName>{user.name}</UserName>}/>
+            {this.checkCurrentIcon(user, invite_status)}
+          </ListItem>
+          <Divider variant="inset" />
+        </div>
+      )
+    })
   }
 
   showEmptyListMessage = () => {
@@ -48,26 +112,26 @@ class Friends extends React.Component<Props, State> {
     if (searchValue) {
       return <EmptyMessage>No one's been found.</EmptyMessage>
     } else {
-      return <EmptyMessage>You don't have any friends yet.</EmptyMessage>
+      return <EmptyMessage>No friends yet.</EmptyMessage>
     }
   }
 
-  mapFriends = (friends: ApiTypes.User[]) => {
+  mapFriends = (friends: ApiTypes.Friends.Friend[]) => {
 
     if (!friends || !friends?.length) {
       return this.showEmptyListMessage()
     }
 
     return friends.map(item => (
-      <div key={item.id}>
-        <ListItem>
+      <ListItemWrapper key={item.user.id}>
+        <ListItem onClick={() => this.onFriendSelect(item.user.id, item.user.name)}>
           <ListItemAvatar>
-            <Avatar alt={item.name} src={item.avatar_thumbnail} />
+            <Avatar alt={item.user.name} src={item.user.avatar_thumbnail} />
           </ListItemAvatar>
-          <ListItemText primary={<UserName>{item.name}</UserName>} />
+          <ListItemText primary={<UserName>{item.user.name}</UserName>} />
         </ListItem>
         <Divider variant="inset" component="li" />
-      </div>
+      </ListItemWrapper>
     ))
   }
 
@@ -77,7 +141,7 @@ class Friends extends React.Component<Props, State> {
 
     this.setState({
       searchValue: value,
-      searchResult: friends.filter(item => item.name.toLowerCase().includes(value.toLowerCase()))
+      searchResult: friends.filter(item => item.user.name.toLowerCase().includes(value.toLowerCase()))
     })
   }
 
@@ -87,11 +151,11 @@ class Friends extends React.Component<Props, State> {
 
   render() {
     const { friends } = this.props
-    const { searchResult, searchValue } = this.state
+    const { searchResult, searchValue, selectedFriendId, selectedFriendName } = this.state
 
     return (
-      <>
-        <SidebarWrapper>
+      <PageWrapper>
+        <UsersWrapper>
           <Paper>
             <SearchWrapper>
               <FormControl fullWidth>
@@ -108,13 +172,13 @@ class Friends extends React.Component<Props, State> {
               {this.mapFriends((searchValue) ? searchResult : friends)}
             </ListStyled>
           </Paper>
-        </SidebarWrapper>
+        </UsersWrapper>
         <ContentWrapper>
-          <ContainerTitle>Title</ContainerTitle>
+          <ContainerTitle>{(selectedFriendName) ? `${selectedFriendName}\`s common friends` : 'Title'}</ContainerTitle>
           <Divider />
-          <List/>
+          {selectedFriendId && (this.mapPotentialFriendsList(selectedFriendId, friends))}
         </ContentWrapper>
-      </>
+      </PageWrapper>
     )
   }
 }
@@ -124,9 +188,10 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   friends: selectors.friends.friends(state),
 })
 
-type DispatchProps = Pick<Props, 'onGetFriends'>
+type DispatchProps = Pick<Props, 'onGetFriends' | 'onAddFriend'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
     onGetFriends: () => dispatch(Actions.friends.getFriendsRequest()),
+    onAddFriend: (data: ApiTypes.Friends.Request) => dispatch(Actions.friends.addFriendRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Friends)

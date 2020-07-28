@@ -28,7 +28,7 @@ export function* watchAddFriend(action: { type: string, payload: ApiTypes.Friend
 
   if (response.status === 200) {
     yield put(Actions.friends.addFriendSuccess())
-    yield put(Actions.friends.getFriendsOfFriendsRequest())
+    yield put(Actions.friends.getFriendsRequest())
   } else {
     yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }

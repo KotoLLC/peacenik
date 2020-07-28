@@ -2,7 +2,7 @@ import { Types } from './actions'
 import { ApiTypes } from './../../types'
 
 export interface State {
-  friends: ApiTypes.User[],
+  friends: ApiTypes.Friends.Friend[],
   friendsOfFriends: ApiTypes.Friends.Potential[],
   invitations: ApiTypes.Friends.Invitation[],
   isInviteByEmailSuccess: boolean

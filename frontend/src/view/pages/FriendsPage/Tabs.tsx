@@ -12,12 +12,8 @@ const FriendTabs: React.SFC<RouteComponentProps> = React.memo((props) => {
       onTabChange(0)
     }
 
-    if (location.pathname.indexOf('potential') !== -1) {
-      onTabChange(1)
-    }
-
     if (location.pathname.indexOf('invitations') !== -1) {
-      onTabChange(2)
+      onTabChange(1)
     }
     if (location.pathname.indexOf('invite') !== -1) {
       onTabChange(false)
@@ -34,7 +30,6 @@ const FriendTabs: React.SFC<RouteComponentProps> = React.memo((props) => {
           onChange={(event, newTab) => onTabChange(newTab)}
           centered>
           <TabStyled label="Friends" onClick={() => history.push('/friends/all')} />
-          <TabStyled label="Potential friends" onClick={() => history.push('/friends/potential')} />
           <TabStyled label="Invites" onClick={() => history.push('/friends/invitations')} />
         </TabsStyled>
       </Paper>

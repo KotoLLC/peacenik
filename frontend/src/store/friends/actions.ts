@@ -25,7 +25,7 @@ const getFriendsRequest = () => ({
   type: Types.GET_FRIENDS_REQUEST,
 })
 
-const getFriendsSucces = (payload: ApiTypes.User[]) => ({
+const getFriendsSucces = (payload: ApiTypes.Friends.Friend[]) => ({
   type: Types.GET_FRIENDS_SUCCESS,
   payload
 })
