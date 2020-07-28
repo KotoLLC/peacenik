@@ -24,7 +24,7 @@ export function* watchGetMessages() {
     })))
 
   } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
+    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
 
@@ -34,7 +34,7 @@ export function* watchGetCurrentNode() {
   if (response.status === 200) {
     yield put(Actions.messages.getCurrentNodeSucces(currentNodeBack2Front(response.data?.tokens)))
   } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
+    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
 
@@ -58,7 +58,7 @@ export function* watchGetMessagesFromNode(action: { type: string, payload: ApiTy
       yield put(Actions.authorization.getAuthTokenRequest())
       yield put(Actions.messages.getMessagesRequest())
     } else {
-      yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
+      yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
     }
     
   }
@@ -71,7 +71,7 @@ export function* watchPostMessage(action: { type: string, payload: ApiTypes.Mess
     yield put(Actions.messages.postMessageSucces(true))
     yield put(Actions.messages.getMessagesRequest())
   } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
+    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
 
@@ -82,7 +82,7 @@ export function* watchDeleteMessage(action: { type: string, payload: ApiTypes.Me
     yield put(Actions.messages.deleteMessageSucces())
     yield put(Actions.messages.getMessagesRequest())
   } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
+    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
 
@@ -93,7 +93,7 @@ export function* watchEditMessage(action: { type: string, payload: ApiTypes.Mess
     yield put(Actions.messages.editMessageSucces())
     yield put(Actions.messages.getMessagesRequest())
   } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
+    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
 
@@ -104,7 +104,7 @@ export function* watchPostComment(action: { type: string, payload: ApiTypes.Mess
     yield put(Actions.messages.postCommentSucces(true))
     yield put(Actions.messages.getMessagesRequest())
   } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
+    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
 
@@ -115,7 +115,7 @@ export function* watchEditComment(action: { type: string, payload: ApiTypes.Mess
     yield put(Actions.messages.editCommentSucces())
     yield put(Actions.messages.getMessagesRequest())
   } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
+    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
 
@@ -126,6 +126,6 @@ export function* watchDeleteComment(action: { type: string, payload: ApiTypes.Me
     yield put(Actions.messages.deleteCommentSucces())
     yield put(Actions.messages.getMessagesRequest())
   } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data || 'Server error'))
+    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
