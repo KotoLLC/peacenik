@@ -44,6 +44,10 @@ type AuthService interface {
 
 	Login(context.Context, *AuthLoginRequest) (*Empty, error)
 
+	Confirm(context.Context, *AuthConfirmRequest) (*Empty, error)
+
+	SendConfirmLink(context.Context, *Empty) (*Empty, error)
+
 	Logout(context.Context, *Empty) (*Empty, error)
 }
 
@@ -53,7 +57,7 @@ type AuthService interface {
 
 type authServiceProtobufClient struct {
 	client HTTPClient
-	urls   [3]string
+	urls   [5]string
 	opts   twirp.ClientOptions
 }
 
@@ -70,9 +74,11 @@ func NewAuthServiceProtobufClient(addr string, client HTTPClient, opts ...twirp.
 	}
 
 	prefix := urlBase(addr) + AuthServicePathPrefix
-	urls := [3]string{
+	urls := [5]string{
 		prefix + "Register",
 		prefix + "Login",
+		prefix + "Confirm",
+		prefix + "SendConfirmLink",
 		prefix + "Logout",
 	}
 
@@ -123,12 +129,52 @@ func (c *authServiceProtobufClient) Login(ctx context.Context, in *AuthLoginRequ
 	return out, nil
 }
 
+func (c *authServiceProtobufClient) Confirm(ctx context.Context, in *AuthConfirmRequest) (*Empty, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "AuthService")
+	ctx = ctxsetters.WithMethodName(ctx, "Confirm")
+	out := new(Empty)
+	err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[2], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *authServiceProtobufClient) SendConfirmLink(ctx context.Context, in *Empty) (*Empty, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "AuthService")
+	ctx = ctxsetters.WithMethodName(ctx, "SendConfirmLink")
+	out := new(Empty)
+	err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[3], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
 func (c *authServiceProtobufClient) Logout(ctx context.Context, in *Empty) (*Empty, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "rpc")
 	ctx = ctxsetters.WithServiceName(ctx, "AuthService")
 	ctx = ctxsetters.WithMethodName(ctx, "Logout")
 	out := new(Empty)
-	err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[2], in, out)
+	err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[4], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -149,7 +195,7 @@ func (c *authServiceProtobufClient) Logout(ctx context.Context, in *Empty) (*Emp
 
 type authServiceJSONClient struct {
 	client HTTPClient
-	urls   [3]string
+	urls   [5]string
 	opts   twirp.ClientOptions
 }
 
@@ -166,9 +212,11 @@ func NewAuthServiceJSONClient(addr string, client HTTPClient, opts ...twirp.Clie
 	}
 
 	prefix := urlBase(addr) + AuthServicePathPrefix
-	urls := [3]string{
+	urls := [5]string{
 		prefix + "Register",
 		prefix + "Login",
+		prefix + "Confirm",
+		prefix + "SendConfirmLink",
 		prefix + "Logout",
 	}
 
@@ -219,12 +267,52 @@ func (c *authServiceJSONClient) Login(ctx context.Context, in *AuthLoginRequest)
 	return out, nil
 }
 
+func (c *authServiceJSONClient) Confirm(ctx context.Context, in *AuthConfirmRequest) (*Empty, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "AuthService")
+	ctx = ctxsetters.WithMethodName(ctx, "Confirm")
+	out := new(Empty)
+	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[2], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *authServiceJSONClient) SendConfirmLink(ctx context.Context, in *Empty) (*Empty, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "AuthService")
+	ctx = ctxsetters.WithMethodName(ctx, "SendConfirmLink")
+	out := new(Empty)
+	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[3], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
 func (c *authServiceJSONClient) Logout(ctx context.Context, in *Empty) (*Empty, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "rpc")
 	ctx = ctxsetters.WithServiceName(ctx, "AuthService")
 	ctx = ctxsetters.WithMethodName(ctx, "Logout")
 	out := new(Empty)
-	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[2], in, out)
+	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[4], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -292,6 +380,12 @@ func (s *authServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 		return
 	case "/rpc.AuthService/Login":
 		s.serveLogin(ctx, resp, req)
+		return
+	case "/rpc.AuthService/Confirm":
+		s.serveConfirm(ctx, resp, req)
+		return
+	case "/rpc.AuthService/SendConfirmLink":
+		s.serveSendConfirmLink(ctx, resp, req)
 		return
 	case "/rpc.AuthService/Logout":
 		s.serveLogout(ctx, resp, req)
@@ -539,6 +633,264 @@ func (s *authServiceServer) serveLoginProtobuf(ctx context.Context, resp http.Re
 	}
 	if respContent == nil {
 		s.writeError(ctx, resp, twirp.InternalError("received a nil *Empty and nil error while calling Login. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *authServiceServer) serveConfirm(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveConfirmJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveConfirmProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *authServiceServer) serveConfirmJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "Confirm")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(AuthConfirmRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *Empty
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.AuthService.Confirm(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *Empty and nil error while calling Confirm. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *authServiceServer) serveConfirmProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "Confirm")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(AuthConfirmRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *Empty
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.AuthService.Confirm(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *Empty and nil error while calling Confirm. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *authServiceServer) serveSendConfirmLink(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveSendConfirmLinkJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveSendConfirmLinkProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *authServiceServer) serveSendConfirmLinkJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "SendConfirmLink")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(Empty)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *Empty
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.AuthService.SendConfirmLink(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *Empty and nil error while calling SendConfirmLink. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *authServiceServer) serveSendConfirmLinkProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "SendConfirmLink")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(Empty)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *Empty
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.AuthService.SendConfirmLink(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *Empty and nil error while calling SendConfirmLink. nil responses are not supported"))
 		return
 	}
 
@@ -1219,19 +1571,22 @@ func callClientError(ctx context.Context, h *twirp.ClientHooks, err twirp.Error)
 }
 
 var twirpFileDescriptor0 = []byte{
-	// 224 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x90, 0xcd, 0x4a, 0xc4, 0x30,
-	0x14, 0x85, 0xe9, 0x8c, 0x53, 0xea, 0x9d, 0x8d, 0x5c, 0x15, 0x42, 0x57, 0xc3, 0xac, 0xc4, 0x45,
-	0x14, 0x7d, 0x02, 0x07, 0xdc, 0xcd, 0xaa, 0xee, 0x74, 0x15, 0x33, 0x97, 0x4e, 0xa0, 0x69, 0x62,
-	0x7e, 0x14, 0x1f, 0xc2, 0x77, 0x96, 0xa6, 0x58, 0x52, 0x90, 0xd9, 0xe5, 0x9e, 0x73, 0xf8, 0xf8,
-	0x08, 0x80, 0x88, 0xe1, 0xc8, 0xad, 0x33, 0xc1, 0xe0, 0xd2, 0x59, 0x59, 0xaf, 0xb5, 0x39, 0x50,
-	0x37, 0x26, 0xdb, 0x37, 0xb8, 0x7c, 0x8a, 0xe1, 0xd8, 0x50, 0xab, 0x7c, 0x20, 0xd7, 0xd0, 0x47,
-	0x24, 0x1f, 0x10, 0xe1, 0xac, 0x17, 0x9a, 0x58, 0xb1, 0x29, 0x6e, 0xce, 0x9b, 0xf4, 0xc6, 0x2b,
-	0x58, 0x91, 0x16, 0xaa, 0x63, 0x8b, 0x14, 0x8e, 0x07, 0xd6, 0x50, 0x59, 0xe1, 0xfd, 0x97, 0x71,
-	0x07, 0xb6, 0x4c, 0xc5, 0x74, 0x6f, 0x77, 0x70, 0x31, 0xc0, 0xf7, 0xa6, 0x55, 0xfd, 0x29, 0x72,
-	0xce, 0x58, 0xcc, 0x19, 0x0f, 0x3f, 0x05, 0xac, 0x07, 0xc8, 0x0b, 0xb9, 0x4f, 0x25, 0x09, 0xef,
-	0xa1, 0xfa, 0x93, 0x45, 0xc6, 0x9d, 0x95, 0xfc, 0x1f, 0xff, 0x1a, 0x52, 0xf3, 0xac, 0x6d, 0xf8,
-	0xc6, 0x5b, 0x58, 0x25, 0x03, 0xbc, 0x9e, 0xe6, 0xb9, 0xd1, 0x6c, 0xbb, 0x81, 0x72, 0x6f, 0x5a,
-	0x13, 0x03, 0x66, 0x69, 0xbe, 0xd8, 0x55, 0xaf, 0x25, 0xe7, 0x77, 0xce, 0xca, 0xf7, 0x32, 0xfd,
-	0xe0, 0xe3, 0x6f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x4a, 0x2e, 0x42, 0xdf, 0x61, 0x01, 0x00, 0x00,
+	// 269 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x91, 0x4f, 0x4f, 0xb3, 0x40,
+	0x10, 0xc6, 0x43, 0xfb, 0xc2, 0x8b, 0xd3, 0x83, 0x66, 0xac, 0x91, 0x70, 0x6a, 0x7a, 0xd2, 0x1e,
+	0x56, 0xa3, 0x9f, 0xc0, 0x1a, 0x6f, 0x9c, 0xe8, 0x4d, 0x4f, 0x08, 0x23, 0xdd, 0xb4, 0xfb, 0xc7,
+	0x65, 0xd1, 0xf8, 0x8d, 0xfd, 0x18, 0x86, 0x85, 0x12, 0x30, 0xea, 0x6d, 0x67, 0x9e, 0x5f, 0x7e,
+	0x79, 0x26, 0x0b, 0x90, 0xd5, 0x76, 0xcb, 0xb4, 0x51, 0x56, 0xe1, 0xd4, 0xe8, 0x3c, 0x9e, 0x09,
+	0x55, 0xd0, 0xbe, 0xdd, 0x2c, 0x9f, 0xe0, 0xf4, 0xae, 0xb6, 0xdb, 0x94, 0x4a, 0x5e, 0x59, 0x32,
+	0x29, 0xbd, 0xd6, 0x54, 0x59, 0x44, 0xf8, 0x27, 0x33, 0x41, 0x91, 0xb7, 0xf0, 0x2e, 0x8e, 0x52,
+	0xf7, 0xc6, 0x39, 0xf8, 0x24, 0x32, 0xbe, 0x8f, 0x26, 0x6e, 0xd9, 0x0e, 0x18, 0x43, 0xa8, 0xb3,
+	0xaa, 0x7a, 0x57, 0xa6, 0x88, 0xa6, 0x2e, 0xe8, 0xe7, 0xe5, 0x1a, 0x4e, 0x1a, 0x79, 0xa2, 0x4a,
+	0x2e, 0xff, 0x32, 0x0f, 0x1d, 0x93, 0x6f, 0x8e, 0x15, 0x60, 0xe3, 0xb8, 0x57, 0xf2, 0x85, 0x1b,
+	0x71, 0xb0, 0xcc, 0xc1, 0xb7, 0x6a, 0x47, 0xb2, 0xd3, 0xb4, 0xc3, 0xcd, 0xa7, 0x07, 0xb3, 0x06,
+	0xde, 0x90, 0x79, 0xe3, 0x39, 0xe1, 0x35, 0x84, 0x87, 0xc3, 0x30, 0x62, 0x46, 0xe7, 0xec, 0x87,
+	0x5b, 0x63, 0x70, 0xc9, 0x83, 0xd0, 0xf6, 0x03, 0x57, 0xe0, 0xbb, 0xb6, 0x78, 0xd6, 0xe3, 0xc3,
+	0xf6, 0x23, 0x96, 0xc1, 0xff, 0xae, 0x15, 0x9e, 0xf7, 0xf4, 0xb8, 0xe7, 0x88, 0xbf, 0x84, 0xe3,
+	0x0d, 0xc9, 0xa2, 0x23, 0x12, 0x2e, 0x77, 0x38, 0x88, 0x47, 0xe8, 0x02, 0x82, 0x44, 0x95, 0xaa,
+	0xb6, 0xbf, 0x11, 0xeb, 0xf0, 0x31, 0x60, 0xec, 0xca, 0xe8, 0xfc, 0x39, 0x70, 0x1f, 0x79, 0xfb,
+	0x15, 0x00, 0x00, 0xff, 0xff, 0x80, 0x2a, 0x3e, 0xb1, 0xe8, 0x01, 0x00, 0x00,
 }

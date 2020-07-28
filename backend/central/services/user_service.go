@@ -168,6 +168,7 @@ func (s *userService) Me(ctx context.Context, _ *rpc.Empty) (*rpc.UserMeResponse
 			Name:            user.Name,
 			AvatarThumbnail: avatarThumbnailLink,
 			Email:           user.Email,
+			IsConfirmed:     user.ConfirmedAt.Valid,
 		},
 		IsAdmin: isAdmin,
 	}, nil

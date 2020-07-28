@@ -36,6 +36,13 @@ s3:
   secret: minioadmin
   bucket: koto-central
 
+smtp:
+  host: smtp.mailtrap.io
+  port: 587
+  user: 23423423423423
+  password: 4534534terer
+  from: admin@koto.org
+
 ``` 
 
 # Run
@@ -65,11 +72,26 @@ Content-Type: application/json
 ## Registration
 
 ```
-### Register a new user
+### Register a new user and send email with confirmation link
 POST http://localhost:12001/rpc.AuthService/Register
 Content-Type: application/json
 
 {"name":  "andrey", "email": "andrey@mail.com", "password":  "12345"}
+
+
+### Send email with confirmation link (explicitely)
+POST http://localhost:12001/rpc.AuthService/SendConfirmLink
+Content-Type: application/json
+{}
+
+
+### Confirm user by confirmation token
+POST http://localhost:12001/rpc.AuthService/Confirm
+Content-Type: application/json
+
+{
+  "token": "USER-CONFIRM-TOKEN"
+}
 ```
 
 ## Authentication

@@ -16,6 +16,7 @@ import (
 	"github.com/mreider/koto/backend/central/repo"
 	"github.com/mreider/koto/backend/central/rpc"
 	"github.com/mreider/koto/backend/central/services"
+	"github.com/mreider/koto/backend/central/services/user"
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/token"
 )
@@ -31,11 +32,12 @@ type Server struct {
 	pubKeyPEM      string
 	repos          repo.Repos
 	tokenGenerator token.Generator
+	tokenParser    token.Parser
 	s3Storage      *common.S3Storage
 	sessionStore   *sessions.CookieStore
 }
 
-func NewServer(cfg config.Config, pubKeyPEM string, repos repo.Repos, tokenGenerator token.Generator, s3Storage *common.S3Storage) *Server {
+func NewServer(cfg config.Config, pubKeyPEM string, repos repo.Repos, tokenGenerator token.Generator, tokenParser token.Parser, s3Storage *common.S3Storage) *Server {
 	sessionStore := sessions.NewCookieStore([]byte(cookieAuthenticationKey))
 	sessionStore.Options.HttpOnly = true
 	sessionStore.Options.MaxAge = 0
@@ -45,6 +47,7 @@ func NewServer(cfg config.Config, pubKeyPEM string, repos repo.Repos, tokenGener
 		pubKeyPEM:      pubKeyPEM,
 		repos:          repos,
 		tokenGenerator: tokenGenerator,
+		tokenParser:    tokenParser,
 		s3Storage:      s3Storage,
 		sessionStore:   sessionStore,
 	}
@@ -58,10 +61,12 @@ func (s *Server) Run() error {
 	baseService := services.NewBase(s.repos, s.s3Storage)
 
 	passwordHash := bcrypt.NewPasswordHash()
+	mailSender := common.NewMailSender(s.cfg.SMTP)
+	userConfirmation := user.NewConfirmation(s.cfg.FrontendAddress, mailSender, s.tokenGenerator, s.tokenParser, s.repos.User)
 
-	authService := services.NewAuth(baseService, sessionUserKey, passwordHash)
+	authService := services.NewAuth(baseService, sessionUserKey, passwordHash, userConfirmation)
 	authServiceHandler := rpc.NewAuthServiceServer(authService, rpcHooks)
-	r.Handle(authServiceHandler.PathPrefix()+"*", s.authSessionProvider(authServiceHandler))
+	r.Handle(authServiceHandler.PathPrefix()+"*", s.findSessionUser(s.authSessionProvider(authServiceHandler)))
 
 	infoService := services.NewInfo(baseService, s.pubKeyPEM)
 	infoServiceHandler := rpc.NewInfoServiceServer(infoService, rpcHooks)
@@ -107,28 +112,45 @@ func (s *Server) setupMiddlewares(r *chi.Mux) {
 	r.Use(cors.New(corsOptions).Handler)
 }
 
-func (s *Server) checkAuth(next http.Handler) http.Handler {
+func (s *Server) findSessionUser(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		session, _ := s.sessionStore.Get(r, sessionName)
 		userID, ok := session.Values[sessionUserKey].(string)
 		if !ok {
-			http.Error(w, "", http.StatusUnauthorized)
 			return
 		}
-		user, err := s.repos.User.FindUserByID(userID)
+		u, err := s.repos.User.FindUserByID(userID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		if user == nil {
-			http.Error(w, "", http.StatusUnauthorized)
+		if u == nil {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), services.ContextUserKey, *user)
-		ctx = context.WithValue(ctx, services.ContextIsAdminKey, s.cfg.IsAdmin(user.Name) || s.cfg.IsAdmin(user.Email))
+		isAdmin := s.cfg.IsAdmin(u.Name) || s.cfg.IsAdmin(u.Email)
+
+		ctx := context.WithValue(r.Context(), services.ContextUserKey, *u)
+		ctx = context.WithValue(ctx, services.ContextIsAdminKey, isAdmin)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func (s *Server) checkAuth(next http.Handler) http.Handler {
+	return s.findSessionUser(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		u, ok := r.Context().Value(services.ContextUserKey).(repo.User)
+		if !ok {
+			http.Error(w, "", http.StatusUnauthorized)
+			return
+		}
+		isAdmin := s.cfg.IsAdmin(u.Name) || s.cfg.IsAdmin(u.Email)
+		if !isAdmin && !u.ConfirmedAt.Valid && r.URL.Path != "/rpc.UserService/Me" {
+			http.Error(w, "", http.StatusForbidden)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	}))
 }
 
 func (s *Server) authSessionProvider(next http.Handler) http.Handler {
