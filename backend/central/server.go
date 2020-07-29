@@ -117,6 +117,7 @@ func (s *Server) findSessionUser(next http.Handler) http.Handler {
 		session, _ := s.sessionStore.Get(r, sessionName)
 		userID, ok := session.Values[sessionUserKey].(string)
 		if !ok {
+			next.ServeHTTP(w, r)
 			return
 		}
 		u, err := s.repos.User.FindUserByID(userID)
@@ -125,6 +126,7 @@ func (s *Server) findSessionUser(next http.Handler) http.Handler {
 			return
 		}
 		if u == nil {
+			next.ServeHTTP(w, r)
 			return
 		}
 
