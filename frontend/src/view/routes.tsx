@@ -11,6 +11,7 @@ import { NotificationsPage } from './pages/NotificationsPage'
 import UserProfilePage from './pages/UserProfilePage'
 import DocsPages from './pages/DocsPages'
 import ConfirmUserPage from '@view/pages/ConfirmUserPage'
+import selectors from '@selectors/index'
 
 const Private = ({ component: Component, ...rest }) => {
   return (
@@ -24,8 +25,8 @@ const Private = ({ component: Component, ...rest }) => {
 }
 
 const mapStateToProps = (state: StoreTypes) => ({
-  isLogged: state.authorization.isLogged,
-  isEmailConfirmed: state.profile.is_confirmed,
+  isLogged: selectors.authorization.isLogged(state),
+  isEmailConfirmed: selectors.profile.isEmailConfirmed(state),
 })
 
 const PrivateRoute = connect(mapStateToProps)(Private)

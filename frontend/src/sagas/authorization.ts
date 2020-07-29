@@ -32,7 +32,8 @@ export function* watchGetAuthToken() {
       localStorage.setItem('kotoAuthTokenDate', JSON.stringify(new Date()))
       yield put(Actions.authorization.getAuthTokenSucces(response.data?.token))
     }
-  } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
-  }
+  } 
+  // else {
+  //   yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  // }
 }
