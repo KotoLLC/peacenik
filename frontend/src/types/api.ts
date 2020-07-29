@@ -20,7 +20,7 @@ export declare namespace ApiTypes {
   }
 
   export interface Token {
-    [key: string]: string
+    token: string
   }
 
   export namespace Profile {
@@ -33,6 +33,7 @@ export declare namespace ApiTypes {
     export interface UserProfile {
       user: User
       is_admin?: boolean
+      is_confirmed?: boolean
     }
 
     export interface EditProfile {

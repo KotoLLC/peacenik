@@ -1,4 +1,5 @@
 import { all, takeEvery } from 'redux-saga/effects'
+import { Types as RegistrationTypes } from '@store/registration/actions'
 import { Types as AuthorizationTypes } from '@store/authorization/actions'
 import { Types as FriendTypes } from '@store/friends/actions'
 import { Types as NodeTypes } from '@store/nodes/actions'
@@ -10,6 +11,10 @@ import {
     watchlogout,
     watchGetAuthToken,
 } from './authorization'
+import { 
+    watchSendConfirmLink,
+    watchConfirmUser,
+ } from './registration'
 import { 
     watchGetFriends, 
     watchGetFriendsOfFriends,
@@ -45,6 +50,9 @@ import {
 
 export function* rootSaga() {
     yield all([
+        takeEvery(RegistrationTypes.SEND_CONFIRM_LINK_REQUEST, watchSendConfirmLink),
+        takeEvery(RegistrationTypes.CONFIRM_USER_REQUEST, watchConfirmUser),
+
         takeEvery(AuthorizationTypes.LOGIN_REQUEST, watchlogin),
         takeEvery(AuthorizationTypes.LOGOUT_REQUEST, watchlogout),
         takeEvery(AuthorizationTypes.GET_AUTH_TOKEN_REQUEST, watchGetAuthToken),

@@ -27,9 +27,11 @@ export function* watchGetAuthToken() {
   const response = yield API.authorization.getAuthToken()
 
   if (response.status === 200) {
-    localStorage.setItem('kotoAuthToken', JSON.stringify(response.data?.token))
-    localStorage.setItem('kotoAuthTokenDate', JSON.stringify(new Date()))
-    yield put(Actions.authorization.getAuthTokenSucces(response.data?.token))
+    if (response.data?.token) {
+      localStorage.setItem('kotoAuthToken', JSON.stringify(response.data?.token))
+      localStorage.setItem('kotoAuthTokenDate', JSON.stringify(new Date()))
+      yield put(Actions.authorization.getAuthTokenSucces(response.data?.token))
+    }
   } else {
     yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }

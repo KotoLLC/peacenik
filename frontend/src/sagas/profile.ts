@@ -7,8 +7,12 @@ export function* watchGetProfile() {
   const response = yield API.profile.getProfile()
 
   if (response.status === 200) {
-    localStorage.setItem('kotoProfile', JSON.stringify(response.data))
-    yield put(Actions.profile.getProfileSucces(response.data)) 
+  
+    if (response.data) {
+      localStorage.setItem('kotoProfile', JSON.stringify(response.data))
+      yield put(Actions.profile.getProfileSucces(response.data)) 
+    }
+    
   } else {
     yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }

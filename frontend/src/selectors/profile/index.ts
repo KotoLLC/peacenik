@@ -3,6 +3,7 @@ import { selector, deepEqualSelector } from '../common'
 
 const profile = createSelector(selector, data => data.profile)
 const isAdmin = createSelector(profile, data => data.is_admin)
+const isEmailConfirmed = createSelector(profile, data => data.is_confirmed)
 const user = createSelector(profile, data => data.user)
 const userName = createSelector(user, data => data.name)
 const userEmail = createSelector(user, data => data.email)
@@ -13,6 +14,7 @@ const uploadLink = deepEqualSelector(profile, data => data.uploadLink)
 export default {
     profile,
     isAdmin,
+    isEmailConfirmed,
     userId,
     userName,
     userEmail,

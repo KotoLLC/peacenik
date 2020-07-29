@@ -1,5 +1,6 @@
 import axios from 'axios'
 import authorization from './authorization'
+import registration from './registration'
 import friends from './friends'
 import nodes from './nodes'
 import profile from './profile'
@@ -14,6 +15,7 @@ export const axiosInstance = axios.create({
 })
 
 export const API = {
+  registration,
   authorization,
   friends,
   nodes,
