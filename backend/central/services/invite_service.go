@@ -82,7 +82,7 @@ func (s *inviteService) FromMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFr
 			friendName = invite.FriendEmail
 		}
 
-		friendAvatarLink, err := s.createAvatarLink(ctx, invite.FriendAvatarID)
+		friendAvatarLink, err := s.createBlobLink(ctx, invite.FriendAvatarID)
 		if err != nil {
 			return nil, twirp.InternalErrorWith(err)
 		}
@@ -110,7 +110,7 @@ func (s *inviteService) ForMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFor
 	}
 	rpcInvites := make([]*rpc.InviteFriendInvite, len(invites))
 	for i, invite := range invites {
-		userAvatarLink, err := s.createAvatarLink(ctx, invite.UserAvatarID)
+		userAvatarLink, err := s.createBlobLink(ctx, invite.UserAvatarID)
 		if err != nil {
 			return nil, twirp.InternalErrorWith(err)
 		}

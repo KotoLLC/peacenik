@@ -53,7 +53,7 @@ func (s *nodeService) Nodes(ctx context.Context, _ *rpc.Empty) (*rpc.NodeNodesRe
 
 	rpcNodes := make([]*rpc.NodeNodesResponseNode, len(nodes))
 	for i, node := range nodes {
-		avatarThumbnailLink, err := s.createAvatarLink(ctx, node.AdminAvatarID)
+		avatarThumbnailLink, err := s.createBlobLink(ctx, node.AdminAvatarID)
 		if err != nil {
 			return nil, twirp.InternalErrorWith(err)
 		}

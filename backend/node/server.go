@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/twitchtv/twirp"
 
+	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/node/config"
 	"github.com/mreider/koto/backend/node/repo"
 	"github.com/mreider/koto/backend/node/rpc"
@@ -22,13 +23,15 @@ type Server struct {
 	cfg         config.Config
 	repos       repo.Repos
 	tokenParser token.Parser
+	s3Storage   *common.S3Storage
 }
 
-func NewServer(cfg config.Config, repos repo.Repos, tokenParser token.Parser) *Server {
+func NewServer(cfg config.Config, repos repo.Repos, tokenParser token.Parser, s3Storage *common.S3Storage) *Server {
 	return &Server{
 		cfg:         cfg,
 		repos:       repos,
 		tokenParser: tokenParser,
+		s3Storage:   s3Storage,
 	}
 }
 
@@ -37,11 +40,15 @@ func (s *Server) Run() error {
 	s.setupMiddlewares(r)
 
 	rpcHooks := &twirp.ServerHooks{}
-	baseService := services.NewBase(s.repos, s.tokenParser, s.cfg.ExternalAddress)
+	baseService := services.NewBase(s.repos, s.tokenParser, s.cfg.ExternalAddress, s.s3Storage)
 
 	messageService := services.NewMessage(baseService)
 	messageServiceHandler := rpc.NewMessageServiceServer(messageService, rpcHooks)
 	r.Handle(messageServiceHandler.PathPrefix()+"*", s.checkAuth(messageServiceHandler))
+
+	blobService := services.NewBlob(baseService)
+	blobServiceHandler := rpc.NewBlobServiceServer(blobService, rpcHooks)
+	r.Handle(blobServiceHandler.PathPrefix()+"*", s.checkAuth(blobServiceHandler))
 
 	log.Println("started on " + s.cfg.ListenAddress)
 	return http.ListenAndServe(s.cfg.ListenAddress, r)
@@ -64,14 +71,14 @@ func (s *Server) setupMiddlewares(r *chi.Mux) {
 }
 
 func (s *Server) checkAuth(next http.Handler) http.Handler {
-	const bearerPrefix = "Bearer "
+	const bearerPrefix = "bearer "
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authorizationToken := r.Header.Get("Authorization")
-		if authorizationToken == "" || !strings.HasPrefix(authorizationToken, bearerPrefix) {
+		if authorizationToken == "" || !strings.HasPrefix(strings.ToLower(authorizationToken), bearerPrefix) {
 			http.Error(w, "", http.StatusUnauthorized)
 			return
 		}
-		rawToken := strings.TrimPrefix(authorizationToken, bearerPrefix)
+		rawToken := authorizationToken[len(bearerPrefix):]
 		_, claims, err := s.tokenParser.Parse(rawToken, "auth")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -79,7 +86,8 @@ func (s *Server) checkAuth(next http.Handler) http.Handler {
 		}
 
 		userID := claims["id"].(string)
-		ctx := context.WithValue(r.Context(), services.ContextUserKey, services.User{ID: userID})
+		userName, _ := claims["name"].(string)
+		ctx := context.WithValue(r.Context(), services.ContextUserKey, services.User{ID: userID, Name: userName})
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

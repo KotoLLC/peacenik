@@ -3,6 +3,7 @@ package common
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -80,6 +81,23 @@ func (s *S3Storage) Read(ctx context.Context, blobID string, w io.Writer) error 
 		return fmt.Errorf("can't write GetObject body: %w", err)
 	}
 	return nil
+}
+
+func (s *S3Storage) ReadN(ctx context.Context, blobID string, n int) ([]byte, error) {
+	s.createBucketIfNotExist(ctx)
+
+	result, err := s.client.GetObject(ctx, s.bucket, blobID, minio.GetObjectOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("can't GetObject: %w", err)
+	}
+	defer func() { _ = result.Close() }()
+
+	buf := make([]byte, n)
+	count, err := io.ReadFull(result, buf)
+	if err != nil && !errors.Is(err, io.EOF) && !errors.Is(err, io.ErrUnexpectedEOF) {
+		return nil, fmt.Errorf("can't write GetObject body: %w", err)
+	}
+	return buf[:count], nil
 }
 
 func (s *S3Storage) CreateLink(ctx context.Context, blobID string, expiration time.Duration) (string, error) {

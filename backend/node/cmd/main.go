@@ -41,6 +41,11 @@ func main() {
 	}
 	log.Printf("Applied %d migrations to %s\n", n, cfg.DB.DBName)
 
+	s3Storage, err := cfg.S3.CreateStorage()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	centralPublicKey, err := loadCentralPublicKey(context.TODO(), cfg.CentralServerAddress)
 	if err != nil {
 		log.Fatalln(err)
@@ -51,7 +56,10 @@ func main() {
 		Message: repo.NewMessages(db),
 	}
 
-	server := node.NewServer(cfg, repos, tokenParser)
+	s3Cleaner := common.NewS3Cleaner(db, s3Storage)
+	go s3Cleaner.Clean(context.Background())
+
+	server := node.NewServer(cfg, repos, tokenParser, s3Storage)
 	err = server.Run()
 	if err != nil {
 		log.Fatalln(err)
