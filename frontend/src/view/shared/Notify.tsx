@@ -10,6 +10,7 @@ const modalRoot = document.getElementById('modal')
 export interface Props {
   errorMessage: string
   successMessage: string
+  isEmailConfirmed: boolean
   setErrorNotify: (text: string) => void
   setSuccessNotify: (text: string) => void
 }
@@ -19,10 +20,11 @@ class Notify extends React.PureComponent<Props> {
   timerID
 
   mapNotification = () => {
+    const { isEmailConfirmed } = this.props
     if (!modalRoot) return false
 
     return ReactDOM.createPortal((
-        <Notifications options={{zIndex: 1000, top: '64px'}} />
+        <Notifications options={{zIndex: 1000, top: (isEmailConfirmed) ? '64px' : '0px'}} />
     ), modalRoot)
   }
 
@@ -53,8 +55,9 @@ class Notify extends React.PureComponent<Props> {
   }
 }
 
-type StateProps = Pick<Props, 'errorMessage' | 'successMessage'>
+type StateProps = Pick<Props, 'errorMessage' | 'successMessage' | 'isEmailConfirmed'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
+  isEmailConfirmed: state.profile.is_confirmed || false,
   errorMessage: state.notify.errorMessage,
   successMessage: state.notify.successMessage,
 })

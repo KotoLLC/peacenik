@@ -17,7 +17,8 @@ export interface State extends ApiTypes.Profile.UserProfile {
 
 const initialState: State = {
   ...user,
-  uploadLink: null
+  uploadLink: null,
+  is_confirmed: false
 }
 
 const reducer = (state = initialState, action) => {

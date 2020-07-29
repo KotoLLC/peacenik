@@ -10,17 +10,22 @@ import { MessagesPage } from './pages/MessagesPage'
 import { NotificationsPage } from './pages/NotificationsPage'
 import UserProfilePage from './pages/UserProfilePage'
 import DocsPages from './pages/DocsPages'
+import ConfirmUserPage from '@view/pages/ConfirmUserPage'
 
 const Private = ({ component: Component, ...rest }) => {
   return (
-    <Route {...rest} render={props => (
-      rest.isLogged ? <Component {...props} /> : <Redirect to="/login" />
-    )} />
+    <Route {...rest} render={props => {
+      if (rest.isLogged) {
+        return rest.isEmailConfirmed ? <Component {...props} /> : <Redirect to="/confirm-user" />
+      }
+      return <Redirect to="/login" />
+    }} />
   )
 }
 
 const mapStateToProps = (state: StoreTypes) => ({
   isLogged: state.authorization.isLogged,
+  isEmailConfirmed: state.profile.is_confirmed,
 })
 
 const PrivateRoute = connect(mapStateToProps)(Private)
@@ -32,6 +37,7 @@ export const Routes = () => {
         <Route exact path="/" component={LoginPage} />
         <Route path="/login" component={LoginPage} />
         <Route path="/docs" component={DocsPages} />
+        <Route path="/confirm-user" component={ConfirmUserPage} />
         <PrivateRoute path="/friends" component={FriendsPage} />
         <PrivateRoute path="/nodes" component={NodePages} />
         <PrivateRoute path="/messages" component={MessagesPage} />
