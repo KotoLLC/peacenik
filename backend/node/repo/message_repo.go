@@ -12,41 +12,31 @@ import (
 
 var (
 	ErrMessageNotFound = errors.New("message not found")
-	ErrCommentNotFound = errors.New("comment not found")
 
 	maxTimestamp = time.Date(9999, 12, 31, 23, 59, 59, 999999999, time.Local)
 )
 
 type Message struct {
-	ID        string    `json:"id" db:"id"`
-	UserID    string    `json:"user_id" db:"user_id"`
-	UserName  string    `json:"user_name" db:"user_name"`
-	Text      string    `json:"text" db:"text"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
-}
-
-type Comment struct {
-	ID        string    `json:"id" db:"id"`
-	MessageID string    `json:"message_id" db:"message_id"`
-	UserID    string    `json:"user_id" db:"user_id"`
-	UserName  string    `json:"user_name" db:"user_name"`
-	Text      string    `json:"text" db:"text"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+	ID                    string         `json:"id" db:"id"`
+	ParentID              sql.NullString `json:"parent_id" db:"parent_id"`
+	UserID                string         `json:"user_id" db:"user_id"`
+	UserName              string         `json:"user_name" db:"user_name"`
+	Text                  string         `json:"text" db:"text"`
+	AttachmentID          string         `json:"attachment_id" db:"attachment_id"`
+	AttachmentType        string         `json:"attachment_type" db:"attachment_type"`
+	AttachmentThumbnailID string         `json:"attachment_thumbnail_id" db:"attachment_thumbnail_id"`
+	CreatedAt             time.Time      `json:"created_at" db:"created_at"`
+	UpdatedAt             time.Time      `json:"updated_at" db:"updated_at"`
 }
 
 type MessageRepo interface {
 	Messages(userIDs []string, from, until time.Time) ([]Message, error)
 	Message(messageID string) (Message, error)
-	AddMessage(message Message) error
-	EditMessage(userID, messageID, text string, updatedAt time.Time) error
+	AddMessage(parentID string, message Message) error
+	EditMessageText(userID, messageID, text string, updatedAt time.Time) error
+	EditMessageAttachment(userID, messageID, attachmentID, attachmentType, attachmentThumbnailID string, updatedAt time.Time) error
 	DeleteMessage(userID, messageID string) error
-	Comments(messageIDs []string) ([]Comment, error)
-	AddComment(comment Comment) error
-	EditComment(userID, commentID, text string, updatedAt time.Time) error
-	DeleteComment(userID, commentID string) error
-	Comment(commentID string) (Comment, error)
+	Comments(messageIDs []string) (map[string][]Message, error)
 }
 
 type messageRepo struct {
@@ -66,9 +56,9 @@ func (r *messageRepo) Messages(userIDs []string, from, until time.Time) ([]Messa
 
 	var messages []Message
 	query, args, err := sqlx.In(`
-		select id, user_id, user_name, text, created_at, updated_at
+		select id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at
 		from messages
-		where user_id in (?)
+		where user_id in (?) and parent_id is null
 			and created_at >= ? and created_at < ?
 		order by created_at, "id"`, userIDs, from, until)
 	if err != nil {
@@ -85,7 +75,7 @@ func (r *messageRepo) Messages(userIDs []string, from, until time.Time) ([]Messa
 func (r *messageRepo) Message(messageID string) (Message, error) {
 	var message Message
 	err := r.db.Get(&message, `
-		select id, user_id, user_name, text, created_at, updated_at
+		select id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at
 		from messages
 		where id = $1`, messageID)
 	if err != nil {
@@ -97,19 +87,22 @@ func (r *messageRepo) Message(messageID string) (Message, error) {
 	return message, nil
 }
 
-func (r *messageRepo) AddMessage(message Message) error {
+func (r *messageRepo) AddMessage(parentID string, message Message) error {
 	_, err := r.db.Exec(`
-		insert into messages(id, user_id, user_name, text, created_at, updated_at)
-		select $1, $2, $3, $4, $5, $6
+		insert into messages(id, parent_id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at)
+		select $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
 		where not exists(select * from messages where id = $1)`,
-		message.ID, message.UserID, message.UserName, message.Text, message.CreatedAt, message.UpdatedAt)
+		message.ID, sql.NullString{String: parentID, Valid: parentID != ""},
+		message.UserID, message.UserName,
+		message.Text, message.AttachmentID, message.AttachmentType, message.AttachmentThumbnailID,
+		message.CreatedAt, message.UpdatedAt)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *messageRepo) EditMessage(userID, messageID, text string, updatedAt time.Time) error {
+func (r *messageRepo) EditMessageText(userID, messageID, text string, updatedAt time.Time) error {
 	res, err := r.db.Exec(`
 		update messages
 		set text = $1, updated_at = $2
@@ -128,11 +121,85 @@ func (r *messageRepo) EditMessage(userID, messageID, text string, updatedAt time
 	return nil
 }
 
+func (r *messageRepo) EditMessageAttachment(userID, messageID, attachmentID, attachmentType, attachmentThumbnailID string, updatedAt time.Time) error {
+	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+		var message Message
+		err := tx.Get(&message, "select attachment_id, attachment_thumbnail_id from messages where id = $1 and user_id = $2",
+			messageID, userID)
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
+			return err
+		}
+		if message.AttachmentID != "" && message.AttachmentID != attachmentID {
+			_, err = tx.Exec(`
+				insert into blob_pending_deletes(blob_id, deleted_at)
+				values ($1, $2)`,
+				message.AttachmentID, updatedAt)
+			if err != nil {
+				return err
+			}
+		}
+		if message.AttachmentThumbnailID != "" && message.AttachmentThumbnailID != message.AttachmentID && message.AttachmentThumbnailID != attachmentThumbnailID {
+			_, err = tx.Exec(`
+				insert into blob_pending_deletes(blob_id, deleted_at)
+				values ($1, $2)`,
+				message.AttachmentThumbnailID, updatedAt)
+			if err != nil {
+				return err
+			}
+		}
+
+		res, err := r.db.Exec(`
+		update messages
+		set attachment_id = $1, attachment_type = $2, attachment_thumbnail_id = $3, updated_at = $4
+		where id = $5 and user_id = $6`,
+			attachmentID, attachmentType, attachmentThumbnailID, updatedAt, messageID, userID)
+		if err != nil {
+			return err
+		}
+		rowsAffected, err := res.RowsAffected()
+		if err != nil {
+			return err
+		}
+		if rowsAffected < 1 {
+			return ErrMessageNotFound
+		}
+		return nil
+	})
+}
+
 func (r *messageRepo) DeleteMessage(userID, messageID string) error {
 	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
-		_, err := tx.Exec(`
-		delete from comments
-		where message_id = $1
+		var messages []Message
+		err := tx.Select(&messages, "select attachment_id, attachment_thumbnail_id from messages where (id = $1 and user_id = $2) or parent_id = $1",
+			messageID, userID)
+		if err != nil {
+			return err
+		}
+		now := common.CurrentTimestamp()
+		for _, msg := range messages {
+			if msg.AttachmentID != "" {
+				_, err = tx.Exec(`
+				insert into blob_pending_deletes(blob_id, deleted_at)
+				values ($1, $2)`,
+					msg.AttachmentID, now)
+				if err != nil {
+					return err
+				}
+			}
+			if msg.AttachmentThumbnailID != "" && msg.AttachmentThumbnailID != msg.AttachmentID {
+				_, err = tx.Exec(`
+				insert into blob_pending_deletes(blob_id, deleted_at)
+				values ($1, $2)`,
+					msg.AttachmentThumbnailID, now)
+				if err != nil {
+					return err
+				}
+			}
+		}
+
+		_, err = tx.Exec(`
+		delete from messages
+		where parent_id = $1
 		  and (select user_id from messages where messages.id = $1) = $2`,
 			messageID, userID)
 		if err != nil {
@@ -158,17 +225,17 @@ func (r *messageRepo) DeleteMessage(userID, messageID string) error {
 	})
 }
 
-func (r *messageRepo) Comments(messageIDs []string) ([]Comment, error) {
+func (r *messageRepo) Comments(messageIDs []string) (map[string][]Message, error) {
 	if len(messageIDs) == 0 {
 		return nil, nil
 	}
 
-	var comments []Comment
+	var comments []Message
 	query, args, err := sqlx.In(`
-		select id, message_id, user_id, user_name, text, created_at, updated_at
-		from comments
-		where message_id in (?)
-		order by message_id, created_at`, messageIDs)
+		select id, parent_id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at
+		from messages
+		where parent_id in (?)
+		order by created_at, id`, messageIDs)
 	if err != nil {
 		return nil, err
 	}
@@ -177,70 +244,10 @@ func (r *messageRepo) Comments(messageIDs []string) ([]Comment, error) {
 	if err != nil {
 		return nil, err
 	}
-	return comments, nil
-}
 
-func (r *messageRepo) AddComment(comment Comment) error {
-	_, err := r.db.Exec(`
-		insert into comments(id, message_id, user_id, user_name, text, created_at, updated_at)
-		select $1, $2, $3, $4, $5, $6, $7
-		where not exists(select * from comments where id = $1)`,
-		comment.ID, comment.MessageID, comment.UserID, comment.UserName, comment.Text, comment.CreatedAt, comment.UpdatedAt)
-	if err != nil {
-		return err
+	result := make(map[string][]Message)
+	for _, comment := range comments {
+		result[comment.ParentID.String] = append(result[comment.ParentID.String], comment)
 	}
-	return nil
-}
-
-func (r *messageRepo) EditComment(userID, commentID, text string, updatedAt time.Time) error {
-	res, err := r.db.Exec(`
-		update comments
-		set text = $1, updated_at = $2
-		where id = $3 and user_id = $4`,
-		text, updatedAt, commentID, userID)
-	if err != nil {
-		return err
-	}
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if rowsAffected < 1 {
-		return ErrCommentNotFound
-	}
-	return nil
-}
-
-func (r *messageRepo) DeleteComment(userID, commentID string) error {
-	res, err := r.db.Exec(`
-		delete from comments
-		where id = $1 and user_id = $2`,
-		commentID, userID)
-	if err != nil {
-		return err
-	}
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if rowsAffected < 1 {
-		return ErrCommentNotFound
-	}
-
-	return nil
-}
-
-func (r *messageRepo) Comment(commentID string) (Comment, error) {
-	var comment Comment
-	err := r.db.Get(&comment, `
-		select id, message_id, user_id, user_name, text, created_at, updated_at
-		from comments
-		where id = $1`, commentID)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return comment, ErrCommentNotFound
-		}
-		return comment, err
-	}
-	return comment, nil
+	return result, nil
 }

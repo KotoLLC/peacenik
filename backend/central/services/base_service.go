@@ -33,10 +33,9 @@ func (s *BaseService) isAdmin(ctx context.Context) bool {
 	return ctx.Value(ContextIsAdminKey).(bool)
 }
 
-func (s *BaseService) createAvatarLink(ctx context.Context, avatarBlobID string) (string, error) {
-	if avatarBlobID == "" {
+func (s *BaseService) createBlobLink(ctx context.Context, blobID string) (string, error) {
+	if blobID == "" {
 		return "", nil
 	}
-
-	return s.s3Storage.CreateLink(ctx, avatarBlobID, time.Hour*24)
+	return s.s3Storage.CreateLink(ctx, blobID, time.Hour*24)
 }

@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/mreider/koto/backend/central/rpc"
 	"github.com/mreider/koto/backend/common"
+	"github.com/mreider/koto/backend/node/rpc"
 )
 
 const (

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"os"
@@ -53,6 +54,9 @@ func main() {
 		Friend: repo.NewFriends(db),
 		Node:   repo.NewNodes(db),
 	}
+
+	s3Cleaner := common.NewS3Cleaner(db, s3Storage)
+	go s3Cleaner.Clean(context.Background())
 
 	server := central.NewServer(cfg, string(publicKeyPEM), repos, tokenGenerator, tokenParser, s3Storage)
 	err = server.Run()

@@ -3,11 +3,11 @@ package services
 import (
 	"bytes"
 	"context"
-	"log"
+	"path/filepath"
 	"sort"
+	"strings"
 
 	"github.com/disintegration/imaging"
-	"github.com/gofrs/uuid"
 	"github.com/h2non/filetype"
 	"github.com/twitchtv/twirp"
 
@@ -52,7 +52,7 @@ func (s *userService) Friends(ctx context.Context, _ *rpc.Empty) (*rpc.UserFrien
 				continue
 			}
 
-			avatarThumbnailLink, err := s.createAvatarLink(ctx, u.AvatarThumbnailID)
+			avatarThumbnailLink, err := s.createBlobLink(ctx, u.AvatarThumbnailID)
 			if err != nil {
 				return nil, twirp.InternalErrorWith(err)
 			}
@@ -71,7 +71,7 @@ func (s *userService) Friends(ctx context.Context, _ *rpc.Empty) (*rpc.UserFrien
 			return rpcUsers[i].User.Name < rpcUsers[j].User.Name
 		})
 
-		avatarThumbnailLink, err := s.createAvatarLink(ctx, friend.AvatarThumbnailID)
+		avatarThumbnailLink, err := s.createBlobLink(ctx, friend.AvatarThumbnailID)
 		if err != nil {
 			return nil, twirp.InternalErrorWith(err)
 		}
@@ -111,7 +111,7 @@ func (s *userService) FriendsOfFriends(ctx context.Context, _ *rpc.Empty) (*rpc.
 	for other, friends := range friendsOfFriends {
 		rpcFriends := make([]*rpc.User, len(friends))
 		for i, friend := range friends {
-			avatarThumbnailLink, err := s.createAvatarLink(ctx, friend.AvatarThumbnailID)
+			avatarThumbnailLink, err := s.createBlobLink(ctx, friend.AvatarThumbnailID)
 			if err != nil {
 				return nil, twirp.InternalErrorWith(err)
 			}
@@ -127,7 +127,7 @@ func (s *userService) FriendsOfFriends(ctx context.Context, _ *rpc.Empty) (*rpc.
 			return rpcFriends[i].Name < rpcFriends[j].Name
 		})
 
-		avatarThumbnailLink, err := s.createAvatarLink(ctx, other.AvatarThumbnailID)
+		avatarThumbnailLink, err := s.createBlobLink(ctx, other.AvatarThumbnailID)
 		if err != nil {
 			return nil, twirp.InternalErrorWith(err)
 		}
@@ -157,7 +157,7 @@ func (s *userService) Me(ctx context.Context, _ *rpc.Empty) (*rpc.UserMeResponse
 	user := s.getUser(ctx)
 	isAdmin := s.isAdmin(ctx)
 
-	avatarThumbnailLink, err := s.createAvatarLink(ctx, user.AvatarThumbnailID)
+	avatarThumbnailLink, err := s.createBlobLink(ctx, user.AvatarThumbnailID)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
@@ -215,25 +215,10 @@ func (s *userService) EditProfile(ctx context.Context, r *rpc.UserEditProfileReq
 	return &rpc.Empty{}, nil
 }
 
-func (s *userService) setAvatar(ctx context.Context, user repo.User, avatarID string) error {
+func (s *userService) setAvatar(ctx context.Context, user repo.User, avatarID string) (err error) {
 	if user.AvatarOriginalID == avatarID {
 		return nil
 	}
-
-	defer func() {
-		if user.AvatarOriginalID != "" {
-			err := s.s3Storage.RemoveObject(ctx, user.AvatarOriginalID)
-			if err != nil {
-				log.Println(err)
-			}
-		}
-		if user.AvatarThumbnailID != "" {
-			err := s.s3Storage.RemoveObject(ctx, user.AvatarThumbnailID)
-			if err != nil {
-				log.Println(err)
-			}
-		}
-	}()
 
 	if avatarID == "" {
 		err := s.repos.User.SetAvatar(user.ID, "", "")
@@ -244,7 +229,7 @@ func (s *userService) setAvatar(ctx context.Context, user repo.User, avatarID st
 	}
 
 	var buf bytes.Buffer
-	err := s.s3Storage.Read(ctx, avatarID, &buf)
+	err = s.s3Storage.Read(ctx, avatarID, &buf)
 	if err != nil {
 		return twirp.InternalErrorWith(err)
 	}
@@ -267,16 +252,14 @@ func (s *userService) setAvatar(ctx context.Context, user repo.User, avatarID st
 		return twirp.InternalErrorWith(err)
 	}
 
-	thumbnailID, err := uuid.NewV4()
-	if err != nil {
-		return twirp.InternalErrorWith(err)
-	}
-	err = s.s3Storage.PutObject(ctx, thumbnailID.String(), buf.Bytes(), "image/jpeg")
+	ext := filepath.Ext(avatarID)
+	thumbnailID := strings.TrimSuffix(avatarID, ext) + "-thumbnail.jpg"
+	err = s.s3Storage.PutObject(ctx, thumbnailID, buf.Bytes(), "image/jpeg")
 	if err != nil {
 		return twirp.InternalErrorWith(err)
 	}
 
-	err = s.repos.User.SetAvatar(user.ID, avatarID, thumbnailID.String())
+	err = s.repos.User.SetAvatar(user.ID, avatarID, thumbnailID)
 	if err != nil {
 		return twirp.InternalErrorWith(err)
 	}
@@ -290,7 +273,7 @@ func (s *userService) Users(ctx context.Context, r *rpc.UserUsersRequest) (*rpc.
 	}
 	rpcUsers := make([]*rpc.User, len(users))
 	for i, user := range users {
-		avatarThumbnailLink, err := s.createAvatarLink(ctx, user.AvatarThumbnailID)
+		avatarThumbnailLink, err := s.createBlobLink(ctx, user.AvatarThumbnailID)
 		if err != nil {
 			return nil, twirp.InternalErrorWith(err)
 		}
