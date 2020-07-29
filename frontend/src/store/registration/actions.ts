@@ -16,8 +16,9 @@ const sendConfirmLinkSucces = () => ({
   type: Types.SEND_CONFIRM_LINK_SUCCESS
 })
 
-const confirmUserRequest = (data: ApiTypes.Token) => ({
+const confirmUserRequest = (payload: ApiTypes.Token) => ({
   type: Types.CONFIRM_USER_REQUEST,
+  payload,
 })
 
 const confirmUserSucces = () => ({

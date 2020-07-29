@@ -3,9 +3,9 @@ import { selector, deepEqualSelector } from '../common'
 
 const profile = createSelector(selector, data => data.profile)
 const isAdmin = createSelector(profile, data => data.is_admin)
-const isEmailConfirmed = createSelector(profile, data => data.is_confirmed)
 const user = createSelector(profile, data => data.user)
 const userName = createSelector(user, data => data.name)
+const isEmailConfirmed = createSelector(user, data => data.is_confirmed)
 const userEmail = createSelector(user, data => data.email)
 const userId = createSelector(user, data => data.id)
 const userAvatar = createSelector(user, data => data.avatar_thumbnail)

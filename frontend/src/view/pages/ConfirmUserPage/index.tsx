@@ -7,6 +7,8 @@ import { ApiTypes } from './../../../types'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
+import queryString from 'query-string'
+import selectors from '@selectors/index'
 import {
   PageWrapper,
   PaperStyled,
@@ -17,24 +19,33 @@ import {
 
 interface Props extends RouteComponentProps {
   isLogged: boolean
+  isEmailConfirmed: boolean
   onLogout: () => void
   onSendConfirmLink: () => void
   onUserConfirm: (data: ApiTypes.Token) => void
 }
 
 export const ConfirmUser: React.SFC<Props> = React.memo((props) => {
-
+  const {isEmailConfirmed, isLogged, history} = props
+  
   const onLogoutClick = () => {
     localStorage.clear()
     props.onLogout()
   }
 
   useEffect(() => {
-    if (props.isLogged === false) {
-      props.history.push('/login')
+    if (isLogged === false) {
+      history.push('/login')
     }
 
-  }, [props.isLogged, props.history])
+    if (isEmailConfirmed === true) {
+      history.push('/messages')
+    }
+  }, [isLogged, history, isEmailConfirmed])
+
+  const url = props.location.search
+  const params = queryString.parse(url)
+  const token = params.token
 
   return (
     <>
@@ -60,13 +71,12 @@ export const ConfirmUser: React.SFC<Props> = React.memo((props) => {
               color="primary">
               resend confirmation email
             </ButtonStyled>
-            <ButtonStyled
-              onClick={() => props.onUserConfirm({ token: '' })}
+            {token && <ButtonStyled
+              onClick={() => props.onUserConfirm({ token: token } as ApiTypes.Token)}
               variant="contained"
-              disabled
               color="primary">
               Confirm
-            </ButtonStyled>
+            </ButtonStyled>}
           </ButtonsWrapper>
         </PaperStyled>
       </PageWrapper>
@@ -74,9 +84,10 @@ export const ConfirmUser: React.SFC<Props> = React.memo((props) => {
   )
 })
 
-type StateProps = Pick<Props, 'isLogged'>
+type StateProps = Pick<Props, 'isLogged' | 'isEmailConfirmed'>
 const mapStateToProps = (state): StateProps => ({
-  isLogged: state.authorization.isLogged,
+  isLogged: selectors.authorization.isLogged(state),
+  isEmailConfirmed: selectors.profile.isEmailConfirmed(state) || false,
 })
 
 type DispatchProps = Pick<Props, 'onLogout' | 'onSendConfirmLink' | 'onUserConfirm'>

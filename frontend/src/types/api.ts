@@ -11,6 +11,7 @@ export declare namespace ApiTypes {
     name: string
     email: string
     avatar_thumbnail?: string
+    is_confirmed?: boolean
   }
 
   export interface UploadLink {
@@ -33,7 +34,6 @@ export declare namespace ApiTypes {
     export interface UserProfile {
       user: User
       is_admin?: boolean
-      is_confirmed?: boolean
     }
 
     export interface EditProfile {

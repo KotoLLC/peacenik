@@ -4,6 +4,7 @@ import Notifications, { notify } from 'react-notify-toast'
 import { connect } from 'react-redux'
 import { StoreTypes } from './../../types/store'
 import Actions from '@store/actions'
+import selectors from '@selectors/index'
 
 const modalRoot = document.getElementById('modal')
 
@@ -57,7 +58,7 @@ class Notify extends React.PureComponent<Props> {
 
 type StateProps = Pick<Props, 'errorMessage' | 'successMessage' | 'isEmailConfirmed'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  isEmailConfirmed: state.profile.is_confirmed || false,
+  isEmailConfirmed: selectors.profile.isEmailConfirmed(state) || false,
   errorMessage: state.notify.errorMessage,
   successMessage: state.notify.successMessage,
 })

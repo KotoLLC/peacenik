@@ -20,6 +20,7 @@ const theme = createMuiTheme({
 
 interface Props {
   isLogged: boolean
+  isEmailConfirmed: boolean
   onGetAuthToken: () => void
 }
 
@@ -27,8 +28,9 @@ class AppComponent extends React.Component<Props> {
 
   checkTokenTime = () => {
     const authTokenDate = localStorage.getItem('kotoAuthTokenDate')
+    const { isEmailConfirmed } = this.props
 
-    if (authTokenDate) {
+    if (authTokenDate && isEmailConfirmed) {
       const lastTokenDate = moment(JSON.parse(authTokenDate))
       const dateNow = new Date()
       const diffTime = moment(dateNow).diff(lastTokenDate) / 1000 // in seconds
@@ -36,10 +38,11 @@ class AppComponent extends React.Component<Props> {
       if (diffTime > 1800) {
         this.props.onGetAuthToken()  
       }
-
-    } else {
-      this.props.onGetAuthToken()
     }
+
+    // else {
+    //   this.props.onGetAuthToken()
+    // }
   }
 
   componentDidMount() {  
@@ -52,7 +55,7 @@ class AppComponent extends React.Component<Props> {
       if (this.props.isLogged) {
         this.checkTokenTime()
       }
-    }, 5000)
+    }, 60 * 1000)
   }
 
   render() {
@@ -68,9 +71,10 @@ class AppComponent extends React.Component<Props> {
   }
 }
 
-type StateProps = Pick<Props, 'isLogged'>
+type StateProps = Pick<Props, 'isLogged' | 'isEmailConfirmed'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   isLogged: selectors.authorization.isLogged(state),
+  isEmailConfirmed: selectors.profile.isEmailConfirmed(state) || false,
 })
 
 type DispatchProps = Pick<Props, 'onGetAuthToken'>
