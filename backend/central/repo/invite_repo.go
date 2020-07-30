@@ -30,9 +30,10 @@ type Invite struct {
 }
 
 type InviteRepo interface {
-	AddInvite(userID, friendEmail string) error
-	AcceptInvite(inviterID, friendID, friendEmail string) error
-	RejectInvite(inviterID, friendID, friendEmail string) error
+	AddInvite(userID, friendID string) error
+	AddInviteByEmail(userID, friendEmail string) error
+	AcceptInvite(inviterID, friendID string) error
+	RejectInvite(inviterID, friendID string) error
 	InvitesFromMe(user User) ([]Invite, error)
 	InvitesForMe(user User) ([]Invite, error)
 	InviteStatuses(user User) (map[string]string, error)
@@ -48,7 +49,16 @@ func NewInvites(db *sqlx.DB) InviteRepo {
 	}
 }
 
-func (r *inviteRepo) AddInvite(inviterID, friendEmail string) error {
+func (r *inviteRepo) AddInvite(inviterID, friendID string) error {
+	_, err := r.db.Exec(`
+		insert into invites(user_id, friend_id, friend_email, created_at)
+		select $1, $2, '', $3
+		where not exists(select * from invites where user_id = $1 and friend_id = $2 and rejected_at is null)`,
+		inviterID, friendID, common.CurrentTimestamp())
+	return err
+}
+
+func (r *inviteRepo) AddInviteByEmail(inviterID, friendEmail string) error {
 	_, err := r.db.Exec(`
 		insert into invites(user_id, friend_email, created_at)
 		select $1, $2, $3
@@ -57,13 +67,13 @@ func (r *inviteRepo) AddInvite(inviterID, friendEmail string) error {
 	return err
 }
 
-func (r *inviteRepo) AcceptInvite(inviterID, friendID, friendEmail string) error {
+func (r *inviteRepo) AcceptInvite(inviterID, friendID string) error {
 	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
 		res, err := tx.Exec(`
 		update invites
 		set accepted_at = $1
-		where user_id = $2 and friend_email = $3 and rejected_at is null`,
-			common.CurrentTimestamp(), inviterID, friendEmail)
+		where user_id = $2 and friend_id = $3 and rejected_at is null`,
+			common.CurrentTimestamp(), inviterID, friendID)
 		if err != nil {
 			return err
 		}
@@ -97,13 +107,13 @@ func (r *inviteRepo) AcceptInvite(inviterID, friendID, friendEmail string) error
 	})
 }
 
-func (r *inviteRepo) RejectInvite(inviterID, friendID, friendEmail string) error {
+func (r *inviteRepo) RejectInvite(inviterID, friendID string) error {
 	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
 		res, err := tx.Exec(`
 		update invites
 		set rejected_at = $1, accepted_at = null
-		where user_id = $2 and friend_email = $3 and rejected_at is null`,
-			common.CurrentTimestamp(), inviterID, friendEmail)
+		where user_id = $2 and friend_id = $3 and rejected_at is null`,
+			common.CurrentTimestamp(), inviterID, friendID)
 		if err != nil {
 			return err
 		}
@@ -130,11 +140,11 @@ func (r *inviteRepo) RejectInvite(inviterID, friendID, friendEmail string) error
 func (r *inviteRepo) InvitesFromMe(user User) ([]Invite, error) {
 	var invites []Invite
 	err := r.db.Select(&invites, `
-		select i.id, i.user_id, coalesce(u.id, '') friend_id, coalesce(u.name, '') friend_name, i.friend_email,
+		select i.id, i.user_id, coalesce(u.id, '') friend_id, coalesce(u.name, '') friend_name, coalesce(u.email, i.friend_email) friend_email,
 		       coalesce(u.avatar_thumbnail_id, '') friend_avatar_id,
 		       i.created_at, i.accepted_at, i.rejected_at
 		from invites i
-			left join users u on u.email = i.friend_email 
+			left join users u on u.id = i.friend_id 
 		where i.user_id = $1
 		order by i.created_at desc;`,
 		user.ID)
@@ -148,12 +158,12 @@ func (r *inviteRepo) InvitesForMe(user User) ([]Invite, error) {
 	var invites []Invite
 	err := r.db.Select(&invites, `
 		select i.id, i.user_id, u.name user_name, u.email user_email, u.avatar_thumbnail_id user_avatar_id,
-		       i.friend_email, i.created_at, i.accepted_at, i.rejected_at
+		       i.created_at, i.accepted_at, i.rejected_at
 		from invites i
 			inner join users u on u.id = i.user_id
-		where i.friend_email = $1
+		where i.friend_id = $1
 		order by i.created_at desc;`,
-		user.Email)
+		user.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -171,9 +181,9 @@ with t as (
     select u.id user_id,
            i.accepted_at,
            i.rejected_at,
-           row_number() over (partition by i.friend_email order by i.created_at desc) rn
+           row_number() over (partition by i.friend_id order by i.created_at desc) rn
     from invites i
-             inner join users u on u.email = i.friend_email
+             inner join users u on u.id = i.friend_id
     where i.user_id = $1
 )
 select user_id,
@@ -199,9 +209,9 @@ with t as (
     select i.user_id,
            i.accepted_at,
            i.rejected_at,
-           row_number() over (partition by i.friend_email order by i.created_at desc) rn
+           row_number() over (partition by i.friend_id order by i.created_at desc) rn
     from invites i
-    where i.friend_email = $1
+    where i.friend_id = $1
 )
 select user_id,
        case
@@ -211,7 +221,7 @@ select user_id,
            end status
 from t
 where rn = 1
-`, user.Email)
+`, user.ID)
 	if err != nil {
 		return nil, err
 	}
