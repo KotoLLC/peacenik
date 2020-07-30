@@ -80,7 +80,7 @@ func (s *Server) Run() error {
 	userServiceHandler := rpc.NewUserServiceServer(userService, rpcHooks)
 	r.Handle(userServiceHandler.PathPrefix()+"*", s.checkAuth(userServiceHandler))
 
-	nodeService := services.NewNode(baseService)
+	nodeService := services.NewNode(baseService, s.cfg.Admins)
 	nodeServiceHandler := rpc.NewNodeServiceServer(nodeService, rpcHooks)
 	r.Handle(nodeServiceHandler.PathPrefix()+"*", s.checkAuth(nodeServiceHandler))
 
@@ -91,6 +91,10 @@ func (s *Server) Run() error {
 	blobService := services.NewBlob(baseService)
 	blobServiceHandler := rpc.NewBlobServiceServer(blobService, rpcHooks)
 	r.Handle(blobServiceHandler.PathPrefix()+"*", s.checkAuth(blobServiceHandler))
+
+	notificationService := services.NewNotification(baseService)
+	notificationServiceHandler := rpc.NewNotificationServiceServer(notificationService, rpcHooks)
+	r.Handle(notificationServiceHandler.PathPrefix()+"*", s.checkAuth(notificationServiceHandler))
 
 	log.Println("started on " + s.cfg.ListenAddress)
 	return http.ListenAndServe(s.cfg.ListenAddress, r)

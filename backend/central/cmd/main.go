@@ -49,10 +49,11 @@ func main() {
 	tokenParser := token.NewParser(publicKey)
 
 	repos := repo.Repos{
-		User:   repo.NewUsers(db),
-		Invite: repo.NewInvites(db),
-		Friend: repo.NewFriends(db),
-		Node:   repo.NewNodes(db),
+		User:         repo.NewUsers(db),
+		Invite:       repo.NewInvites(db),
+		Friend:       repo.NewFriends(db),
+		Node:         repo.NewNodes(db),
+		Notification: common.NewNotifications(db),
 	}
 
 	s3Cleaner := common.NewS3Cleaner(db, s3Storage)
