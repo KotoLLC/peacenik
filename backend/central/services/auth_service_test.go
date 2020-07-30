@@ -70,7 +70,7 @@ func TestAuthService_Register_NameWithSpaces(t *testing.T) {
 	assert.NotNil(t, err)
 	twirpErr := err.(twirp.Error)
 	assert.Equal(t, twirp.InvalidArgument, twirpErr.Code())
-	assert.Equal(t, "name shouldn't contain spaces", twirpErr.Msg())
+	assert.Equal(t, "name is invalid", twirpErr.Msg())
 }
 
 func TestAuthService_Register_Duplicated(t *testing.T) {
