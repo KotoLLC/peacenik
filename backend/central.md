@@ -272,3 +272,29 @@ Content-Type: application/json
   "user_ids": ["bec79fab-a8ce-47c8-a826-47f08a06ff6f", "b002054c-2612-4906-b741-67f19e131126", "7b786381-00e6-4765-bc1f-8730c64d432d"]
 }
 ```
+
+## Notifications
+
+```
+### Notification counters (total, unread)
+POST http://localhost:12001/rpc.NotificationService/Count
+Content-Type: application/json
+
+{}
+
+
+### Notifications
+POST http://localhost:12001/rpc.NotificationService/Notifications
+Content-Type: application/json
+
+{}
+
+
+### Clean notifications
+POST http://localhost:12001/rpc.NotificationService/Clean
+Content-Type: application/json
+
+{
+  "last_known_id": "LAST-KNOWN-NOTIFICATION-ID"
+}
+```

@@ -12,6 +12,7 @@ It is generated from these files:
 	invite.proto
 	model.proto
 	node.proto
+	notification.proto
 	token.proto
 	user.proto
 */

@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package rpc;
+option go_package = "../rpc";
+
+import "model.proto";
+
+service NotificationService {
+    rpc Count (Empty) returns (NotificationCountResponse);
+    rpc Notifications (Empty) returns (NotificationNotificationsResponse);
+    rpc Clean (NotificationCleanRequest) returns (Empty);
+}
+
+message NotificationCountResponse {
+    int32 total = 1;
+    int32 unread = 2;
+}
+
+message NotificationNotificationsResponse {
+    repeated Notification notifications = 1;
+}
+
+message NotificationCleanRequest {
+    string last_known_id = 1;
+}

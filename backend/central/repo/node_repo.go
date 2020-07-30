@@ -32,7 +32,7 @@ type UserNode struct {
 
 type NodeRepo interface {
 	NodeExists(address string) (bool, error)
-	AddNode(address, details string, nodeAdmin User) error
+	AddNode(address, details string, nodeAdmin User) (string, error)
 	AllNodes() ([]Node, error)
 	Nodes(user User) ([]Node, error)
 	Node(nodeID string) (*Node, error)
@@ -68,17 +68,20 @@ func (r *nodeRepo) NodeExists(address string) (bool, error) {
 	return true, nil
 }
 
-func (r *nodeRepo) AddNode(address, details string, nodeAdmin User) error {
+func (r *nodeRepo) AddNode(address, details string, nodeAdmin User) (string, error) {
 	nodeID, err := uuid.NewV4()
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	_, err = r.db.Exec(`
 		insert into nodes(id, address, admin_id, created_at, details) 
 		VALUES ($1, $2, $3, $4, $5)`,
-		nodeID, address, nodeAdmin.ID, common.CurrentTimestamp(), details)
-	return err
+		nodeID.String(), address, nodeAdmin.ID, common.CurrentTimestamp(), details)
+	if err != nil {
+		return "", err
+	}
+	return nodeID.String(), nil
 }
 
 func (r *nodeRepo) AllNodes() ([]Node, error) {
