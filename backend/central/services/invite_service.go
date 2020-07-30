@@ -32,14 +32,16 @@ func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) 
 		return nil, twirp.InternalErrorWith(err)
 	}
 
-	friendEmail := r.Friend
 	if friend != nil {
-		friendEmail = friend.Email
-	}
-
-	err = s.repos.Invite.AddInvite(user.ID, friendEmail)
-	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		err = s.repos.Invite.AddInvite(user.ID, friend.ID)
+		if err != nil {
+			return nil, twirp.InternalErrorWith(err)
+		}
+	} else {
+		err = s.repos.Invite.AddInviteByEmail(user.ID, r.Friend)
+		if err != nil {
+			return nil, twirp.InternalErrorWith(err)
+		}
 	}
 
 	return &rpc.Empty{}, nil
@@ -47,7 +49,7 @@ func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) 
 
 func (s *inviteService) Accept(ctx context.Context, r *rpc.InviteAcceptRequest) (*rpc.Empty, error) {
 	user := s.getUser(ctx)
-	err := s.repos.Invite.AcceptInvite(r.InviterId, user.ID, user.Email)
+	err := s.repos.Invite.AcceptInvite(r.InviterId, user.ID)
 	if err != nil {
 		if errors.Is(err, repo.ErrInviteNotFound) {
 			return nil, twirp.NotFoundError(err.Error())
@@ -59,7 +61,7 @@ func (s *inviteService) Accept(ctx context.Context, r *rpc.InviteAcceptRequest) 
 
 func (s *inviteService) Reject(ctx context.Context, r *rpc.InviteRejectRequest) (*rpc.Empty, error) {
 	user := s.getUser(ctx)
-	err := s.repos.Invite.RejectInvite(r.InviterId, user.ID, user.Email)
+	err := s.repos.Invite.RejectInvite(r.InviterId, user.ID)
 	if err != nil {
 		if errors.Is(err, repo.ErrInviteNotFound) {
 			return nil, twirp.NotFoundError(err.Error())
@@ -82,7 +84,7 @@ func (s *inviteService) FromMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFr
 			friendName = invite.FriendEmail
 		}
 
-		friendAvatarLink, err := s.createAvatarLink(ctx, invite.FriendAvatarID)
+		friendAvatarLink, err := s.createBlobLink(ctx, invite.FriendAvatarID)
 		if err != nil {
 			return nil, twirp.InternalErrorWith(err)
 		}
@@ -110,7 +112,7 @@ func (s *inviteService) ForMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFor
 	}
 	rpcInvites := make([]*rpc.InviteFriendInvite, len(invites))
 	for i, invite := range invites {
-		userAvatarLink, err := s.createAvatarLink(ctx, invite.UserAvatarID)
+		userAvatarLink, err := s.createBlobLink(ctx, invite.UserAvatarID)
 		if err != nil {
 			return nil, twirp.InternalErrorWith(err)
 		}

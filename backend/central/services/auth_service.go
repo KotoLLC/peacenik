@@ -3,14 +3,18 @@ package services
 import (
 	"context"
 	"log"
+	"regexp"
 	"strings"
-	"unicode"
 
 	"github.com/gofrs/uuid"
 	"github.com/twitchtv/twirp"
 
 	"github.com/mreider/koto/backend/central/rpc"
 	"github.com/mreider/koto/backend/central/services/user"
+)
+
+var (
+	userNameRe = regexp.MustCompile(`^\w(\w|-|_|\.)+\w$`)
 )
 
 type PasswordHash interface {
@@ -44,8 +48,9 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 	if r.Password == "" {
 		return nil, twirp.InvalidArgumentError("password", "shouldn't be empty")
 	}
-	if strings.IndexFunc(r.Name, unicode.IsSpace) >= 0 {
-		return nil, twirp.InvalidArgumentError("name", "shouldn't contain spaces")
+	r.Name = strings.TrimSpace(r.Name)
+	if !userNameRe.MatchString(r.Name) {
+		return nil, twirp.InvalidArgumentError("name", "is invalid")
 	}
 
 	u, err := s.repos.User.FindUserByName(r.Name)

@@ -3,15 +3,22 @@ package services
 import (
 	"context"
 	"errors"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/gofrs/uuid"
+	"github.com/h2non/filetype"
 	"github.com/twitchtv/twirp"
 
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/node/repo"
 	"github.com/mreider/koto/backend/node/rpc"
 	"github.com/mreider/koto/backend/token"
+)
+
+const (
+	fileTypeBufSize = 8192
 )
 
 type messageService struct {
@@ -44,28 +51,54 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		return nil, twirp.InternalErrorWith(err)
 	}
 
+	attachmentType, err := s.getAttachmentType(ctx, r.AttachmentId)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+
+	attachmentThumbnailID, err := s.getAttachmentThumbnailID(ctx, r.AttachmentId, attachmentType)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+
 	now := common.CurrentTimestamp()
 	msg := repo.Message{
-		ID:        messageID.String(),
-		UserID:    claims["id"].(string),
-		UserName:  claims["name"].(string),
-		Text:      r.Text,
-		CreatedAt: now,
-		UpdatedAt: now,
+		ID:                    messageID.String(),
+		UserID:                claims["id"].(string),
+		UserName:              claims["name"].(string),
+		Text:                  r.Text,
+		AttachmentID:          r.AttachmentId,
+		AttachmentType:        attachmentType,
+		AttachmentThumbnailID: attachmentThumbnailID,
+		CreatedAt:             now,
+		UpdatedAt:             now,
 	}
-	err = s.repos.Message.AddMessage(msg)
+	err = s.repos.Message.AddMessage("", msg)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+
+	attachmentLink, err := s.createBlobLink(ctx, msg.AttachmentID)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+
+	attachmentThumbnailLink, err := s.createBlobLink(ctx, msg.AttachmentThumbnailID)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
 
 	return &rpc.MessagePostResponse{
 		Message: &rpc.Message{
-			Id:        msg.ID,
-			UserId:    msg.UserID,
-			UserName:  msg.UserName,
-			Text:      msg.Text,
-			CreatedAt: common.TimeToRPCString(msg.CreatedAt),
-			UpdatedAt: common.TimeToRPCString(msg.UpdatedAt),
+			Id:                  msg.ID,
+			UserId:              msg.UserID,
+			UserName:            msg.UserName,
+			Text:                msg.Text,
+			Attachment:          attachmentLink,
+			AttachmentType:      attachmentType,
+			AttachmentThumbnail: attachmentThumbnailLink,
+			CreatedAt:           common.TimeToRPCString(msg.CreatedAt),
+			UpdatedAt:           common.TimeToRPCString(msg.UpdatedAt),
 		},
 	}, nil
 }
@@ -115,13 +148,25 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 	rpcMessageMap := make(map[string]*rpc.Message, len(messages))
 	for i, message := range messages {
 		messageIDs = append(messageIDs, message.ID)
+		attachmentLink, err := s.createBlobLink(ctx, message.AttachmentID)
+		if err != nil {
+			return nil, twirp.InternalErrorWith(err)
+		}
+		attachmentThumbnailLink, err := s.createBlobLink(ctx, message.AttachmentThumbnailID)
+		if err != nil {
+			return nil, twirp.InternalErrorWith(err)
+		}
+
 		rpcMessages[i] = &rpc.Message{
-			Id:        message.ID,
-			UserId:    message.UserID,
-			UserName:  message.UserName,
-			Text:      message.Text,
-			CreatedAt: common.TimeToRPCString(message.CreatedAt),
-			UpdatedAt: common.TimeToRPCString(message.UpdatedAt),
+			Id:                  message.ID,
+			UserId:              message.UserID,
+			UserName:            message.UserName,
+			Text:                message.Text,
+			Attachment:          attachmentLink,
+			AttachmentType:      message.AttachmentType,
+			AttachmentThumbnail: attachmentThumbnailLink,
+			CreatedAt:           common.TimeToRPCString(message.CreatedAt),
+			UpdatedAt:           common.TimeToRPCString(message.UpdatedAt),
 		}
 		rpcMessageMap[message.ID] = rpcMessages[i]
 	}
@@ -130,16 +175,31 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
-	for _, comment := range comments {
-		rpcComment := &rpc.Comment{
-			Id:        comment.ID,
-			UserId:    comment.UserID,
-			UserName:  comment.UserName,
-			Text:      comment.Text,
-			CreatedAt: common.TimeToRPCString(comment.CreatedAt),
-			UpdatedAt: common.TimeToRPCString(comment.UpdatedAt),
+	for messageID, messageComments := range comments {
+		rpcComments := make([]*rpc.Message, len(messageComments))
+		for i, comment := range messageComments {
+			attachmentLink, err := s.createBlobLink(ctx, comment.AttachmentID)
+			if err != nil {
+				return nil, twirp.InternalErrorWith(err)
+			}
+			attachmentThumbnailLink, err := s.createBlobLink(ctx, comment.AttachmentThumbnailID)
+			if err != nil {
+				return nil, twirp.InternalErrorWith(err)
+			}
+
+			rpcComments[i] = &rpc.Message{
+				Id:                  comment.ID,
+				UserId:              comment.UserID,
+				UserName:            comment.UserName,
+				Text:                comment.Text,
+				Attachment:          attachmentLink,
+				AttachmentType:      comment.AttachmentType,
+				AttachmentThumbnail: attachmentThumbnailLink,
+				CreatedAt:           common.TimeToRPCString(comment.CreatedAt),
+				UpdatedAt:           common.TimeToRPCString(comment.UpdatedAt),
+			}
 		}
-		rpcMessageMap[comment.MessageID].Comments = append(rpcMessageMap[comment.MessageID].Comments, rpcComment)
+		rpcMessageMap[messageID].Comments = rpcComments
 	}
 
 	return &rpc.MessageMessagesResponse{
@@ -149,12 +209,33 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 
 func (s *messageService) Edit(ctx context.Context, r *rpc.MessageEditRequest) (*rpc.MessageEditResponse, error) {
 	user := s.getUser(ctx)
-	err := s.repos.Message.EditMessage(user.ID, r.MessageId, r.Text, common.CurrentTimestamp())
-	if err != nil {
-		if errors.Is(err, repo.ErrMessageNotFound) {
-			return nil, twirp.NotFoundError(err.Error())
+	now := common.CurrentTimestamp()
+	if r.TextChanged {
+		err := s.repos.Message.EditMessageText(user.ID, r.MessageId, r.Text, now)
+		if err != nil {
+			if errors.Is(err, repo.ErrMessageNotFound) {
+				return nil, twirp.NotFoundError(err.Error())
+			}
+			return nil, twirp.InternalErrorWith(err)
 		}
-		return nil, twirp.InternalErrorWith(err)
+	}
+	if r.AttachmentChanged {
+		attachmentType, err := s.getAttachmentType(ctx, r.AttachmentId)
+		if err != nil {
+			return nil, twirp.InternalErrorWith(err)
+		}
+		attachmentThumbnailID, err := s.getAttachmentThumbnailID(ctx, r.AttachmentId, attachmentType)
+		if err != nil {
+			return nil, twirp.InternalErrorWith(err)
+		}
+
+		err = s.repos.Message.EditMessageAttachment(user.ID, r.MessageId, r.AttachmentId, attachmentType, attachmentThumbnailID, now)
+		if err != nil {
+			if errors.Is(err, repo.ErrMessageNotFound) {
+				return nil, twirp.NotFoundError(err.Error())
+			}
+			return nil, twirp.InternalErrorWith(err)
+		}
 	}
 
 	msg, err := s.repos.Message.Message(r.MessageId)
@@ -165,21 +246,34 @@ func (s *messageService) Edit(ctx context.Context, r *rpc.MessageEditRequest) (*
 		return nil, twirp.InternalErrorWith(err)
 	}
 
+	attachmentLink, err := s.createBlobLink(ctx, msg.AttachmentID)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+	attachmentThumbnailLink, err := s.createBlobLink(ctx, msg.AttachmentThumbnailID)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+
 	return &rpc.MessageEditResponse{
 		Message: &rpc.Message{
-			Id:        msg.ID,
-			UserId:    msg.UserID,
-			UserName:  msg.UserName,
-			Text:      msg.Text,
-			CreatedAt: common.TimeToRPCString(msg.CreatedAt),
-			UpdatedAt: common.TimeToRPCString(msg.UpdatedAt),
+			Id:                  msg.ID,
+			UserId:              msg.UserID,
+			UserName:            msg.UserName,
+			Text:                msg.Text,
+			Attachment:          attachmentLink,
+			AttachmentType:      msg.AttachmentType,
+			AttachmentThumbnail: attachmentThumbnailLink,
+			CreatedAt:           common.TimeToRPCString(msg.CreatedAt),
+			UpdatedAt:           common.TimeToRPCString(msg.UpdatedAt),
 		},
 	}, nil
 }
 
-func (s *messageService) Delete(ctx context.Context, r *rpc.MessageDeleteRequest) (*rpc.Empty, error) {
+func (s *messageService) Delete(ctx context.Context, r *rpc.MessageDeleteRequest) (_ *rpc.Empty, err error) {
 	user := s.getUser(ctx)
-	err := s.repos.Message.DeleteMessage(user.ID, r.MessageId)
+
+	err = s.repos.Message.DeleteMessage(user.ID, r.MessageId)
 	if err != nil {
 		if errors.Is(err, repo.ErrMessageNotFound) {
 			return nil, twirp.NotFoundError(err.Error())
@@ -231,70 +325,178 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 		return nil, twirp.InternalErrorWith(err)
 	}
 
+	attachmentType, err := s.getAttachmentType(ctx, r.AttachmentId)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+
+	attachmentThumbnailID, err := s.getAttachmentThumbnailID(ctx, r.AttachmentId, attachmentType)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+
 	now := common.CurrentTimestamp()
 
-	comment := repo.Comment{
-		ID:        commentID.String(),
-		MessageID: r.MessageId,
-		UserID:    claims["id"].(string),
-		UserName:  claims["name"].(string),
-		Text:      r.Text,
-		CreatedAt: now,
-		UpdatedAt: now,
+	comment := repo.Message{
+		ID:                    commentID.String(),
+		UserID:                claims["id"].(string),
+		UserName:              claims["name"].(string),
+		Text:                  r.Text,
+		AttachmentID:          r.AttachmentId,
+		AttachmentType:        attachmentType,
+		AttachmentThumbnailID: attachmentThumbnailID,
+		CreatedAt:             now,
+		UpdatedAt:             now,
 	}
-	err = s.repos.Message.AddComment(comment)
+	err = s.repos.Message.AddMessage(r.MessageId, comment)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+
+	attachmentLink, err := s.createBlobLink(ctx, comment.AttachmentID)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+
+	attachmentThumbnailLink, err := s.createBlobLink(ctx, comment.AttachmentThumbnailID)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
 
 	return &rpc.MessagePostCommentResponse{
-		Comment: &rpc.Comment{
-			Id:        comment.ID,
-			UserId:    comment.UserID,
-			UserName:  comment.UserName,
-			Text:      comment.Text,
-			CreatedAt: common.TimeToRPCString(comment.CreatedAt),
-			UpdatedAt: common.TimeToRPCString(comment.UpdatedAt),
+		Comment: &rpc.Message{
+			Id:                  comment.ID,
+			UserId:              comment.UserID,
+			UserName:            comment.UserName,
+			Text:                comment.Text,
+			Attachment:          attachmentLink,
+			AttachmentType:      attachmentType,
+			AttachmentThumbnail: attachmentThumbnailLink,
+			CreatedAt:           common.TimeToRPCString(comment.CreatedAt),
+			UpdatedAt:           common.TimeToRPCString(comment.UpdatedAt),
 		},
 	}, nil
 }
 
 func (s *messageService) EditComment(ctx context.Context, r *rpc.MessageEditCommentRequest) (*rpc.MessageEditCommentResponse, error) {
 	user := s.getUser(ctx)
-	err := s.repos.Message.EditComment(user.ID, r.CommentId, r.Text, common.CurrentTimestamp())
+	now := common.CurrentTimestamp()
+	if r.TextChanged {
+		err := s.repos.Message.EditMessageText(user.ID, r.CommentId, r.Text, now)
+		if err != nil {
+			if errors.Is(err, repo.ErrMessageNotFound) {
+				return nil, twirp.NotFoundError("comment not found")
+			}
+			return nil, twirp.InternalErrorWith(err)
+		}
+	}
+	if r.AttachmentChanged {
+		attachmentType, err := s.getAttachmentType(ctx, r.AttachmentId)
+		if err != nil {
+			return nil, twirp.InternalErrorWith(err)
+		}
+
+		attachmentThumbnailID, err := s.getAttachmentThumbnailID(ctx, r.AttachmentId, attachmentType)
+		if err != nil {
+			return nil, twirp.InternalErrorWith(err)
+		}
+
+		err = s.repos.Message.EditMessageAttachment(user.ID, r.CommentId, r.AttachmentId, attachmentType, attachmentThumbnailID, now)
+		if err != nil {
+			if errors.Is(err, repo.ErrMessageNotFound) {
+				return nil, twirp.NotFoundError(err.Error())
+			}
+			return nil, twirp.InternalErrorWith(err)
+		}
+	}
+
+	comment, err := s.repos.Message.Message(r.CommentId)
 	if err != nil {
-		if errors.Is(err, repo.ErrCommentNotFound) {
-			return nil, twirp.NotFoundError(err.Error())
+		if errors.Is(err, repo.ErrMessageNotFound) {
+			return nil, twirp.NotFoundError("comment not found")
 		}
 		return nil, twirp.InternalErrorWith(err)
 	}
-	comment, err := s.repos.Message.Comment(r.CommentId)
+
+	attachmentLink, err := s.createBlobLink(ctx, comment.AttachmentID)
 	if err != nil {
-		if errors.Is(err, repo.ErrCommentNotFound) {
-			return nil, twirp.NotFoundError(err.Error())
-		}
 		return nil, twirp.InternalErrorWith(err)
 	}
+
+	attachmentThumbnailLink, err := s.createBlobLink(ctx, comment.AttachmentThumbnailID)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+
 	return &rpc.MessageEditCommentResponse{
-		Comment: &rpc.Comment{
-			Id:        comment.ID,
-			UserId:    comment.UserID,
-			UserName:  comment.UserName,
-			Text:      comment.Text,
-			CreatedAt: common.TimeToRPCString(comment.CreatedAt),
-			UpdatedAt: common.TimeToRPCString(comment.UpdatedAt),
+		Comment: &rpc.Message{
+			Id:                  comment.ID,
+			UserId:              comment.UserID,
+			UserName:            comment.UserName,
+			Text:                comment.Text,
+			Attachment:          attachmentLink,
+			AttachmentType:      comment.AttachmentType,
+			AttachmentThumbnail: attachmentThumbnailLink,
+			CreatedAt:           common.TimeToRPCString(comment.CreatedAt),
+			UpdatedAt:           common.TimeToRPCString(comment.UpdatedAt),
 		},
 	}, nil
 }
 
-func (s *messageService) DeleteComment(ctx context.Context, r *rpc.MessageDeleteCommentRequest) (*rpc.Empty, error) {
+func (s *messageService) DeleteComment(ctx context.Context, r *rpc.MessageDeleteCommentRequest) (_ *rpc.Empty, err error) {
 	user := s.getUser(ctx)
-	err := s.repos.Message.DeleteComment(user.ID, r.CommentId)
+	err = s.repos.Message.DeleteMessage(user.ID, r.CommentId)
 	if err != nil {
-		if errors.Is(err, repo.ErrCommentNotFound) {
-			return nil, twirp.NotFoundError(err.Error())
+		if errors.Is(err, repo.ErrMessageNotFound) {
+			return nil, twirp.NotFoundError("comment not found")
 		}
 		return nil, twirp.InternalErrorWith(err)
 	}
 	return &rpc.Empty{}, nil
+}
+
+func (s *messageService) getAttachmentType(ctx context.Context, attachmentID string) (string, error) {
+	if attachmentID == "" {
+		return "", nil
+	}
+
+	buf, err := s.s3Storage.ReadN(ctx, attachmentID, fileTypeBufSize)
+	if err != nil {
+		return "", err
+	}
+	t, err := filetype.Match(buf)
+	if err != nil {
+		return "", err
+	}
+	return t.MIME.Value, nil
+}
+
+func (s *messageService) getAttachmentThumbnailID(ctx context.Context, attachmentID, attachmentType string) (string, error) {
+	if strings.HasPrefix(attachmentType, "image/") {
+		return attachmentID, nil
+	}
+
+	if !strings.HasPrefix(attachmentType, "video/") {
+		return "", nil
+	}
+
+	link, err := s.createBlobLink(ctx, attachmentID)
+	if err != nil {
+		return "", err
+	}
+	thumbnail, err := common.VideoThumbnail(link)
+	if err != nil {
+		return "", err
+	}
+	if len(thumbnail) == 0 {
+		return "", nil
+	}
+
+	ext := filepath.Ext(attachmentID)
+	attachmentThumbnailID := strings.TrimSuffix(attachmentID, ext) + "-thumbnail.jpg"
+	err = s.s3Storage.PutObject(ctx, attachmentThumbnailID, thumbnail, "image/jpeg")
+	if err != nil {
+		return "", twirp.InternalErrorWith(err)
+	}
+	return attachmentThumbnailID, nil
 }

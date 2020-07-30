@@ -14,13 +14,13 @@ require (
 	github.com/h2non/filetype v1.1.0
 	github.com/jinzhu/configor v1.2.0
 	github.com/jmoiron/sqlx v1.2.0
-	github.com/lib/pq v1.7.1
-	github.com/minio/minio-go/v7 v7.0.1
+	github.com/lib/pq v1.8.0
+	github.com/minio/minio-go/v7 v7.0.2
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rubenv/sql-migrate v0.0.0-20200616145509-8d140a17f351
 	github.com/stretchr/testify v1.6.1
 	github.com/twitchtv/twirp v5.12.1+incompatible
-	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899
+	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de
 	golang.org/x/net v0.0.0-20200202094626-16171245cfb2 // indirect
 	google.golang.org/protobuf v1.24.0
 )

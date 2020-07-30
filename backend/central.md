@@ -242,7 +242,8 @@ POST http://localhost:12001/rpc.BlobService/UploadLink
 Content-Type: application/json
 
 {
-  "content_type": "image/png"
+  "content_type": "image/png",
+  "file_name": "image.png",
 }
 ```
 

@@ -122,11 +122,23 @@ func (r *userRepo) FindUserByNameOrEmail(value string) (*User, error) {
 }
 
 func (r *userRepo) AddUser(id, name, email, passwordHash string) error {
-	_, err := r.db.Exec(`
-		insert into users(id, name, email, password_hash, created_at, updated_at)
-		values($1, $2, $3, $4, $5, $5)`,
-		id, name, email, passwordHash, common.CurrentTimestamp())
-	return err
+	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+		_, err := tx.Exec(`
+			insert into users(id, name, email, password_hash, created_at, updated_at)
+			values($1, $2, $3, $4, $5, $5)`,
+			id, name, email, passwordHash, common.CurrentTimestamp())
+		if err != nil {
+			return err
+		}
+		if email != "" {
+			_, err = tx.Exec(`
+			update invites
+			set friend_id = $1
+			where friend_id is null and friend_email = $2`,
+				id, email)
+		}
+		return err
+	})
 }
 
 func (r *userRepo) UserCount() (int, error) {
@@ -136,12 +148,39 @@ func (r *userRepo) UserCount() (int, error) {
 }
 
 func (r *userRepo) SetAvatar(userID, avatarOriginalID, avatarThumbnailID string) error {
-	_, err := r.db.Exec(`
-		update users
-		set avatar_original_id = $1, avatar_thumbnail_id = $2, updated_at = $3
-		where id = $4;`,
-		avatarOriginalID, avatarThumbnailID, common.CurrentTimestamp(), userID)
-	return err
+	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+		var user User
+		err := tx.Get(&user, "select avatar_original_id, avatar_thumbnail_id from users where id = $1", userID)
+		if err != nil {
+			return err
+		}
+		now := common.CurrentTimestamp()
+		if user.AvatarOriginalID != "" && user.AvatarOriginalID != avatarOriginalID {
+			_, err = tx.Exec(`
+				insert into blob_pending_deletes(blob_id, deleted_at)
+				values ($1, $2)`,
+				user.AvatarOriginalID, now)
+			if err != nil {
+				return err
+			}
+		}
+		if user.AvatarThumbnailID != "" && user.AvatarThumbnailID != avatarThumbnailID {
+			_, err = tx.Exec(`
+				insert into blob_pending_deletes(blob_id, deleted_at)
+				values ($1, $2)`,
+				user.AvatarThumbnailID, now)
+			if err != nil {
+				return err
+			}
+		}
+
+		_, err = tx.Exec(`
+			update users
+			set avatar_original_id = $1, avatar_thumbnail_id = $2, updated_at = $3
+			where id = $4;`,
+			avatarOriginalID, avatarThumbnailID, now, userID)
+		return err
+	})
 }
 
 func (r *userRepo) SetEmail(userID, email string) error {
