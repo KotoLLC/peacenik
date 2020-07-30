@@ -488,6 +488,10 @@ func (s *messageService) getAttachmentThumbnailID(ctx context.Context, attachmen
 	if err != nil {
 		return "", err
 	}
+	if len(thumbnail) == 0 {
+		return "", nil
+	}
+
 	ext := filepath.Ext(attachmentID)
 	attachmentThumbnailID := strings.TrimSuffix(attachmentID, ext) + "-thumbnail.jpg"
 	err = s.s3Storage.PutObject(ctx, attachmentThumbnailID, thumbnail, "image/jpeg")

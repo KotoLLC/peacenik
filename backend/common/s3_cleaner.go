@@ -56,15 +56,13 @@ func (c *S3Cleaner) clean(ctx context.Context) {
 			log.Println(err)
 			continue
 		}
-		if !exists {
-			continue
+		if exists {
+			err = c.s3Storage.RemoveObject(ctx, item.BlobID)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
 		}
-		err = c.s3Storage.RemoveObject(ctx, item.BlobID)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-
 		_, err = c.db.ExecContext(ctx, `
 			delete from blob_pending_deletes
 			where id = $1`, item.ID)

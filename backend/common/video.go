@@ -24,30 +24,44 @@ var (
 )
 
 func VideoThumbnail(videoPath string) ([]byte, error) {
-	_, _, duration, _, err := videoMetadata(videoPath)
-	if err != nil {
-		return nil, err
-	}
-
 	tempDir, err := ioutil.TempDir("", "")
 	if err != nil {
 		return nil, err
 	}
 	defer func() { _ = os.RemoveAll(tempDir) }()
 
-	var position int
-	if duration.Seconds() > 5 {
-		position = 5
-	} else {
-		position = int(duration.Seconds() / 2)
-	}
-
 	outputPath := filepath.Join(tempDir, "thumbnail.jpg")
-	cmd := exec.Command("ffmpeg", "-i", videoPath, "-vframes", "1", "-ss", strconv.Itoa(position), outputPath)
+	const defaultPosition = "00:00:05.000"
 
+	cmd := exec.Command("ffmpeg", "-i", videoPath, "-vframes", "1", "-ss", defaultPosition, outputPath)
 	err = cmd.Run()
 	if err != nil {
 		return nil, err
+	}
+
+	_, err = os.Stat(outputPath)
+	if err != nil {
+		if !os.IsNotExist(err) {
+			return nil, err
+		}
+		_, _, duration, _, err := videoMetadata(videoPath)
+		if err != nil {
+			return nil, err
+		}
+
+		if duration == 0 {
+			return nil, nil
+		}
+
+		position := duration / 2
+		minutes := int(position.Minutes()) % 60
+		seconds := int(position.Seconds()) % 60
+		milliseconds := int(position.Milliseconds()) % 1000
+		cmd := exec.Command("ffmpeg", "-i", videoPath, "-vframes", "1", "-ss", fmt.Sprintf("00:%02d:%02d.%03d", minutes, seconds, milliseconds), outputPath)
+		err = cmd.Run()
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	data, err := ioutil.ReadFile(outputPath)
