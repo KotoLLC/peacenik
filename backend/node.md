@@ -46,7 +46,8 @@ Content-Type: application/json
 
 {
   "token":  "POST-MESSAGE-TOKEN",
-  "text": "second message"
+  "text": "second message",
+  "attachment_id": "ATTACHMENT-BLOB-ID"
 }
 
 
@@ -90,7 +91,10 @@ Content-Type: application/json
 
 {
   "message_id": "4",
+  "text_changed": true,
   "text": "updated message"
+  "attachment_changed": true,
+  "attachment_id": "ATTACHMENT-BLOB-ID"
 }
 
 ### Delete message
@@ -111,7 +115,8 @@ Content-Type: application/json
 {
   "token":  "GET-MESSAGES-TOKEN",
   "message_id": "55",
-  "text": "new comment 123"
+  "text": "new comment 123",
+  "attachment_id": "ATTACHMENT-BLOB-ID"
 }
 
 
@@ -122,7 +127,10 @@ Content-Type: application/json
 
 {
   "comment_id": "123",
+  "text_changed": true,
   "text": "updated comment 123"
+  "attachment_changed": true,
+  "attachment_id": "ATTACHMENT-BLOB-ID"
 }
 
 
@@ -133,5 +141,18 @@ Content-Type: application/json
 
 {
   "comment_id": "123"
+}
+```
+
+## Blobs
+
+```
+### Get blob upload link
+POST http://localhost:12012/rpc.BlobService/UploadLink
+Content-Type: application/json
+
+{
+  "content_type": "image/png",
+  "file_name": "image.png",
 }
 ```
