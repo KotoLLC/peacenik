@@ -111,7 +111,9 @@ class NodeList extends React.Component<Props, State> {
       })
     }
 
-    if (!newProps.nodeslist?.length) return {}
+    if (!newProps.nodeslist?.length) return {
+      showList: []
+    }
     if (prevState.isFilterChecked) return {}
 
     return {
