@@ -8,6 +8,7 @@ import { StoreTypes } from './../types'
 import { NodePages } from './pages/NodePages'
 import { MessagesPage } from './pages/MessagesPage'
 import { NotificationsPage } from './pages/NotificationsPage'
+import AboutUsPage from './pages/AboutUsPage'
 import UserProfilePage from './pages/UserProfilePage'
 import RegistrationPage from './pages/RegistrationPage'
 import DocsPages from './pages/DocsPages'
@@ -41,6 +42,7 @@ export const Routes = () => {
         <Route path="/registration" component={RegistrationPage} />
         <Route path="/docs" component={DocsPages} />
         <Route path="/confirm-user" component={ConfirmUserPage} />
+        <Route path="/about-us" component={AboutUsPage} />
         <PrivateRoute path="/friends" component={FriendsPage} />
         <PrivateRoute path="/nodes" component={NodePages} />
         <PrivateRoute path="/messages" component={MessagesPage} />

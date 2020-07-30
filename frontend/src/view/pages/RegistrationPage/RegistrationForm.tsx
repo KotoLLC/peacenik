@@ -236,8 +236,7 @@ export class RegistrationForm extends React.PureComponent<Props, State> {
           },
           {
             name: 'About Koto',
-            to: '/',
-            disabled: true
+            to: '/about-us',
           },
           {
             name: 'Code of conduct',
