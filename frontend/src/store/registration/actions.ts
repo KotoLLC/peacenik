@@ -6,6 +6,12 @@ export enum Types {
 
   CONFIRM_USER_REQUEST = 'CONFIRM_USER_REQUEST',
   CONFIRM_USER_SUCCESS = 'CONFIRM_USER_SUCCESS',
+  
+  REGISTER_USER_REQUEST = 'REGISTER_USER_REQUEST',
+  REGISTER_USER_SUCCESS = 'REGISTER_USER_SUCCESS',
+  REGISTER_USER_FAILED = 'REGISTER_USER_FAILED',
+
+  RESET_REGISTRATION_RESULT = 'RESET_REGISTRATION_RESULT',
 }
 
 const sendConfirmLinkRequest = () => ({
@@ -25,9 +31,31 @@ const confirmUserSucces = () => ({
   type: Types.CONFIRM_USER_SUCCESS
 })
 
+const registerUserRequest = (payload: ApiTypes.RegisterUser) => ({
+  type: Types.REGISTER_USER_REQUEST,
+  payload,
+})
+
+const registerUserSucces = () => ({
+  type: Types.REGISTER_USER_SUCCESS
+})
+
+const registerUserFailed = (payload: string) => ({
+  type: Types.REGISTER_USER_FAILED,
+  payload,
+})
+
+const resetRegistrationResult = () => ({
+  type: Types.RESET_REGISTRATION_RESULT
+})
+
 export default {
   sendConfirmLinkRequest,
   sendConfirmLinkSucces,
   confirmUserRequest,
   confirmUserSucces,
+  registerUserRequest,
+  registerUserSucces,
+  resetRegistrationResult,
+  registerUserFailed,
 }

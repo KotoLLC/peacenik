@@ -10,14 +10,28 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import { validate } from '@services/validation'
 import { FooterMenu } from '@view/shared/FooterMenu'
-import { FormWrapper, FormControlStyled, ButtonStyled, ContainerStyled, Header } from './styles'
-import { ApiTypes } from './../../../types/api'
+import { ApiTypes } from '../../../types/api'
 import { RouteComponentProps } from 'react-router-dom'
+import { 
+  FormWrapper, 
+  FormControlStyled, 
+  ButtonStyled, 
+  ContainerStyled, 
+  Header, 
+} from './styles'
 
-type FieldsType = 'name' | 'password' | ''
+type FieldsType = 'name' | 'password' | 'email' | ''
+
+export interface Props extends RouteComponentProps {
+  registrationErrorMessage: string
+  isRegisterSuccess: boolean
+  onRegisterUser: (data: ApiTypes.RegisterUser) => void
+  onResetRegistrationResult: () => void
+}
 
 interface State {
   name: string
+  email: string
   password: string
   isPasswordVisible: boolean
   isRequest: boolean
@@ -25,17 +39,11 @@ interface State {
   errorMessage: string
 }
 
-export interface Props extends RouteComponentProps {
-  loginErrorMessage: string
-  isLogged: boolean
-  onLogin: (data: ApiTypes.Login) => void
-  resetLoginFailedMessage: () => void
-}
-
-export class LoginForm extends React.PureComponent<Props, State> {
+export class RegistrationForm extends React.PureComponent<Props, State> {
 
   state = {
     name: '',
+    email: '',
     password: '',
     isPasswordVisible: false,
     isRequest: false,
@@ -44,28 +52,42 @@ export class LoginForm extends React.PureComponent<Props, State> {
   }
 
   static getDerivedStateFromProps(nextProps: Props) {
-    if (nextProps.loginErrorMessage !== '') {
+
+    if (nextProps.isRegisterSuccess === true) {
+      nextProps.history.push('/confirm-user')
+      return { 
+        isRequest: false 
+      }
+    } 
+
+    if (nextProps.registrationErrorMessage !== '') {
       return {
-        errorMessage: nextProps.loginErrorMessage,
+        errorMessage: nextProps.registrationErrorMessage,
         isRequest: false
       }
-    } if (nextProps.isLogged === true) {
-      nextProps.history.push('/messages')
-      return { isRequest: false }
     } else {
       return {}
     }
   }
 
+  onNameChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    this.setState({
+      name: event.currentTarget.value.trim(),
+      errorMessage: '',
+    })
+  }
+  
   onEmailChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     this.setState({
-      name: event.currentTarget.value.trim()
+      email: event.currentTarget.value.trim(),
+      errorMessage: '',
     })
   }
 
   onPasswordChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     this.setState({
-      password: event.currentTarget.value.trim()
+      password: event.currentTarget.value.trim(),
+      errorMessage: '',
     })
   }
 
@@ -76,12 +98,20 @@ export class LoginForm extends React.PureComponent<Props, State> {
   }
 
   onValidate = (): boolean => {
-    const { password, name } = this.state
-
+    const { password, name, email } = this.state
+    
     if (!validate.isUserNameValid(name)) {
       this.setState({
-        errorMessage: 'Name or email are incorrect',
+        errorMessage: 'Name is incorrect',
         noValideField: 'name',
+      })
+      return false
+    }
+
+    if (!validate.isEmailValid(email)) {
+      this.setState({
+        errorMessage: 'Email is incorrect',
+        noValideField: 'email',
       })
       return false
     }
@@ -99,8 +129,8 @@ export class LoginForm extends React.PureComponent<Props, State> {
 
   onFormSubmit = (event: FormEvent) => {
     event.preventDefault()
-    const { name, password } = this.state
-    const { onLogin } = this.props
+    const { name, password, email } = this.state
+    const { onRegisterUser } = this.props
 
     if (!this.onValidate()) return
 
@@ -110,17 +140,18 @@ export class LoginForm extends React.PureComponent<Props, State> {
       noValideField: '',
     })
 
-    onLogin({ name, password })
+    onRegisterUser({ name, password, email })
   }
 
   componentWillUnmount() {
-    this.props.resetLoginFailedMessage()
+    this.props.onResetRegistrationResult()
   }
 
   render() {
     const {
       password,
       name,
+      email,
       isPasswordVisible,
       isRequest,
       errorMessage,
@@ -135,24 +166,38 @@ export class LoginForm extends React.PureComponent<Props, State> {
         </Header>
         <FormWrapper onSubmit={this.onFormSubmit}>
           <FormControlStyled variant="outlined">
-            <InputLabel 
+            <InputLabel
               htmlFor="name"
               color={(noValideField === 'name') ? 'secondary' : 'primary'}
-              >Name / Email</InputLabel>
+            >Name</InputLabel>
             <OutlinedInput
               id="name"
               type={'text'}
               value={name}
               error={(noValideField === 'name') ? true : false}
-              onChange={this.onEmailChange}
-              labelWidth={98}
+              onChange={this.onNameChange}
+              labelWidth={42}
             />
           </FormControlStyled>
           <FormControlStyled variant="outlined">
-            <InputLabel 
+            <InputLabel
+              htmlFor="email"
+              color={(noValideField === 'email') ? 'secondary' : 'primary'}
+            >Email</InputLabel>
+            <OutlinedInput
+              id="email"
+              type={'text'}
+              value={email}
+              error={(noValideField === 'email') ? true : false}
+              onChange={this.onEmailChange}
+              labelWidth={40}
+            />
+          </FormControlStyled>
+          <FormControlStyled variant="outlined">
+            <InputLabel
               htmlFor="password"
               color={(noValideField === 'password') ? 'secondary' : 'primary'}
-              >Password</InputLabel>
+            >Password</InputLabel>
             <OutlinedInput
               id="password"
               type={isPasswordVisible ? 'text' : 'password'}
@@ -180,19 +225,14 @@ export class LoginForm extends React.PureComponent<Props, State> {
             type="submit"
             onClick={this.onFormSubmit}
           >
-            {isRequest ? <CircularProgress size={25} color={'inherit'} /> : 'Login'}
+            {isRequest ? <CircularProgress size={25} color={'inherit'} /> : 'Register'}
           </ButtonStyled>
           {errorMessage && <FormHelperText error>{errorMessage}</FormHelperText>}
         </FormWrapper>
         <FooterMenu menuItems={[
           {
-            name: 'Forgotten password',
-            to: '/',
-            disabled: true,
-          },
-          {
-            name: 'Register for Koto',
-            to: '/registration',
+            name: 'Login for Koto',
+            to: '/login'
           },
           {
             name: 'About Koto',

@@ -1,6 +1,12 @@
 
 export declare namespace ApiTypes {
 
+  export interface RegisterUser {
+    name: string
+    email: string
+    password: string
+  }
+
   export interface Login {
     name: string
     password: string

@@ -2,6 +2,7 @@ import { applyMiddleware, combineReducers, createStore, compose } from 'redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import createSagaMiddleware from 'redux-saga'
 import { rootSaga } from '@sagas/index'
+import registration from './registration'
 import authorization from './authorization'
 import friends from './friends'
 import notify from './notify'
@@ -10,6 +11,7 @@ import profile from './profile'
 import messages from './messages'
 
 const appReducer = combineReducers({
+    registration,
     authorization,
     friends,
     notify,

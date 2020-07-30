@@ -9,6 +9,7 @@ import { NodePages } from './pages/NodePages'
 import { MessagesPage } from './pages/MessagesPage'
 import { NotificationsPage } from './pages/NotificationsPage'
 import UserProfilePage from './pages/UserProfilePage'
+import RegistrationPage from './pages/RegistrationPage'
 import DocsPages from './pages/DocsPages'
 import ConfirmUserPage from '@view/pages/ConfirmUserPage'
 import selectors from '@selectors/index'
@@ -37,6 +38,7 @@ export const Routes = () => {
       <Switch>
         <Route exact path="/" component={LoginPage} />
         <Route path="/login" component={LoginPage} />
+        <Route path="/registration" component={RegistrationPage} />
         <Route path="/docs" component={DocsPages} />
         <Route path="/confirm-user" component={ConfirmUserPage} />
         <PrivateRoute path="/friends" component={FriendsPage} />
