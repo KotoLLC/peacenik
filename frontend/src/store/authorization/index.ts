@@ -39,6 +39,11 @@ const reducer = (state = initialState, action) => {
         isLogged: false, 
       } }
     }
+    case Types.LOGOUT_REQUEST: {
+      return { ...state, ...{ 
+        loginErrorMessage: '', 
+      } }
+    }
     case Types.GET_AUTH_TOKEN_SUCCESS: {
       return { ...state, ...{ 
         authToken: action.payload, 

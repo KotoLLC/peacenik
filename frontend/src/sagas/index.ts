@@ -14,6 +14,7 @@ import {
 import { 
     watchSendConfirmLink,
     watchConfirmUser,
+    watchRegisterUser,
  } from './registration'
 import { 
     watchGetFriends, 
@@ -52,6 +53,7 @@ export function* rootSaga() {
     yield all([
         takeEvery(RegistrationTypes.SEND_CONFIRM_LINK_REQUEST, watchSendConfirmLink),
         takeEvery(RegistrationTypes.CONFIRM_USER_REQUEST, watchConfirmUser),
+        takeEvery(RegistrationTypes.REGISTER_USER_REQUEST, watchRegisterUser),
 
         takeEvery(AuthorizationTypes.LOGIN_REQUEST, watchlogin),
         takeEvery(AuthorizationTypes.LOGOUT_REQUEST, watchlogout),

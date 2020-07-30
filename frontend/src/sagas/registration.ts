@@ -25,3 +25,15 @@ export function* watchConfirmUser(action: { type: string, payload: ApiTypes.Toke
     yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
+
+export function* watchRegisterUser(action: { type: string, payload: ApiTypes.RegisterUser }) {
+  const response = yield API.registration.registerUser(action.payload)
+  
+  if (response.status === 200) {
+    yield put(Actions.registration.registerUserSucces())
+    yield put(Actions.authorization.loginSucces())
+    localStorage.setItem('kotoIsLogged', 'true')
+  } else {
+    yield put(Actions.registration.registerUserFailed(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}

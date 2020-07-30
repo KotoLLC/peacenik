@@ -2,11 +2,12 @@ import { connect } from 'react-redux'
 import { LoginForm, Props } from './LoginForm'
 import Actions from '@store/actions'
 import { ApiTypes, StoreTypes } from './../../../types'
+import selectors from '@selectors/index'
 
 type StateProps = Pick<Props, 'loginErrorMessage' | 'isLogged'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-    loginErrorMessage: state.authorization.loginErrorMessage,
-    isLogged: state.authorization.isLogged,
+    loginErrorMessage: selectors.authorization.loginErrorMessage(state),
+    isLogged: selectors.authorization.isLogged(state),
 })
 
 type DispatchProps = Pick<Props, 'onLogin' | 'resetLoginFailedMessage'>
