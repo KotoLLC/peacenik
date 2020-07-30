@@ -33,6 +33,7 @@
 		"react-cookie": "^4.0.3",
 		"react-dom": "16.13.1",
 		"react-notify-toast": "^0.5.1",
+		"react-page-scroller": "^2.0.7-beta",
 		"react-redux": "^7.2.0",
 		"react-router-dom": "^5.2.0",
 		"react-scripts": "3.4.1",
