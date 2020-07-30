@@ -122,11 +122,23 @@ func (r *userRepo) FindUserByNameOrEmail(value string) (*User, error) {
 }
 
 func (r *userRepo) AddUser(id, name, email, passwordHash string) error {
-	_, err := r.db.Exec(`
-		insert into users(id, name, email, password_hash, created_at, updated_at)
-		values($1, $2, $3, $4, $5, $5)`,
-		id, name, email, passwordHash, common.CurrentTimestamp())
-	return err
+	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+		_, err := tx.Exec(`
+			insert into users(id, name, email, password_hash, created_at, updated_at)
+			values($1, $2, $3, $4, $5, $5)`,
+			id, name, email, passwordHash, common.CurrentTimestamp())
+		if err != nil {
+			return err
+		}
+		if email != "" {
+			_, err = tx.Exec(`
+			update invites
+			set friend_id = $1
+			where friend_id is null and friend_email = $2`,
+				id, email)
+		}
+		return err
+	})
 }
 
 func (r *userRepo) UserCount() (int, error) {
