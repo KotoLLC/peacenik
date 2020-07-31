@@ -132,8 +132,19 @@ export const MessageSticky = styled.div`
 `
 
 export const EmptyMessage = styled.div`
+  display: flex;
+  position: absolute;
   text-align: center;
-  font-weight: bold;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  
+  a {
+    text-decoration: none;
+    /* font-size: 1.1em; */
+    /* color: #999; */
+    /* font-weight: 300; */
+  }
 `
 
 export const UpButton = styled(IconButton)`
