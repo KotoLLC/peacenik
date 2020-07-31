@@ -6,10 +6,10 @@ import { ApiTypes } from './../types'
 export function* watchSendConfirmLink() {
   const response = yield API.registration.sendConfirmLink()
   if (response.status === 200) {
-    yield put(Actions.notify.setSuccessNotify('Sent successfully, please check your mail.'))
+    yield put(Actions.common.setSuccessNotify('Sent successfully, please check your mail.'))
     yield put(Actions.registration.sendConfirmLinkSucces())
   } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
 
@@ -22,7 +22,7 @@ export function* watchConfirmUser(action: { type: string, payload: ApiTypes.Toke
     yield put(Actions.authorization.getAuthTokenRequest())
     yield put(Actions.authorization.loginSucces())
   } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
 

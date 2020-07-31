@@ -6,6 +6,7 @@ import Actions from '@store/actions'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import { TopMenu } from './TopMenu'
 import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive'
+import { history } from '@view/routes'
 import { 
   TooltipStyle, 
   IconButtonStyled, 
@@ -22,9 +23,8 @@ interface Props {
 const TopBar: React.SFC<Props> = React.memo((props) => {
 
   const onLogoutClick = () => {
-    localStorage.clear()
+    history.push('/login')    
     props.onLogout()
-    window.location.reload()
   }
 
   return (

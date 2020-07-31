@@ -1,13 +1,15 @@
 import { Types } from './actions'
 
 export interface State {
-  errorMessage: string,
-  successMessage: string,
+  errorMessage: string
+  successMessage: string
+  isPreloaderActive: boolean
 }
 
 const initialState: State = {
   errorMessage: '',
   successMessage: '',
+  isPreloaderActive: false,
 }
 
 const reducer = (state = initialState, action) => {
@@ -23,6 +25,13 @@ const reducer = (state = initialState, action) => {
       return {
         ...state, ...{
           successMessage: action.payload,
+        }
+      }
+    }
+    case Types.SET_PRELOADER_ACTIVE: {
+      return {
+        ...state, ...{
+          isPreloaderActive: action.payload,
         }
       }
     }

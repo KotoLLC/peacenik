@@ -10,7 +10,7 @@ export function* watchNodeCreate(action: { type: string, payload: ApiTypes.Nodes
   if (response.status === 200) {
     yield put(Actions.nodes.nodeCreateSucces())
   } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
 
@@ -20,7 +20,7 @@ export function* watchGetNodes() {
   if (response.status === 200) {
     yield put(Actions.nodes.getNodesSuccess(nodesListBack2Front(response?.data?.nodes)))
   } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
 
@@ -30,7 +30,7 @@ export function* watchApproveNode(action: {type: string, payload: ApiTypes.Nodes
   if (response.status === 200) {
     yield put(Actions.nodes.getNodesRequest())
   } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
 
@@ -40,6 +40,6 @@ export function* watchRemoveNode(action: {type: string, payload: ApiTypes.Nodes.
   if (response.status === 200) {
     yield put(Actions.nodes.getNodesRequest())
   } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }

@@ -7,6 +7,7 @@ import { CssBaseline } from '@material-ui/core'
 import { store } from '@store/store'
 import { Routes } from '@view/routes'
 import Notify from '@view/shared/Notify'
+import PreloaderFullScreen from '@view/shared/PreloaderFullScreen'
 import { StoreTypes } from './types'
 import selectors from '@selectors/index'
 import Actions from '@store/actions'
@@ -65,6 +66,7 @@ class AppComponent extends React.Component<Props> {
           <CssBaseline />
           <Routes />
           <Notify />
+          <PreloaderFullScreen />
         </ThemeProvider>
       </ErrorBoundary>
     )

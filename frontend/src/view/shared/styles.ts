@@ -121,3 +121,16 @@ export const NotificationsWrapper = styled(Link)`
 export const NotificationsCounter = styled.div`
   margin-left: 5px;
 `  
+
+export const PreloaderViewport = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 2000;
+  width: 100%;
+  height: 100vh;
+  background: #fff;
+`
