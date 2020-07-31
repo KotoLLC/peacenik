@@ -25,6 +25,7 @@ type NotificationRepo interface {
 	Counts(userID string) (total int, unread int, err error)
 	Notifications(userID string) ([]Notification, error)
 	Clean(userID string, lastKnownID string) error
+	MarkRead(userID string, lastKnownID string) error
 }
 
 type notificationRepo struct {
@@ -95,5 +96,14 @@ func (r *notificationRepo) Clean(userID string, lastKnownID string) error {
 		delete from notifications
 		where user_id = $1 and created_at <= (select created_at from notifications where user_id = $1 and id = $2)`,
 		userID, lastKnownID)
+	return err
+}
+
+func (r *notificationRepo) MarkRead(userID string, lastKnownID string) error {
+	_, err := r.db.Exec(`
+		update notifications
+		set read_at = $1
+		where user_id = $2 and read_at is null and created_at <= (select created_at from notifications where user_id = $2 and id = $3)`,
+		CurrentTimestamp(), userID, lastKnownID)
 	return err
 }

@@ -62,3 +62,12 @@ func (s *notificationService) Clean(ctx context.Context, r *rpc.NotificationClea
 	}
 	return &rpc.Empty{}, nil
 }
+
+func (s *notificationService) MarkRead(ctx context.Context, r *rpc.NotificationMarkReadRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+	err := s.repos.Notification.MarkRead(user.ID, r.LastKnownId)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+	return &rpc.Empty{}, nil
+}

@@ -9,6 +9,7 @@ service NotificationService {
     rpc Count (Empty) returns (NotificationCountResponse);
     rpc Notifications (Empty) returns (NotificationNotificationsResponse);
     rpc Clean (NotificationCleanRequest) returns (Empty);
+    rpc MarkRead (NotificationMarkReadRequest) returns (Empty);
 }
 
 message NotificationCountResponse {
@@ -21,5 +22,9 @@ message NotificationNotificationsResponse {
 }
 
 message NotificationCleanRequest {
+    string last_known_id = 1;
+}
+
+message NotificationMarkReadRequest {
     string last_known_id = 1;
 }

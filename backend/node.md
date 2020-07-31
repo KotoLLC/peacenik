@@ -149,10 +149,50 @@ Content-Type: application/json
 ```
 ### Get blob upload link
 POST http://localhost:12012/rpc.BlobService/UploadLink
+Authorization: Bearer AUTH-TOKEN
 Content-Type: application/json
 
 {
   "content_type": "image/png",
   "file_name": "image.png",
+}
+```
+
+## Notifications
+
+```
+### Notification counters (total, unread)
+POST http://localhost:12012/rpc.NotificationService/Count
+Authorization: Bearer AUTH-TOKEN
+Content-Type: application/json
+
+{}
+
+
+### Notifications
+POST http://localhost:12012/rpc.NotificationService/Notifications
+Authorization: Bearer AUTH-TOKEN
+Content-Type: application/json
+
+{}
+
+
+### Mark notifications as read
+POST http://localhost:12012/rpc.NotificationService/MarkRead
+Authorization: Bearer AUTH-TOKEN
+Content-Type: application/json
+
+{
+  "last_known_id": "LAST-KNOWN-NOTIFICATION-ID"
+}
+
+
+### Clean notifications
+POST http://localhost:12012/rpc.NotificationService/Clean
+Authorization: Bearer AUTH-TOKEN
+Content-Type: application/json
+
+{
+  "last_known_id": "LAST-KNOWN-NOTIFICATION-ID"
 }
 ```
