@@ -19,3 +19,12 @@ message Message {
 
     repeated Message comments = 10;
 }
+
+message Notification {
+    string id = 1;
+    string text = 2;
+    string type = 3;
+    string data = 4;
+    string created_at = 5;
+    string read_at = 6;
+}

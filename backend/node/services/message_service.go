@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"log"
 	"path/filepath"
 	"strings"
 	"time"
@@ -14,6 +15,7 @@ import (
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/node/repo"
 	"github.com/mreider/koto/backend/node/rpc"
+	"github.com/mreider/koto/backend/node/services/message"
 	"github.com/mreider/koto/backend/token"
 )
 
@@ -46,6 +48,12 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
 	}
 
+	rawFriendIDs := claims["friends"].([]interface{})
+	friends := make([]string, len(rawFriendIDs))
+	for i, rawID := range rawFriendIDs {
+		friends[i] = rawID.(string)
+	}
+
 	messageID, err := uuid.NewV4()
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
@@ -76,6 +84,33 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 	err = s.repos.Message.AddMessage("", msg)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
+	}
+
+	for _, friendID := range friends {
+		err = s.repos.Notification.AddNotification(friendID, msg.UserName+" posted a new message", "message/post", map[string]interface{}{
+			"user_id":    msg.UserID,
+			"message_id": msg.ID,
+		})
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	userTags := message.FindUserTags(msg.Text)
+	users, err := s.repos.User.FindUsersByName(userTags)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+	for _, u := range users {
+		if u.ID != msg.UserID {
+			err = s.repos.Notification.AddNotification(u.ID, msg.UserName+" tagged you in a message", "message/tag", map[string]interface{}{
+				"user_id":    msg.UserID,
+				"message_id": msg.ID,
+			})
+			if err != nil {
+				log.Println(err)
+			}
+		}
 	}
 
 	attachmentLink, err := s.createBlobLink(ctx, msg.AttachmentID)
@@ -146,29 +181,29 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 	messageIDs := make([]string, len(messages))
 	rpcMessages := make([]*rpc.Message, len(messages))
 	rpcMessageMap := make(map[string]*rpc.Message, len(messages))
-	for i, message := range messages {
-		messageIDs = append(messageIDs, message.ID)
-		attachmentLink, err := s.createBlobLink(ctx, message.AttachmentID)
+	for i, msg := range messages {
+		messageIDs = append(messageIDs, msg.ID)
+		attachmentLink, err := s.createBlobLink(ctx, msg.AttachmentID)
 		if err != nil {
 			return nil, twirp.InternalErrorWith(err)
 		}
-		attachmentThumbnailLink, err := s.createBlobLink(ctx, message.AttachmentThumbnailID)
+		attachmentThumbnailLink, err := s.createBlobLink(ctx, msg.AttachmentThumbnailID)
 		if err != nil {
 			return nil, twirp.InternalErrorWith(err)
 		}
 
 		rpcMessages[i] = &rpc.Message{
-			Id:                  message.ID,
-			UserId:              message.UserID,
-			UserName:            message.UserName,
-			Text:                message.Text,
+			Id:                  msg.ID,
+			UserId:              msg.UserID,
+			UserName:            msg.UserName,
+			Text:                msg.Text,
 			Attachment:          attachmentLink,
-			AttachmentType:      message.AttachmentType,
+			AttachmentType:      msg.AttachmentType,
 			AttachmentThumbnail: attachmentThumbnailLink,
-			CreatedAt:           common.TimeToRPCString(message.CreatedAt),
-			UpdatedAt:           common.TimeToRPCString(message.UpdatedAt),
+			CreatedAt:           common.TimeToRPCString(msg.CreatedAt),
+			UpdatedAt:           common.TimeToRPCString(msg.UpdatedAt),
 		}
-		rpcMessageMap[message.ID] = rpcMessages[i]
+		rpcMessageMap[msg.ID] = rpcMessages[i]
 	}
 
 	comments, err := s.repos.Message.Comments(messageIDs)
@@ -298,7 +333,7 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
 	}
 
-	message, err := s.repos.Message.Message(r.MessageId)
+	msg, err := s.repos.Message.Message(r.MessageId)
 	if err != nil {
 		if errors.Is(err, repo.ErrMessageNotFound) {
 			return nil, twirp.NotFoundError(err.Error())
@@ -310,7 +345,7 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 	found := false
 	for _, rawUserID := range rawUserIDs {
 		userID := rawUserID.(string)
-		if userID == message.UserID {
+		if userID == msg.UserID {
 			found = true
 			break
 		}
@@ -351,6 +386,35 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 	err = s.repos.Message.AddMessage(r.MessageId, comment)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
+	}
+
+	if user.ID != msg.UserID {
+		err = s.repos.Notification.AddNotification(msg.UserID, user.Name+" posted a new comment", "comment/post", map[string]interface{}{
+			"user_id":    user.ID,
+			"message_id": msg.ID,
+			"comment_id": comment.ID,
+		})
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	userTags := message.FindUserTags(comment.Text)
+	users, err := s.repos.User.FindUsersByName(userTags)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+	for _, u := range users {
+		if u.ID != comment.UserID {
+			err = s.repos.Notification.AddNotification(u.ID, comment.UserName+" tagged you in a comment", "comment/tag", map[string]interface{}{
+				"user_id":    comment.UserID,
+				"message_id": msg.ID,
+				"comment_id": comment.ID,
+			})
+			if err != nil {
+				log.Println(err)
+			}
+		}
 	}
 
 	attachmentLink, err := s.createBlobLink(ctx, comment.AttachmentID)
