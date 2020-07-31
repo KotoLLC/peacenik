@@ -15,8 +15,8 @@ type User struct {
 	Name              string       `json:"name" db:"name"`
 	Email             string       `json:"email,omitempty" db:"email"`
 	PasswordHash      string       `json:"-" db:"password_hash"`
-	AvatarOriginalID  string       `json:"avatar_original_id" db:"avatar_original_id"`
-	AvatarThumbnailID string       `json:"avatar_thumbnail_id" db:"avatar_thumbnail_id"`
+	AvatarOriginalID  string       `json:"avatar_original_id,omitempty" db:"avatar_original_id"`
+	AvatarThumbnailID string       `json:"avatar_thumbnail_id,omitempty" db:"avatar_thumbnail_id"`
 	CreatedAt         time.Time    `json:"created_at,omitempty" db:"created_at"`
 	UpdatedAt         time.Time    `json:"updated_at,omitempty" db:"updated_at"`
 	ConfirmedAt       sql.NullTime `json:"confirmed_at,omitempty" db:"confirmed_at"`

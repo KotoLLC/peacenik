@@ -53,7 +53,9 @@ func main() {
 
 	tokenParser := token.NewParser(centralPublicKey)
 	repos := repo.Repos{
-		Message: repo.NewMessages(db),
+		Message:      repo.NewMessages(db),
+		Notification: common.NewNotifications(db),
+		User:         repo.NewUsers(db),
 	}
 
 	s3Cleaner := common.NewS3Cleaner(db, s3Storage)

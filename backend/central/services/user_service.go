@@ -34,7 +34,7 @@ func NewUser(base *BaseService, passwordHash PasswordHash) rpc.UserService {
 
 func (s *userService) Friends(ctx context.Context, _ *rpc.Empty) (*rpc.UserFriendsResponse, error) {
 	user := s.getUser(ctx)
-	friendMap, err := s.repos.Friend.Friends(user)
+	friendMap, err := s.repos.Friend.FriendsWithSubFriends(user)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
