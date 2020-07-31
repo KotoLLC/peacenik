@@ -144,6 +144,49 @@ Content-Type: application/json
 }
 ```
 
+## Likes
+
+```
+### Like a message
+POST http://localhost:12012/rpc.MessageService/LikeMessage
+Authorization: Bearer AUTH-TOKEN
+Content-Type: application/json
+
+{
+  "message_id": "MESSAGE-ID"
+}
+
+
+### Like a comment
+POST http://localhost:12012/rpc.MessageService/LikeComment
+Authorization: Bearer AUTH-TOKEN
+Content-Type: application/json
+
+{
+  "comment_id": "COMMENT-ID"
+}
+
+### Message likes
+POST http://localhost:12012/rpc.MessageService/MessageLikes
+Authorization: Bearer AUTH-TOKEN
+Content-Type: application/json
+
+{
+  "message_id": "MESSAGE-ID"
+}
+
+
+### Comment likes
+POST http://localhost:12012/rpc.MessageService/CommentLikes
+Authorization: Bearer AUTH-TOKEN
+Content-Type: application/json
+
+{
+  "comment_id": "COMMENT-ID"
+}
+
+```
+
 ## Blobs
 
 ```

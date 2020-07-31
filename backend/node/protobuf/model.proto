@@ -16,8 +16,9 @@ message Message {
     string attachment_thumbnail = 7;
     string created_at = 8;
     string updated_at = 9;
+    int32 likes = 10;
 
-    repeated Message comments = 10;
+    repeated Message comments = 11;
 }
 
 message Notification {
