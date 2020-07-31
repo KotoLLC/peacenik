@@ -5,7 +5,8 @@ import (
 )
 
 type FriendRepo interface {
-	Friends(user User) (map[User][]User, error)
+	Friends(user User) ([]User, error)
+	FriendsWithSubFriends(user User) (map[User][]User, error)
 	FriendsOfFriends(user User) (map[User][]User, error)
 }
 
@@ -19,7 +20,23 @@ func NewFriends(db *sqlx.DB) FriendRepo {
 	}
 }
 
-func (r *friendRepo) Friends(user User) (map[User][]User, error) {
+func (r *friendRepo) Friends(user User) ([]User, error) {
+	var friends []User
+	err := r.db.Select(&friends, `
+		select id, name, avatar_thumbnail_id
+		from users
+		where id in (
+			select friend_id
+			from friends
+			where user_id = $1)`,
+		user.ID)
+	if err != nil {
+		return nil, err
+	}
+	return friends, nil
+}
+
+func (r *friendRepo) FriendsWithSubFriends(user User) (map[User][]User, error) {
 	result := make(map[User][]User)
 
 	var items []struct {

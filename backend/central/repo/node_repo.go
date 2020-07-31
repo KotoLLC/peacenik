@@ -3,7 +3,6 @@ package repo
 import (
 	"database/sql"
 	"errors"
-	"sort"
 	"time"
 
 	"github.com/gofrs/uuid"
@@ -38,7 +37,7 @@ type NodeRepo interface {
 	Node(nodeID string) (*Node, error)
 	ApproveNode(nodeID string) error
 	RemoveNode(nodeID string) error
-	ConnectedNodes(user User) ([]UserNode, []string, error)
+	ConnectedNodes(user User) ([]UserNode, error)
 }
 
 type nodeRepo struct {
@@ -138,7 +137,7 @@ func (r *nodeRepo) RemoveNode(nodeID string) error {
 	return err
 }
 
-func (r *nodeRepo) ConnectedNodes(user User) (userNodes []UserNode, userIDs []string, err error) {
+func (r *nodeRepo) ConnectedNodes(user User) (userNodes []UserNode, err error) {
 	type friend struct {
 		MinDistance int
 		Count       int
@@ -161,12 +160,12 @@ func (r *nodeRepo) ConnectedNodes(user User) (userNodes []UserNode, userIDs []st
 			where user_id in (?)`,
 			currentLevel)
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 		query = r.db.Rebind(query)
 		err = r.db.Select(&nextPairs, query, args...)
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 
 		currentLevel = currentLevel[:0]
@@ -187,19 +186,13 @@ func (r *nodeRepo) ConnectedNodes(user User) (userNodes []UserNode, userIDs []st
 		}
 	}
 
-	userIDs = make([]string, 0, len(friends))
-	for friendID := range friends {
-		userIDs = append(userIDs, friendID)
-	}
-	sort.Strings(userIDs)
-
 	var nodes []Node
 	err = r.db.Select(&nodes, `
 		select id, address, admin_id, created_at, approved_at, disabled_at, details
 		from nodes
 		where approved_at is not null and disabled_at is null`)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	userNodes = make([]UserNode, 0, 10)
@@ -213,5 +206,5 @@ func (r *nodeRepo) ConnectedNodes(user User) (userNodes []UserNode, userIDs []st
 		}
 	}
 
-	return userNodes, userIDs, nil
+	return userNodes, nil
 }

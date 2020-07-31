@@ -50,6 +50,10 @@ func (s *Server) Run() error {
 	blobServiceHandler := rpc.NewBlobServiceServer(blobService, rpcHooks)
 	r.Handle(blobServiceHandler.PathPrefix()+"*", s.checkAuth(blobServiceHandler))
 
+	notificationService := services.NewNotification(baseService)
+	notificationServiceHandler := rpc.NewNotificationServiceServer(notificationService, rpcHooks)
+	r.Handle(notificationServiceHandler.PathPrefix()+"*", s.checkAuth(notificationServiceHandler))
+
 	log.Println("started on " + s.cfg.ListenAddress)
 	return http.ListenAndServe(s.cfg.ListenAddress, r)
 }
@@ -59,6 +63,7 @@ func (s *Server) setupMiddlewares(r *chi.Mux) {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(middleware.Compress(5))
 
 	corsOptions := cors.Options{
 		AllowOriginFunc: func(r *http.Request, origin string) bool {
@@ -87,6 +92,12 @@ func (s *Server) checkAuth(next http.Handler) http.Handler {
 
 		userID := claims["id"].(string)
 		userName, _ := claims["name"].(string)
+
+		err = s.repos.User.AddUser(userID, userName)
+		if err != nil {
+			log.Println(err)
+		}
+
 		ctx := context.WithValue(r.Context(), services.ContextUserKey, services.User{ID: userID, Name: userName})
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

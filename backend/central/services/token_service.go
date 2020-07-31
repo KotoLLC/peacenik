@@ -41,7 +41,7 @@ func (s *tokenService) Auth(ctx context.Context, _ *rpc.Empty) (*rpc.TokenAuthRe
 func (s *tokenService) PostMessage(ctx context.Context, _ *rpc.Empty) (*rpc.TokenPostMessageResponse, error) {
 	user := s.getUser(ctx)
 
-	nodes, _, err := s.repos.Node.ConnectedNodes(user)
+	nodes, err := s.repos.Node.ConnectedNodes(user)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
@@ -65,10 +65,25 @@ func (s *tokenService) PostMessage(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 		nodes = nodes[:1]
 	}
 
+	friends, err := s.repos.Friend.Friends(user)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+	friendIDs := make([]string, len(friends))
+	for i, friend := range friends {
+		friendIDs[i] = friend.ID
+	}
+	sort.Slice(friendIDs, func(i, j int) bool {
+		return friendIDs[i] < friendIDs[j]
+	})
+
 	tokens := make(map[string]string)
 	exp := time.Now().Add(s.tokenDuration)
 	for _, node := range nodes {
-		claims := map[string]interface{}{"node": node.Node.Address}
+		claims := map[string]interface{}{
+			"node":    node.Node.Address,
+			"friends": friendIDs,
+		}
 		nodeToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "post-message", exp, claims)
 		if err != nil {
 			return nil, err
@@ -83,12 +98,26 @@ func (s *tokenService) PostMessage(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 func (s *tokenService) GetMessages(ctx context.Context, _ *rpc.Empty) (*rpc.TokenGetMessagesResponse, error) {
 	user := s.getUser(ctx)
 
-	nodes, userIDs, err := s.repos.Node.ConnectedNodes(user)
+	nodes, err := s.repos.Node.ConnectedNodes(user)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
 	tokens := make(map[string]string)
 	exp := time.Now().Add(s.tokenDuration)
+
+	friends, err := s.repos.Friend.Friends(user)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+	userIDs := make([]string, len(friends)+1)
+	userIDs[0] = user.ID
+	for i, u := range friends {
+		userIDs[i+1] = u.ID
+	}
+	sort.Slice(userIDs, func(i, j int) bool {
+		return userIDs[i] < userIDs[j]
+	})
+
 	for _, node := range nodes {
 		claims := map[string]interface{}{
 			"node":  node.Node.Address,
