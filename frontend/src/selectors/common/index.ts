@@ -4,7 +4,14 @@ import isEqual from 'lodash.isequal'
 
 export const selector = createSelector((s: StoreTypes) => s, s => s)
 
+const common = createSelector(selector, data => data.common)
+const isPreloaderActive = createSelector(common, data => data.isPreloaderActive)
+
 export const deepEqualSelector = createSelectorCreator(
     defaultMemoize,
     isEqual
 )
+
+export default {
+    isPreloaderActive,
+}

@@ -29,7 +29,6 @@ export const ConfirmUser: React.SFC<Props> = React.memo((props) => {
   const {isEmailConfirmed, isLogged, history} = props
   
   const onLogoutClick = () => {
-    localStorage.clear()
     props.onLogout()
   }
 

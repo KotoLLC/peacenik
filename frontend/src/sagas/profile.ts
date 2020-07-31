@@ -14,7 +14,7 @@ export function* watchGetProfile() {
     }
     
   } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
 
@@ -24,7 +24,7 @@ export function* watchGetUploadLink(action: { type: string, payload: string }) {
   if (response.status === 200) {
     yield put(Actions.profile.getUploadLinkSucces(response.data))
   } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
 
@@ -34,7 +34,7 @@ export function* watchSetAvatar(action: { type: string, payload: ApiTypes.Profil
   if (response.status === 204 || response.status === 200) {
     yield put(Actions.profile.setAvatarSuccess())
   } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
 
@@ -43,8 +43,8 @@ export function* watchEditProfile(action: { type: string, payload: ApiTypes.Prof
 
   if (response.status === 200) {
     yield put(Actions.profile.getProfileRequest())
-    yield put(Actions.notify.setSuccessNotify('Changes have been saved'))
+    yield put(Actions.common.setSuccessNotify('Changes have been saved'))
   } else {
-    yield put(Actions.notify.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }

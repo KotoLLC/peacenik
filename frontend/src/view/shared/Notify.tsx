@@ -25,7 +25,7 @@ class Notify extends React.PureComponent<Props> {
     if (!modalRoot) return false
 
     return ReactDOM.createPortal((
-        <Notifications options={{zIndex: 1000, top: (isEmailConfirmed) ? '64px' : '0px'}} />
+        <Notifications options={{zIndex: 3000, top: (isEmailConfirmed) ? '64px' : '0px'}} />
     ), modalRoot)
   }
 
@@ -59,14 +59,14 @@ class Notify extends React.PureComponent<Props> {
 type StateProps = Pick<Props, 'errorMessage' | 'successMessage' | 'isEmailConfirmed'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   isEmailConfirmed: selectors.profile.isEmailConfirmed(state) || false,
-  errorMessage: state.notify.errorMessage,
-  successMessage: state.notify.successMessage,
+  errorMessage: state.common.errorMessage,
+  successMessage: state.common.successMessage,
 })
 
 type DispatchProps = Pick<Props, 'setErrorNotify' | 'setSuccessNotify'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-    setErrorNotify: (value: string) => dispatch(Actions.notify.setErrorNotify(value)),
-    setSuccessNotify: (value: string) => dispatch(Actions.notify.setSuccessNotify(value)),
+    setErrorNotify: (value: string) => dispatch(Actions.common.setErrorNotify(value)),
+    setSuccessNotify: (value: string) => dispatch(Actions.common.setSuccessNotify(value)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Notify)
