@@ -6,10 +6,11 @@ import Actions from '@store/actions'
 import selectors from '@selectors/index'
 import { Link } from 'react-router-dom'
 import { StoreTypes, ApiTypes, NodeTypes } from './../../../types'
+import Button from '@material-ui/core/Button'
 import {
   ContainerStyled,
   EmptyMessage,
-  UpButton
+  UpButton,
 } from './styles'
 import { sortByDate } from '@services/sortByDate'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
@@ -27,7 +28,7 @@ interface Props {
 class MessageFeed extends React.Component<Props> {
 
   timerId
-  
+
   editorRef = React.createRef<HTMLDivElement>()
 
   componentDidMount() {
@@ -54,16 +55,32 @@ class MessageFeed extends React.Component<Props> {
   onScrollUp = () => {
     this.editorRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
   }
-    
-  render() {
+
+  checkCurrentNode = () => {
     const { currentNode, messages } = this.props
 
+    if (currentNode.host) {
+      return (
+        <>
+          <div ref={this.editorRef}><Editor /></div>
+          {this.mapMessages(messages)}
+        </>
+      )
+    } else {
+      return (
+        <EmptyMessage>
+          <Link to="/about-us">
+            <Button variant="outlined" >View our presentation</Button>
+          </Link>
+        </EmptyMessage>
+      )
+    }
+  }
+
+  render() {
     return (
       <ContainerStyled maxWidth="md">
-        {(currentNode.host)
-          ? <div ref={this.editorRef}><Editor /></div>
-          : <EmptyMessage>To send messages you need to <Link to="/nodes/create">register the node</Link></EmptyMessage>}
-        {this.mapMessages(messages)}
+        {this.checkCurrentNode()}
         <UpButton color="inherit" onClick={this.onScrollUp}>
           <ArrowUpwardIcon />
         </UpButton>
