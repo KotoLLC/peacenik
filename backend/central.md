@@ -290,6 +290,15 @@ Content-Type: application/json
 {}
 
 
+### Mark notifications as read
+POST http://localhost:12001/rpc.NotificationService/MarkRead
+Content-Type: application/json
+
+{
+  "last_known_id": "LAST-KNOWN-NOTIFICATION-ID"
+}
+
+
 ### Clean notifications
 POST http://localhost:12001/rpc.NotificationService/Clean
 Content-Type: application/json

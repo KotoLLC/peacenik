@@ -849,7 +849,7 @@ func (s *notificationServiceServer) serveMarkReadProtobuf(ctx context.Context, r
 }
 
 func (s *notificationServiceServer) ServiceDescriptor() ([]byte, int) {
-	return twirpFileDescriptor5, 0
+	return twirpFileDescriptor2, 0
 }
 
 func (s *notificationServiceServer) ProtocGenTwirpVersion() string {
@@ -860,7 +860,7 @@ func (s *notificationServiceServer) PathPrefix() string {
 	return NotificationServicePathPrefix
 }
 
-var twirpFileDescriptor5 = []byte{
+var twirpFileDescriptor2 = []byte{
 	// 298 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x92, 0xc1, 0x4b, 0xf4, 0x30,
 	0x10, 0xc5, 0xe9, 0xb7, 0xb4, 0xec, 0x37, 0xa5, 0x07, 0xa3, 0x48, 0xad, 0x28, 0xb5, 0x07, 0xd9,
