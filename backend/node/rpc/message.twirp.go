@@ -34,6 +34,14 @@ type MessageService interface {
 	EditComment(context.Context, *MessageEditCommentRequest) (*MessageEditCommentResponse, error)
 
 	DeleteComment(context.Context, *MessageDeleteCommentRequest) (*Empty, error)
+
+	LikeMessage(context.Context, *MessageLikeMessageRequest) (*MessageLikeMessageResponse, error)
+
+	LikeComment(context.Context, *MessageLikeCommentRequest) (*MessageLikeCommentResponse, error)
+
+	MessageLikes(context.Context, *MessageMessageLikesRequest) (*MessageMessageLikesResponse, error)
+
+	CommentLikes(context.Context, *MessageCommentLikesRequest) (*MessageCommentLikesResponse, error)
 }
 
 // ==============================
@@ -42,7 +50,7 @@ type MessageService interface {
 
 type messageServiceProtobufClient struct {
 	client HTTPClient
-	urls   [7]string
+	urls   [11]string
 	opts   twirp.ClientOptions
 }
 
@@ -59,7 +67,7 @@ func NewMessageServiceProtobufClient(addr string, client HTTPClient, opts ...twi
 	}
 
 	prefix := urlBase(addr) + MessageServicePathPrefix
-	urls := [7]string{
+	urls := [11]string{
 		prefix + "Messages",
 		prefix + "Post",
 		prefix + "Edit",
@@ -67,6 +75,10 @@ func NewMessageServiceProtobufClient(addr string, client HTTPClient, opts ...twi
 		prefix + "PostComment",
 		prefix + "EditComment",
 		prefix + "DeleteComment",
+		prefix + "LikeMessage",
+		prefix + "LikeComment",
+		prefix + "MessageLikes",
+		prefix + "CommentLikes",
 	}
 
 	return &messageServiceProtobufClient{
@@ -216,13 +228,93 @@ func (c *messageServiceProtobufClient) DeleteComment(ctx context.Context, in *Me
 	return out, nil
 }
 
+func (c *messageServiceProtobufClient) LikeMessage(ctx context.Context, in *MessageLikeMessageRequest) (*MessageLikeMessageResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "MessageService")
+	ctx = ctxsetters.WithMethodName(ctx, "LikeMessage")
+	out := new(MessageLikeMessageResponse)
+	err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[7], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *messageServiceProtobufClient) LikeComment(ctx context.Context, in *MessageLikeCommentRequest) (*MessageLikeCommentResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "MessageService")
+	ctx = ctxsetters.WithMethodName(ctx, "LikeComment")
+	out := new(MessageLikeCommentResponse)
+	err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[8], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *messageServiceProtobufClient) MessageLikes(ctx context.Context, in *MessageMessageLikesRequest) (*MessageMessageLikesResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "MessageService")
+	ctx = ctxsetters.WithMethodName(ctx, "MessageLikes")
+	out := new(MessageMessageLikesResponse)
+	err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[9], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *messageServiceProtobufClient) CommentLikes(ctx context.Context, in *MessageCommentLikesRequest) (*MessageCommentLikesResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "MessageService")
+	ctx = ctxsetters.WithMethodName(ctx, "CommentLikes")
+	out := new(MessageCommentLikesResponse)
+	err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[10], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
 // ==========================
 // MessageService JSON Client
 // ==========================
 
 type messageServiceJSONClient struct {
 	client HTTPClient
-	urls   [7]string
+	urls   [11]string
 	opts   twirp.ClientOptions
 }
 
@@ -239,7 +331,7 @@ func NewMessageServiceJSONClient(addr string, client HTTPClient, opts ...twirp.C
 	}
 
 	prefix := urlBase(addr) + MessageServicePathPrefix
-	urls := [7]string{
+	urls := [11]string{
 		prefix + "Messages",
 		prefix + "Post",
 		prefix + "Edit",
@@ -247,6 +339,10 @@ func NewMessageServiceJSONClient(addr string, client HTTPClient, opts ...twirp.C
 		prefix + "PostComment",
 		prefix + "EditComment",
 		prefix + "DeleteComment",
+		prefix + "LikeMessage",
+		prefix + "LikeComment",
+		prefix + "MessageLikes",
+		prefix + "CommentLikes",
 	}
 
 	return &messageServiceJSONClient{
@@ -396,6 +492,86 @@ func (c *messageServiceJSONClient) DeleteComment(ctx context.Context, in *Messag
 	return out, nil
 }
 
+func (c *messageServiceJSONClient) LikeMessage(ctx context.Context, in *MessageLikeMessageRequest) (*MessageLikeMessageResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "MessageService")
+	ctx = ctxsetters.WithMethodName(ctx, "LikeMessage")
+	out := new(MessageLikeMessageResponse)
+	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[7], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *messageServiceJSONClient) LikeComment(ctx context.Context, in *MessageLikeCommentRequest) (*MessageLikeCommentResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "MessageService")
+	ctx = ctxsetters.WithMethodName(ctx, "LikeComment")
+	out := new(MessageLikeCommentResponse)
+	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[8], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *messageServiceJSONClient) MessageLikes(ctx context.Context, in *MessageMessageLikesRequest) (*MessageMessageLikesResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "MessageService")
+	ctx = ctxsetters.WithMethodName(ctx, "MessageLikes")
+	out := new(MessageMessageLikesResponse)
+	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[9], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *messageServiceJSONClient) CommentLikes(ctx context.Context, in *MessageCommentLikesRequest) (*MessageCommentLikesResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "MessageService")
+	ctx = ctxsetters.WithMethodName(ctx, "CommentLikes")
+	out := new(MessageCommentLikesResponse)
+	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[10], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
 // =============================
 // MessageService Server Handler
 // =============================
@@ -464,6 +640,18 @@ func (s *messageServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 		return
 	case "/rpc.MessageService/DeleteComment":
 		s.serveDeleteComment(ctx, resp, req)
+		return
+	case "/rpc.MessageService/LikeMessage":
+		s.serveLikeMessage(ctx, resp, req)
+		return
+	case "/rpc.MessageService/LikeComment":
+		s.serveLikeComment(ctx, resp, req)
+		return
+	case "/rpc.MessageService/MessageLikes":
+		s.serveMessageLikes(ctx, resp, req)
+		return
+	case "/rpc.MessageService/CommentLikes":
+		s.serveCommentLikes(ctx, resp, req)
 		return
 	default:
 		msg := fmt.Sprintf("no handler for path %q", req.URL.Path)
@@ -1376,6 +1564,522 @@ func (s *messageServiceServer) serveDeleteCommentProtobuf(ctx context.Context, r
 	callResponseSent(ctx, s.hooks)
 }
 
+func (s *messageServiceServer) serveLikeMessage(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveLikeMessageJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveLikeMessageProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *messageServiceServer) serveLikeMessageJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "LikeMessage")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(MessageLikeMessageRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *MessageLikeMessageResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.MessageService.LikeMessage(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *MessageLikeMessageResponse and nil error while calling LikeMessage. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *messageServiceServer) serveLikeMessageProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "LikeMessage")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(MessageLikeMessageRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *MessageLikeMessageResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.MessageService.LikeMessage(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *MessageLikeMessageResponse and nil error while calling LikeMessage. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *messageServiceServer) serveLikeComment(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveLikeCommentJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveLikeCommentProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *messageServiceServer) serveLikeCommentJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "LikeComment")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(MessageLikeCommentRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *MessageLikeCommentResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.MessageService.LikeComment(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *MessageLikeCommentResponse and nil error while calling LikeComment. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *messageServiceServer) serveLikeCommentProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "LikeComment")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(MessageLikeCommentRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *MessageLikeCommentResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.MessageService.LikeComment(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *MessageLikeCommentResponse and nil error while calling LikeComment. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *messageServiceServer) serveMessageLikes(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveMessageLikesJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveMessageLikesProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *messageServiceServer) serveMessageLikesJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "MessageLikes")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(MessageMessageLikesRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *MessageMessageLikesResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.MessageService.MessageLikes(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *MessageMessageLikesResponse and nil error while calling MessageLikes. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *messageServiceServer) serveMessageLikesProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "MessageLikes")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(MessageMessageLikesRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *MessageMessageLikesResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.MessageService.MessageLikes(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *MessageMessageLikesResponse and nil error while calling MessageLikes. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *messageServiceServer) serveCommentLikes(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveCommentLikesJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveCommentLikesProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *messageServiceServer) serveCommentLikesJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CommentLikes")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(MessageCommentLikesRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *MessageCommentLikesResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.MessageService.CommentLikes(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *MessageCommentLikesResponse and nil error while calling CommentLikes. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *messageServiceServer) serveCommentLikesProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CommentLikes")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(MessageCommentLikesRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *MessageCommentLikesResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.MessageService.CommentLikes(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *MessageCommentLikesResponse and nil error while calling CommentLikes. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
 func (s *messageServiceServer) ServiceDescriptor() ([]byte, int) {
 	return twirpFileDescriptor1, 0
 }
@@ -1389,38 +2093,49 @@ func (s *messageServiceServer) PathPrefix() string {
 }
 
 var twirpFileDescriptor1 = []byte{
-	// 520 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x55, 0xcb, 0x6e, 0xd3, 0x40,
-	0x14, 0x95, 0xeb, 0x34, 0xa4, 0xd7, 0x09, 0x12, 0x97, 0x8a, 0xba, 0x2e, 0x85, 0x60, 0x24, 0x94,
-	0x0d, 0xae, 0x54, 0xc4, 0x02, 0x89, 0x6e, 0x48, 0xb3, 0xe8, 0x82, 0x0a, 0x85, 0x0d, 0x62, 0x53,
-	0x05, 0x7b, 0x68, 0x23, 0xe2, 0x07, 0x9e, 0x29, 0x82, 0x4f, 0xe0, 0xa7, 0xd8, 0xf1, 0x19, 0xfc,
-	0x0b, 0x9a, 0x99, 0xeb, 0x78, 0xc6, 0x36, 0x85, 0xec, 0x58, 0xc5, 0x73, 0xee, 0x63, 0xce, 0x39,
-	0x73, 0x67, 0x02, 0xa3, 0x94, 0x71, 0xbe, 0xb8, 0x64, 0x51, 0x51, 0xe6, 0x22, 0x47, 0xb7, 0x2c,
-	0xe2, 0xc0, 0x4b, 0xf3, 0x84, 0xad, 0x34, 0x12, 0xbe, 0x83, 0x7b, 0xaf, 0x75, 0x0a, 0xfd, 0xf0,
-	0x39, 0xfb, 0x7c, 0xcd, 0xb8, 0xc0, 0x5d, 0xd8, 0x16, 0xf9, 0x27, 0x96, 0xf9, 0xce, 0xd8, 0x99,
-	0xec, 0xcc, 0xf5, 0x02, 0x11, 0x7a, 0x1f, 0xcb, 0x3c, 0xf5, 0xb7, 0x14, 0xa8, 0xbe, 0x65, 0xe6,
-	0x75, 0x26, 0x96, 0x2b, 0xdf, 0xd5, 0x99, 0x6a, 0x11, 0x4e, 0x61, 0xaf, 0xd5, 0x99, 0x17, 0x79,
-	0xc6, 0x19, 0x4e, 0x60, 0x40, 0xbc, 0xb8, 0xef, 0x8c, 0xdd, 0x89, 0x77, 0x3c, 0x8c, 0xca, 0x22,
-	0x8e, 0x28, 0x71, 0xbe, 0x8e, 0x86, 0x31, 0x20, 0x81, 0x6f, 0x72, 0x2e, 0xfe, 0x4a, 0x4d, 0xb0,
-	0xaf, 0xa2, 0xa2, 0x26, 0xbf, 0xf1, 0x31, 0x8c, 0x16, 0x42, 0x2c, 0xe2, 0xab, 0x94, 0x65, 0xe2,
-	0x62, 0x99, 0x10, 0xc5, 0x61, 0x0d, 0x9e, 0x25, 0xe1, 0x09, 0xdc, 0xb5, 0x36, 0x21, 0x96, 0x4f,
-	0xe0, 0x16, 0xf1, 0x50, 0xfb, 0x34, 0x49, 0x56, 0xc1, 0xf0, 0x87, 0xb3, 0x26, 0x39, 0x4b, 0x96,
-	0x6b, 0x92, 0x87, 0x00, 0x94, 0x21, 0xf7, 0xd5, 0x4c, 0x77, 0x08, 0x39, 0x4b, 0xf0, 0x11, 0x0c,
-	0x25, 0xc3, 0x8b, 0xf8, 0x6a, 0x91, 0x5d, 0xb2, 0x44, 0xb1, 0x1e, 0xcc, 0x3d, 0x89, 0x4d, 0x35,
-	0xb4, 0x16, 0xe4, 0x1a, 0x82, 0x9e, 0x02, 0x1a, 0x82, 0xaa, 0xe2, 0x9e, 0x2a, 0xbe, 0x53, 0x47,
-	0xaa, 0x16, 0x2d, 0xfd, 0xdb, 0x37, 0xea, 0xd7, 0xfc, 0x37, 0xd4, 0xff, 0x1c, 0x76, 0x09, 0x3b,
-	0x65, 0x2b, 0x26, 0xd8, 0xbf, 0x19, 0x10, 0x7e, 0x77, 0x60, 0xdf, 0xb0, 0x7d, 0x9a, 0xa7, 0x92,
-	0xce, 0xcd, 0x47, 0x6c, 0xb7, 0xdc, 0x6a, 0x7a, 0xda, 0x65, 0x58, 0xcb, 0x81, 0x5e, 0x87, 0x03,
-	0xa7, 0x10, 0x74, 0x51, 0xa9, 0x8d, 0x88, 0x35, 0xd4, 0x6d, 0x04, 0x05, 0xc3, 0x9f, 0xb5, 0x22,
-	0x69, 0x64, 0x43, 0xd1, 0x21, 0x00, 0x25, 0x1a, 0x76, 0x10, 0xf2, 0x7f, 0xcd, 0x43, 0xed, 0x86,
-	0x25, 0x63, 0x43, 0x37, 0x5e, 0xc2, 0x81, 0x35, 0x16, 0x1b, 0xd9, 0x71, 0xfc, 0xcb, 0x85, 0xdb,
-	0x54, 0xfe, 0x96, 0x95, 0x5f, 0x96, 0x31, 0xc3, 0x19, 0x0c, 0xaa, 0x97, 0x04, 0x0f, 0xcc, 0x3d,
-	0x1b, 0x2f, 0x57, 0x70, 0xbf, 0x3b, 0x48, 0xfc, 0x5f, 0x40, 0x4f, 0x1e, 0x32, 0xee, 0x99, 0x59,
-	0xc6, 0xeb, 0x12, 0xf8, 0xed, 0x40, 0x5d, 0x2a, 0x1d, 0xb1, 0x4b, 0x8d, 0x3b, 0x6f, 0x97, 0x5a,
-	0x97, 0xe9, 0x08, 0xfa, 0xda, 0x06, 0xdc, 0x37, 0x73, 0xac, 0x1b, 0x13, 0x80, 0x0a, 0xcd, 0xd2,
-	0x42, 0x7c, 0xc3, 0x73, 0xf0, 0x8c, 0x59, 0xc4, 0x07, 0x4d, 0x52, 0xb6, 0x9d, 0xc1, 0xc3, 0x3f,
-	0xc6, 0x89, 0xc0, 0x39, 0x78, 0xc6, 0x69, 0xda, 0xfd, 0xda, 0xd3, 0x6a, 0xf7, 0xeb, 0x1a, 0x83,
-	0x13, 0x18, 0x59, 0xe7, 0x8a, 0xe3, 0xb6, 0xae, 0x46, 0x4f, 0x43, 0xde, 0xab, 0xc1, 0xfb, 0x7e,
-	0x14, 0x1d, 0x95, 0x45, 0xfc, 0xa1, 0xaf, 0xfe, 0x88, 0x9e, 0xfd, 0x0e, 0x00, 0x00, 0xff, 0xff,
-	0x84, 0x3d, 0x10, 0xf6, 0xab, 0x06, 0x00, 0x00,
+	// 689 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x56, 0xcb, 0x6e, 0xd3, 0x4c,
+	0x14, 0x96, 0x9b, 0x6b, 0x8f, 0x93, 0x5f, 0x3f, 0x43, 0x44, 0x12, 0x97, 0xd2, 0x60, 0x24, 0x94,
+	0x0d, 0xa9, 0x14, 0xc4, 0x82, 0x4b, 0x17, 0x90, 0x66, 0x11, 0x09, 0x2a, 0x08, 0x1b, 0xc4, 0x26,
+	0x04, 0x7b, 0x68, 0xad, 0xc4, 0xb1, 0xb1, 0x27, 0x08, 0x1e, 0x81, 0xe7, 0xe0, 0x3d, 0xd8, 0xf1,
+	0x5e, 0x68, 0xec, 0xb1, 0xe7, 0xe2, 0x69, 0x1a, 0xef, 0x58, 0x35, 0x73, 0x6e, 0xf3, 0x9d, 0xcf,
+	0xe7, 0x7c, 0x53, 0x68, 0xfb, 0x38, 0x8e, 0x97, 0x97, 0x78, 0x14, 0x46, 0x01, 0x09, 0x50, 0x25,
+	0x0a, 0x1d, 0xcb, 0xf4, 0x03, 0x17, 0xaf, 0x53, 0x8b, 0xfd, 0x01, 0xee, 0xbc, 0x49, 0x43, 0xd8,
+	0x9f, 0x78, 0x8e, 0xbf, 0x6e, 0x71, 0x4c, 0x50, 0x07, 0x6a, 0x24, 0x58, 0xe1, 0x4d, 0xcf, 0x18,
+	0x18, 0xc3, 0xc3, 0x79, 0x7a, 0x40, 0x08, 0xaa, 0x5f, 0xa2, 0xc0, 0xef, 0x1d, 0x24, 0xc6, 0xe4,
+	0x37, 0x8d, 0xdc, 0x6e, 0x88, 0xb7, 0xee, 0x55, 0xd2, 0xc8, 0xe4, 0x60, 0x4f, 0xa0, 0x5b, 0xa8,
+	0x1c, 0x87, 0xc1, 0x26, 0xc6, 0x68, 0x08, 0x4d, 0x86, 0x2b, 0xee, 0x19, 0x83, 0xca, 0xd0, 0x1c,
+	0xb7, 0x46, 0x51, 0xe8, 0x8c, 0x58, 0xe0, 0x3c, 0xf7, 0xda, 0x0e, 0x20, 0x66, 0x7c, 0x1b, 0xc4,
+	0xe4, 0x46, 0x68, 0x04, 0x7f, 0x27, 0x19, 0x34, 0xfa, 0x1b, 0x3d, 0x80, 0xf6, 0x92, 0x90, 0xa5,
+	0x73, 0xe5, 0xe3, 0x0d, 0x59, 0x78, 0x2e, 0x83, 0xd8, 0xe2, 0xc6, 0x99, 0x6b, 0x9f, 0xc1, 0x6d,
+	0xe9, 0x12, 0x86, 0xf2, 0x21, 0x34, 0x18, 0x8e, 0xe4, 0x1e, 0x15, 0x64, 0xe6, 0xb4, 0x7f, 0x1b,
+	0x39, 0xc8, 0xa9, 0xeb, 0xe5, 0x20, 0x8f, 0x01, 0x58, 0x04, 0xbd, 0x37, 0x45, 0x7a, 0xc8, 0x2c,
+	0x33, 0x17, 0xdd, 0x87, 0x16, 0x45, 0xb8, 0x70, 0xae, 0x96, 0x9b, 0x4b, 0xec, 0x26, 0xa8, 0x9b,
+	0x73, 0x93, 0xda, 0x26, 0xa9, 0x29, 0x6f, 0xa8, 0x22, 0x34, 0xf4, 0x08, 0x90, 0xd0, 0x50, 0x96,
+	0x5c, 0x4d, 0x92, 0x6f, 0x71, 0x4f, 0x56, 0xa2, 0xd0, 0x7f, 0x6d, 0x67, 0xff, 0x29, 0xfe, 0x92,
+	0xfd, 0x3f, 0x81, 0x0e, 0xb3, 0x9d, 0xe3, 0x35, 0x26, 0x78, 0x3f, 0x02, 0xec, 0x9f, 0x06, 0xf4,
+	0x05, 0xda, 0x27, 0x81, 0x4f, 0xe1, 0xec, 0xfe, 0xc4, 0x72, 0xc9, 0x03, 0x95, 0x53, 0x1d, 0x61,
+	0x05, 0x06, 0xaa, 0x1a, 0x06, 0xce, 0xc1, 0xd2, 0x41, 0xe1, 0x44, 0x38, 0xa9, 0x49, 0x4f, 0x04,
+	0x73, 0xda, 0x7f, 0x78, 0x47, 0x94, 0x48, 0xa5, 0xa3, 0x63, 0x00, 0x16, 0x28, 0xd0, 0xc1, 0x2c,
+	0xff, 0xd6, 0x3c, 0x70, 0x36, 0xa4, 0x36, 0x4a, 0xb2, 0xf1, 0x02, 0x8e, 0xa4, 0xb1, 0x28, 0x45,
+	0x87, 0xfd, 0x2c, 0xa7, 0xf2, 0xb5, 0xb7, 0xca, 0x14, 0x64, 0xcf, 0xc9, 0x1a, 0xe7, 0xf8, 0xa5,
+	0x5c, 0x86, 0xbf, 0x03, 0xb5, 0xb5, 0xb7, 0x4a, 0x94, 0xc7, 0x18, 0xd6, 0xe6, 0xe9, 0x41, 0xb9,
+	0xaf, 0x1c, 0x56, 0xf9, 0x3e, 0x95, 0x2f, 0xfd, 0x7d, 0x9f, 0xc0, 0x14, 0x72, 0x6e, 0x12, 0x8b,
+	0x2e, 0x34, 0xb6, 0x31, 0x8e, 0xf8, 0xd0, 0xd7, 0xe9, 0x71, 0xe6, 0xa2, 0x3e, 0x34, 0x69, 0x3d,
+	0x77, 0xb1, 0xcc, 0xc6, 0xa2, 0x91, 0x9c, 0x5f, 0x12, 0xfb, 0x79, 0x8e, 0x4a, 0xb8, 0x28, 0xde,
+	0x93, 0xc2, 0x69, 0xfe, 0xf1, 0xe4, 0xe4, 0x7c, 0x06, 0xf2, 0x9e, 0xa8, 0x7a, 0xff, 0x2f, 0x4e,
+	0x00, 0x8d, 0xcc, 0xba, 0xe4, 0x18, 0x18, 0x2b, 0x2a, 0x86, 0x5d, 0xb4, 0x72, 0x0c, 0x72, 0x72,
+	0x39, 0x0c, 0xe3, 0x5f, 0x75, 0xf8, 0x8f, 0x99, 0xdf, 0xe3, 0xe8, 0x9b, 0xe7, 0x60, 0x34, 0x85,
+	0x66, 0xf6, 0x26, 0xa1, 0x23, 0x31, 0x4f, 0x79, 0x03, 0xad, 0xbb, 0x7a, 0x27, 0x43, 0xf0, 0x14,
+	0xaa, 0x54, 0x2e, 0x50, 0x57, 0x8c, 0x12, 0xde, 0x29, 0xab, 0x57, 0x74, 0xf0, 0x54, 0xba, 0x5b,
+	0x72, 0xaa, 0xf0, 0x7a, 0xc8, 0xa9, 0x92, 0x2c, 0x9f, 0x42, 0x3d, 0x5d, 0x28, 0xd4, 0x17, 0x63,
+	0x24, 0xed, 0xb5, 0x20, 0x71, 0x4d, 0xfd, 0x90, 0xfc, 0x40, 0x17, 0x60, 0x0a, 0xaa, 0x86, 0xee,
+	0xa9, 0xa0, 0xe4, 0x61, 0xb7, 0x4e, 0xae, 0xf5, 0x33, 0x00, 0x17, 0x60, 0x0a, 0xba, 0x20, 0xd7,
+	0x2b, 0xea, 0x9e, 0x5c, 0x4f, 0x27, 0x28, 0x67, 0xd0, 0x96, 0x14, 0x02, 0x0d, 0x8a, 0x7d, 0x29,
+	0x35, 0x95, 0xf6, 0x84, 0x35, 0x97, 0xe1, 0x14, 0xb5, 0x43, 0x86, 0xa3, 0xd3, 0x07, 0x56, 0x4f,
+	0xdb, 0x5e, 0x51, 0x1b, 0x8a, 0xf5, 0xd4, 0xf6, 0xde, 0x41, 0x4b, 0xdc, 0x21, 0x74, 0xa2, 0x99,
+	0x29, 0x71, 0x2d, 0xac, 0xc1, 0xf5, 0x01, 0xbc, 0xa4, 0xb8, 0x12, 0x72, 0x49, 0xcd, 0xa6, 0xc9,
+	0x25, 0x75, 0xdb, 0xf4, 0xaa, 0xf9, 0xb1, 0x3e, 0x1a, 0x9d, 0x46, 0xa1, 0xf3, 0xb9, 0x9e, 0xfc,
+	0x63, 0xf8, 0xf8, 0x6f, 0x00, 0x00, 0x00, 0xff, 0xff, 0xb7, 0xba, 0x0b, 0x54, 0x3b, 0x0a, 0x00,
+	0x00,
 }

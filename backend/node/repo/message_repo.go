@@ -27,6 +27,13 @@ type Message struct {
 	AttachmentThumbnailID string         `json:"attachment_thumbnail_id" db:"attachment_thumbnail_id"`
 	CreatedAt             time.Time      `json:"created_at" db:"created_at"`
 	UpdatedAt             time.Time      `json:"updated_at" db:"updated_at"`
+	Likes                 int            `json:"likes" db:"likes"`
+}
+
+type MessageLike struct {
+	MessageID string    `json:"message_id" db:"message_id"`
+	UserID    string    `json:"user_id" db:"user_id"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
 type MessageRepo interface {
@@ -37,6 +44,8 @@ type MessageRepo interface {
 	EditMessageAttachment(userID, messageID, attachmentID, attachmentType, attachmentThumbnailID string, updatedAt time.Time) error
 	DeleteMessage(userID, messageID string) error
 	Comments(messageIDs []string) (map[string][]Message, error)
+	LikeMessage(userID, messageID string) (likes int, err error)
+	MessageLikes(messageID string) (likes []MessageLike, err error)
 }
 
 type messageRepo struct {
@@ -56,7 +65,8 @@ func (r *messageRepo) Messages(userIDs []string, from, until time.Time) ([]Messa
 
 	var messages []Message
 	query, args, err := sqlx.In(`
-		select id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at
+		select id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at,
+		       (select count(*) from message_likes where message_id = messages.id) likes
 		from messages
 		where user_id in (?) and parent_id is null
 			and created_at >= ? and created_at < ?
@@ -75,7 +85,8 @@ func (r *messageRepo) Messages(userIDs []string, from, until time.Time) ([]Messa
 func (r *messageRepo) Message(messageID string) (Message, error) {
 	var message Message
 	err := r.db.Get(&message, `
-		select id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at
+		select id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at,
+		       (select count(*) from message_likes where message_id = messages.id) likes
 		from messages
 		where id = $1`, messageID)
 	if err != nil {
@@ -198,9 +209,32 @@ func (r *messageRepo) DeleteMessage(userID, messageID string) error {
 		}
 
 		_, err = tx.Exec(`
+		delete from message_likes
+		where message_id in (
+		    select id     
+		    from messages
+			where parent_id = $1
+		  		and (select user_id from messages where messages.id = $1) = $2)`,
+			messageID, userID)
+		if err != nil {
+			return err
+		}
+
+		_, err = tx.Exec(`
 		delete from messages
 		where parent_id = $1
 		  and (select user_id from messages where messages.id = $1) = $2`,
+			messageID, userID)
+		if err != nil {
+			return err
+		}
+
+		_, err = tx.Exec(`
+		delete from message_likes
+		where message_id in (
+		    select id
+		    from messages
+			where id = $1 and user_id = $2)`,
 			messageID, userID)
 		if err != nil {
 			return err
@@ -232,7 +266,8 @@ func (r *messageRepo) Comments(messageIDs []string) (map[string][]Message, error
 
 	var comments []Message
 	query, args, err := sqlx.In(`
-		select id, parent_id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at
+		select id, parent_id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at,
+		       (select count(*) from message_likes where message_id = messages.id) likes
 		from messages
 		where parent_id in (?)
 		order by created_at, id`, messageIDs)
@@ -250,4 +285,33 @@ func (r *messageRepo) Comments(messageIDs []string) (map[string][]Message, error
 		result[comment.ParentID.String] = append(result[comment.ParentID.String], comment)
 	}
 	return result, nil
+}
+
+func (r *messageRepo) LikeMessage(userID, messageID string) (likes int, err error) {
+	_, err = r.db.Exec(`
+		insert into message_likes(message_id, user_id, created_at)
+		select $1, $2, $3
+		where not exists(select * from message_likes where message_id = $1 and user_id = $2)`,
+		messageID, userID, common.CurrentTimestamp())
+	if err != nil {
+		return -1, err
+	}
+	err = r.db.Get(&likes, "select count(*) from message_likes where message_id = $1", messageID)
+	if err != nil {
+		return -1, err
+	}
+	return likes, nil
+}
+
+func (r *messageRepo) MessageLikes(messageID string) (likes []MessageLike, err error) {
+	err = r.db.Select(&likes, `
+		select message_id, user_id, created_at
+		from message_likes
+		where message_id = $1
+		order by created_at`,
+		messageID)
+	if err != nil {
+		return nil, err
+	}
+	return likes, nil
 }

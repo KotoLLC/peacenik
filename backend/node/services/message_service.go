@@ -134,6 +134,7 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 			AttachmentThumbnail: attachmentThumbnailLink,
 			CreatedAt:           common.TimeToRPCString(msg.CreatedAt),
 			UpdatedAt:           common.TimeToRPCString(msg.UpdatedAt),
+			Likes:               int32(msg.Likes),
 		},
 	}, nil
 }
@@ -202,6 +203,7 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 			AttachmentThumbnail: attachmentThumbnailLink,
 			CreatedAt:           common.TimeToRPCString(msg.CreatedAt),
 			UpdatedAt:           common.TimeToRPCString(msg.UpdatedAt),
+			Likes:               int32(msg.Likes),
 		}
 		rpcMessageMap[msg.ID] = rpcMessages[i]
 	}
@@ -232,6 +234,7 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 				AttachmentThumbnail: attachmentThumbnailLink,
 				CreatedAt:           common.TimeToRPCString(comment.CreatedAt),
 				UpdatedAt:           common.TimeToRPCString(comment.UpdatedAt),
+				Likes:               int32(comment.Likes),
 			}
 		}
 		rpcMessageMap[messageID].Comments = rpcComments
@@ -301,6 +304,7 @@ func (s *messageService) Edit(ctx context.Context, r *rpc.MessageEditRequest) (*
 			AttachmentThumbnail: attachmentThumbnailLink,
 			CreatedAt:           common.TimeToRPCString(msg.CreatedAt),
 			UpdatedAt:           common.TimeToRPCString(msg.UpdatedAt),
+			Likes:               int32(msg.Likes),
 		},
 	}, nil
 }
@@ -438,6 +442,7 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 			AttachmentThumbnail: attachmentThumbnailLink,
 			CreatedAt:           common.TimeToRPCString(comment.CreatedAt),
 			UpdatedAt:           common.TimeToRPCString(comment.UpdatedAt),
+			Likes:               int32(comment.Likes),
 		},
 	}, nil
 }
@@ -503,6 +508,7 @@ func (s *messageService) EditComment(ctx context.Context, r *rpc.MessageEditComm
 			AttachmentThumbnail: attachmentThumbnailLink,
 			CreatedAt:           common.TimeToRPCString(comment.CreatedAt),
 			UpdatedAt:           common.TimeToRPCString(comment.UpdatedAt),
+			Likes:               int32(comment.Likes),
 		},
 	}, nil
 }
@@ -563,4 +569,105 @@ func (s *messageService) getAttachmentThumbnailID(ctx context.Context, attachmen
 		return "", twirp.InternalErrorWith(err)
 	}
 	return attachmentThumbnailID, nil
+}
+
+func (s *messageService) LikeMessage(ctx context.Context, r *rpc.MessageLikeMessageRequest) (*rpc.MessageLikeMessageResponse, error) {
+	user := s.getUser(ctx)
+
+	msg, err := s.repos.Message.Message(r.MessageId)
+	if err != nil {
+		if !errors.Is(err, repo.ErrMessageNotFound) {
+			return nil, twirp.InternalErrorWith(err)
+		}
+		return &rpc.MessageLikeMessageResponse{
+			Likes: -1,
+		}, nil
+	}
+
+	if msg.ParentID.Valid {
+		return nil, twirp.InvalidArgumentError("message_id", "is not a message")
+	}
+
+	newLikeCount, err := s.repos.Message.LikeMessage(user.ID, msg.ID)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+	err = s.repos.Notification.AddNotification(msg.UserID, user.Name+" waved at you", "message/like", map[string]interface{}{
+		"user_id":    user.ID,
+		"message_id": msg.ID,
+	})
+	if err != nil {
+		log.Println(err)
+	}
+	return &rpc.MessageLikeMessageResponse{
+		Likes: int32(newLikeCount),
+	}, nil
+}
+
+func (s *messageService) LikeComment(ctx context.Context, r *rpc.MessageLikeCommentRequest) (*rpc.MessageLikeCommentResponse, error) {
+	user := s.getUser(ctx)
+
+	comment, err := s.repos.Message.Message(r.CommentId)
+	if err != nil {
+		if !errors.Is(err, repo.ErrMessageNotFound) {
+			return nil, twirp.InternalErrorWith(err)
+		}
+		return &rpc.MessageLikeCommentResponse{
+			Likes: -1,
+		}, nil
+	}
+
+	if !comment.ParentID.Valid {
+		return nil, twirp.InvalidArgumentError("comment_id", "is not a comment")
+	}
+
+	newLikeCount, err := s.repos.Message.LikeMessage(user.ID, comment.ID)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+	err = s.repos.Notification.AddNotification(comment.UserID, user.Name+" waved at you", "comment/like", map[string]interface{}{
+		"user_id":    user.ID,
+		"message_id": comment.ParentID,
+		"comment_id": comment.ID,
+	})
+	if err != nil {
+		log.Println(err)
+	}
+	return &rpc.MessageLikeCommentResponse{
+		Likes: int32(newLikeCount),
+	}, nil
+}
+
+func (s *messageService) MessageLikes(_ context.Context, r *rpc.MessageMessageLikesRequest) (*rpc.MessageMessageLikesResponse, error) {
+	likes, err := s.repos.Message.MessageLikes(r.MessageId)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+	rpcLikes := make([]*rpc.MessageLike, len(likes))
+	for i, like := range likes {
+		rpcLikes[i] = &rpc.MessageLike{
+			UserId:  like.UserID,
+			LikedAt: common.TimeToRPCString(like.CreatedAt),
+		}
+	}
+	return &rpc.MessageMessageLikesResponse{
+		Likes: rpcLikes,
+	}, nil
+}
+
+func (s *messageService) CommentLikes(_ context.Context, r *rpc.MessageCommentLikesRequest) (*rpc.MessageCommentLikesResponse, error) {
+	likes, err := s.repos.Message.MessageLikes(r.CommentId)
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
+	}
+	rpcLikes := make([]*rpc.MessageLike, len(likes))
+	for i, like := range likes {
+		rpcLikes[i] = &rpc.MessageLike{
+			UserId:  like.UserID,
+			LikedAt: common.TimeToRPCString(like.CreatedAt),
+		}
+	}
+	return &rpc.MessageCommentLikesResponse{
+		Likes: rpcLikes,
+	}, nil
 }

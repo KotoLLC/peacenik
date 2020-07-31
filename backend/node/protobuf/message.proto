@@ -13,6 +13,10 @@ service MessageService {
     rpc PostComment (MessagePostCommentRequest) returns (MessagePostCommentResponse);
     rpc EditComment (MessageEditCommentRequest) returns (MessageEditCommentResponse);
     rpc DeleteComment (MessageDeleteCommentRequest) returns (Empty);
+    rpc LikeMessage (MessageLikeMessageRequest) returns (MessageLikeMessageResponse);
+    rpc LikeComment (MessageLikeCommentRequest) returns (MessageLikeCommentResponse);
+    rpc MessageLikes (MessageMessageLikesRequest) returns (MessageMessageLikesResponse);
+    rpc CommentLikes (MessageCommentLikesRequest) returns (MessageCommentLikesResponse);
 }
 
 message MessageMessagesRequest {
@@ -76,4 +80,42 @@ message MessageEditCommentResponse {
 
 message MessageDeleteCommentRequest {
     string comment_id = 1;
+}
+
+message MessageLikeMessageRequest {
+    string message_id = 1;
+}
+
+message MessageLikeMessageResponse {
+    int32 likes = 1;
+}
+
+message MessageLikeCommentRequest {
+    string comment_id = 1;
+}
+
+message MessageLikeCommentResponse {
+    int32 likes = 1;
+}
+
+message MessageLike {
+    string message_id = 1;
+    string user_id = 2;
+    string liked_at = 3;
+}
+
+message MessageMessageLikesRequest {
+    string message_id = 1;
+}
+
+message MessageMessageLikesResponse {
+    repeated MessageLike likes = 1;
+}
+
+message MessageCommentLikesRequest {
+    string comment_id = 1;
+}
+
+message MessageCommentLikesResponse {
+    repeated MessageLike likes = 1;
 }
