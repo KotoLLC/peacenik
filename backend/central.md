@@ -133,7 +133,8 @@ Content-Type: application/json
 
 {
   "address": "http://localhost:12002",
-  "details": "my cool node"
+  "details": "my cool node",
+  "post_limit": 2
 }
 
 
@@ -156,6 +157,16 @@ POST http://localhost:12001/rpc.NodeService/Remove
 Content-Type: application/json
 
 {"node_id":  "ba7c6e53-dfea-46ec-b0ff-208f984393c4"}
+
+
+### Set post limit for a node
+POST http://localhost:12001/rpc.NodeService/SetPostLimit
+Content-Type: application/json
+
+{
+  "node_id": "ebcaed9f-dbb4-40f6-982f-5f1fc5e3daf9",
+  "post_limit": 2
+}
 ```
 
 ## Invites
