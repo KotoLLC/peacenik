@@ -10,11 +10,13 @@ service NodeService {
     rpc Nodes (Empty) returns (NodeNodesResponse);
     rpc Approve (NodeApproveRequest) returns (Empty);
     rpc Remove (NodeRemoveRequest) returns (Empty);
+    rpc SetPostLimit (NodePostLimitRequest) returns (Empty);
 }
 
 message NodeRegisterRequest {
     string address = 1;
     string details = 2;
+    int32 post_limit = 3;
 }
 
 message NodeNodesResponseNode {
@@ -25,6 +27,7 @@ message NodeNodesResponseNode {
     string approved_at = 5;
     string disabled_at = 6;
     string details = 7;
+    int32 post_limit = 8;
 }
 
 message NodeNodesResponse {
@@ -37,4 +40,9 @@ message NodeApproveRequest {
 
 message NodeRemoveRequest {
     string node_id = 1;
+}
+
+message NodePostLimitRequest {
+    string node_id = 1;
+    int32 post_limit = 2;
 }

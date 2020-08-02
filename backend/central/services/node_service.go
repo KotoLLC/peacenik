@@ -34,7 +34,7 @@ func (s *nodeService) Register(ctx context.Context, r *rpc.NodeRegisterRequest) 
 	if nodeExists {
 		return nil, twirp.NewError(twirp.AlreadyExists, "node already exists")
 	}
-	nodeID, err := s.repos.Node.AddNode(r.Address, r.Details, user)
+	nodeID, err := s.repos.Node.AddNode(r.Address, r.Details, user, int(r.PostLimit))
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
@@ -90,6 +90,7 @@ func (s *nodeService) Nodes(ctx context.Context, _ *rpc.Empty) (*rpc.NodeNodesRe
 			ApprovedAt: common.NullTimeToRPCString(node.ApprovedAt),
 			DisabledAt: common.NullTimeToRPCString(node.DisabledAt),
 			Details:    node.Details,
+			PostLimit:  int32(node.PostLimit),
 		}
 	}
 
@@ -152,6 +153,28 @@ func (s *nodeService) Remove(ctx context.Context, r *rpc.NodeRemoveRequest) (*rp
 		if err != nil {
 			log.Println(err)
 		}
+	}
+
+	return &rpc.Empty{}, nil
+}
+
+func (s *nodeService) SetPostLimit(ctx context.Context, r *rpc.NodePostLimitRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+	node, err := s.repos.Node.Node(r.NodeId)
+	if err != nil {
+		if errors.Is(err, repo.ErrNodeNotFound) {
+			return nil, twirp.NotFoundError(err.Error())
+		}
+		return nil, twirp.InternalErrorWith(err)
+	}
+
+	if node.AdminID != user.ID {
+		return nil, twirp.NotFoundError(repo.ErrNodeNotFound.Error())
+	}
+
+	err = s.repos.Node.SetNodePostLimit(user.ID, r.NodeId, int(r.PostLimit))
+	if err != nil {
+		return nil, twirp.InternalErrorWith(err)
 	}
 
 	return &rpc.Empty{}, nil
