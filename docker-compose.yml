@@ -1,0 +1,101 @@
+version: "3.7"
+
+services:
+  s3:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+    command: ["server","/data"]
+    environment:
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+
+  central:
+    build:
+      context: ./backend
+      dockerfile: ./central/Dockerfile
+    stdin_open: true
+    tty: true
+    working_dir: /service
+    ports:
+      - 12001:12001
+    environment:
+      KOTO_ADDRESS: :12001
+      KOTO_PRIVATE_KEY: /central.rsa
+      KOTO_ADMINS: "[\"admin1\"]"
+      KOTO_DB_HOST: db_central
+      KOTO_DB_SSL_MODE: disable
+      KOTO_DB_USER: postgres
+      KOTO_DB_PASSWORD: docker
+      KOTO_DB_NAME: koto-central
+      KOTO_S3_ENDPOINT: s3:9000
+      KOTO_S3_KEY: minioadmin
+      KOTO_S3_SECRET: minioadmin
+      KOTO_S3_BUCKET: koto-central
+      KOTO_SMTP_HOST: smtp.mailtrap.io
+      KOTO_SMTP_PORT: 587
+      KOTO_SMTP_USER: 23423423423423
+      KOTO_SMTP_PASSWORD: 4534534terer
+      KOTO_SMTP_FROM: admin@koto.org
+
+    restart: on-failure
+    depends_on:
+      - db_central
+    volumes:
+      - ./backend/central.rsa:/central.rsa
+  
+  node-1:
+    build:
+      context: ./backend
+      dockerfile: ./node/Dockerfile
+    stdin_open: true
+    tty: true
+    working_dir: /service
+    # command: ["./node-service","-config", "node-12002-config.yml"]
+    ports:
+      - 12002:12002
+    environment:
+      KOTO_ADDRESS: :12002
+      KOTO_EXTERNAL_ADDRESS: http://node-1:12002/
+      KOTO_CENTRAL_ADDRESS: http://central:12001/
+      KOTO_DB_HOST: db_node
+      KOTO_DB_SSL_MODE: disable
+      KOTO_DB_USER: postgres
+      KOTO_DB_PASSWORD: docker
+      KOTO_DB_NAME: koto-node-1
+      KOTO_S3_ENDPOINT: s3:9000
+      KOTO_S3_KEY: minioadmin
+      KOTO_S3_SECRET: minioadmin
+      KOTO_S3_BUCKET: koto-node-1
+    restart: on-failure
+    depends_on:
+      - db_node
+
+  frontend:
+    build:
+      context: ./frontend
+      target: base
+    stdin_open: true
+    tty: true
+    command: npm start
+    working_dir: /app
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend/.:/app
+
+  db_central:
+    image: postgres:9.6
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: koto-central
+      POSTGRES_PASSWORD: docker
+
+  db_node:
+    image: postgres:9.6
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: koto-node-1
+      POSTGRES_PASSWORD: docker

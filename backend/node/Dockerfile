@@ -10,7 +10,7 @@ RUN go mod download
 COPY token/*.go ./token/
 COPY common/*.go ./common/
 
-COPY node/ ./node/
+COPY ./node/ ./node/
 
 RUN GOOS=linux GOARCH=amd64 go build -o node-service ./node/cmd/
 

@@ -51,6 +51,10 @@ smtp:
 ```
 docker run --name minio-koto -p 9000:9000 -e MINIO_ACCESS_KEY=minioadmin -e MINIO_SECRET_KEY=minioadmin -d minio/minio server /data
 ```
+## PostGres
+```
+docker run --name koto-central -d -p 5432:5432 -e POSTGRES_PASSWORD=docker -e POSTGRES_DB=koto-central -d postgres
+```
 
 ## Central Service
 ```
