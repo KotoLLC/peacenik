@@ -2,9 +2,11 @@ package central
 
 import (
 	"context"
+	"errors"
 	"log"
 	"net/http"
 
+	"github.com/ansel1/merry"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
@@ -57,7 +59,24 @@ func (s *Server) Run() error {
 	r := chi.NewRouter()
 	s.setupMiddlewares(r)
 
-	rpcHooks := &twirp.ServerHooks{}
+	rpcHooks := &twirp.ServerHooks{
+		Error: func(ctx context.Context, err twirp.Error) context.Context {
+			cause := errors.Unwrap(err)
+			if cause != nil {
+				if err.Code() == twirp.Internal {
+					log.Print(merry.Details(cause))
+				} else {
+					sourceLine := merry.SourceLine(cause)
+					if sourceLine != "" {
+						log.Printf("%s: %s\n", cause, sourceLine)
+					}
+				}
+			} else {
+				log.Println(err)
+			}
+			return ctx
+		},
+	}
 	baseService := services.NewBase(s.repos, s.s3Storage)
 
 	passwordHash := bcrypt.NewPasswordHash()

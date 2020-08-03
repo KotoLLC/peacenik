@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/ansel1/merry"
 	"github.com/gofrs/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/types"
@@ -41,14 +42,14 @@ func NewNotifications(db *sqlx.DB) NotificationRepo {
 func (r *notificationRepo) AddNotification(userID, text, notificationType string, data map[string]interface{}) error {
 	notificationID, err := uuid.NewV4()
 	if err != nil {
-		return err
+		return merry.Wrap(err)
 	}
 
 	var jsonData []byte
 	if data != nil {
 		jsonData, err = json.Marshal(data)
 		if err != nil {
-			return err
+			return merry.Wrap(err)
 		}
 	} else {
 		jsonData = []byte("{}")
@@ -58,7 +59,7 @@ func (r *notificationRepo) AddNotification(userID, text, notificationType string
 		insert into notifications(id, user_id, text, type, data, created_at) 
 		values ($1, $2, $3, $4, $5, $6)`,
 		notificationID, userID, text, notificationType, types.JSONText(jsonData), CurrentTimestamp())
-	return err
+	return merry.Wrap(err)
 }
 
 func (r *notificationRepo) Counts(userID string) (total int, unread int, err error) {
@@ -86,7 +87,7 @@ func (r *notificationRepo) Notifications(userID string) ([]Notification, error) 
 		order by created_at`,
 		userID)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	return notifications, nil
 }
@@ -96,7 +97,7 @@ func (r *notificationRepo) Clean(userID string, lastKnownID string) error {
 		delete from notifications
 		where user_id = $1 and created_at <= (select created_at from notifications where user_id = $1 and id = $2)`,
 		userID, lastKnownID)
-	return err
+	return merry.Wrap(err)
 }
 
 func (r *notificationRepo) MarkRead(userID string, lastKnownID string) error {
@@ -105,5 +106,5 @@ func (r *notificationRepo) MarkRead(userID string, lastKnownID string) error {
 		set read_at = $1
 		where user_id = $2 and read_at is null and created_at <= (select created_at from notifications where user_id = $2 and id = $3)`,
 		CurrentTimestamp(), userID, lastKnownID)
-	return err
+	return merry.Wrap(err)
 }

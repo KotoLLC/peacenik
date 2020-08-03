@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ansel1/merry"
 	"github.com/dgrijalva/jwt-go"
 
 	"github.com/mreider/koto/backend/common"
@@ -75,13 +76,13 @@ func loadCentralPublicKey(ctx context.Context, centralServerAddress string) (*rs
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, centralServerAddress+"/rpc.InfoService/PublicKey", strings.NewReader("{}"))
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 
@@ -90,11 +91,11 @@ func loadCentralPublicKey(ctx context.Context, centralServerAddress string) (*rs
 	}
 	err = json.NewDecoder(resp.Body).Decode(&body)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	key, err := jwt.ParseRSAPublicKeyFromPEM([]byte(body.PublicKey))
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	return key, nil
 }
@@ -113,7 +114,7 @@ func loadConfig(execDir string) (config.Config, error) {
 
 	cfg, err := config.Load(configPath)
 	if err != nil {
-		return config.Config{}, err
+		return config.Config{}, merry.Wrap(err)
 	}
 
 	if cfg.CentralServerAddress != "" {

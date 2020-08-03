@@ -3,6 +3,7 @@ package common
 import (
 	"strings"
 
+	"github.com/ansel1/merry"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
@@ -35,7 +36,7 @@ func (cfg S3Config) CreateStorage() (*S3Storage, error) {
 		Secure: s3Secure,
 	})
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 
 	s3Storage := NewS3Storage(minioClient, cfg.Bucket)

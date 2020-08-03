@@ -1,6 +1,7 @@
 package bcrypt
 
 import (
+	"github.com/ansel1/merry"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/mreider/koto/backend/central/services"
@@ -15,7 +16,7 @@ func NewPasswordHash() services.PasswordHash {
 func (h *passwordHash) GenerateHash(password string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return "", err
+		return "", merry.Wrap(err)
 	}
 	return string(hash), nil
 }

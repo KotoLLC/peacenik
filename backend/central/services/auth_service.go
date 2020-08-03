@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/ansel1/merry"
 	"github.com/gofrs/uuid"
 	"github.com/twitchtv/twirp"
 
@@ -57,7 +58,7 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 
 	u, err := s.repos.User.FindUserByName(r.Name)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 	if u != nil {
 		return nil, twirp.NewError(twirp.AlreadyExists, "user already exists")
@@ -65,7 +66,7 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 
 	u, err = s.repos.User.FindUserByEmail(r.Email)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 	if u != nil {
 		return nil, twirp.NewError(twirp.AlreadyExists, "user already exists")
@@ -73,22 +74,22 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 
 	userID, err := uuid.NewV4()
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 
 	passwordHash, err := s.passwordHash.GenerateHash(r.Password)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 
 	err = s.repos.User.AddUser(userID.String(), r.Name, r.Email, passwordHash)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 
 	u, err = s.repos.User.FindUserByID(userID.String())
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	if s.userConfirmation != nil {
 		err = s.userConfirmation.SendConfirmLink(*u)
@@ -102,7 +103,7 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 func (s *authService) Login(ctx context.Context, r *rpc.AuthLoginRequest) (*rpc.Empty, error) {
 	u, err := s.repos.User.FindUserByNameOrEmail(r.Name)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 	if u == nil {
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid name or password")
@@ -116,7 +117,7 @@ func (s *authService) Login(ctx context.Context, r *rpc.AuthLoginRequest) (*rpc.
 	session.SetValue(s.sessionUserKey, u.ID)
 	err = session.Save()
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 	return &rpc.Empty{}, nil
 }
@@ -126,7 +127,7 @@ func (s *authService) Logout(ctx context.Context, _ *rpc.Empty) (*rpc.Empty, err
 	session.Clear()
 	err := session.Save()
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 	return &rpc.Empty{}, nil
 }
@@ -141,12 +142,12 @@ func (s *authService) Confirm(ctx context.Context, r *rpc.AuthConfirmRequest) (*
 		if s.isAdmin(ctx) {
 			u, err := s.repos.User.FindUser(r.Token)
 			if err != nil {
-				return nil, twirp.InternalErrorWith(err)
+				return nil, err
 			}
 			if u != nil {
 				err = s.repos.User.ConfirmUser(u.ID)
 				if err != nil {
-					return nil, twirp.InternalErrorWith(err)
+					return nil, err
 				}
 				return &rpc.Empty{}, nil
 			}
@@ -155,7 +156,7 @@ func (s *authService) Confirm(ctx context.Context, r *rpc.AuthConfirmRequest) (*
 
 	err := s.userConfirmation.Confirm(r.Token)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 	return &rpc.Empty{}, nil
 }
@@ -167,7 +168,7 @@ func (s *authService) SendConfirmLink(ctx context.Context, _ *rpc.Empty) (*rpc.E
 	u := s.getUser(ctx)
 	err := s.userConfirmation.SendConfirmLink(u)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 	return &rpc.Empty{}, nil
 }

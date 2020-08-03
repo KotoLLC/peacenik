@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"github.com/ansel1/merry"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -31,7 +32,7 @@ func (r *friendRepo) Friends(user User) ([]User, error) {
 			where user_id = $1)`,
 		user.ID)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	return friends, nil
 }
@@ -56,7 +57,7 @@ func (r *friendRepo) FriendsWithSubFriends(user User) (map[User][]User, error) {
 		where f.user_id in (select friend_id from friends where user_id = $1)`,
 		user.ID)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 
 	for _, item := range items {
@@ -89,7 +90,7 @@ func (r *friendRepo) FriendsOfFriends(user User) (map[User][]User, error) {
 			and f.friend_id <> $1`,
 		user.ID)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 
 	for _, item := range items {

@@ -3,6 +3,7 @@ module github.com/mreider/koto/backend
 go 1.14
 
 require (
+	github.com/ansel1/merry v1.5.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/disintegration/imaging v1.6.2
 	github.com/go-chi/chi v4.1.2+incompatible

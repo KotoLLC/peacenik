@@ -1,6 +1,7 @@
 package common
 
 import (
+	"github.com/ansel1/merry"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -14,12 +15,12 @@ func RunInTransaction(db *sqlx.DB, action func(tx *sqlx.Tx) error) error {
 
 	err := action(tx)
 	if err != nil {
-		return err
+		return merry.Wrap(err)
 	}
 
 	err = tx.Commit()
 	if err != nil {
-		return err
+		return merry.Wrap(err)
 	}
 
 	tx = nil
