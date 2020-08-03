@@ -11,6 +11,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ansel1/merry"
 )
 
 const (
@@ -26,7 +28,7 @@ var (
 func VideoThumbnail(videoPath string) ([]byte, error) {
 	tempDir, err := ioutil.TempDir("", "")
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	defer func() { _ = os.RemoveAll(tempDir) }()
 
@@ -36,17 +38,17 @@ func VideoThumbnail(videoPath string) ([]byte, error) {
 	cmd := exec.Command("ffmpeg", "-i", videoPath, "-vframes", "1", "-ss", defaultPosition, outputPath)
 	err = cmd.Run()
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 
 	_, err = os.Stat(outputPath)
 	if err != nil {
 		if !os.IsNotExist(err) {
-			return nil, err
+			return nil, merry.Wrap(err)
 		}
 		_, _, duration, _, err := videoMetadata(videoPath)
 		if err != nil {
-			return nil, err
+			return nil, merry.Wrap(err)
 		}
 
 		if duration == 0 {
@@ -60,13 +62,13 @@ func VideoThumbnail(videoPath string) ([]byte, error) {
 		cmd := exec.Command("ffmpeg", "-i", videoPath, "-vframes", "1", "-ss", fmt.Sprintf("00:%02d:%02d.%03d", minutes, seconds, milliseconds), outputPath)
 		err = cmd.Run()
 		if err != nil {
-			return nil, err
+			return nil, merry.Wrap(err)
 		}
 	}
 
 	data, err := ioutil.ReadFile(outputPath)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	return data, nil
 }
@@ -78,7 +80,7 @@ func videoMetadata(videoPath string) (width, height int, duration time.Duration,
 	width, height, duration, fps, ok := parseVideoMetadata(string(output))
 
 	if !ok {
-		return -1, -1, 0, 0, fmt.Errorf("can't obtain video metadata for '%s'", videoPath)
+		return -1, -1, 0, 0, merry.Errorf("can't obtain video metadata for '%s'", videoPath)
 	}
 
 	return width, height, duration, fps, nil

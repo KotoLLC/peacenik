@@ -2,16 +2,16 @@ package repo
 
 import (
 	"database/sql"
-	"errors"
 	"time"
 
+	"github.com/ansel1/merry"
 	"github.com/jmoiron/sqlx"
 
 	"github.com/mreider/koto/backend/common"
 )
 
 var (
-	ErrMessageNotFound = errors.New("message not found")
+	ErrMessageNotFound = common.ErrNotFound.WithMessage("message not found")
 
 	maxTimestamp = time.Date(9999, 12, 31, 23, 59, 59, 999999999, time.Local)
 )
@@ -72,12 +72,12 @@ func (r *messageRepo) Messages(userIDs []string, from, until time.Time) ([]Messa
 			and created_at >= ? and created_at < ?
 		order by created_at, "id"`, userIDs, from, until)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	query = r.db.Rebind(query)
 	err = r.db.Select(&messages, query, args...)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	return messages, nil
 }
@@ -90,10 +90,10 @@ func (r *messageRepo) Message(messageID string) (Message, error) {
 		from messages
 		where id = $1`, messageID)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return message, ErrMessageNotFound
+		if merry.Is(err, sql.ErrNoRows) {
+			return message, ErrMessageNotFound.Here()
 		}
-		return message, err
+		return message, merry.Wrap(err)
 	}
 	return message, nil
 }
@@ -108,7 +108,7 @@ func (r *messageRepo) AddMessage(parentID string, message Message) error {
 		message.Text, message.AttachmentID, message.AttachmentType, message.AttachmentThumbnailID,
 		message.CreatedAt, message.UpdatedAt)
 	if err != nil {
-		return err
+		return merry.Wrap(err)
 	}
 	return nil
 }
@@ -120,14 +120,14 @@ func (r *messageRepo) EditMessageText(userID, messageID, text string, updatedAt 
 		where id = $3 and user_id = $4`,
 		text, updatedAt, messageID, userID)
 	if err != nil {
-		return err
+		return merry.Wrap(err)
 	}
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return err
+		return merry.Wrap(err)
 	}
 	if rowsAffected < 1 {
-		return ErrMessageNotFound
+		return ErrMessageNotFound.Here()
 	}
 	return nil
 }
@@ -137,8 +137,8 @@ func (r *messageRepo) EditMessageAttachment(userID, messageID, attachmentID, att
 		var message Message
 		err := tx.Get(&message, "select attachment_id, attachment_thumbnail_id from messages where id = $1 and user_id = $2",
 			messageID, userID)
-		if err != nil && !errors.Is(err, sql.ErrNoRows) {
-			return err
+		if err != nil && !merry.Is(err, sql.ErrNoRows) {
+			return merry.Wrap(err)
 		}
 		if message.AttachmentID != "" && message.AttachmentID != attachmentID {
 			_, err = tx.Exec(`
@@ -146,7 +146,7 @@ func (r *messageRepo) EditMessageAttachment(userID, messageID, attachmentID, att
 				values ($1, $2)`,
 				message.AttachmentID, updatedAt)
 			if err != nil {
-				return err
+				return merry.Wrap(err)
 			}
 		}
 		if message.AttachmentThumbnailID != "" && message.AttachmentThumbnailID != message.AttachmentID && message.AttachmentThumbnailID != attachmentThumbnailID {
@@ -155,7 +155,7 @@ func (r *messageRepo) EditMessageAttachment(userID, messageID, attachmentID, att
 				values ($1, $2)`,
 				message.AttachmentThumbnailID, updatedAt)
 			if err != nil {
-				return err
+				return merry.Wrap(err)
 			}
 		}
 
@@ -165,14 +165,14 @@ func (r *messageRepo) EditMessageAttachment(userID, messageID, attachmentID, att
 		where id = $5 and user_id = $6`,
 			attachmentID, attachmentType, attachmentThumbnailID, updatedAt, messageID, userID)
 		if err != nil {
-			return err
+			return merry.Wrap(err)
 		}
 		rowsAffected, err := res.RowsAffected()
 		if err != nil {
-			return err
+			return merry.Wrap(err)
 		}
 		if rowsAffected < 1 {
-			return ErrMessageNotFound
+			return ErrMessageNotFound.Here()
 		}
 		return nil
 	})
@@ -184,7 +184,7 @@ func (r *messageRepo) DeleteMessage(userID, messageID string) error {
 		err := tx.Select(&messages, "select attachment_id, attachment_thumbnail_id from messages where (id = $1 and user_id = $2) or parent_id = $1",
 			messageID, userID)
 		if err != nil {
-			return err
+			return merry.Wrap(err)
 		}
 		now := common.CurrentTimestamp()
 		for _, msg := range messages {
@@ -194,7 +194,7 @@ func (r *messageRepo) DeleteMessage(userID, messageID string) error {
 				values ($1, $2)`,
 					msg.AttachmentID, now)
 				if err != nil {
-					return err
+					return merry.Wrap(err)
 				}
 			}
 			if msg.AttachmentThumbnailID != "" && msg.AttachmentThumbnailID != msg.AttachmentID {
@@ -203,7 +203,7 @@ func (r *messageRepo) DeleteMessage(userID, messageID string) error {
 				values ($1, $2)`,
 					msg.AttachmentThumbnailID, now)
 				if err != nil {
-					return err
+					return merry.Wrap(err)
 				}
 			}
 		}
@@ -217,7 +217,7 @@ func (r *messageRepo) DeleteMessage(userID, messageID string) error {
 		  		and (select user_id from messages where messages.id = $1) = $2)`,
 			messageID, userID)
 		if err != nil {
-			return err
+			return merry.Wrap(err)
 		}
 
 		_, err = tx.Exec(`
@@ -226,7 +226,7 @@ func (r *messageRepo) DeleteMessage(userID, messageID string) error {
 		  and (select user_id from messages where messages.id = $1) = $2`,
 			messageID, userID)
 		if err != nil {
-			return err
+			return merry.Wrap(err)
 		}
 
 		_, err = tx.Exec(`
@@ -237,7 +237,7 @@ func (r *messageRepo) DeleteMessage(userID, messageID string) error {
 			where id = $1 and user_id = $2)`,
 			messageID, userID)
 		if err != nil {
-			return err
+			return merry.Wrap(err)
 		}
 
 		res, err := tx.Exec(`
@@ -245,14 +245,14 @@ func (r *messageRepo) DeleteMessage(userID, messageID string) error {
 		where id = $1 and user_id = $2`,
 			messageID, userID)
 		if err != nil {
-			return err
+			return merry.Wrap(err)
 		}
 		rowsAffected, err := res.RowsAffected()
 		if err != nil {
-			return err
+			return merry.Wrap(err)
 		}
 		if rowsAffected < 1 {
-			return ErrMessageNotFound
+			return ErrMessageNotFound.Here()
 		}
 
 		return nil
@@ -272,12 +272,12 @@ func (r *messageRepo) Comments(messageIDs []string) (map[string][]Message, error
 		where parent_id in (?)
 		order by created_at, id`, messageIDs)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	query = r.db.Rebind(query)
 	err = r.db.Select(&comments, query, args...)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 
 	result := make(map[string][]Message)
@@ -294,11 +294,11 @@ func (r *messageRepo) LikeMessage(userID, messageID string) (likes int, err erro
 		where not exists(select * from message_likes where message_id = $1 and user_id = $2)`,
 		messageID, userID, common.CurrentTimestamp())
 	if err != nil {
-		return -1, err
+		return -1, merry.Wrap(err)
 	}
 	err = r.db.Get(&likes, "select count(*) from message_likes where message_id = $1", messageID)
 	if err != nil {
-		return -1, err
+		return -1, merry.Wrap(err)
 	}
 	return likes, nil
 }
@@ -311,7 +311,7 @@ func (r *messageRepo) MessageLikes(messageID string) (likes []MessageLike, err e
 		order by created_at`,
 		messageID)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	return likes, nil
 }

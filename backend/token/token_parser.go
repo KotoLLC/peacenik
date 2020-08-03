@@ -2,13 +2,13 @@ package token
 
 import (
 	"crypto/rsa"
-	"errors"
 
+	"github.com/ansel1/merry"
 	"github.com/dgrijalva/jwt-go"
 )
 
 var (
-	ErrInvalidToken = errors.New("invalid token")
+	ErrInvalidToken = merry.New("invalid token")
 )
 
 type Parser interface {
@@ -28,21 +28,21 @@ func NewParser(publicKey *rsa.PublicKey) Parser {
 func (p *parser) Parse(rawToken string, scope string) (token *jwt.Token, claims jwt.MapClaims, err error) {
 	jwtToken, err := jwt.Parse(rawToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
-			return nil, ErrInvalidToken
+			return nil, ErrInvalidToken.Here()
 		}
 		return p.publicKey, nil
 	})
 	if err != nil {
-		return nil, nil, ErrInvalidToken
+		return nil, nil, ErrInvalidToken.Here()
 	}
 
 	claims = jwtToken.Claims.(jwt.MapClaims)
 	if !jwtToken.Valid {
-		return jwtToken, claims, ErrInvalidToken
+		return jwtToken, claims, ErrInvalidToken.Here()
 	}
 
 	if scope != claims["scope"].(string) {
-		return jwtToken, claims, ErrInvalidToken
+		return jwtToken, claims, ErrInvalidToken.Here()
 	}
 	return jwtToken, claims, nil
 }

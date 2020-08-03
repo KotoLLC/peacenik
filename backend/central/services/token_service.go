@@ -5,7 +5,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/twitchtv/twirp"
+	"github.com/ansel1/merry"
 
 	"github.com/mreider/koto/backend/central/rpc"
 	"github.com/mreider/koto/backend/token"
@@ -30,7 +30,7 @@ func (s *tokenService) Auth(ctx context.Context, _ *rpc.Empty) (*rpc.TokenAuthRe
 
 	authToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "auth", time.Now().Add(s.tokenDuration), nil)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 
 	return &rpc.TokenAuthResponse{
@@ -43,7 +43,7 @@ func (s *tokenService) PostMessage(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 
 	nodes, err := s.repos.Node.ConnectedNodes(user)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 	sort.Slice(nodes, func(i, j int) bool {
 		if nodes[i].MinDistance < nodes[j].MinDistance {
@@ -67,7 +67,7 @@ func (s *tokenService) PostMessage(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 
 	friends, err := s.repos.Friend.Friends(user)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 	friendIDs := make([]string, len(friends))
 	for i, friend := range friends {
@@ -86,7 +86,7 @@ func (s *tokenService) PostMessage(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 		}
 		nodeToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "post-message", exp, claims)
 		if err != nil {
-			return nil, err
+			return nil, merry.Wrap(err)
 		}
 		tokens[node.Node.Address] = nodeToken
 	}
@@ -100,14 +100,14 @@ func (s *tokenService) GetMessages(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 
 	nodes, err := s.repos.Node.ConnectedNodes(user)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 	tokens := make(map[string]string)
 	exp := time.Now().Add(s.tokenDuration)
 
 	friends, err := s.repos.Friend.Friends(user)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 	userIDs := make([]string, len(friends)+1)
 	userIDs[0] = user.ID
@@ -125,7 +125,7 @@ func (s *tokenService) GetMessages(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 		}
 		nodeToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "get-messages", exp, claims)
 		if err != nil {
-			return nil, err
+			return nil, merry.Wrap(err)
 		}
 		tokens[node.Node.Address] = nodeToken
 	}

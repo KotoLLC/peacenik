@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/ansel1/merry"
 	"github.com/disintegration/imaging"
 	"github.com/h2non/filetype"
 	"github.com/twitchtv/twirp"
@@ -36,12 +37,12 @@ func (s *userService) Friends(ctx context.Context, _ *rpc.Empty) (*rpc.UserFrien
 	user := s.getUser(ctx)
 	friendMap, err := s.repos.Friend.FriendsWithSubFriends(user)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 
 	inviteStatuses, err := s.repos.Invite.InviteStatuses(user)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 
 	rpcFriends := make([]*rpc.UserFriendsFriend, 0, len(friendMap))
@@ -54,7 +55,7 @@ func (s *userService) Friends(ctx context.Context, _ *rpc.Empty) (*rpc.UserFrien
 
 			avatarThumbnailLink, err := s.createBlobLink(ctx, u.AvatarThumbnailID)
 			if err != nil {
-				return nil, twirp.InternalErrorWith(err)
+				return nil, err
 			}
 
 			rpcUsers = append(rpcUsers, &rpc.UserFriendsFriendOfFriend{
@@ -73,7 +74,7 @@ func (s *userService) Friends(ctx context.Context, _ *rpc.Empty) (*rpc.UserFrien
 
 		avatarThumbnailLink, err := s.createBlobLink(ctx, friend.AvatarThumbnailID)
 		if err != nil {
-			return nil, twirp.InternalErrorWith(err)
+			return nil, err
 		}
 
 		rpcFriends = append(rpcFriends, &rpc.UserFriendsFriend{
@@ -99,12 +100,12 @@ func (s *userService) FriendsOfFriends(ctx context.Context, _ *rpc.Empty) (*rpc.
 	user := s.getUser(ctx)
 	friendsOfFriends, err := s.repos.Friend.FriendsOfFriends(user)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 
 	inviteStatuses, err := s.repos.Invite.InviteStatuses(user)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 
 	rpcFriendsOfFriends := make([]*rpc.UserFriendsOfFriendsResponseFriend, 0, len(friendsOfFriends))
@@ -113,7 +114,7 @@ func (s *userService) FriendsOfFriends(ctx context.Context, _ *rpc.Empty) (*rpc.
 		for i, friend := range friends {
 			avatarThumbnailLink, err := s.createBlobLink(ctx, friend.AvatarThumbnailID)
 			if err != nil {
-				return nil, twirp.InternalErrorWith(err)
+				return nil, err
 			}
 
 			rpcFriends[i] = &rpc.User{
@@ -129,7 +130,7 @@ func (s *userService) FriendsOfFriends(ctx context.Context, _ *rpc.Empty) (*rpc.
 
 		avatarThumbnailLink, err := s.createBlobLink(ctx, other.AvatarThumbnailID)
 		if err != nil {
-			return nil, twirp.InternalErrorWith(err)
+			return nil, err
 		}
 
 		inviteStatus := inviteStatuses[other.ID]
@@ -159,7 +160,7 @@ func (s *userService) Me(ctx context.Context, _ *rpc.Empty) (*rpc.UserMeResponse
 
 	avatarThumbnailLink, err := s.createBlobLink(ctx, user.AvatarThumbnailID)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 
 	return &rpc.UserMeResponse{
@@ -184,7 +185,7 @@ func (s *userService) EditProfile(ctx context.Context, r *rpc.UserEditProfileReq
 		if r.Email != user.Email {
 			err := s.repos.User.SetEmail(user.ID, r.Email)
 			if err != nil {
-				return nil, twirp.InternalErrorWith(err)
+				return nil, err
 			}
 		}
 	}
@@ -196,19 +197,19 @@ func (s *userService) EditProfile(ctx context.Context, r *rpc.UserEditProfileReq
 
 		passwordHash, err := s.passwordHash.GenerateHash(r.Password)
 		if err != nil {
-			return nil, twirp.InternalErrorWith(err)
+			return nil, err
 		}
 
 		err = s.repos.User.SetPassword(user.ID, passwordHash)
 		if err != nil {
-			return nil, twirp.InternalErrorWith(err)
+			return nil, err
 		}
 	}
 
 	if r.AvatarChanged {
 		err := s.setAvatar(ctx, user, r.AvatarId)
 		if err != nil {
-			return nil, err
+			return nil, merry.Wrap(err)
 		}
 	}
 
@@ -223,7 +224,7 @@ func (s *userService) setAvatar(ctx context.Context, user repo.User, avatarID st
 	if avatarID == "" {
 		err := s.repos.User.SetAvatar(user.ID, "", "")
 		if err != nil {
-			return twirp.InternalErrorWith(err)
+			return merry.Wrap(err)
 		}
 		return nil
 	}
@@ -231,11 +232,11 @@ func (s *userService) setAvatar(ctx context.Context, user repo.User, avatarID st
 	var buf bytes.Buffer
 	err = s.s3Storage.Read(ctx, avatarID, &buf)
 	if err != nil {
-		return twirp.InternalErrorWith(err)
+		return merry.Wrap(err)
 	}
 	dataType, err := filetype.Match(buf.Bytes())
 	if err != nil {
-		return twirp.InternalErrorWith(err)
+		return merry.Wrap(err)
 	}
 	if dataType.MIME.Type != "image" {
 		return twirp.NewError(twirp.InvalidArgument, "not image")
@@ -243,25 +244,25 @@ func (s *userService) setAvatar(ctx context.Context, user repo.User, avatarID st
 
 	original, err := imaging.Decode(&buf)
 	if err != nil {
-		return twirp.InternalErrorWith(err)
+		return merry.Wrap(err)
 	}
 	thumbnail := imaging.Thumbnail(original, avatarThumbnailWidth, avatarThumbnailHeight, imaging.Lanczos)
 	buf.Reset()
 	err = imaging.Encode(&buf, thumbnail, imaging.JPEG)
 	if err != nil {
-		return twirp.InternalErrorWith(err)
+		return merry.Wrap(err)
 	}
 
 	ext := filepath.Ext(avatarID)
 	thumbnailID := strings.TrimSuffix(avatarID, ext) + "-thumbnail.jpg"
 	err = s.s3Storage.PutObject(ctx, thumbnailID, buf.Bytes(), "image/jpeg")
 	if err != nil {
-		return twirp.InternalErrorWith(err)
+		return merry.Wrap(err)
 	}
 
 	err = s.repos.User.SetAvatar(user.ID, avatarID, thumbnailID)
 	if err != nil {
-		return twirp.InternalErrorWith(err)
+		return merry.Wrap(err)
 	}
 	return nil
 }
@@ -269,13 +270,13 @@ func (s *userService) setAvatar(ctx context.Context, user repo.User, avatarID st
 func (s *userService) Users(ctx context.Context, r *rpc.UserUsersRequest) (*rpc.UserUsersResponse, error) {
 	users, err := s.repos.User.FindUsers(r.UserIds)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 	rpcUsers := make([]*rpc.User, len(users))
 	for i, user := range users {
 		avatarThumbnailLink, err := s.createBlobLink(ctx, user.AvatarThumbnailID)
 		if err != nil {
-			return nil, twirp.InternalErrorWith(err)
+			return nil, err
 		}
 
 		rpcUsers[i] = &rpc.User{

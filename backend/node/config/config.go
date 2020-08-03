@@ -1,8 +1,7 @@
 package config
 
 import (
-	"fmt"
-
+	"github.com/ansel1/merry"
 	"github.com/jinzhu/configor"
 
 	"github.com/mreider/koto/backend/common"
@@ -26,7 +25,7 @@ func Load(cfgPath string) (Config, error) {
 	var cfg Config
 	err := configor.Load(&cfg, cfgPaths...)
 	if err != nil {
-		return Config{}, fmt.Errorf("can't load config: %w", err)
+		return Config{}, merry.Prepend(err, "can't load config")
 	}
 	return cfg, nil
 }

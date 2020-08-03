@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"github.com/ansel1/merry"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -31,7 +32,7 @@ func (r *userRepo) AddUser(id, name string) error {
 			on conflict (id) do update set name = excluded.name where users.name <> excluded.name;`,
 		id, name)
 	if err != nil {
-		return err
+		return merry.Wrap(err)
 	}
 	return nil
 }
@@ -46,13 +47,13 @@ func (r *userRepo) FindUsersByName(names []string) ([]User, error) {
 		from users
 		where name in (?)`, names)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	query = r.db.Rebind(query)
 	var users []User
 	err = r.db.Select(&users, query, args...)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	return users, nil
 }

@@ -3,13 +3,12 @@ package common
 import (
 	"bytes"
 	"context"
-	"errors"
-	"fmt"
 	"io"
 	"log"
 	"sync"
 	"time"
 
+	"github.com/ansel1/merry"
 	"github.com/minio/minio-go/v7"
 )
 
@@ -62,7 +61,7 @@ func (s *S3Storage) Exists(ctx context.Context, blobID string) (bool, error) {
 		if minioErr, ok := err.(minio.ErrorResponse); ok && minioErr.Code == "NoSuchKey" {
 			return false, nil
 		}
-		return false, fmt.Errorf("can't StatObject: %w", err)
+		return false, merry.Prepend(err, "can't StatObject")
 	}
 	return info.Key != "", nil
 }
@@ -72,13 +71,13 @@ func (s *S3Storage) Read(ctx context.Context, blobID string, w io.Writer) error 
 
 	result, err := s.client.GetObject(ctx, s.bucket, blobID, minio.GetObjectOptions{})
 	if err != nil {
-		return fmt.Errorf("can't GetObject: %w", err)
+		return merry.Prepend(err, "can't GetObject")
 	}
 	defer func() { _ = result.Close() }()
 
 	_, err = io.Copy(w, result)
 	if err != nil {
-		return fmt.Errorf("can't write GetObject body: %w", err)
+		return merry.Prepend(err, "can't write GetObject body")
 	}
 	return nil
 }
@@ -88,14 +87,14 @@ func (s *S3Storage) ReadN(ctx context.Context, blobID string, n int) ([]byte, er
 
 	result, err := s.client.GetObject(ctx, s.bucket, blobID, minio.GetObjectOptions{})
 	if err != nil {
-		return nil, fmt.Errorf("can't GetObject: %w", err)
+		return nil, merry.Prepend(err, "can't GetObject")
 	}
 	defer func() { _ = result.Close() }()
 
 	buf := make([]byte, n)
 	count, err := io.ReadFull(result, buf)
-	if err != nil && !errors.Is(err, io.EOF) && !errors.Is(err, io.ErrUnexpectedEOF) {
-		return nil, fmt.Errorf("can't write GetObject body: %w", err)
+	if err != nil && !merry.Is(err, io.EOF) && !merry.Is(err, io.ErrUnexpectedEOF) {
+		return nil, merry.Prepend(err, "can't write GetObject body")
 	}
 	return buf[:count], nil
 }
@@ -118,7 +117,7 @@ func (s *S3Storage) CreateLink(ctx context.Context, blobID string, expiration ti
 
 	u, err := s.client.PresignedGetObject(ctx, s.bucket, blobID, expiration, nil)
 	if err != nil {
-		return "", fmt.Errorf("can't Presign: %w", err)
+		return "", merry.Prepend(err, "can't Presign")
 	}
 
 	s.cachedLinks[blobID] = u.String()
@@ -134,7 +133,7 @@ func (s *S3Storage) PutObject(ctx context.Context, blobID string, content []byte
 		ContentType: contentType,
 	})
 	if err != nil {
-		return fmt.Errorf("can't PutObject: %w", err)
+		return merry.Prepend(err, "can't PutObject")
 	}
 	return nil
 }
@@ -147,31 +146,31 @@ func (s *S3Storage) CreateUploadLink(ctx context.Context, blobID, contentType st
 	policy := minio.NewPostPolicy()
 	err = policy.SetBucket(s.bucket)
 	if err != nil {
-		return "", nil, fmt.Errorf("can't SetBucket for policy: %w", err)
+		return "", nil, merry.Prepend(err, "can't SetBucket for policy")
 	}
 	err = policy.SetKey(blobID)
 	if err != nil {
-		return "", nil, fmt.Errorf("can't SetKey for policy: %w", err)
+		return "", nil, merry.Prepend(err, "can't SetKey for policy")
 	}
 	err = policy.SetExpires(time.Now().UTC().Add(expiration))
 	if err != nil {
-		return "", nil, fmt.Errorf("can't SetExpires for policy: %w", err)
+		return "", nil, merry.Prepend(err, "can't SetExpires for policy")
 	}
 	err = policy.SetContentType(contentType)
 	if err != nil {
-		return "", nil, fmt.Errorf("can't SetContentType for policy: %w", err)
+		return "", nil, merry.Prepend(err, "can't SetContentType for policy")
 	}
 
 	for key, value := range metadata {
 		err = policy.SetUserMetadata(key, value)
 		if err != nil {
-			return "", nil, fmt.Errorf("can't SetContentType for policy: %w", err)
+			return "", nil, merry.Prepend(err, "can't SetContentType for policy")
 		}
 	}
 
 	link, formData, err := s.client.PresignedPostPolicy(ctx, policy)
 	if err != nil {
-		return "", nil, fmt.Errorf("can't Presign: %w", err)
+		return "", nil, merry.Prepend(err, "can't Presign")
 	}
 
 	return link.String(), formData, nil
@@ -182,7 +181,7 @@ func (s *S3Storage) RemoveObject(ctx context.Context, blobID string) error {
 
 	err := s.client.RemoveObject(ctx, s.bucket, blobID, minio.RemoveObjectOptions{})
 	if err != nil {
-		return fmt.Errorf("can't RemoveObject: %w", err)
+		return merry.Prepend(err, "can't RemoveObject")
 	}
 	return nil
 }
