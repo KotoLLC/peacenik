@@ -14,11 +14,14 @@ The alpha version should be ready in July 2020. You can check our progress [here
 
 ## Setup instructions
 
-You can run the backend API's here:
+You can run things for testing purposes by installing node + docker and running:
 
-[Run a central server](backend/central.md)
+```
+npm install
+docker-compose up --build
+```
 
-[Run a node](backend/node.md)
+## Running tests
 
 [Run tests](tests.md)
 
