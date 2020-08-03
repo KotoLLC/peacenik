@@ -10,43 +10,45 @@ on:
       - '*'
 
 jobs:
-  steps:
-    - uses: actions/checkout@v2.0
-      name: Check out code  
-
-    - name: Get the version
-      id: get_version
-      run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
-    
-    - uses: mr-smithers-excellent/docker-build-push@v4
-      name: Build & push Frontend Docker image
-      with:
-        image: k0t0/frontend
-        tag: ${{ steps.get_version.outputs.VERSION }}
-        registry: docker.io
-        directory: ./frontend
-        dockerfile: Dockerfile
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-
-    - uses: mr-smithers-excellent/docker-build-push@v4
-      name: Build & push Backend Central Docker image
-      with:
-        image: k0t0/central
-        tag: ${{ steps.get_version.outputs.VERSION }}
-        registry: docker.io
-        directory: ./frontend
-        dockerfile: Dockerfile
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-
-    - uses: mr-smithers-excellent/docker-build-push@v4
-      name: Build & push Backend Node Docker image
-      with:
-        image: k0t0/node
-        tag: ${{ steps.get_version.outputs.VERSION }}
-        registry: docker.io
-        directory: ./frontend
-        dockerfile: Dockerfile
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+  
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
+      
+      - uses: mr-smithers-excellent/docker-build-push@v4
+        name: Build & push Frontend Docker image
+        with:
+          image: k0t0/frontend
+          tag: ${{ steps.get_version.outputs.VERSION }}
+          registry: docker.io
+          directory: ./frontend
+          dockerfile: Dockerfile
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+  
+      - uses: mr-smithers-excellent/docker-build-push@v4
+        name: Build & push Backend Central Docker image
+        with:
+          image: k0t0/central
+          tag: ${{ steps.get_version.outputs.VERSION }}
+          registry: docker.io
+          directory: ./frontend
+          dockerfile: Dockerfile
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+  
+      - uses: mr-smithers-excellent/docker-build-push@v4
+        name: Build & push Backend Node Docker image
+        with:
+          image: k0t0/node
+          tag: ${{ steps.get_version.outputs.VERSION }}
+          registry: docker.io
+          directory: ./frontend
+          dockerfile: Dockerfile
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
