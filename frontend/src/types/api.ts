@@ -184,6 +184,9 @@ export declare namespace ApiTypes {
       updated_at: string
       comments?: Comment[] 
       avatar_thumbnail?: string
+      attachment?: string
+      attachment_type?: string
+      attachment_thumbnail?: string
     }
     
     export interface Comment {

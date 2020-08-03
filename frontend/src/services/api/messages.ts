@@ -121,10 +121,8 @@ export default {
   },
  
   setAttachment: async (host: string, data: FormData) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
     const config = {
       headers: {
-        // Authorization: `Bearer ${authToken}`,
         'Content-Type': 'multipart/form-data',
       }
     }

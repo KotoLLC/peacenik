@@ -113,11 +113,13 @@ export const ButtonsWrapper = styled.div`
 export const MessageContent = styled.div`
   font-size: 14px;
   margin-top: 10px;
+  margin-bottom: 10px;
   padding-left: 60px;
 `
 
 export const EditMessageWrapper = styled.div`
   padding-left: 60px;
+  margin-bottom: 10px;
   
   &:after {
     content: '';
@@ -176,4 +178,8 @@ export const UploadInput = styled.input`
 export const ImagePreview = styled.img`
   max-width: 100%;
   max-height: 500px;
+`
+
+export const AttachmentWrapper = styled.div`
+  padding-left: 60px;
 `

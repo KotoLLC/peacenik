@@ -50,6 +50,7 @@ const Editor: React.SFC<Props> = (props) => {
       }
     }
 
+    setFile(null)
     props.onMessagePost(data)
   }
 
@@ -111,7 +112,7 @@ const Editor: React.SFC<Props> = (props) => {
       })
 
     }
-  }, [isMessagePostedSuccess, onPostMessageSucces, uploadLink])
+  }, [isMessagePostedSuccess, uploadLink])
 
   return (
     <MessageSticky>
