@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/jinzhu/configor"
@@ -10,15 +11,18 @@ import (
 )
 
 type Config struct {
-	ListenAddress        string   `yaml:"address" default:":12001" env:"KOTO_LISTEN_ADDRESS"`
-	PrivateKeyPath       string   `yaml:"private_key_path" default:"central.rsa" env:"KOTO_PRIVATE_KEY"`
-	Admins               []string `yaml:"admins" env:"KOTO_ADMINS"`
-	TokenDurationSeconds int      `yaml:"token_duration" default:"3600" env:"KOTO_TOKEN_DURATION"`
-	FrontendAddress      string   `yaml:"frontend" default:"http://localhost:3000" env:"KOTO_FRONTEND_ADDRESS"`
+	ListenAddress        string `yaml:"address" default:":12001" env:"KOTO_LISTEN_ADDRESS"`
+	PrivateKeyPath       string `yaml:"private_key_path" default:"central.rsa" env:"KOTO_PRIVATE_KEY"`
+	Admins               string `yaml:"admins" env:"KOTO_ADMINS"`
+	TokenDurationSeconds int    `yaml:"token_duration" default:"3600" env:"KOTO_TOKEN_DURATION"`
+	FrontendAddress      string `yaml:"frontend" default:"http://localhost:3000" env:"KOTO_FRONTEND_ADDRESS"`
+	TestMode             bool   `yaml:"test_mode" default:"false" env:"KOTO_TEST_MODE"`
 
 	DB   common.DatabaseConfig `yaml:"db"`
 	S3   common.S3Config       `yaml:"s3"`
 	SMTP common.SMTPConfig     `yaml:"smtp"`
+
+	adminList []string
 }
 
 func Load(cfgPath string) (Config, error) {
@@ -32,6 +36,11 @@ func Load(cfgPath string) (Config, error) {
 	if err != nil {
 		return Config{}, fmt.Errorf("can't load config: %w", err)
 	}
+
+	for _, admin := range strings.Split(cfg.Admins, ",") {
+		cfg.adminList = append(cfg.adminList, strings.TrimSpace(admin))
+	}
+
 	return cfg, nil
 }
 
@@ -40,10 +49,14 @@ func (cfg Config) TokenDuration() time.Duration {
 }
 
 func (cfg Config) IsAdmin(user string) bool {
-	for _, admin := range cfg.Admins {
+	for _, admin := range cfg.adminList {
 		if admin == user {
 			return true
 		}
 	}
 	return false
+}
+
+func (cfg Config) AdminList() []string {
+	return cfg.adminList
 }

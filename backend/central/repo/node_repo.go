@@ -21,6 +21,7 @@ type Node struct {
 	ApprovedAt    sql.NullTime `db:"approved_at"`
 	DisabledAt    sql.NullTime `db:"disabled_at"`
 	Details       string       `db:"details"`
+	PostLimit     int          `db:"post_limit"`
 }
 
 type UserNode struct {
@@ -31,13 +32,14 @@ type UserNode struct {
 
 type NodeRepo interface {
 	NodeExists(address string) (bool, error)
-	AddNode(address, details string, nodeAdmin User) (string, error)
+	AddNode(address, details string, nodeAdmin User, postLimit int) (string, error)
 	AllNodes() ([]Node, error)
 	Nodes(user User) ([]Node, error)
 	Node(nodeID string) (*Node, error)
 	ApproveNode(nodeID string) error
 	RemoveNode(nodeID string) error
 	ConnectedNodes(user User) ([]UserNode, error)
+	SetNodePostLimit(nodeAdminID, nodeID string, postLimit int) error
 }
 
 type nodeRepo struct {
@@ -67,16 +69,20 @@ func (r *nodeRepo) NodeExists(address string) (bool, error) {
 	return true, nil
 }
 
-func (r *nodeRepo) AddNode(address, details string, nodeAdmin User) (string, error) {
+func (r *nodeRepo) AddNode(address, details string, nodeAdmin User, postLimit int) (string, error) {
 	nodeID, err := uuid.NewV4()
 	if err != nil {
 		return "", err
 	}
 
+	if postLimit < 0 {
+		postLimit = 0
+	}
+
 	_, err = r.db.Exec(`
-		insert into nodes(id, address, admin_id, created_at, details) 
-		VALUES ($1, $2, $3, $4, $5)`,
-		nodeID.String(), address, nodeAdmin.ID, common.CurrentTimestamp(), details)
+		insert into nodes(id, address, admin_id, created_at, details, post_limit) 
+		VALUES ($1, $2, $3, $4, $5, $6)`,
+		nodeID.String(), address, nodeAdmin.ID, common.CurrentTimestamp(), details, postLimit)
 	if err != nil {
 		return "", err
 	}
@@ -87,7 +93,7 @@ func (r *nodeRepo) AllNodes() ([]Node, error) {
 	var nodes []Node
 	err := r.db.Select(&nodes, `
 			select n.id, n.address, n.admin_id, n.created_at, n.approved_at, n.disabled_at, n.details,
-				   u.name admin_name, u.avatar_thumbnail_id admin_avatar_id
+				   u.name admin_name, u.avatar_thumbnail_id admin_avatar_id, post_limit
 			from nodes n
 				inner join users u on u.id = n.admin_id`)
 	return nodes, err
@@ -97,7 +103,7 @@ func (r *nodeRepo) Nodes(user User) ([]Node, error) {
 	var nodes []Node
 	err := r.db.Select(&nodes, `
 		select n.id, n.address, n.admin_id, n.created_at, n.approved_at, n.disabled_at, n.details,
-				   u.name admin_name, u.avatar_thumbnail_id admin_avatar_id
+				   u.name admin_name, u.avatar_thumbnail_id admin_avatar_id, post_limit
 		from nodes n
 			inner join users u on u.id = n.admin_id
 		where n.admin_id = $1`, user.ID)
@@ -107,7 +113,7 @@ func (r *nodeRepo) Nodes(user User) ([]Node, error) {
 func (r *nodeRepo) Node(nodeID string) (*Node, error) {
 	var node Node
 	err := r.db.Get(&node, `
-		select id, address, admin_id, created_at, approved_at, disabled_at, details
+		select id, address, admin_id, created_at, approved_at, disabled_at, details, post_limit
 		from nodes
 		where id = $1`, nodeID)
 	if err != nil {
@@ -188,7 +194,7 @@ func (r *nodeRepo) ConnectedNodes(user User) (userNodes []UserNode, err error) {
 
 	var nodes []Node
 	err = r.db.Select(&nodes, `
-		select id, address, admin_id, created_at, approved_at, disabled_at, details
+		select id, address, admin_id, created_at, approved_at, disabled_at, details, post_limit
 		from nodes
 		where approved_at is not null and disabled_at is null`)
 	if err != nil {
@@ -197,7 +203,7 @@ func (r *nodeRepo) ConnectedNodes(user User) (userNodes []UserNode, err error) {
 
 	userNodes = make([]UserNode, 0, 10)
 	for _, node := range nodes {
-		if friend, ok := friends[node.AdminID]; ok {
+		if friend, ok := friends[node.AdminID]; ok && (node.PostLimit <= 0 || friend.MinDistance < node.PostLimit) {
 			userNodes = append(userNodes, UserNode{
 				Node:        node,
 				MinDistance: friend.MinDistance,
@@ -207,4 +213,17 @@ func (r *nodeRepo) ConnectedNodes(user User) (userNodes []UserNode, err error) {
 	}
 
 	return userNodes, nil
+}
+
+func (r *nodeRepo) SetNodePostLimit(nodeAdminID, nodeID string, postLimit int) error {
+	if postLimit < 0 {
+		postLimit = 1
+	}
+
+	_, err := r.db.Exec(`
+		update nodes
+		set post_limit = $1
+		where id = $2 and admin_id = $3`,
+		postLimit, nodeID, nodeAdminID)
+	return err
 }
