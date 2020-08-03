@@ -13,6 +13,7 @@ import selectors from '@selectors/index'
 import Actions from '@store/actions'
 import moment from 'moment'
 import 'react-lazy-load-image-component/src/effects/blur.css'
+import 'video-react/dist/video-react.css'
 
 const theme = createMuiTheme({
   typography: {

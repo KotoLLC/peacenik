@@ -104,4 +104,32 @@ export default {
       return response
     }).catch(error => ({ error }))
   },
+
+  getUploadLink: async (data: ApiTypes.Messages.UploadLinkRequest) => {
+    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const config = {
+      withCredentials: false,
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      }
+    }
+    return await axiosInstance.post(`${data.host}/rpc.BlobService/UploadLink`, {
+      'content_type': data.value
+    }, config).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
+ 
+  setAttachment: async (host: string, data: FormData) => {
+    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const config = {
+      headers: {
+        // Authorization: `Bearer ${authToken}`,
+        'Content-Type': 'multipart/form-data',
+      }
+    }
+    return await axiosInstance.post(host, data, config).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
 }

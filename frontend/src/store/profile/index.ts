@@ -8,7 +8,7 @@ const user: ApiTypes.Profile.UserProfile = profile ? JSON.parse(profile) : {
     name: '',
     email: '',
     avatar_thumbnail: '',
-  }
+  } 
 }
 
 export interface State extends ApiTypes.Profile.UserProfile {

@@ -129,3 +129,23 @@ export function* watchDeleteComment(action: { type: string, payload: ApiTypes.Me
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
+
+export function* watchGetMessageUploadLink(action: { type: string, payload: ApiTypes.Messages.UploadLinkRequest }) {
+  const response = yield API.messages.getUploadLink(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.messages.getMessageUploadLinkSucces(response.data))
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
+export function* watchSetAttachment(action: { type: string, payload: ApiTypes.Messages.Attachment}) {
+  const response = yield API.messages.setAttachment(action.payload.link, action.payload.form_data)
+  
+  if (response.status === 204 || response.status === 200) {
+    yield put(Actions.messages.setAttachmentSuccess())
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}

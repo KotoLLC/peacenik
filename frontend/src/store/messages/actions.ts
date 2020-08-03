@@ -13,21 +13,27 @@ export enum Types {
 
   POST_MESSAGE_REQUEST = 'POST_MESSAGE_REQUEST',
   POST_MESSAGE_SUCCESS = 'POST_MESSAGE_SUCCESS',
-  
+
   DELETE_MESSAGE_REQUEST = 'DELETE_MESSAGE_REQUEST',
   DELETE_MESSAGE_SUCCESS = 'DELETE_MESSAGE_SUCCESS',
-  
+
   EDIT_MESSAGE_REQUEST = 'EDIT_MESSAGE_REQUEST',
   EDIT_MESSAGE_SUCCESS = 'EDIT_MESSAGE_SUCCESS',
 
   POST_COMMENT_REQUEST = 'POST_COMMENT_REQUEST',
   POST_COMMENT_SUCCESS = 'POST_COMMENT_SUCCESS',
-  
+
   EDIT_COMMENT_REQUEST = 'EDIT_COMMENT_REQUEST',
   EDIT_COMMENT_SUCCESS = 'EDIT_COMMENT_SUCCESS',
-  
+
   DELETE_COMMENT_REQUEST = 'DELETE_COMMENT_REQUEST',
   DELETE_COMMENT_SUCCESS = 'DELETE_COMMENT_SUCCESS',
+
+  GET_MESSAGE_UPLOAD_LINK_REQUEST = 'GET_MESSAGE_UPLOAD_LINK_REQUEST',
+  GET_MESSAGE_UPLOAD_LINK_SUCCESS = 'GET_MESSAGE_UPLOAD_LINK_SUCCESS',
+
+  SET_MESSAGE_ATTACHMENT_REQUEST = 'SET_MESSAGE_ATTACHMENT_REQUEST',
+  SET_MESSAGE_ATTACHMENT_SUCCESS = 'SET_MESSAGE_ATTACHMENT_SUCCESS',
 }
 
 const getMessagesRequest = () => ({
@@ -114,6 +120,25 @@ const deleteCommentSucces = () => ({
   type: Types.DELETE_COMMENT_SUCCESS,
 })
 
+const getMessageUploadLinkRequest = (payload: ApiTypes.Messages.UploadLinkRequest) => ({
+  type: Types.GET_MESSAGE_UPLOAD_LINK_REQUEST,
+  payload,
+})
+
+const getMessageUploadLinkSucces = (payload: ApiTypes.UploadLink) => ({
+  type: Types.GET_MESSAGE_UPLOAD_LINK_SUCCESS,
+  payload
+})
+
+const setAttachmentRequest = (payload: ApiTypes.Messages.Attachment) => ({
+  type: Types.SET_MESSAGE_ATTACHMENT_REQUEST,
+  payload,
+})
+
+const setAttachmentSuccess = () => ({
+  type: Types.SET_MESSAGE_ATTACHMENT_SUCCESS,
+})
+
 export default {
   getMessagesRequest,
   getMessagesSucces,
@@ -133,4 +158,8 @@ export default {
   editCommentSucces,
   deleteCommentRequest,
   deleteCommentSucces,
+  getMessageUploadLinkRequest,
+  getMessageUploadLinkSucces,
+  setAttachmentRequest,
+  setAttachmentSuccess,
 }
