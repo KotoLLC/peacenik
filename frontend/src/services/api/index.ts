@@ -6,8 +6,10 @@ import nodes from './nodes'
 import profile from './profile'
 import messages from './messages'
 
+const URL = process.env.KOTO_CENTRAL_HOST ? `${process.env.KOTO_CENTRAL_HOST}:12001` : 'http://localhost:12001'
+
 export const axiosInstance = axios.create({
-  baseURL: 'http://localhost:12001',
+  baseURL: URL,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
