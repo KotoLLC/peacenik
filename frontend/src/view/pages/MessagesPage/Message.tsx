@@ -25,6 +25,8 @@ import {
   CommentsLink,
   CommentsLinkWrapper,
   CommentsWrapepr,
+  ImagePreview,
+  AttachmentWrapper,
 } from './styles'
 
 interface Props extends ApiTypes.Messages.Message {
@@ -34,7 +36,20 @@ interface Props extends ApiTypes.Messages.Message {
 }
 
 const Message: React.SFC<Props> = (props) => {
-  const { text, user_name, created_at, isAuthor, id, sourceHost, messageToken, comments, avatar_thumbnail } = props
+  const { 
+    text, 
+    user_name, 
+    created_at, 
+    isAuthor, 
+    id, 
+    sourceHost, 
+    messageToken, 
+    comments, 
+    avatar_thumbnail,
+    attachment,
+    attachment_type,
+    // attachment_thumbnail,
+   } = props
   const [isEditer, setEditor] = useState<boolean>(false)
   const [isCommentsEditer, setCommentsEditor] = useState<boolean>(false)
   const [message, onMessageChange] = useState<string>(text)
@@ -114,6 +129,18 @@ const Message: React.SFC<Props> = (props) => {
     }
   }
 
+  const renderAttachment = () => {
+    if (attachment_type && attachment_type.indexOf('image') !== -1) {
+      return (
+        <AttachmentWrapper>
+          <ImagePreview src={attachment}/>
+        </AttachmentWrapper>
+      )
+    }
+
+    return null
+  }
+
   return (
     <>
       <PaperStyled>
@@ -142,6 +169,7 @@ const Message: React.SFC<Props> = (props) => {
             </EditMessageWrapper>
             : <MessageContent>{message}</MessageContent>
         }
+        { renderAttachment() }
         {
           isCommentsEditer && <EditMessageWrapper>
             <TextareaAutosizeStyled
