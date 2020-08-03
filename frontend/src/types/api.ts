@@ -122,6 +122,8 @@ export declare namespace ApiTypes {
       body: {
         token: string,
         text: string,
+        attachment_id?: string,
+        attachment_changed?: boolean
       }
     }
     
@@ -193,6 +195,16 @@ export declare namespace ApiTypes {
       created_at: string
       updated_at: string
       avatar_thumbnail?: string
+    }
+
+    export interface UploadLinkRequest {
+      host: string,
+      value: string
+    }
+
+    export interface Attachment {
+      form_data: FormData
+      link: string
     }
   }
 
