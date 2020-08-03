@@ -47,6 +47,8 @@ import {
     watchPostComment,
     watchEditComment,
     watchDeleteComment,
+    watchGetMessageUploadLink,
+    watchSetAttachment,
 } from './messages'
 
 export function* rootSaga() {
@@ -86,5 +88,7 @@ export function* rootSaga() {
         takeEvery(MessagesTypes.POST_COMMENT_REQUEST, watchPostComment),
         takeEvery(MessagesTypes.EDIT_COMMENT_REQUEST, watchEditComment),
         takeEvery(MessagesTypes.DELETE_COMMENT_REQUEST, watchDeleteComment),
+        takeEvery(MessagesTypes.GET_MESSAGE_UPLOAD_LINK_REQUEST, watchGetMessageUploadLink),
+        takeEvery(MessagesTypes.SET_MESSAGE_ATTACHMENT_REQUEST, watchSetAttachment),
     ])
 }

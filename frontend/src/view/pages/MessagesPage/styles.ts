@@ -58,6 +58,13 @@ export const TextareaAutosizeStyled = styled(TextareaAutosize)`
   background: transparent;
 `
 
+export const EditorButtonsWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+`
+
 export const ButtonSend = styled(Button)`
   && {
     float: right;
@@ -141,9 +148,6 @@ export const EmptyMessage = styled.div`
   
   a {
     text-decoration: none;
-    /* font-size: 1.1em; */
-    /* color: #999; */
-    /* font-weight: 300; */
   }
 `
 
@@ -163,4 +167,13 @@ export const CommentsLink = styled(Link)`
     cursor: pointer;
     color: #1976d2;
   }
+`
+
+export const UploadInput = styled.input`
+  display: none;
+`
+
+export const ImagePreview = styled.img`
+  max-width: 100%;
+  max-height: 500px;
 `

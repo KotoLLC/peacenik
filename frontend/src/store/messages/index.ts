@@ -6,6 +6,7 @@ export interface State {
   currentNode: NodeTypes.CurrentNode
   isMessagePostedSuccess: boolean
   messages: ApiTypes.Messages.Message[]
+  uploadLink: ApiTypes.UploadLink | null
 }
 
 const initialState: State = {
@@ -15,7 +16,8 @@ const initialState: State = {
     token: '',
   },
   isMessagePostedSuccess: false,
-  messages: []
+  messages: [],
+  uploadLink: null,
 }
 
 const reducer = (state = initialState, action) => {
@@ -45,6 +47,11 @@ const reducer = (state = initialState, action) => {
         ...state, ...{ 
           messages: uniqBy([...action.payload, ...state.messages], 'id')
         }
+      }
+    }
+    case Types.GET_MESSAGE_UPLOAD_LINK_SUCCESS: {
+      return {
+        ...state, ...{ uploadLink: action.payload }
       }
     }
     default: return state
