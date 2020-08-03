@@ -3,7 +3,6 @@ import ReactPageScroller from 'react-page-scroller'
 import Typography from '@material-ui/core/Typography'
 import { v4 as uuidv4 } from 'uuid'
 import { withRouter, RouteComponentProps } from 'react-router'
-import { LazyLoadImage } from 'react-lazy-load-image-component'
 import Button from '@material-ui/core/Button'
 
 import {
@@ -51,10 +50,7 @@ export const AboutUs: React.SFC<RouteComponentProps> = (props) => {
         <ContainerStyled maxWidth="md">
           <div>
             <Typography variant="h3" gutterBottom>Some image</Typography>
-            <LazyLoadImage
-              alt="img"
-              effect="blur"
-              src="https://picsum.photos/id/10/400/300" />
+            <img src="https://picsum.photos/id/10/400/300" alt="img"/>
             <Typography variant="subtitle1" gutterBottom>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos blanditiis tenetur</Typography>
           </div>
         </ContainerStyled>
