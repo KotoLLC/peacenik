@@ -7,7 +7,7 @@ on:
     # paths:
     # - 'frontend/**'
     tags:        
-      - *
+      - '*'
 
 jobs:
   steps:
