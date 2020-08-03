@@ -27,14 +27,16 @@ type authService struct {
 	sessionUserKey   string
 	passwordHash     PasswordHash
 	userConfirmation *user.Confirmation
+	testMode         bool
 }
 
-func NewAuth(base *BaseService, sessionUserKey string, passwordHash PasswordHash, userConfirmation *user.Confirmation) rpc.AuthService {
+func NewAuth(base *BaseService, sessionUserKey string, passwordHash PasswordHash, userConfirmation *user.Confirmation, testMode bool) rpc.AuthService {
 	return &authService{
 		BaseService:      base,
 		sessionUserKey:   sessionUserKey,
 		passwordHash:     passwordHash,
 		userConfirmation: userConfirmation,
+		testMode:         testMode,
 	}
 }
 
@@ -134,7 +136,23 @@ func (s *authService) getAuthSession(ctx context.Context) Session {
 	return session
 }
 
-func (s *authService) Confirm(_ context.Context, r *rpc.AuthConfirmRequest) (*rpc.Empty, error) {
+func (s *authService) Confirm(ctx context.Context, r *rpc.AuthConfirmRequest) (*rpc.Empty, error) {
+	if s.testMode {
+		if s.isAdmin(ctx) {
+			u, err := s.repos.User.FindUser(r.Token)
+			if err != nil {
+				return nil, twirp.InternalErrorWith(err)
+			}
+			if u != nil {
+				err = s.repos.User.ConfirmUser(u.ID)
+				if err != nil {
+					return nil, twirp.InternalErrorWith(err)
+				}
+				return &rpc.Empty{}, nil
+			}
+		}
+	}
+
 	err := s.userConfirmation.Confirm(r.Token)
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
