@@ -1,7 +1,7 @@
 address: :12001
 frontend: http://localhost:3000
-admins:
-  - andrey9
+admins: andrey9,matt
+test_mode: false
 
 db:
   host: localhost

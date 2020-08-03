@@ -64,7 +64,7 @@ func (s *Server) Run() error {
 	mailSender := common.NewMailSender(s.cfg.SMTP)
 	userConfirmation := user.NewConfirmation(s.cfg.FrontendAddress, mailSender, s.tokenGenerator, s.tokenParser, s.repos.User)
 
-	authService := services.NewAuth(baseService, sessionUserKey, passwordHash, userConfirmation)
+	authService := services.NewAuth(baseService, sessionUserKey, passwordHash, userConfirmation, s.cfg.TestMode)
 	authServiceHandler := rpc.NewAuthServiceServer(authService, rpcHooks)
 	r.Handle(authServiceHandler.PathPrefix()+"*", s.findSessionUser(s.authSessionProvider(authServiceHandler)))
 
@@ -80,7 +80,7 @@ func (s *Server) Run() error {
 	userServiceHandler := rpc.NewUserServiceServer(userService, rpcHooks)
 	r.Handle(userServiceHandler.PathPrefix()+"*", s.checkAuth(userServiceHandler))
 
-	nodeService := services.NewNode(baseService, s.cfg.Admins)
+	nodeService := services.NewNode(baseService, s.cfg.AdminList())
 	nodeServiceHandler := rpc.NewNodeServiceServer(nodeService, rpcHooks)
 	r.Handle(nodeServiceHandler.PathPrefix()+"*", s.checkAuth(nodeServiceHandler))
 
