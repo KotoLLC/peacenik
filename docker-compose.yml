@@ -22,7 +22,7 @@ services:
     environment:
       KOTO_ADDRESS: :12001
       KOTO_PRIVATE_KEY: /central.rsa
-      KOTO_ADMINS: "[\"admin1\"]"
+      KOTO_ADMINS: "matt"
       KOTO_DB_HOST: db_central
       KOTO_DB_SSL_MODE: disable
       KOTO_DB_USER: postgres
@@ -37,13 +37,14 @@ services:
       KOTO_SMTP_USER: 23423423423423
       KOTO_SMTP_PASSWORD: 4534534terer
       KOTO_SMTP_FROM: admin@koto.org
+      KOTO_TEST_MODE: "true"
 
     restart: on-failure
     depends_on:
       - db_central
     volumes:
       - ./backend/central.rsa:/central.rsa
-  
+
   node-1:
     build:
       context: ./backend
