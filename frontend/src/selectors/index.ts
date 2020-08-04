@@ -5,6 +5,7 @@ import messages from './messages'
 import authorization from './authorization'
 import registration from './registration'
 import common from './common'
+import notifications from './notifications'
 
 export default {
     friends,
@@ -14,4 +15,5 @@ export default {
     authorization,
     registration,
     common,
+    notifications,
 }

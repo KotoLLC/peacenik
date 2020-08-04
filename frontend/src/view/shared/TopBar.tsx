@@ -7,6 +7,8 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import { TopMenu } from './TopMenu'
 import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive'
 import { history } from '@view/routes'
+import selectors from '@selectors/index'
+import { StoreTypes } from './../../types'
 import { 
   TooltipStyle, 
   IconButtonStyled, 
@@ -17,10 +19,12 @@ import {
 } from './styles'
 
 interface Props {
+  notificationLength: number
   onLogout: () => void
 }
 
 const TopBar: React.SFC<Props> = React.memo((props) => {
+  const { notificationLength } = props
 
   const onLogoutClick = () => {
     history.push('/login')    
@@ -32,9 +36,9 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
       <Toolbar>
         <LogoWrapper to="/messages">Koto</LogoWrapper>
         <TopBarRightSide>
-          {false && <NotificationsWrapper to="/notifications">
+          {Boolean(notificationLength) && <NotificationsWrapper to="/notifications">
             <NotificationsActiveIcon fontSize="small"/>
-            <NotificationsCounter>10 notifications</NotificationsCounter>
+            <NotificationsCounter>{notificationLength} notifications</NotificationsCounter>
           </NotificationsWrapper>}
           <TopMenu />
           <TooltipStyle title={`Logout`}>
@@ -48,9 +52,14 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
   )
 })
 
+type StateProps = Pick<Props, 'notificationLength'>
+const mapStateToProps = (state: StoreTypes): StateProps => ({
+  notificationLength: selectors.notifications.notificationLength(state),
+})
+
 type DispatchProps = Pick<Props, 'onLogout'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onLogout: () => dispatch(Actions.authorization.logoutRequest()),
 })
 
-export default connect(null, mapDispatchToProps)(TopBar)
+export default connect(mapStateToProps, mapDispatchToProps)(TopBar)

@@ -214,4 +214,28 @@ export declare namespace ApiTypes {
     }
   }
 
+  export namespace Notifications {
+
+    export type MessageTypes = 'message/post' | 'message/tag' | 'message/like'
+    export type CommentTypes = 'comment/post' | 'comment/tag' | 'comment/like'
+    export type NodeTypes = 'node/add' | 'node/approve' | 'node/remove'
+    export type InviteTypes = 'invite/add' | 'invite/approve' | 'invite/remove'
+
+    export interface Data {
+      user_id: string
+      node_id?: string 
+      message_id?: string
+      comment_id?: string
+    }
+
+    export type Type = MessageTypes | CommentTypes | NodeTypes | InviteTypes
+
+    export interface Notification {
+      id: string,
+      text: string,
+      type: Type
+      data: Data
+      created_at: string
+    }
+  }
 }
