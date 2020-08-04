@@ -24,9 +24,12 @@ interface Props {
   isLogged: boolean
   isEmailConfirmed: boolean
   onGetAuthToken: () => void
+  onGetNotifications: () => void
 }
 
 class AppComponent extends React.Component<Props> {
+
+  state = {}
 
   checkTokenTime = () => {
     const authTokenDate = localStorage.getItem('kotoAuthTokenDate')
@@ -38,7 +41,7 @@ class AppComponent extends React.Component<Props> {
       const diffTime = moment(dateNow).diff(lastTokenDate) / 1000 // in seconds
 
       if (diffTime > 1800) {
-        this.props.onGetAuthToken()  
+        this.props.onGetAuthToken()
       }
     }
 
@@ -47,15 +50,24 @@ class AppComponent extends React.Component<Props> {
     // }
   }
 
-  componentDidMount() {  
-    
+  static getDerivedStateFromProps(newProps: Props) {
+    if (newProps.isLogged) {
+      newProps.onGetNotifications()
+    }
+
+    return null
+  }
+
+  componentDidMount() {
     if (this.props.isLogged) {
       this.checkTokenTime()
+      this.props.onGetNotifications()
     }
 
     setInterval(() => {
       if (this.props.isLogged) {
         this.checkTokenTime()
+        this.props.onGetNotifications()
       }
     }, 60 * 1000)
   }
@@ -80,9 +92,10 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   isEmailConfirmed: selectors.profile.isEmailConfirmed(state) || false,
 })
 
-type DispatchProps = Pick<Props, 'onGetAuthToken'>
+type DispatchProps = Pick<Props, 'onGetAuthToken' | 'onGetNotifications'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onGetAuthToken: () => dispatch(Actions.authorization.getAuthTokenRequest())
+  onGetAuthToken: () => dispatch(Actions.authorization.getAuthTokenRequest()),
+  onGetNotifications: () => dispatch(Actions.notifications.getNotificationsRequest()),
 })
 
 const App = connect(mapStateToProps, mapDispatchToProps)(AppComponent)

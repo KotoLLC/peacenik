@@ -5,6 +5,7 @@ import { State as CommonState } from '@store/common'
 import { State as NodesState } from '@store/nodes'
 import { State as ProfileState } from '@store/profile'
 import { State as MessagesState } from '@store/messages'
+import { State as NotificationsState } from '@store/notifications'
 
 export interface StoreTypes {
   registration: RegistrationState
@@ -14,4 +15,5 @@ export interface StoreTypes {
   nodes: NodesState
   profile: ProfileState
   messages: MessagesState
+  notifications: NotificationsState
 }

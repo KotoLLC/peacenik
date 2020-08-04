@@ -5,6 +5,7 @@ import common from './common/actions'
 import nodes from './nodes/actions'
 import profile from './profile/actions'
 import messages from './messages/actions'
+import notifications from './notifications/actions'
 
 export default {
   registration,
@@ -14,4 +15,5 @@ export default {
   nodes,
   profile,
   messages,
+  notifications,
 }

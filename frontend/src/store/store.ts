@@ -9,6 +9,7 @@ import common from './common'
 import nodes from './nodes'
 import profile from './profile'
 import messages from './messages'
+import notifications from './notifications'
 
 const appReducer = combineReducers({
     registration,
@@ -18,6 +19,7 @@ const appReducer = combineReducers({
     nodes,
     profile,
     messages,
+    notifications,
 })
 
 const rootReducer = (state, action) => {
