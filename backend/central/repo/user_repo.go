@@ -2,9 +2,9 @@ package repo
 
 import (
 	"database/sql"
-	"errors"
 	"time"
 
+	"github.com/ansel1/merry"
 	"github.com/jmoiron/sqlx"
 
 	"github.com/mreider/koto/backend/common"
@@ -53,10 +53,10 @@ func (r *userRepo) FindUser(value string) (*User, error) {
 		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at
 		from users where id = $1 or name = $1 or email = $1`, value)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if merry.Is(err, sql.ErrNoRows) {
 			return nil, nil
 		}
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	return &user, nil
 }
@@ -68,10 +68,10 @@ func (r *userRepo) FindUserByID(id string) (*User, error) {
 		from users
 		where id = $1`, id)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if merry.Is(err, sql.ErrNoRows) {
 			return nil, nil
 		}
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	return &user, nil
 }
@@ -83,10 +83,10 @@ func (r *userRepo) FindUserByEmail(email string) (*User, error) {
 		from users
 		where email = $1`, email)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if merry.Is(err, sql.ErrNoRows) {
 			return nil, nil
 		}
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	return &user, nil
 }
@@ -98,10 +98,10 @@ func (r *userRepo) FindUserByName(name string) (*User, error) {
 		from users
 		where name = $1`, name)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if merry.Is(err, sql.ErrNoRows) {
 			return nil, nil
 		}
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	return &user, nil
 }
@@ -113,10 +113,10 @@ func (r *userRepo) FindUserByNameOrEmail(value string) (*User, error) {
 		from users
 		where name = $1 or email = $1`, value)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if merry.Is(err, sql.ErrNoRows) {
 			return nil, nil
 		}
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	return &user, nil
 }
@@ -128,7 +128,7 @@ func (r *userRepo) AddUser(id, name, email, passwordHash string) error {
 			values($1, $2, $3, $4, $5, $5)`,
 			id, name, email, passwordHash, common.CurrentTimestamp())
 		if err != nil {
-			return err
+			return merry.Wrap(err)
 		}
 		if email != "" {
 			_, err = tx.Exec(`
@@ -137,14 +137,14 @@ func (r *userRepo) AddUser(id, name, email, passwordHash string) error {
 			where friend_id is null and friend_email = $2`,
 				id, email)
 		}
-		return err
+		return merry.Wrap(err)
 	})
 }
 
 func (r *userRepo) UserCount() (int, error) {
 	var count int
 	err := r.db.Get(&count, "select count(*) from users;")
-	return count, err
+	return count, merry.Wrap(err)
 }
 
 func (r *userRepo) SetAvatar(userID, avatarOriginalID, avatarThumbnailID string) error {
@@ -152,7 +152,7 @@ func (r *userRepo) SetAvatar(userID, avatarOriginalID, avatarThumbnailID string)
 		var user User
 		err := tx.Get(&user, "select avatar_original_id, avatar_thumbnail_id from users where id = $1", userID)
 		if err != nil {
-			return err
+			return merry.Wrap(err)
 		}
 		now := common.CurrentTimestamp()
 		if user.AvatarOriginalID != "" && user.AvatarOriginalID != avatarOriginalID {
@@ -161,7 +161,7 @@ func (r *userRepo) SetAvatar(userID, avatarOriginalID, avatarThumbnailID string)
 				values ($1, $2)`,
 				user.AvatarOriginalID, now)
 			if err != nil {
-				return err
+				return merry.Wrap(err)
 			}
 		}
 		if user.AvatarThumbnailID != "" && user.AvatarThumbnailID != avatarThumbnailID {
@@ -170,7 +170,7 @@ func (r *userRepo) SetAvatar(userID, avatarOriginalID, avatarThumbnailID string)
 				values ($1, $2)`,
 				user.AvatarThumbnailID, now)
 			if err != nil {
-				return err
+				return merry.Wrap(err)
 			}
 		}
 
@@ -179,7 +179,7 @@ func (r *userRepo) SetAvatar(userID, avatarOriginalID, avatarThumbnailID string)
 			set avatar_original_id = $1, avatar_thumbnail_id = $2, updated_at = $3
 			where id = $4;`,
 			avatarOriginalID, avatarThumbnailID, now, userID)
-		return err
+		return merry.Wrap(err)
 	})
 }
 
@@ -189,7 +189,7 @@ func (r *userRepo) SetEmail(userID, email string) error {
 		set email = $1, updated_at = $2
 		where id = $3;`,
 		email, common.CurrentTimestamp(), userID)
-	return err
+	return merry.Wrap(err)
 }
 
 func (r *userRepo) SetPassword(userID, passwordHash string) error {
@@ -198,7 +198,7 @@ func (r *userRepo) SetPassword(userID, passwordHash string) error {
 		set password_hash = $1, updated_at = $2
 		where id = $3;`,
 		passwordHash, common.CurrentTimestamp(), userID)
-	return err
+	return merry.Wrap(err)
 }
 
 func (r *userRepo) FindUsers(ids []string) ([]User, error) {
@@ -211,13 +211,13 @@ func (r *userRepo) FindUsers(ids []string) ([]User, error) {
 		from users
 		where id in (?)`, ids)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	query = r.db.Rebind(query)
 	var users []User
 	err = r.db.Select(&users, query, args...)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	return users, nil
 }
@@ -228,5 +228,5 @@ func (r *userRepo) ConfirmUser(userID string) error {
 		set confirmed_at = $1
 		where id = $2 and confirmed_at is null`,
 		common.CurrentTimestamp(), userID)
-	return err
+	return merry.Wrap(err)
 }

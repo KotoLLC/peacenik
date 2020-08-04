@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/ansel1/merry"
+
 	"github.com/mreider/koto/backend/central"
 	"github.com/mreider/koto/backend/central/config"
 	"github.com/mreider/koto/backend/central/migrate"
@@ -80,7 +82,7 @@ func loadConfig(execDir string) (config.Config, error) {
 
 	cfg, err := config.Load(configPath)
 	if err != nil {
-		return config.Config{}, err
+		return config.Config{}, merry.Wrap(err)
 	}
 
 	cfg.FrontendAddress = strings.TrimSuffix(cfg.FrontendAddress, "/")

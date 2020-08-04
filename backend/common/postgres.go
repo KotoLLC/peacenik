@@ -1,9 +1,9 @@
 package common
 
 import (
-	"errors"
 	"fmt"
 
+	"github.com/ansel1/merry"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq" // Nobody else knows about postgres
 )
@@ -14,7 +14,7 @@ const (
 )
 
 var (
-	errDatabaseNameIsEmpty = errors.New("database name should be specified")
+	ErrDatabaseNameIsEmpty = merry.New("database name should be specified")
 )
 
 type DatabaseConfig struct {
@@ -28,21 +28,21 @@ type DatabaseConfig struct {
 
 func OpenDatabase(cfg DatabaseConfig, migrations ...func(db *sqlx.DB, dialect string) (n int, err error)) (db *sqlx.DB, migrationsCount int, err error) {
 	if cfg.DBName == "" {
-		return nil, 0, errDatabaseNameIsEmpty
+		return nil, 0, ErrDatabaseNameIsEmpty.Here()
 	}
 
 	connectionStr := cfg.ConnectionString()
 
 	db, err = sqlx.Connect(dbDialect, connectionStr)
 	if err != nil {
-		return nil, 0, fmt.Errorf("can't connect to database: %w", err)
+		return nil, 0, merry.Prepend(err, "can't connect to database")
 	}
 
 	var n int
 	for _, migrate := range migrations {
 		m, err := migrate(db, dbDialect)
 		if err != nil {
-			return nil, 0, fmt.Errorf("can't apply migration to the database: %w", err)
+			return nil, 0, merry.Prepend(err, "can't apply migration to the database")
 		}
 		n += m
 	}
@@ -66,13 +66,13 @@ func CreateDatabaseIfNotExist(cfg DatabaseConfig) error {
 
 	db, err = sqlx.Connect(dbDialect, connectionStr)
 	if err != nil {
-		return fmt.Errorf("can't connect to postgres database: %w", err)
+		return merry.Prepend(err, "can't connect to postgres database")
 	}
 	defer func() { _ = db.Close() }()
 
 	_, err = db.Exec(fmt.Sprintf(`create database "%s";`, dbName))
 	if err != nil {
-		return fmt.Errorf("can't create the database: %w", err)
+		return merry.Prepend(err, "can't create the database")
 	}
 	return nil
 }

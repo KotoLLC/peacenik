@@ -2,16 +2,16 @@ package repo
 
 import (
 	"database/sql"
-	"errors"
 	"time"
 
+	"github.com/ansel1/merry"
 	"github.com/jmoiron/sqlx"
 
 	"github.com/mreider/koto/backend/common"
 )
 
 var (
-	ErrInviteNotFound = errors.New("invite not found")
+	ErrInviteNotFound = common.ErrNotFound.WithMessage("invite not found")
 )
 
 type Invite struct {
@@ -55,7 +55,7 @@ func (r *inviteRepo) AddInvite(inviterID, friendID string) error {
 		select $1, $2, '', $3
 		where not exists(select * from invites where user_id = $1 and friend_id = $2 and rejected_at is null)`,
 		inviterID, friendID, common.CurrentTimestamp())
-	return err
+	return merry.Wrap(err)
 }
 
 func (r *inviteRepo) AddInviteByEmail(inviterID, friendEmail string) error {
@@ -64,7 +64,7 @@ func (r *inviteRepo) AddInviteByEmail(inviterID, friendEmail string) error {
 		select $1, $2, $3
 		where not exists(select * from invites where user_id = $1 and friend_email = $2 and rejected_at is null)`,
 		inviterID, friendEmail, common.CurrentTimestamp())
-	return err
+	return merry.Wrap(err)
 }
 
 func (r *inviteRepo) AcceptInvite(inviterID, friendID string) error {
@@ -75,14 +75,14 @@ func (r *inviteRepo) AcceptInvite(inviterID, friendID string) error {
 		where user_id = $2 and friend_id = $3 and rejected_at is null`,
 			common.CurrentTimestamp(), inviterID, friendID)
 		if err != nil {
-			return err
+			return merry.Wrap(err)
 		}
 		rowsAffected, err := res.RowsAffected()
 		if err != nil {
-			return err
+			return merry.Wrap(err)
 		}
 		if rowsAffected == 0 {
-			return ErrInviteNotFound
+			return ErrInviteNotFound.Here()
 		}
 
 		_, err = tx.Exec(`
@@ -91,7 +91,7 @@ func (r *inviteRepo) AcceptInvite(inviterID, friendID string) error {
 			where not exists(select * from friends where user_id = $1 and friend_id = $2)`,
 			inviterID, friendID)
 		if err != nil {
-			return err
+			return merry.Wrap(err)
 		}
 
 		_, err = tx.Exec(`
@@ -100,7 +100,7 @@ func (r *inviteRepo) AcceptInvite(inviterID, friendID string) error {
 			where not exists(select * from friends where user_id = $1 and friend_id = $2)`,
 			friendID, inviterID)
 		if err != nil {
-			return err
+			return merry.Wrap(err)
 		}
 
 		return nil
@@ -115,14 +115,14 @@ func (r *inviteRepo) RejectInvite(inviterID, friendID string) error {
 		where user_id = $2 and friend_id = $3 and rejected_at is null`,
 			common.CurrentTimestamp(), inviterID, friendID)
 		if err != nil {
-			return err
+			return merry.Wrap(err)
 		}
 		rowsAffected, err := res.RowsAffected()
 		if err != nil {
-			return err
+			return merry.Wrap(err)
 		}
 		if rowsAffected == 0 {
-			return ErrInviteNotFound
+			return ErrInviteNotFound.Here()
 		}
 
 		_, err = tx.Exec(`
@@ -130,7 +130,7 @@ func (r *inviteRepo) RejectInvite(inviterID, friendID string) error {
 			where (user_id = $1 and friend_id = $2) or (user_id = $2 and friend_id = $1)`,
 			inviterID, friendID)
 		if err != nil {
-			return err
+			return merry.Wrap(err)
 		}
 
 		return nil
@@ -149,7 +149,7 @@ func (r *inviteRepo) InvitesFromMe(user User) ([]Invite, error) {
 		order by i.created_at desc;`,
 		user.ID)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	return invites, nil
 }
@@ -165,7 +165,7 @@ func (r *inviteRepo) InvitesForMe(user User) ([]Invite, error) {
 		order by i.created_at desc;`,
 		user.ID)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	return invites, nil
 }
@@ -196,7 +196,7 @@ from t
 where rn = 1;
 `, user.ID)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 
 	result := make(map[string]string)
@@ -223,7 +223,7 @@ from t
 where rn = 1
 `, user.ID)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 
 	for _, item := range items {

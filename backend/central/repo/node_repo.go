@@ -2,9 +2,9 @@ package repo
 
 import (
 	"database/sql"
-	"errors"
 	"time"
 
+	"github.com/ansel1/merry"
 	"github.com/gofrs/uuid"
 	"github.com/jmoiron/sqlx"
 
@@ -47,7 +47,7 @@ type nodeRepo struct {
 }
 
 var (
-	ErrNodeNotFound = errors.New("node not found")
+	ErrNodeNotFound = common.ErrNotFound.WithMessage("node not found")
 )
 
 func NewNodes(db *sqlx.DB) NodeRepo {
@@ -61,10 +61,10 @@ func (r *nodeRepo) NodeExists(address string) (bool, error) {
 	err := r.db.Get(&nodeID, `select id from nodes where address = $1`,
 		address)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if merry.Is(err, sql.ErrNoRows) {
 			return false, nil
 		}
-		return false, err
+		return false, merry.Wrap(err)
 	}
 	return true, nil
 }
@@ -72,7 +72,7 @@ func (r *nodeRepo) NodeExists(address string) (bool, error) {
 func (r *nodeRepo) AddNode(address, details string, nodeAdmin User, postLimit int) (string, error) {
 	nodeID, err := uuid.NewV4()
 	if err != nil {
-		return "", err
+		return "", merry.Wrap(err)
 	}
 
 	if postLimit < 0 {
@@ -84,7 +84,7 @@ func (r *nodeRepo) AddNode(address, details string, nodeAdmin User, postLimit in
 		VALUES ($1, $2, $3, $4, $5, $6)`,
 		nodeID.String(), address, nodeAdmin.ID, common.CurrentTimestamp(), details, postLimit)
 	if err != nil {
-		return "", err
+		return "", merry.Wrap(err)
 	}
 	return nodeID.String(), nil
 }
@@ -96,7 +96,7 @@ func (r *nodeRepo) AllNodes() ([]Node, error) {
 				   u.name admin_name, u.avatar_thumbnail_id admin_avatar_id, post_limit
 			from nodes n
 				inner join users u on u.id = n.admin_id`)
-	return nodes, err
+	return nodes, merry.Wrap(err)
 }
 
 func (r *nodeRepo) Nodes(user User) ([]Node, error) {
@@ -107,7 +107,7 @@ func (r *nodeRepo) Nodes(user User) ([]Node, error) {
 		from nodes n
 			inner join users u on u.id = n.admin_id
 		where n.admin_id = $1`, user.ID)
-	return nodes, err
+	return nodes, merry.Wrap(err)
 }
 
 func (r *nodeRepo) Node(nodeID string) (*Node, error) {
@@ -117,10 +117,10 @@ func (r *nodeRepo) Node(nodeID string) (*Node, error) {
 		from nodes
 		where id = $1`, nodeID)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, ErrNodeNotFound
+		if merry.Is(err, sql.ErrNoRows) {
+			return nil, ErrNodeNotFound.Here()
 		}
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 
 	return &node, nil
@@ -132,7 +132,7 @@ func (r *nodeRepo) ApproveNode(nodeID string) error {
 		set approved_at = $1
 		where id = $2`,
 		common.CurrentTimestamp(), nodeID)
-	return err
+	return merry.Wrap(err)
 }
 
 func (r *nodeRepo) RemoveNode(nodeID string) error {
@@ -140,7 +140,7 @@ func (r *nodeRepo) RemoveNode(nodeID string) error {
 		delete from nodes
 		where id = $1`,
 		nodeID)
-	return err
+	return merry.Wrap(err)
 }
 
 func (r *nodeRepo) ConnectedNodes(user User) (userNodes []UserNode, err error) {
@@ -166,12 +166,12 @@ func (r *nodeRepo) ConnectedNodes(user User) (userNodes []UserNode, err error) {
 			where user_id in (?)`,
 			currentLevel)
 		if err != nil {
-			return nil, err
+			return nil, merry.Wrap(err)
 		}
 		query = r.db.Rebind(query)
 		err = r.db.Select(&nextPairs, query, args...)
 		if err != nil {
-			return nil, err
+			return nil, merry.Wrap(err)
 		}
 
 		currentLevel = currentLevel[:0]
@@ -198,7 +198,7 @@ func (r *nodeRepo) ConnectedNodes(user User) (userNodes []UserNode, err error) {
 		from nodes
 		where approved_at is not null and disabled_at is null`)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 
 	userNodes = make([]UserNode, 0, 10)
@@ -225,5 +225,5 @@ func (r *nodeRepo) SetNodePostLimit(nodeAdminID, nodeID string, postLimit int) e
 		set post_limit = $1
 		where id = $2 and admin_id = $3`,
 		postLimit, nodeID, nodeAdminID)
-	return err
+	return merry.Wrap(err)
 }

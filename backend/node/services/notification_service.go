@@ -3,8 +3,6 @@ package services
 import (
 	"context"
 
-	"github.com/twitchtv/twirp"
-
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/node/rpc"
 )
@@ -23,7 +21,7 @@ func (s *notificationService) Count(ctx context.Context, _ *rpc.Empty) (*rpc.Not
 	user := s.getUser(ctx)
 	total, unread, err := s.repos.Notification.Counts(user.ID)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 	return &rpc.NotificationCountResponse{
 		Total:  int32(total),
@@ -35,7 +33,7 @@ func (s *notificationService) Notifications(ctx context.Context, _ *rpc.Empty) (
 	user := s.getUser(ctx)
 	notifications, err := s.repos.Notification.Notifications(user.ID)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 	rpcNotifications := make([]*rpc.Notification, len(notifications))
 	for i, notification := range notifications {
@@ -58,7 +56,7 @@ func (s *notificationService) Clean(ctx context.Context, r *rpc.NotificationClea
 	user := s.getUser(ctx)
 	err := s.repos.Notification.Clean(user.ID, r.LastKnownId)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 	return &rpc.Empty{}, nil
 }
@@ -67,7 +65,7 @@ func (s *notificationService) MarkRead(ctx context.Context, r *rpc.NotificationM
 	user := s.getUser(ctx)
 	err := s.repos.Notification.MarkRead(user.ID, r.LastKnownId)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 	return &rpc.Empty{}, nil
 }
