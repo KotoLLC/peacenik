@@ -44,7 +44,8 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		return nil, twirp.InternalErrorWith(err)
 	}
 
-	if user.ID != claims["id"].(string) || s.externalAddress != claims["node"].(string) {
+	if user.ID != claims["id"].(string) ||
+		strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["node"].(string), "/") {
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
 	}
 
@@ -150,7 +151,8 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 		return nil, twirp.InternalErrorWith(err)
 	}
 
-	if user.ID != claims["id"].(string) || s.externalAddress != claims["node"].(string) {
+	if user.ID != claims["id"].(string) ||
+		strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["node"].(string), "/") {
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
 	}
 
@@ -333,7 +335,8 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 		return nil, twirp.InternalErrorWith(err)
 	}
 
-	if user.ID != claims["id"].(string) || s.externalAddress != claims["node"].(string) {
+	if user.ID != claims["id"].(string) ||
+		strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["node"].(string), "/") {
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
 	}
 

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "539ab04e-7e88-4ccd-9aad-13b7990dc5b9",
+		"_postman_id": "0248a775-4bc1-4ea7-93e9-3245ead21273",
 		"name": "requests",
 		"description": "Authenticate from central server",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -15,7 +15,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "3476a9ed-3528-424c-8885-ea6afdc8681a",
+								"id": "7da594da-99ec-41cc-88f8-401b9522d63f",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"var jsonData = JSON.parse(responseBody);",
@@ -65,7 +65,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "e0ba0823-6b57-4cab-b3ca-3b1f20e28f84",
+								"id": "11309436-ab2d-41a4-951a-5125ab9e20e4",
 								"exec": [
 									"pm.expect(pm.response.code).to.be.oneOf([200,409]);",
 									"tests[\"passed\"] = true; "
@@ -111,7 +111,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "7ac17a45-48c7-4072-9f08-1b104b2646e5",
+								"id": "213fa496-9087-49a9-b328-aa77c190e9ba",
 								"exec": [
 									"pm.expect(pm.response.code).to.be.oneOf([200,409]);",
 									"tests[\"passed\"] = true; "
@@ -157,7 +157,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "eb391879-4a86-462e-8b27-8f31e8981322",
+								"id": "ff330bcc-5ca5-4ab0-8c08-2088848415c8",
 								"exec": [
 									"pm.expect(pm.response.code).to.be.oneOf([200,409]);",
 									"tests[\"passed\"] = true; "
@@ -203,7 +203,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "7f466a84-8528-45be-89eb-e98ace9144e3",
+								"id": "80f336f6-61b5-48d9-a0af-25f979d6fb9b",
 								"exec": [
 									"pm.expect(pm.response.code).to.be.oneOf([200,409]);",
 									"tests[\"passed\"] = true; "
@@ -255,7 +255,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "75f8a3d0-9936-408c-b3bb-69e20e0b6a09",
+								"id": "8fb45da3-f77f-4839-9c91-3c842746c5ad",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -301,7 +301,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "2d9ca3dd-6b49-499d-bc87-671862888266",
+								"id": "3c5e9c3f-d279-4568-877c-f8b17120696a",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -347,7 +347,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "2f3b7b39-0173-4514-b214-734173bc65a9",
+								"id": "db91d4b7-92b2-423b-952e-0533639ff37a",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -393,7 +393,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "d8abc197-c62d-4f2e-882e-98c7ad596ab3",
+								"id": "296d5a41-2107-4923-99dc-59a6f540206b",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -439,7 +439,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "ec930f60-1d8e-48a9-b193-678d80ae6712",
+								"id": "76f819bb-0987-4158-8361-e8534cfa61ea",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -491,7 +491,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "bdc570e9-6142-4c1e-8df3-2b8bc9f40645",
+								"id": "c7e74548-74af-46d4-8358-7398c486f84d",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -537,7 +537,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "ccc530d3-995b-428e-a38d-cc38261d1237",
+								"id": "998a8776-d867-475c-b4d2-9b1740edcdbd",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -583,7 +583,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "564e6049-35cc-47b9-ae82-b0548dc8c7e4",
+								"id": "9bf4bff4-e511-49b2-b931-27f8c0827075",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -629,7 +629,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "a54935ac-b8c7-4ade-ab73-31b4c76802a0",
+								"id": "6ec98a16-b0e9-42d5-9dc1-aa709d4dc753",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -675,7 +675,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "7a8c1086-5fa0-4f71-8a3c-8619065f6163",
+								"id": "d993488e-22ee-4502-a1c1-06d70529fb6e",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -721,7 +721,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "4d44ef7c-72b0-407e-91d2-22e6e77cd04a",
+								"id": "dd784b6d-3e70-4ae9-b7b5-00adccaa091f",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -767,7 +767,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "1d7589d1-c379-4b79-a6d9-6aabf02562f8",
+								"id": "2819d81e-acb5-4e1f-8fa5-71c42403c95d",
 								"exec": [
 									"pm.expect(pm.response.code).to.be.oneOf([200,409]);",
 									"tests[\"passed\"] = true; "
@@ -813,7 +813,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "684cfc2b-7502-493d-8598-0a755ff1d974",
+								"id": "02467edd-3bb0-4689-8f99-bec4b18e7db4",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"NODE\", jsonData.nodes[0].id);",
@@ -861,7 +861,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "85642aca-af6a-43b7-9658-e2f43747ee89",
+								"id": "eb97ce48-8a14-4c43-ab24-492559f28a13",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -907,7 +907,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "74ebe566-761e-4cd3-9a0b-6046a9662c28",
+								"id": "0cdbb7ec-ffcc-48bf-8664-6da47224181d",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -952,7 +952,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "4e2aa7a3-ee5f-4ff0-a590-91ab75058c9e",
+						"id": "425ef57a-f29d-4ae2-b31c-e100e35889c3",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -962,7 +962,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "179f5942-a4c0-4330-9179-b1c2aeef6967",
+						"id": "5fa5afb8-9171-4e30-92f5-0f2a5e7a73fb",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -981,7 +981,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "6751a92f-c424-4cd7-93d5-9c0930c669dc",
+								"id": "2227354b-199d-470f-a8c6-5083efabd4af",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -1027,7 +1027,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "c7b21e1c-16e3-45fa-b1bc-340e29f104fc",
+								"id": "b594b1ab-effb-474d-984b-9a2a3f20ef3c",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -1073,7 +1073,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "5c0525bc-14d8-4fd6-8ae0-f81b5b2aab07",
+								"id": "42f72f8d-a5be-4c87-9698-8f91fd110384",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"INVITER_ID\", jsonData.invites[0].friend_id);",
@@ -1121,7 +1121,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "3840ace2-f2b1-4776-9e40-976a145d6e9f",
+								"id": "f2d63174-fe12-41c7-b704-775896454469",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -1167,7 +1167,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "4c0b7e63-fcac-4134-9cc3-c5ee873cbd81",
+								"id": "259bb12d-6e55-4a51-9f43-5aadda70dd53",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -1213,7 +1213,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "b9cac670-7d72-4f65-a9c6-fdb2f8cb8294",
+								"id": "5cb60008-7f5d-4d9b-902e-be49a556d798",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -1258,7 +1258,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "58f8cfca-9549-41b1-95a1-4d1814d387b5",
+						"id": "121554fe-340c-427f-a8aa-46b41fe13638",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -1268,7 +1268,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "79da676e-9c63-4bb2-b5a7-c585dd6990a0",
+						"id": "abb798f1-57c3-4c97-bd5d-272b8e259dfa",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -1287,7 +1287,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "36f7b8c8-2960-426c-aff3-adc6063f76c2",
+								"id": "85abe43d-82ba-4cca-8b4f-2067760e80fa",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -1333,7 +1333,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "7283b2c2-5bb9-4858-9c48-3e0e9bc2d0b8",
+								"id": "df11fac0-adec-4c3b-8063-fe8cf6fab349",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -1379,7 +1379,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "92521484-13ff-4401-b583-07e6c9c4cfda",
+								"id": "79a4878d-270d-4d87-86ed-13089e3b3945",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"INVITER_ID\", jsonData.invites[0].friend_id);",
@@ -1427,7 +1427,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "24e755c1-35a6-49a0-8057-03f946e14340",
+								"id": "2477be51-2028-42f0-a712-7371915386b6",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -1473,7 +1473,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "a5b13617-b53d-4fbd-84b3-687717f02e4f",
+								"id": "dc00ac69-d624-46e9-99fe-9aeb52ef0f49",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -1519,7 +1519,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "267be4d9-302b-4dfb-8ff3-06c170636a9b",
+								"id": "d026d6f3-1234-4601-86f0-fae936094d81",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -1564,7 +1564,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "cad78f5a-00a9-45b7-99f3-4503d71ad92f",
+						"id": "12345a76-95e5-4725-af1b-42aae3560151",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -1574,7 +1574,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "9d175c3b-5d70-4eef-905f-9d0103e87557",
+						"id": "c11eb072-d839-4684-a3ed-a25d477ff1e8",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -1593,7 +1593,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "f13a2700-daab-4cc2-ab58-95cb60d45e9f",
+								"id": "20b42af2-9328-42c8-851f-21bd37341cb9",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -1639,7 +1639,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "ec7f7de0-c1f3-4047-bb51-3d45492b91d5",
+								"id": "c4b8704e-4840-4b82-b17c-ac5da267fd51",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -1685,7 +1685,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "1164f79b-8a37-434a-a68e-2b9b2584ec85",
+								"id": "910e709c-d104-4fa7-86a9-a911faaf9dc3",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"INVITER_ID\", jsonData.invites[0].friend_id);",
@@ -1733,7 +1733,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "b789641c-d96b-4c47-b693-d9de24528f10",
+								"id": "8b7e2e22-f42b-4cd6-a87c-ed240f02b3b4",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -1779,7 +1779,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "9d73eacc-22a5-46b1-a730-382c45cf4ba1",
+								"id": "9e690789-6b24-4b6d-9dec-18995c38383b",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -1825,7 +1825,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "ceac6be3-f736-440b-a021-d000f57d48dc",
+								"id": "8c137f0a-d95e-49b1-8558-75179b9fcab0",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -1870,7 +1870,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "ff639b72-e4de-484a-acb4-ee99ac26e3ff",
+						"id": "d090803e-328d-4a3a-b3bc-6ad794ca67e6",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -1880,7 +1880,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "e94e7121-36b3-4c12-b4a3-ed0230a973e5",
+						"id": "f47b8bee-2815-42c7-ab7b-0a068867b541",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -1899,7 +1899,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "e86a20a9-9914-4348-a5b7-5ab1ae6ee305",
+								"id": "0da3e81b-7777-415b-ac1b-7f1d303acd34",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -1945,7 +1945,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "e2b434f8-dde6-49df-9345-e06642d7b1e8",
+								"id": "ea03488f-fe82-4003-8874-e439537b7ced",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"AUTH_TOKEN\", jsonData.token);",
@@ -1993,7 +1993,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "85413c3c-065d-4430-8f0f-3d72a1239594",
+								"id": "d6cebf56-fb88-4575-8dff-7526455970fe",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"POST_TOKEN\", jsonData.tokens[\"http://localhost:12002\"]);",
@@ -2041,7 +2041,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "3c545670-756c-4141-8f37-f7605834eb2e",
+								"id": "7dc9e095-6527-4716-8ed8-323b717a03f2",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -2077,7 +2077,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"token\":  \"{{POST_TOKEN}}\",\n  \"message\": {\n    \"id\": \"1\",\n    \"text\": \"hello message\",\n    \"created_at\": \"2020-06-12T10:16:40.335Z\",\n    \"updated_at\": \"2020-06-12T10:16:40.335Z\"\n  }\n}",
+							"raw": "{\n  \"token\":  \"{{POST_TOKEN}}\",\n  \"text\": \"hello message\"\n}",
 							"options": {
 								"raw": {}
 							}
@@ -2103,7 +2103,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "508e30ac-f752-47d5-84bd-0cace3023b41",
+								"id": "a6280284-70bb-46ac-8896-1bffc10c3d3d",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -2148,7 +2148,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "e955afbe-a2b4-4dd4-ac76-ea1dd299f9d1",
+						"id": "ee083b01-d646-478a-aa83-4470024e38c3",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -2158,7 +2158,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "3587524f-fc61-49f0-88c3-dff955034a3f",
+						"id": "e43a5cca-1b1a-499f-bbfc-9c29735eca6f",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -2177,7 +2177,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "35de92aa-5f1e-4897-a0a9-0a2d862467a6",
+								"id": "623fc35a-45ea-4c1b-a783-5c9d0529d1ce",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -2223,7 +2223,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "5b07b11d-86f4-4701-bccc-883812bb34b9",
+								"id": "d1432787-5e3f-4812-89d8-73962d81531b",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"AUTH_TOKEN\", jsonData.token);",
@@ -2271,7 +2271,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "210d7835-ff6c-4539-b2af-8ae67704abea",
+								"id": "6df276f3-f733-40bf-b663-e1be4b410f15",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"GET_TOKEN\",  jsonData.tokens[\"http://localhost:12002\"]);",
@@ -2319,7 +2319,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "9e7122a3-f49b-4ca8-aa5b-6de5e1341981",
+								"id": "3230f29e-4053-4b74-8563-9639d00dda8c",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -2375,7 +2375,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "0b4aaedd-969b-4299-972d-9183cf0bf1ea",
+								"id": "ff0972d2-8e77-45bd-94c1-c8500511daa6",
 								"exec": [
 									"pm.response.to.have.status(200);",
 									"tests[\"passed\"] = true; "
@@ -2420,7 +2420,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "ab7caa6e-104a-452c-834d-6a19b109a2d7",
+						"id": "4c386427-37c7-4611-9a05-a34201f3da30",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -2430,7 +2430,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "54d90e8c-3019-4f43-bfd8-a9051c3d5f94",
+						"id": "77ca1eda-8e97-4b22-99b2-67d2f76eafc2",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -2445,7 +2445,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "ddbbd5f3-7f78-44cc-b89d-f40bdbb4c5ca",
+				"id": "67bd00cc-5bf7-4268-b5fb-0214ec2d8e53",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -2455,7 +2455,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "da4ac9fd-9c78-4fcf-9515-12c357723a27",
+				"id": "0b927a99-fa2d-4c6d-9912-d1eec50bae08",
 				"type": "text/javascript",
 				"exec": [
 					""
