@@ -75,16 +75,13 @@ services:
   frontend:
     build:
       context: ./frontend
-      target: base
+      dockerfile: ./Dockerfile.development
     stdin_open: true
     tty: true
-    command: npm start
     working_dir: /app
     ports:
       - 3000:3000
-    volumes:
-      - ./frontend/.:/app
-
+  
   db_central:
     image: postgres:9.6
     ports:
