@@ -8,22 +8,11 @@ Koto is an open-source, ad-free, social network with a mixture of central and di
 
 Koto is comparable to Facebook, rather than Twitter, as it is for closed circles of friendships.
 
+[Installation instructions](installation.md).
+
 ## Status
 
-The alpha version should be ready in July 2020. You can check our progress [here](https://github.com/mreider/koto/projects/1)
-
-## Setup instructions
-
-You can run things for testing purposes by installing node + docker and running:
-
-```
-npm install
-docker-compose up --build
-```
-
-## Running tests
-
-[Run tests](tests.md)
+The alpha version should be ready in August 2020. You can check our progress [here](https://github.com/mreider/koto/projects/1)
 
 ## Comparison to other social network projects
 
