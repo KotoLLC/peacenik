@@ -57,7 +57,7 @@ services:
       - 12002:12002
     environment:
       KOTO_ADDRESS: :12002
-      KOTO_EXTERNAL_ADDRESS: http://node-1:12002/
+      KOTO_EXTERNAL_ADDRESS: http://localhost:12002/
       KOTO_CENTRAL_ADDRESS: http://central:12001/
       KOTO_DB_HOST: db_node
       KOTO_DB_SSL_MODE: disable
@@ -81,7 +81,7 @@ services:
     working_dir: /app
     ports:
       - 3000:3000
-  
+
   db_central:
     image: postgres:9.6
     ports:
