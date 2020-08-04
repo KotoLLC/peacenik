@@ -1,15 +1,18 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, ChangeEvent } from 'react'
 import Avatar from '@material-ui/core/Avatar'
 import EditIcon from '@material-ui/icons/Edit'
-import IconButton from '@material-ui/core/IconButton'
-import Tooltip from '@material-ui/core/Tooltip'
 import RemoveMessageDialog from './RemoveMessageDialog'
 import moment from 'moment'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import ChatBubbleOutlineIcon from '@material-ui/icons/ChatBubbleOutline'
 import Comment from './Comment'
-import { ApiTypes } from './../../../types'
+import selectors from '@selectors/index'
+import AttachFileIcon from '@material-ui/icons/AttachFile'
+import IconButton from '@material-ui/core/IconButton'
+import Tooltip from '@material-ui/core/Tooltip'
+import { Player } from 'video-react'
+import { ApiTypes, StoreTypes, NodeTypes } from './../../../types'
 import {
   PaperStyled,
   MessageHeader,
@@ -27,44 +30,58 @@ import {
   CommentsWrapepr,
   ImagePreview,
   AttachmentWrapper,
+  EditorButtonsWrapper,
+  UploadInput,
 } from './styles'
 
 interface Props extends ApiTypes.Messages.Message {
   isAuthor: boolean
+  uploadLink: ApiTypes.UploadLink | null
+  currentNode: NodeTypes.CurrentNode
   onMessageEdit: (data: ApiTypes.Messages.EditMessage) => void
   onCommentPost: (data: ApiTypes.Messages.PostComment) => void
+  onGetMessageUploadLink: (data: ApiTypes.Messages.UploadLinkRequest) => void
+  onSetAttachment: (data: ApiTypes.Messages.Attachment) => void
+  onResetMessageUploadLink: () => void
 }
 
 const Message: React.SFC<Props> = (props) => {
-  const { 
-    text, 
-    user_name, 
-    created_at, 
-    isAuthor, 
-    id, 
-    sourceHost, 
-    messageToken, 
-    comments, 
+  const {
+    text,
+    user_name,
+    created_at,
+    isAuthor,
+    id,
+    sourceHost,
+    messageToken,
+    comments,
     avatar_thumbnail,
     attachment,
     attachment_type,
-    // attachment_thumbnail,
-   } = props
+    uploadLink,
+    onResetMessageUploadLink,
+  } = props
   const [isEditer, setEditor] = useState<boolean>(false)
   const [isCommentsEditer, setCommentsEditor] = useState<boolean>(false)
   const [message, onMessageChange] = useState<string>(text)
   const [comment, onCommentChange] = useState<string>('')
   const [isCommentsOpen, openComments] = useState<boolean>(false)
+  const [isFileUploaded, setUploadedFile] = useState<boolean>(false)
+  const [file, setFile] = useState<File | null>(null)
 
   const onMessageSave = () => {
-    setEditor(false)
     props.onMessageEdit({
       host: sourceHost,
       body: {
         message_id: id,
         text: message,
+        text_changed: true,
+        attachment_changed: (file?.name) ? true : false,
+        attachment_id: (file?.name) && uploadLink?.blob_id,
       }
     })
+    setEditor(false)
+    onResetMessageUploadLink()
   }
 
   const onComandEnterDownInMessage = (event) => {
@@ -72,7 +89,7 @@ const Message: React.SFC<Props> = (props) => {
       onMessageSave()
     }
   }
-  
+
   const onComandEnterDownInComment = (event) => {
     if (event.keyCode === 13 && (event.metaKey || event.ctrlKey)) {
       onCommentSave()
@@ -96,7 +113,7 @@ const Message: React.SFC<Props> = (props) => {
         <ButtonsWrapper>
           <Tooltip title={`Comment`}>
             <IconButton onClick={() => setCommentsEditor(!isCommentsEditer)}>
-              <ChatBubbleOutlineIcon /> 
+              <ChatBubbleOutlineIcon />
             </IconButton>
           </Tooltip>
         </ButtonsWrapper>
@@ -122,7 +139,7 @@ const Message: React.SFC<Props> = (props) => {
       return (
         <CommentsWrapepr>
           {comments?.map(item => (
-            <Comment {...item} key={item.id} sourceHost={sourceHost}/>
+            <Comment {...item} key={item.id} sourceHost={sourceHost} />
           ))}
         </CommentsWrapepr>
       )
@@ -130,16 +147,76 @@ const Message: React.SFC<Props> = (props) => {
   }
 
   const renderAttachment = () => {
+    if (file?.name && file?.type.indexOf('image') !== -1) {
+      return (
+        <AttachmentWrapper>
+          <ImagePreview src={URL.createObjectURL(file)} />
+        </AttachmentWrapper>
+      )
+    } 
+
+    if (file?.name && file?.type.indexOf('video') !== -1) {
+      return (
+        <AttachmentWrapper>
+          <Player>
+            <source src={URL.createObjectURL(file)} />
+          </Player>
+        </AttachmentWrapper>
+      )
+    } 
+    
     if (attachment_type && attachment_type.indexOf('image') !== -1) {
       return (
         <AttachmentWrapper>
-          <ImagePreview src={attachment}/>
+          <ImagePreview src={attachment} />
+        </AttachmentWrapper>
+      )
+    }
+    
+    if (attachment_type && attachment_type.indexOf('video') !== -1) {
+      return (
+        <AttachmentWrapper>
+          <Player>
+            <source src={attachment} />
+          </Player>
         </AttachmentWrapper>
       )
     }
 
     return null
   }
+
+  const onFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const { onGetMessageUploadLink } = props
+    setUploadedFile(false)
+
+    const uploadedFile = event.target.files
+    if (uploadedFile && uploadedFile[0]) {
+      onGetMessageUploadLink({
+        host: props.currentNode.host,
+        value: uploadedFile[0].type
+      })
+      setFile(uploadedFile[0])
+    }
+  }
+
+  useEffect(() => {
+    if (props.uploadLink && file && !isFileUploaded) {
+      const { form_data } = props?.uploadLink
+      const data = new FormData()
+
+      data.append('file', file, file?.name)
+
+      for (let key in form_data) {
+        data.append(key, form_data[key])
+      }
+
+      props.onSetAttachment({
+        link: props?.uploadLink.link,
+        form_data: data,
+      })
+    }
+  }, [uploadLink])
 
   return (
     <>
@@ -161,15 +238,29 @@ const Message: React.SFC<Props> = (props) => {
                 onKeyDown={onComandEnterDownInMessage}
                 value={message}
                 onChange={(evant) => onMessageChange(evant.currentTarget.value)} />
-              <ButtonSend
-                variant="contained"
-                color="primary"
-                onClick={onMessageSave}
-              >Save</ButtonSend>
+              <EditorButtonsWrapper>
+                <Tooltip title={`Attach image or video`}>
+                  <IconButton component="label">
+                    <AttachFileIcon fontSize="small" color="primary" />
+                    <UploadInput
+                      type="file"
+                      id="file"
+                      name="file"
+                      onChange={onFileUpload}
+                      accept="video/*,image/*"
+                    />
+                  </IconButton>
+                </Tooltip>
+                <ButtonSend
+                  variant="contained"
+                  color="primary"
+                  onClick={onMessageSave}
+                >Save</ButtonSend>
+              </EditorButtonsWrapper>
             </EditMessageWrapper>
             : <MessageContent>{message}</MessageContent>
         }
-        { renderAttachment() }
+        {renderAttachment()}
         {
           isCommentsEditer && <EditMessageWrapper>
             <TextareaAutosizeStyled
@@ -192,10 +283,24 @@ const Message: React.SFC<Props> = (props) => {
   )
 }
 
-type DispatchProps = Pick<Props, 'onMessageEdit' | 'onCommentPost'>
+type StateProps = Pick<Props, 'uploadLink' | 'currentNode'>
+const mapStateToProps = (state: StoreTypes): StateProps => ({
+  uploadLink: state.messages.uploadLink,
+  currentNode: selectors.messages.currentNode(state),
+})
+
+type DispatchProps = Pick<Props, 
+  | 'onMessageEdit' 
+  | 'onCommentPost' 
+  | 'onGetMessageUploadLink' 
+  | 'onSetAttachment' 
+  | 'onResetMessageUploadLink'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onMessageEdit: (data: ApiTypes.Messages.EditMessage) => dispatch(Actions.messages.editMessageRequest(data)),
   onCommentPost: (data: ApiTypes.Messages.PostComment) => dispatch(Actions.messages.postCommentRequest(data)),
+  onGetMessageUploadLink: (data: ApiTypes.Messages.UploadLinkRequest) => dispatch(Actions.messages.getMessageUploadLinkRequest(data)),
+  onSetAttachment: (data: ApiTypes.Messages.Attachment) => dispatch(Actions.messages.setAttachmentRequest(data)),
+  onResetMessageUploadLink: () => dispatch(Actions.messages.getMessageUploadLinkSucces(null)),
 })
 
-export default connect(null, mapDispatchToProps)(Message)
+export default connect(mapStateToProps, mapDispatchToProps)(Message)

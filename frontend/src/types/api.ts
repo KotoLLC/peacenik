@@ -148,6 +148,9 @@ export declare namespace ApiTypes {
       body: {
         message_id: string,
         text: string,
+        text_changed: boolean,
+        attachment_changed?: boolean,
+        attachment_id?: string,
       }
     }
     
