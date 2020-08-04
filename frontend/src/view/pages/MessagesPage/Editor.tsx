@@ -39,19 +39,19 @@ const Editor: React.SFC<Props> = (props) => {
   const { isMessagePostedSuccess, onPostMessageSucces, uploadLink } = props
 
   const onMessageSend = () => {
-    if (!value) return
-
-    const data = {
-      host: props.currentNode.host,
-      body: {
-        token: props.currentNode.token,
-        text: value,
-        attachment_id: uploadLink?.blob_id,
+    if (value || file) {
+      const data = {
+        host: props.currentNode.host,
+        body: {
+          token: props.currentNode.token,
+          text: value,
+          attachment_id: uploadLink?.blob_id,
+        }
       }
+  
+      setFile(null)
+      props.onMessagePost(data)
     }
-
-    setFile(null)
-    props.onMessagePost(data)
   }
 
   const onComandEnterDown = (event) => {

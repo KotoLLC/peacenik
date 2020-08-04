@@ -3,7 +3,7 @@ import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button'
 
 export const DocWrapper = styled.div`
-  margin-top: 20px;
+  margin: 20px 0 30px;
   width: 100%;
 `
 

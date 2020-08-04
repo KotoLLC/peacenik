@@ -125,7 +125,7 @@ const getMessageUploadLinkRequest = (payload: ApiTypes.Messages.UploadLinkReques
   payload,
 })
 
-const getMessageUploadLinkSucces = (payload: ApiTypes.UploadLink) => ({
+const getMessageUploadLinkSucces = (payload: ApiTypes.UploadLink | null) => ({
   type: Types.GET_MESSAGE_UPLOAD_LINK_SUCCESS,
   payload
 })
