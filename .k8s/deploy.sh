@@ -11,7 +11,7 @@ _wait_for_deployments() {
 
 deploy() {
     echo "Applying Postgres DB resources"
-    kubectl apply -f ./db --dry-run
+    kubectl apply -f ./db
     echo "======================================================="
     echo "Waiting for Postgres DB resources to become available"
     # wait for the pods to be available
@@ -20,7 +20,7 @@ deploy() {
     echo
     echo "==============================="
     echo "Applying Koto Central resources"
-    kubectl apply -f ./central --dry-run
+    kubectl apply -f ./central
     echo "======================================================="
     echo "Waiting for Koto Central resources to become available"
     # wait for the pods to be available
@@ -29,7 +29,7 @@ deploy() {
     echo
     echo "============================"
     echo "Applying Koto Node resources"
-    kubectl apply -f ./node --dry-run
+    kubectl apply -f ./node
     echo "======================================================="
     echo "Waiting for Koto Node resources to become available"
     # wait for the pods to be available
@@ -38,19 +38,27 @@ deploy() {
     echo
     echo "================================"
     echo "Applying Koto Frontend resources"
-    kubectl apply -f ./frontend --dry-run
+    kubectl apply -f ./frontend
     echo "======================================================="
     echo "Waiting for Koto Frontend resources to become available"
     # wait for the pods to be available
     _wait_for_deployments ${BACKEND_NAMESPACE}
 }
 
+destroy(){
+    echo "Deleting all the Koto resources"
+    kubectl delete -f .
+}
+
 case "$1" in
 deploy)
     deploy
     ;;
+destroy)
+    destroy
+    ;;
 *)
-    echo $"Usage: $0 {deploy}"
+    echo $"Usage: $0 {deploy|destroy}"
     exit 1
     ;;
 
