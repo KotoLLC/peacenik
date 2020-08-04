@@ -27,7 +27,7 @@ jobs:
           tag: ${{ steps.get_version.outputs.VERSION }}
           registry: docker.io
           directory: ./frontend
-          dockerfile: ./frontend/Dockerfile
+          dockerfile: ./frontend/Dockerfile.development
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
   
