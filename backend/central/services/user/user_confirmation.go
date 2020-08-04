@@ -5,6 +5,8 @@ import (
 	"html"
 	"time"
 
+	"github.com/ansel1/merry"
+
 	"github.com/mreider/koto/backend/central/repo"
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/token"
@@ -49,7 +51,7 @@ func (c *Confirmation) SendConfirmLink(user repo.User) error {
 			"email": user.Email,
 		})
 	if err != nil {
-		return err
+		return merry.Wrap(err)
 	}
 
 	link := fmt.Sprintf("%s"+frontendPath, c.frontendAddress, confirmToken)
@@ -59,12 +61,12 @@ func (c *Confirmation) SendConfirmLink(user repo.User) error {
 func (c *Confirmation) Confirm(confirmToken string) error {
 	_, claims, err := c.tokenParser.Parse(confirmToken, "user-confirm")
 	if err != nil {
-		return err
+		return merry.Wrap(err)
 	}
 	var userID string
 	var ok bool
 	if userID, ok = claims["id"].(string); !ok {
-		return token.ErrInvalidToken
+		return token.ErrInvalidToken.Here()
 	}
 
 	return c.userRepo.ConfirmUser(userID)

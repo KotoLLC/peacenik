@@ -1,6 +1,7 @@
 package migrate
 
 import (
+	"github.com/ansel1/merry"
 	"github.com/jmoiron/sqlx"
 	migrate "github.com/rubenv/sql-migrate"
 )
@@ -19,7 +20,7 @@ func Migrate(db *sqlx.DB, dialect string) (n int, err error) {
 
 	n, err = migrate.Exec(db.DB, dialect, migrationSource, migrate.Up)
 	if err != nil {
-		return 0, err
+		return 0, merry.Wrap(err)
 	}
 	return n, nil
 }

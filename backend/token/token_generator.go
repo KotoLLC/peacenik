@@ -4,6 +4,7 @@ import (
 	"crypto/rsa"
 	"time"
 
+	"github.com/ansel1/merry"
 	"github.com/dgrijalva/jwt-go"
 )
 
@@ -34,7 +35,7 @@ func (g *generator) Generate(userID, userName, scope string, exp time.Time, clai
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodRS256, tokenClaims)
 	token, err = jwtToken.SignedString(g.privateKey)
 	if err != nil {
-		return "", err
+		return "", merry.Wrap(err)
 	}
 	return token, nil
 }

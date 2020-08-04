@@ -1,0 +1,69 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: node-db-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: do-block-storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-node-service
+  namespace: backend
+  labels:
+    app: db-node-service
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: db-node-service
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-node-db
+  namespace: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-node-service
+  template:
+    metadata:
+      labels:
+        app: db-node-service
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:12.2
+          env:
+          - name: POSTGRES_DB
+            value: koto-node-1
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-node-password
+                key: password
+          ports:
+          - containerPort: 5432
+          volumeMounts:
+          - name: node-db-data
+            mountPath: /var/lib/postgresql
+      volumes:
+      - name: node-db-data
+        persistentVolumeClaim:
+          claimName: node-db-pvc
+---
+apiVersion: v1
+data:
+  password: ZG9ja2Vy
+kind: Secret
+metadata:
+  name: db-node-password
+  namespace: backend

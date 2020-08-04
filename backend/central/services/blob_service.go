@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/ansel1/merry"
+
 	"github.com/mreider/koto/backend/central/rpc"
 	"github.com/mreider/koto/backend/common"
 )
@@ -28,7 +30,7 @@ func (s *blobService) UploadLink(ctx context.Context, r *rpc.BlobUploadLinkReque
 
 	blobID, err := common.GenerateRandomString(blobIDLength)
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 
 	if r.FileName != "" {
@@ -42,7 +44,7 @@ func (s *blobService) UploadLink(ctx context.Context, r *rpc.BlobUploadLinkReque
 			"user-name": user.Name,
 		})
 	if err != nil {
-		return nil, err
+		return nil, merry.Wrap(err)
 	}
 	return &rpc.BlobUploadLinkResponse{
 		BlobId:   blobID,

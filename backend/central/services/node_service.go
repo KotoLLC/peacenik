@@ -3,9 +3,9 @@ package services
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"log"
 
+	"github.com/ansel1/merry"
 	"github.com/twitchtv/twirp"
 
 	"github.com/mreider/koto/backend/central/repo"
@@ -29,19 +29,19 @@ func (s *nodeService) Register(ctx context.Context, r *rpc.NodeRegisterRequest) 
 	user := s.getUser(ctx)
 	nodeExists, err := s.repos.Node.NodeExists(r.Address)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 	if nodeExists {
 		return nil, twirp.NewError(twirp.AlreadyExists, "node already exists")
 	}
 	nodeID, err := s.repos.Node.AddNode(r.Address, r.Details, user, int(r.PostLimit))
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 
 	for _, admin := range s.admins {
 		adminUser, err := s.repos.User.FindUserByNameOrEmail(admin)
-		if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		if err != nil && !merry.Is(err, sql.ErrNoRows) {
 			log.Println(err)
 		}
 		if adminUser != nil {
@@ -68,14 +68,14 @@ func (s *nodeService) Nodes(ctx context.Context, _ *rpc.Empty) (*rpc.NodeNodesRe
 		nodes, err = s.repos.Node.Nodes(user)
 	}
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 
 	rpcNodes := make([]*rpc.NodeNodesResponseNode, len(nodes))
 	for i, node := range nodes {
 		avatarThumbnailLink, err := s.createBlobLink(ctx, node.AdminAvatarID)
 		if err != nil {
-			return nil, twirp.InternalErrorWith(err)
+			return nil, err
 		}
 
 		rpcNodes[i] = &rpc.NodeNodesResponseNode{
@@ -107,12 +107,12 @@ func (s *nodeService) Approve(ctx context.Context, r *rpc.NodeApproveRequest) (*
 
 	err := s.repos.Node.ApproveNode(r.NodeId)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 
 	node, err := s.repos.Node.Node(r.NodeId)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 
 	err = s.repos.Notification.AddNotification(node.AdminID, user.Name+" approved your node", "node/approve", map[string]interface{}{
@@ -130,10 +130,10 @@ func (s *nodeService) Remove(ctx context.Context, r *rpc.NodeRemoveRequest) (*rp
 	user := s.getUser(ctx)
 	node, err := s.repos.Node.Node(r.NodeId)
 	if err != nil {
-		if errors.Is(err, repo.ErrNodeNotFound) {
+		if merry.Is(err, repo.ErrNodeNotFound) {
 			return nil, twirp.NotFoundError(err.Error())
 		}
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 
 	if !s.isAdmin(ctx) && node.AdminID != user.ID {
@@ -142,7 +142,7 @@ func (s *nodeService) Remove(ctx context.Context, r *rpc.NodeRemoveRequest) (*rp
 
 	err = s.repos.Node.RemoveNode(r.NodeId)
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 
 	if node.AdminID != user.ID {
@@ -162,10 +162,10 @@ func (s *nodeService) SetPostLimit(ctx context.Context, r *rpc.NodePostLimitRequ
 	user := s.getUser(ctx)
 	node, err := s.repos.Node.Node(r.NodeId)
 	if err != nil {
-		if errors.Is(err, repo.ErrNodeNotFound) {
+		if merry.Is(err, repo.ErrNodeNotFound) {
 			return nil, twirp.NotFoundError(err.Error())
 		}
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 
 	if node.AdminID != user.ID {
@@ -174,7 +174,7 @@ func (s *nodeService) SetPostLimit(ctx context.Context, r *rpc.NodePostLimitRequ
 
 	err = s.repos.Node.SetNodePostLimit(user.ID, r.NodeId, int(r.PostLimit))
 	if err != nil {
-		return nil, twirp.InternalErrorWith(err)
+		return nil, err
 	}
 
 	return &rpc.Empty{}, nil

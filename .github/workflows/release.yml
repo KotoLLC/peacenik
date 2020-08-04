@@ -1,0 +1,54 @@
+name: build and publish
+
+on:
+  push:
+    # branches:
+    #   - master
+    # paths:
+    # - 'frontend/**'
+    tags:        
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+  
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
+      
+      - uses: mr-smithers-excellent/docker-build-push@v4
+        name: Build & push Frontend Docker image
+        with:
+          image: k0t0/frontend
+          tag: ${{ steps.get_version.outputs.VERSION }}
+          registry: docker.io
+          directory: ./frontend
+          dockerfile: ./frontend/Dockerfile.production
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+  
+      - uses: mr-smithers-excellent/docker-build-push@v4
+        name: Build & push Backend Central Docker image
+        with:
+          image: k0t0/central
+          tag: ${{ steps.get_version.outputs.VERSION }}
+          registry: docker.io
+          directory: ./backend
+          dockerfile: ./backend/central/Dockerfile
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+  
+      - uses: mr-smithers-excellent/docker-build-push@v4
+        name: Build & push Backend Node Docker image
+        with:
+          image: k0t0/node
+          tag: ${{ steps.get_version.outputs.VERSION }}
+          registry: docker.io
+          directory: ./backend
+          dockerfile: ./backend/node/Dockerfile
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
