@@ -28,7 +28,6 @@ metadata:
   namespace: frontend
 spec:
   type: LoadBalancer
-  loadBalancerIP: 67.207.77.187
   selector:
     app: frontend
   ports:
