@@ -46,12 +46,12 @@ class NotificationsPage extends React.PureComponent<Props> {
   checkCurrentIcon = (item: ApiTypes.Notifications.Notification) => {
     const { text, type, data } = item
 
-    let urlVars = '?'
+    let urlVars = `?type=${type}`
     const dataObj = JSON.parse(data as any) // tslint:disable-line
 
     Object.entries(dataObj).forEach(
       ([key, value]) => {
-        urlVars += `${key}=${value}`
+        urlVars += `&${key}=${value}`
       }
     )
 
@@ -77,24 +77,29 @@ class NotificationsPage extends React.PureComponent<Props> {
       return (
         <ListText>
           <StorageIcon fontSize="small" />
-          <ListLink to={`nodes/list${urlVars}`}>{text}</ListLink>
+          <ListLink to={`/nodes/list${urlVars}`}>{text}</ListLink>
         </ListText>
       )
     }
 
     if (type.indexOf('invite') !== -1) {
+      
+      let currentUrl = '/friends/all'
+
+      if (type === 'invite/add' || type === 'invite/reject') {
+        currentUrl = '/friends/invitations'
+      }
+
       return (
         <ListText>
           <GroupAddIcon fontSize="small" />
-          <ListLink to={`friends/all${urlVars}`}>{text}</ListLink>
+          <ListLink to={currentUrl}>{text}</ListLink>
         </ListText>
       )
     }
   }
 
-  mapNotifiactions = () => {
-    const { notifications } = this.props
-
+  mapNotifiactions = (notifications: ApiTypes.Notifications.Notification[]) => {
     return notifications.map(item => (
       <ListIten key={item.id}>
         <ListDate>{moment(item.created_at).format('DD MMM YYYY hh:mm a')}</ListDate>
@@ -104,16 +109,22 @@ class NotificationsPage extends React.PureComponent<Props> {
   }
 
   static getDerivedStateFromProps(newProps: Props, prevState: State) {
-    if (JSON.stringify(newProps.notifications) !== JSON.stringify(prevState.notifications)) {
-      return {
-        notifications: newProps.notifications
-      }
+    const sortByDate = (data: ApiTypes.Notifications.Notification[]) => {
+      return data.sort((b, a) => {
+        return moment(b.created_at).diff(a.created_at)
+      })
+    }
+
+    if (newProps.notifications?.length) return {
+      notifications: sortByDate(newProps.notifications)
     }
 
     return null
   }
 
   render() {
+    const { notifications } = this.state
+
     return (
       <WithTopBar>
         <ContainerStyled >
@@ -122,7 +133,7 @@ class NotificationsPage extends React.PureComponent<Props> {
               <Title>Notifications</Title>
             </Header>
             <ListWrapper>
-              {this.mapNotifiactions()}
+              {this.mapNotifiactions(notifications)}
             </ListWrapper>
             <Footer>
               <Button variant="contained" color="primary">clear</Button>

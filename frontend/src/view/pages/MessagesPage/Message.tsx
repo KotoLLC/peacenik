@@ -13,6 +13,8 @@ import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import { Player } from 'video-react'
 import { ApiTypes, StoreTypes, NodeTypes } from './../../../types'
+// import queryString from 'query-string'
+// import { history } from '@view/routes'
 import {
   PaperStyled,
   MessageHeader,
@@ -61,6 +63,29 @@ const Message: React.SFC<Props> = (props) => {
     uploadLink,
     onResetMessageUploadLink,
   } = props
+
+  // const url = history.location.search
+  // const params = queryString.parse(url)
+  // const messageRef = React.createRef<HTMLDivElement>()
+
+  // function checkIsCommentsOpen() {
+  //   if(params?.type?.indexOf('comment') !== -1){
+  //     return comments?.some(item => item.id === params?.comment_id)
+  //   }
+  //   return false
+  // }
+  
+  // function checkIsScrollToMessage() {
+  //   if(params?.type?.indexOf('message') !== -1){
+  //     if(id === params?.message_id){
+  //       messageRef?.current?.scrollIntoView({ behavior: 'auto', block: 'start' })
+  //     }
+  //   }
+  // }
+
+  // checkIsScrollToMessage()
+  // const isOpen = checkIsCommentsOpen()
+
   const [isEditer, setEditor] = useState<boolean>(false)
   const [isCommentsEditer, setCommentsEditor] = useState<boolean>(false)
   const [message, onMessageChange] = useState<string>(text)
@@ -139,7 +164,11 @@ const Message: React.SFC<Props> = (props) => {
       return (
         <CommentsWrapepr>
           {comments?.map(item => (
-            <Comment {...item} key={item.id} sourceHost={sourceHost} />
+            <Comment
+              {...item} 
+              key={item.id} 
+              sourceHost={sourceHost} 
+              />
           ))}
         </CommentsWrapepr>
       )
