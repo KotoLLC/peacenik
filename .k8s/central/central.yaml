@@ -3,7 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: central
-  namespace: backend
 spec:
   selector:
     matchLabels:
@@ -83,7 +82,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: central-service
-  namespace: backend
 spec:
   type: ClusterIP
   selector:
