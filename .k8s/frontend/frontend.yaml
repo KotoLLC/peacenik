@@ -21,7 +21,7 @@ spec:
         - containerPort: 5000
         env:
           - name: KOTO_CENTRAL_HOST
-            value: central.koto.at:12001
+            value: http://central.koto.at:12001
 ---
 apiVersion: v1
 kind: Service
