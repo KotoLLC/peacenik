@@ -15,7 +15,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: node
-        image: k0t0/node:v1.1
+        image: k0t0/node:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 12002
@@ -23,9 +23,9 @@ spec:
           - name: KOTO_ADDRESS
             value: ":12002"
           - name: KOTO_EXTERNAL_ADDRESS
-            value: http://node-service:12002/
+            value: http://node1.koto.at:12002/
           - name: KOTO_CENTRAL_ADDRESS
-            value: http://central-service:12001/
+            value: http://central.koto.at:12001/
           - name: KOTO_DB_HOST
             value: db-node-service.backend
           - name: KOTO_DB_SSL_MODE
@@ -59,7 +59,7 @@ kind: Service
 metadata:
   name: node-service
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
     app: node
   ports:
