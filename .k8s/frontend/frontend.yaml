@@ -20,6 +20,9 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
+        env:
+          - name: KOTO_CENTRAL_HOST
+            value: central-service.backend
 ---
 apiVersion: v1
 kind: Service
