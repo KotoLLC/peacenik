@@ -2,18 +2,32 @@ FROM node:alpine as builder
 
 WORKDIR /app
 
-COPY . ./
+COPY package.json ./
 
 RUN npm install --silent
 
+COPY . ./
+
 RUN npm run build
 
-FROM node:alpine
+FROM golang:1.14-alpine as server-builder
+
+WORKDIR /server
+
+COPY server/go.mod ./
+COPY server/go.sum ./
+
+RUN go mod download
+
+COPY server/*.go ./
+
+RUN GOOS=linux GOARCH=amd64 go build -o frontend-server .
+
+FROM alpine
 
 COPY --from=builder /app/build ./build
-
-RUN npm install -g serve
+COPY --from=server-builder /server/frontend-server ./
 
 EXPOSE 5000
 
-CMD ["serve", "-p", "5000", "-s", "./build"]
+ENTRYPOINT ["./frontend-server"]
