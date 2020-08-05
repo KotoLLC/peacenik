@@ -19,7 +19,8 @@ spec:
             secretName: central-key
       containers:
       - name: central
-        image: k0t0/central:v1.0
+        image: k0t0/central:v1.1
+        imagePullPolicy: Always
         ports:
         - containerPort: 12001
         volumeMounts:
@@ -33,9 +34,11 @@ spec:
           - name: KOTO_ADMINS
             value: matt
           - name: KOTO_DB_HOST
-            value: db-central-service.backend
+            value: db-central-service
           - name: KOTO_DB_SSL_MODE
             value: disable
+          - name: KOTO_FRONTEND_ADDRESS
+            value: frontend-service.frontend
           - name: KOTO_DB_USER
             value: postgres
           - name: KOTO_DB_PASSWORD
@@ -46,7 +49,7 @@ spec:
           - name: KOTO_DB_NAME
             value: koto-central
           - name: KOTO_S3_ENDPOINT
-            value: "s3-service:9000"
+            value: https://storage.googleapis.com
           - name: KOTO_S3_KEY
             valueFrom:
               secretKeyRef:
