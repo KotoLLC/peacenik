@@ -51,33 +51,33 @@ spec:
           - name: KOTO_S3_KEY
             valueFrom:
               secretKeyRef:
-                name: central-secrets
+                name: central-s3
                 key: s3_key 
           - name: KOTO_S3_SECRET
             valueFrom:
               secretKeyRef:
-                name: central-secrets
+                name: central-s3
                 key: s3_secret
           - name: KOTO_S3_BUCKET
             value: koto-central
           - name: KOTO_SMTP_HOST
             value: smtp.sendgrid.net
           - name: KOTO_SMTP_PORT
-            value: "25" # TODO
+            value: "465" # TODO
           - name: KOTO_SMTP_USER
             valueFrom:
               secretKeyRef:
-                name: central-secrets
+                name: central-smtp
                 key: smtp_user
           - name: KOTO_SMTP_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: central-secrets
+                name: central-smtp
                 key: smtp_password
           - name: KOTO_SMTP_FROM
             value: admin@koto.org
           - name: KOTO_TEST_MODE
-            value: "true"
+            value: "false"
 ---
 apiVersion: v1
 kind: Service
