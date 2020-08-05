@@ -9,13 +9,12 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  storageClassName: do-block-storage
+  storageClassName: standard
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: db-central-service
-  namespace: backend
   labels:
     app: db-central-service
 spec:
@@ -28,7 +27,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres-central-db
-  namespace: backend
 spec:
   replicas: 1
   selector:
@@ -59,11 +57,3 @@ spec:
       - name: central-db-data
         persistentVolumeClaim:
           claimName: central-db-pvc
----
-apiVersion: v1
-data:
-  password: ZG9ja2Vy
-kind: Secret
-metadata:
-  name: db-central-password
-  namespace: backend

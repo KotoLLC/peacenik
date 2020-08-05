@@ -3,7 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: central
-  namespace: backend
 spec:
   selector:
     matchLabels:
@@ -20,7 +19,8 @@ spec:
             secretName: central-key
       containers:
       - name: central
-        image: k0t0/central:v1.0
+        image: k0t0/central:v1.1
+        imagePullPolicy: Always
         ports:
         - containerPort: 12001
         volumeMounts:
@@ -34,56 +34,57 @@ spec:
           - name: KOTO_ADMINS
             value: matt
           - name: KOTO_DB_HOST
-            value: db-central-service.backend
+            value: db-central-service
           - name: KOTO_DB_SSL_MODE
             value: disable
+          - name: KOTO_FRONTEND_ADDRESS
+            value: frontend-service.frontend
           - name: KOTO_DB_USER
             value: postgres
           - name: KOTO_DB_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: central-secrets
-                key: db_password
+                name: db-central-password
+                key: password
           - name: KOTO_DB_NAME
             value: koto-central
           - name: KOTO_S3_ENDPOINT
-            value: "s3-service:9000"
+            value: https://storage.googleapis.com
           - name: KOTO_S3_KEY
             valueFrom:
               secretKeyRef:
-                name: central-secrets
+                name: central-s3
                 key: s3_key 
           - name: KOTO_S3_SECRET
             valueFrom:
               secretKeyRef:
-                name: central-secrets
+                name: central-s3
                 key: s3_secret
           - name: KOTO_S3_BUCKET
             value: koto-central
           - name: KOTO_SMTP_HOST
             value: smtp.sendgrid.net
           - name: KOTO_SMTP_PORT
-            value: "25" # TODO
+            value: "465" # TODO
           - name: KOTO_SMTP_USER
             valueFrom:
               secretKeyRef:
-                name: central-secrets
+                name: central-smtp
                 key: smtp_user
           - name: KOTO_SMTP_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: central-secrets
+                name: central-smtp
                 key: smtp_password
           - name: KOTO_SMTP_FROM
             value: admin@koto.org
           - name: KOTO_TEST_MODE
-            value: "true"
+            value: "false"
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: central-service
-  namespace: backend
 spec:
   type: ClusterIP
   selector:
@@ -91,23 +92,3 @@ spec:
   ports:
   - name: http
     port: 12001
----
-apiVersion: v1
-data:
-  key: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlDV3dJQkFBS0JnUURCSERZYWZDTDR5dFl2QW1TcUdKZ3ZrOVdTaEJHd2Zia2svTUNRbTFjZG1SUTI1cFlhCjB4QlFYMlM5Y1oyc1VsNS9iRzZZSlRKOFV0V0RaUWRVRnBjbVZKcE9TbkhyK1FSWkpVM1JWcEgyVzZjMlhNdzgKM2FHNS9xT3B2dWdYUlBndEh5bFNyNDl4RE8zV29EMXN6Zng1bUtCWEZhajVQTDVmYXNEZXFaSHVpUUlEQVFBQgpBb0dBQjlYQU1EVG5LbGI0ZDdIT0tjU1RzQ0o4WU5SdzcwczZqdENlYzMrSitrNXlyb09PaFlvWXVGb1dlVVU1CjAzc0lFSDF5dzBPSEY5bzRoWHM4MytHR3dscFNDSnBTdHU0b0FKa2hwYjRqak52TEZEcDNGWEtQVGVBUDdwdTcKamkxeFRBTHREeE50MlB5S3JhZW00am54OFpwbnpRMndxeEVhT1MyQWxTaXRvREVDUVFEa0tHS1lpTkZGS3F2NwpFempDa3RaN0t5SHZ3eERqRmtpT3JYN3VySmZ6aVNlYkF4UUxPOExWQ0gxWXkyVlpWNzJEbnI5Nk90djBFc1lBCnBQbXM4dzU5QWtFQTJLenlISFZhN24xR08zQlVvSlNrZzJRYTB2YUFvK3Rqb20zZStzVmYxZllOM3U2QUVDb00KaURrWE00K0FaVkd3K2dLQ3c1cTJ4V3JITENFNDZrQ2gvUUpBZENwN3lONGdidThERVpyLzAxR2dFcVlyYVVBUQpZUTcvY21XenN5SDlXK29CV0ZPQTZSZE1ZOXNtdHdjWVd4enBTUktTdTFFc25HRFNuNUZmN2tieW9RSkFRcXNzCkw4OTROQ3Q5b2FwVmo3ZE15MVRRNEJxU3lGMFVJaFZXWjZpMWJUc3hWMmZoSlpnYWxRdWo5T3h4b0RzN2ppR1oKcEtBRkhzZFZFMklCaGlwdTdRSkFiN0tMS1ZZZVE3RjdaSE9MVzBlYllpWnF1QUt2Nnk4NjF6RzBYdjRMTzhJeQpQbjJTNWU0VE93TTMzUzZJelNRWlpBWUR6WXRzZStOanNJanl3ampBNXc9PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo=
-kind: Secret
-metadata:
-  name: central-key
-  namespace: backend
----
-apiVersion: v1
-data:
-  db_password: ZG9ja2Vy
-  s3_key: bWluaW9hZG1pbg==
-  s3_secret: bWluaW9hZG1pbg==
-  smtp_password: NDUzNDUzNHRlcmVy
-  smtp_user: MjM0MjM0MjM0MjM0MjM=
-kind: Secret
-metadata:
-  name: central-secrets
-  namespace: backend

@@ -34,3 +34,39 @@ docker-compose up --build
 ## Running tests
 
 [Run tests](tests.md)
+
+## Modifying secrets
+- To create your Central Database password run the following command replacing the `<PASSWORD>` value with your actual password:
+
+```
+kubectl create secret generic db-central-password --from-literal=password=123123123 -oyaml --dry-run=client > ./.k8s/db/secret-central-db.yaml
+```
+
+- To create your Node Database password run the following command replacing the `<PASSWORD>` value with your actual password:
+
+```
+kubectl create secret generic db-node-password --from-literal=password=123123123 -oyaml --dry-run=client > ./.k8s/db/secret-node-db.yaml
+```
+- To create your Central server secrets run the following command replacing the strings between `<>` with your actual value:
+
+```
+kubectl create secret generic central-smtp --from-literal=smtp_user=test --from-literal=smtp_password=test -oyaml --dry-run=client > ./.k8s/central/secret-central-smtp.yaml
+```
+
+```
+kubectl create secret generic central-s3 --from-literal=s3_key=test --from-literal=s3_secret=test -oyaml --dry-run=client > ./.k8s/central/secret-central-s3.yaml
+```
+
+### Generate an RSA key
+
+```
+openssl genrsa -out ./central.rsa 1024
+
+kubectl create secret generic central-key --from-file=key=./central.rsa -oyaml --dry-run=client > ./.k8s/central/secret-central-key.yaml
+```
+
+- To create your Node S3 key and secret run the following command replacing the `<KEY>` and `<SECRET>` value with your actual password:
+
+```
+kubectl create secret generic node-secrets --from-literal=s3_key=test --from-literal=s3_secret=<SECRET> -oyaml --dry-run=client > ./.k8s/node/secret-node.yaml
+```

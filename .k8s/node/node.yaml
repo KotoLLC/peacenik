@@ -3,7 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: node
-  namespace: backend
 spec:
   selector:
     matchLabels:
@@ -16,16 +15,17 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: node
-        image: k0t0/node:v1.0
+        image: k0t0/node:v1.1
+        imagePullPolicy: Always
         ports:
         - containerPort: 12002
         env:
           - name: KOTO_ADDRESS
             value: ":12002"
           - name: KOTO_EXTERNAL_ADDRESS
-            value: http://node-service.backend:12002/
+            value: http://node-service:12002/
           - name: KOTO_CENTRAL_ADDRESS
-            value: http://central-service.backend:12001/
+            value: http://central-service:12001/
           - name: KOTO_DB_HOST
             value: db-node-service.backend
           - name: KOTO_DB_SSL_MODE
@@ -35,12 +35,12 @@ spec:
           - name: KOTO_DB_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: node-secrets
-                key: db_password
+                name: db-node-password
+                key: password
           - name: KOTO_DB_NAME
             value: koto-node-1
           - name: KOTO_S3_ENDPOINT
-            value: "s3-service:9000"
+            value: https://storage.googleapis.com
           - name: KOTO_S3_KEY
             valueFrom:
               secretKeyRef:
@@ -58,7 +58,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: node-service
-  namespace: backend
 spec:
   type: ClusterIP
   selector:
@@ -66,13 +65,3 @@ spec:
   ports:
   - name: http
     port: 12002
----
-apiVersion: v1
-data:
-  db_password: ZG9ja2Vy
-  s3_key: bWluaW9hZG1pbg==
-  s3_secret: bWluaW9hZG1pbg==
-kind: Secret
-metadata:
-  name: node-secrets
-  namespace: backend
