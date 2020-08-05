@@ -29,27 +29,66 @@ interface Props {
   onGetNotifications: () => void
 }
 
+interface State {
+  notifications: ApiTypes.Notifications.Notification[]
+}
+
 class NotificationsPage extends React.PureComponent<Props> {
+
+  state = {
+    notifications: this.props.notifications || []
+  }
 
   componentDidMount() {
     this.props.onGetNotifications()
   }
 
-  checkCurrentIcon = (type: ApiTypes.Notifications.Type) => {
+  checkCurrentIcon = (item: ApiTypes.Notifications.Notification) => {
+    const { text, type, data } = item
+
+    let urlVars = '?'
+    const dataObj = JSON.parse(data as any) // tslint:disable-line
+
+    Object.entries(dataObj).forEach(
+      ([key, value]) => {
+        urlVars += `${key}=${value}`
+      }
+    )
+
     if (type.indexOf('message') !== -1) {
-      return <ForumIcon fontSize="small" />
+      return (
+        <ListText>
+          <ForumIcon fontSize="small" />
+          <ListLink to={`/messages${urlVars}`}>{text}</ListLink>
+        </ListText>
+      )
     }
 
     if (type.indexOf('comment') !== -1) {
-      return <AlternateEmailIcon fontSize="small" />
+      return (
+        <ListText>
+          <AlternateEmailIcon fontSize="small" />
+          <ListLink to={`/messages${urlVars}`}>{text}</ListLink>
+        </ListText>
+      )
     }
 
     if (type.indexOf('node') !== -1) {
-      return <StorageIcon fontSize="small" />
+      return (
+        <ListText>
+          <StorageIcon fontSize="small" />
+          <ListLink to={`nodes/list${urlVars}`}>{text}</ListLink>
+        </ListText>
+      )
     }
 
     if (type.indexOf('invite') !== -1) {
-      return <GroupAddIcon fontSize="small" />
+      return (
+        <ListText>
+          <GroupAddIcon fontSize="small" />
+          <ListLink to={`friends/all${urlVars}`}>{text}</ListLink>
+        </ListText>
+      )
     }
   }
 
@@ -59,12 +98,19 @@ class NotificationsPage extends React.PureComponent<Props> {
     return notifications.map(item => (
       <ListIten key={item.id}>
         <ListDate>{moment(item.created_at).format('DD MMM YYYY hh:mm a')}</ListDate>
-        <ListText>
-          {this.checkCurrentIcon(item.type)}
-          <ListLink>{item.text}</ListLink>
-        </ListText>
+        {this.checkCurrentIcon(item)}
       </ListIten>
     ))
+  }
+
+  static getDerivedStateFromProps(newProps: Props, prevState: State) {
+    if (JSON.stringify(newProps.notifications) !== JSON.stringify(prevState.notifications)) {
+      return {
+        notifications: newProps.notifications
+      }
+    }
+
+    return null
   }
 
   render() {

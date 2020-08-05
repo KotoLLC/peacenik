@@ -7,7 +7,7 @@ import profile from './profile'
 import messages from './messages'
 import notifications from './notifications'
 
-const URL = process.env.KOTO_CENTRAL_HOST ? `${process.env.KOTO_CENTRAL_HOST}:12001` : 'http://localhost:12001'
+const URL = process.env.KOTO_CENTRAL_HOST ? `${process.env.KOTO_CENTRAL_HOST}` : 'http://localhost:12001'
 
 export const axiosInstance = axios.create({
   baseURL: URL,
