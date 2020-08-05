@@ -59,11 +59,3 @@ spec:
       - name: central-db-data
         persistentVolumeClaim:
           claimName: central-db-pvc
----
-apiVersion: v1
-data:
-  password: ZG9ja2Vy
-kind: Secret
-metadata:
-  name: db-central-password
-  namespace: backend
