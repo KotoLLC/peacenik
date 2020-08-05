@@ -59,11 +59,4 @@ spec:
       - name: node-db-data
         persistentVolumeClaim:
           claimName: node-db-pvc
----
-apiVersion: v1
-data:
-  password: ZG9ja2Vy
-kind: Secret
-metadata:
-  name: db-node-password
-  namespace: backend
+
