@@ -19,7 +19,7 @@ spec:
             secretName: central-key
       containers:
       - name: central
-        image: k0t0/central:v1.1
+        image: k0t0/central:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 12001
@@ -38,7 +38,7 @@ spec:
           - name: KOTO_DB_SSL_MODE
             value: disable
           - name: KOTO_FRONTEND_ADDRESS
-            value: frontend-service.frontend
+            value: koto.at
           - name: KOTO_DB_USER
             value: postgres
           - name: KOTO_DB_PASSWORD
@@ -77,7 +77,7 @@ spec:
                 name: central-smtp
                 key: smtp_password
           - name: KOTO_SMTP_FROM
-            value: admin@koto.org
+            value: admin@koto.at
           - name: KOTO_TEST_MODE
             value: "false"
 ---
@@ -86,7 +86,7 @@ kind: Service
 metadata:
   name: central-service
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
     app: central
   ports:
