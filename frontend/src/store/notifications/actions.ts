@@ -1,5 +1,5 @@
 
-import { ApiTypes, NodeTypes } from '../../types'
+import { ApiTypes } from '../../types'
 
 export enum Types {
   GET_NOTIFICATIONS_REQUEST = 'GET_NOTIFICATIONS_REQUEST',
@@ -9,6 +9,14 @@ export enum Types {
   
   GET_NOTIFICATIONS_FROM_CENTRAL_REQUEST = 'GET_NOTIFICATIONS_FROM_CENTRAL_REQUEST',
   GET_NOTIFICATIONS_FROM_CENTRAL_SUCCESS = 'GET_NOTIFICATIONS_FROM_CENTRAL_SUCCESS',
+
+  CLEAN_NOTIFICATIONS = 'CLEAN_NOTIFICATIONS',
+
+  CLEAN_NOTIFICATIONS_IN_NODE_REQUEST = 'CLEAN_NOTIFICATIONS_IN_NODE_REQUEST',
+  CLEAN_NOTIFICATIONS_IN_NODE_SUCCESS = 'CLEAN_NOTIFICATIONS_IN_NODE_SUCCESS',
+  
+  CLEAN_NOTIFICATIONS_IN_CENTRAL_REQUEST = 'CLEAN_NOTIFICATIONS_IN_CENTRAL_REQUEST',
+  CLEAN_NOTIFICATIONS_IN_CENTRAL_SUCCESS = 'CLEAN_NOTIFICATIONS_IN_CENTRAL_SUCCESS',
 }
 
 const getNotificationsRequest = () => ({
@@ -34,10 +42,40 @@ const getNotificationsFromCentralSuccess = (payload) => ({
   payload,
 })
 
+const cleanNotificationsInCentralRequest = (payload: ApiTypes.Notifications.CleanNotification) => ({
+  type: Types.CLEAN_NOTIFICATIONS_IN_CENTRAL_REQUEST,
+  payload,
+})
+
+const cleanNotificationsInCentralSuccess = () => ({
+  type: Types.CLEAN_NOTIFICATIONS_IN_CENTRAL_SUCCESS,
+})
+
+const cleanNotificationsInNodeRequest = (payload: {
+  host: string,
+  data: ApiTypes.Notifications.CleanNotification
+}) => ({
+  type: Types.CLEAN_NOTIFICATIONS_IN_NODE_REQUEST,
+  payload,
+})
+
+const cleanNotificationsInNodeSuccess = () => ({
+  type: Types.CLEAN_NOTIFICATIONS_IN_NODE_SUCCESS,
+})
+
+const cleanNotifications = () => ({
+  type: Types.CLEAN_NOTIFICATIONS
+})
+
 export default {
   getNotificationsRequest,
   getNotificationsFromNodeRequest,
   getNotificationsFromNodeSuccess,
   getNotificationsFromCentralRequest,
   getNotificationsFromCentralSuccess,
+  cleanNotificationsInCentralRequest,
+  cleanNotificationsInCentralSuccess,
+  cleanNotificationsInNodeRequest,
+  cleanNotificationsInNodeSuccess,
+  cleanNotifications,
 }

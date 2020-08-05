@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import Container from '@material-ui/core/Container'
 import Paper from '@material-ui/core/Paper'
+import { Link } from 'react-router-dom'
 
 export const ContainerStyled = styled(Container)`
   && {
@@ -57,10 +58,11 @@ export const ListText = styled.p`
   align-items: center;
 `
 
-export const ListLink = styled.span`
+export const ListLink = styled(Link)`
   margin-left: 7px;
   text-decoration: underline;
   cursor: pointer;
+  color: #3f51b5;
 
   &:hover {
     text-decoration: none;
