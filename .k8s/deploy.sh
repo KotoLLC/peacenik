@@ -2,6 +2,7 @@
 set -eo pipefail
 
 BACKEND_NAMESPACE="backend"
+FRONTEND_NAMESPACE="frontend"
 
 _wait_for_deployments() {
     NAMESPACE=${1}
@@ -16,7 +17,7 @@ deploy() {
     echo
     echo "==============================="
     echo "Applying Postgres DB resources"
-    kubectl apply -f ./db
+    kubectl apply -f ./db -n ${BACKEND_NAMESPACE}
     echo "====================================================="
     echo "Waiting for Postgres DB resources to become available"
     # wait for the pods to be available
@@ -25,7 +26,7 @@ deploy() {
     echo
     echo "==============================="
     echo "Applying Koto Central resources"
-    kubectl apply -f ./central
+    kubectl apply -f ./central -n ${BACKEND_NAMESPACE}
     echo "====================================="
     echo "Waiting resources to become available"
     # wait for the pods to be available
@@ -34,7 +35,7 @@ deploy() {
     echo
     echo "============================"
     echo "Applying Koto Node resources"
-    kubectl apply -f ./node
+    kubectl apply -f ./node -n ${BACKEND_NAMESPACE}
     echo "====================================="
     echo "Waiting resources to become available"
     # wait for the pods to be available
@@ -43,7 +44,7 @@ deploy() {
     echo
     echo "================================"
     echo "Applying Koto Frontend resources"
-    kubectl apply -f ./frontend
+    kubectl apply -f ./frontend -n ${FRONTEND_NAMESPACE}
     echo "====================================="
     echo "Waiting resources to become available"
     # wait for the pods to be available

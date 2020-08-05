@@ -1,5 +1,5 @@
 .idea/
-.k8s/**/secrets-*.yaml
+.k8s/**/secret-*.yaml
 
 package-lock.json
 node_modules

@@ -3,7 +3,6 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: node-db-pvc
-  namespace: backend
 spec:
   accessModes:
   - ReadWriteOnce
@@ -16,7 +15,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: db-node-service
-  namespace: backend
   labels:
     app: db-node-service
 spec:
@@ -29,7 +27,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres-node-db
-  namespace: backend
 spec:
   replicas: 1
   selector:

@@ -3,7 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: node
-  namespace: backend
 spec:
   selector:
     matchLabels:
@@ -58,7 +57,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: node-service
-  namespace: backend
 spec:
   type: ClusterIP
   selector:
