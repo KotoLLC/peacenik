@@ -15,16 +15,17 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: node
-        image: k0t0/node:v1.0
+        image: k0t0/node:v1.1
+        imagePullPolicy: Always
         ports:
         - containerPort: 12002
         env:
           - name: KOTO_ADDRESS
             value: ":12002"
           - name: KOTO_EXTERNAL_ADDRESS
-            value: http://node-service.backend:12002/
+            value: http://node-service:12002/
           - name: KOTO_CENTRAL_ADDRESS
-            value: http://central-service.backend:12001/
+            value: http://central-service:12001/
           - name: KOTO_DB_HOST
             value: db-node-service.backend
           - name: KOTO_DB_SSL_MODE
@@ -39,7 +40,7 @@ spec:
           - name: KOTO_DB_NAME
             value: koto-node-1
           - name: KOTO_S3_ENDPOINT
-            value: "s3-service:9000"
+            value: https://storage.googleapis.com
           - name: KOTO_S3_KEY
             valueFrom:
               secretKeyRef:

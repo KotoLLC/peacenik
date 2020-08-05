@@ -15,13 +15,13 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: frontend
-        image: k0t0/frontend:v1.0
+        image: k0t0/frontend:v1.1
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
         env:
           - name: KOTO_CENTRAL_HOST
-            value: central-service.backend
+            value: central-service:12001.backend
 ---
 apiVersion: v1
 kind: Service
