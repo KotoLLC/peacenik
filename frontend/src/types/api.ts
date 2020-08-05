@@ -215,11 +215,11 @@ export declare namespace ApiTypes {
   }
 
   export namespace Notifications {
-
+ 
     export type MessageTypes = 'message/post' | 'message/tag' | 'message/like'
     export type CommentTypes = 'comment/post' | 'comment/tag' | 'comment/like'
     export type NodeTypes = 'node/add' | 'node/approve' | 'node/remove'
-    export type InviteTypes = 'invite/add' | 'invite/approve' | 'invite/remove'
+    export type InviteTypes = 'invite/add' | 'invite/approve' | 'invite/reject'
 
     export interface Data {
       user_id: string

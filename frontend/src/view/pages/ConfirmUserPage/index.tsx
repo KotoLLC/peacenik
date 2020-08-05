@@ -8,7 +8,7 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import queryString from 'query-string'
-import selectors from '@selectors/index'
+import selectors from '@selectors/index' 
 import {
   PageWrapper,
   PaperStyled,

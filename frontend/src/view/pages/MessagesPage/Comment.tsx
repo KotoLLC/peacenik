@@ -33,6 +33,7 @@ const Comment: React.SFC<Props> = (props) => {
   const { text, user_name, created_at, id, user_id, sourceHost, userId, avatar_thumbnail } = props
   const [isEditer, setEditor] = useState<boolean>(false)
   const [comment, onCommentChange] = useState<string>(text)
+  const commentRef = React.createRef<HTMLDivElement>()
 
   const onMessageSave = () => {
     setEditor(false)
@@ -67,7 +68,7 @@ const Comment: React.SFC<Props> = (props) => {
   }
 
   return (
-    <CommentWrapper>
+    <CommentWrapper ref={commentRef}>
       <MessageHeader>
         <UserInfo>
           <Avatar variant="rounded" src={avatar_thumbnail}/>
