@@ -66,7 +66,7 @@ func (r *messageRepo) Messages(currentUserID string, userIDs []string, from, unt
 
 	var messages []Message
 	query, args, err := sqlx.In(`
-		select id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at,
+		select id, parent_id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at,
 		       (select count(*) from message_likes where message_id = messages.id) likes,
 		       case when exists(select * from message_likes where message_id = messages.id and user_id = ?) then true else false end liked_by_me
 		from messages
@@ -87,7 +87,7 @@ func (r *messageRepo) Messages(currentUserID string, userIDs []string, from, unt
 func (r *messageRepo) Message(currentUserID string, messageID string) (Message, error) {
 	var message Message
 	err := r.db.Get(&message, `
-		select id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at,
+		select id, parent_id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at,
 		       (select count(*) from message_likes where message_id = messages.id) likes,
 		       case when exists(select * from message_likes where message_id = messages.id and user_id = $1) then true else false end liked_by_me
 		from messages
