@@ -8,6 +8,9 @@ import moment from 'moment'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'
+import FavoriteIcon from '@material-ui/icons/Favorite'
+import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder'
+import Badge from '@material-ui/core/Badge'
 import {
   CommentWrapper,
   MessageHeader,
@@ -15,11 +18,11 @@ import {
   UserName,
   MessageDate,
   UserNameWrapper,
-  ButtonsWrapper,
   MessageContent,
   TextareaAutosizeStyled,
   EditMessageWrapper,
   ButtonSend,
+  ButtonsWrapper,
 } from './styles'
 import { ApiTypes, StoreTypes } from 'src/types'
 
@@ -27,10 +30,23 @@ interface Props extends ApiTypes.Messages.Comment {
   userId: string
   onCommentEdit: (data: ApiTypes.Messages.EditComment) => void
   onCommentDelete: (data: ApiTypes.Messages.DeleteComment) => void
+  onLikeComment: (data: ApiTypes.Messages.Like) => void
 }
 
 const Comment: React.SFC<Props> = (props) => {
-  const { text, user_name, created_at, id, user_id, sourceHost, userId, avatar_thumbnail } = props
+  const { 
+    text, 
+    user_name, 
+    created_at, 
+    id, 
+    user_id, 
+    sourceHost, 
+    userId, 
+    avatar_thumbnail,
+    liked_by_me,
+    likes,
+    onLikeComment,
+   } = props
   const [isEditer, setEditor] = useState<boolean>(false)
   const [comment, onCommentChange] = useState<string>(text)
   const commentRef = React.createRef<HTMLDivElement>()
@@ -64,7 +80,24 @@ const Comment: React.SFC<Props> = (props) => {
           <RemoveCommentDialog {...{ comment, id, sourceHost }} />
         </ButtonsWrapper>
       )
+    } else {
+      return (
+        <ButtonsWrapper>{renderLikeIcon()}</ButtonsWrapper>
+      )
     }
+  }
+
+  const renderLikeIcon = () => {
+    return (
+      <IconButton onClick={() => onLikeComment({
+        host: sourceHost,
+        id: id
+      })}>
+        <Badge badgeContent={likes} color="primary">
+          {liked_by_me ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+        </Badge>
+      </IconButton>
+    )
   }
 
   return (
@@ -103,10 +136,11 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   userId: selectors.profile.userId(state),
 })
 
-type DispatchProps = Pick<Props, 'onCommentEdit' | 'onCommentDelete'>
+type DispatchProps = Pick<Props, 'onCommentEdit' | 'onCommentDelete' | 'onLikeComment'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onCommentEdit: (data: ApiTypes.Messages.EditComment) => dispatch(Actions.messages.editCommentRequest(data)),
   onCommentDelete: (data: ApiTypes.Messages.DeleteComment) => dispatch(Actions.messages.deleteCommentRequest(data)),
+  onLikeComment: (data: ApiTypes.Messages.Like) => dispatch(Actions.messages.linkCommnetRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Comment)

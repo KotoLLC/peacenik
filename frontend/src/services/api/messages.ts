@@ -130,4 +130,34 @@ export default {
       return response
     }).catch(error => ({ error }))
   },
+  
+  likeMessage: async (data: ApiTypes.Messages.Like) => {
+    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const config = {
+      withCredentials: false,
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      }
+    }
+    return await axiosInstance.post(`${data.host}/rpc.MessageService/LikeMessage`, {
+      'message_id': data.id
+    }, config).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
+  
+  likeComment: async (data: ApiTypes.Messages.Like) => {
+    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const config = {
+      withCredentials: false,
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      }
+    }
+    return await axiosInstance.post(`${data.host}/rpc.MessageService/LikeComment`, {
+      'comment_id': data.id
+    }, config).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
 }

@@ -138,3 +138,25 @@ export function* watchSetAttachment(action: { type: string, payload: ApiTypes.Me
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
+
+export function* watchLikeMessage(action: { type: string, payload: ApiTypes.Messages.Like }) {
+  const response = yield API.messages.likeMessage(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.messages.linkMessageSuccess())
+    yield put(Actions.messages.getMessagesRequest())
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
+export function* watchLikeComment(action: { type: string, payload: ApiTypes.Messages.Like }) {
+  const response = yield API.messages.likeComment(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.messages.linkCommentSuccess())
+    yield put(Actions.messages.getMessagesRequest())
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}

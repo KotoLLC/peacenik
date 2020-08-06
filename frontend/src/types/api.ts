@@ -190,6 +190,8 @@ export declare namespace ApiTypes {
       attachment?: string
       attachment_type?: string
       attachment_thumbnail?: string
+      likes?: number
+      liked_by_me?: boolean
     }
     
     export interface Comment {
@@ -201,6 +203,8 @@ export declare namespace ApiTypes {
       created_at: string
       updated_at: string
       avatar_thumbnail?: string
+      likes?: number
+      liked_by_me?: boolean
     }
 
     export interface UploadLinkRequest {
@@ -211,6 +215,11 @@ export declare namespace ApiTypes {
     export interface Attachment {
       form_data: FormData
       link: string
+    }
+
+    export interface Like {
+      host: string
+      id: string
     }
   }
 

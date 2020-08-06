@@ -34,6 +34,12 @@ export enum Types {
 
   SET_MESSAGE_ATTACHMENT_REQUEST = 'SET_MESSAGE_ATTACHMENT_REQUEST',
   SET_MESSAGE_ATTACHMENT_SUCCESS = 'SET_MESSAGE_ATTACHMENT_SUCCESS',
+
+  LIKE_MESSAGE_REQUEST = 'LIKE_MESSAGE_REQUEST',
+  LIKE_MESSAGE_SUCCESS = 'LIKE_MESSAGE_SUCCESS',
+  
+  LIKE_COMMENT_REQUEST = 'LIKE_COMMENT_REQUEST',
+  LIKE_COMMENT_SUCCESS = 'LIKE_COMMENT_SUCCESS',
 }
 
 const getMessagesRequest = () => ({
@@ -139,6 +145,24 @@ const setAttachmentSuccess = () => ({
   type: Types.SET_MESSAGE_ATTACHMENT_SUCCESS,
 })
 
+const linkMessageRequest = (payload: ApiTypes.Messages.Like) => ({
+  type: Types.LIKE_MESSAGE_REQUEST,
+  payload,
+})
+
+const linkMessageSuccess = () => ({
+  type: Types.LIKE_MESSAGE_SUCCESS,
+})
+
+const linkCommnetRequest = (payload: ApiTypes.Messages.Like) => ({
+  type: Types.LIKE_COMMENT_REQUEST,
+  payload,
+})
+
+const linkCommentSuccess = () => ({
+  type: Types.LIKE_COMMENT_SUCCESS,
+})
+
 export default {
   getMessagesRequest,
   getMessagesSucces,
@@ -162,4 +186,8 @@ export default {
   getMessageUploadLinkSucces,
   setAttachmentRequest,
   setAttachmentSuccess,
+  linkMessageRequest,
+  linkMessageSuccess,
+  linkCommnetRequest,
+  linkCommentSuccess,
 }
