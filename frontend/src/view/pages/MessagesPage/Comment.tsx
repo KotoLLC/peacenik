@@ -21,7 +21,7 @@ import {
   EditMessageWrapper,
   ButtonSend,
 } from './styles'
-import { ApiTypes, StoreTypes } from '../../../types'
+import { ApiTypes, StoreTypes } from 'src/types'
 
 interface Props extends ApiTypes.Messages.Comment {
   userId: string

@@ -17,4 +17,12 @@ export declare namespace CommonTypes {
     }
   }
 
+  export namespace NotificationTypes {
+    
+    export interface LastKnown {
+      host: string
+      id: string
+    }
+  }
+
 }

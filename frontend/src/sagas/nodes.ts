@@ -1,6 +1,6 @@
 import { put } from 'redux-saga/effects'
 import Actions from '@store/actions'
-import { ApiTypes } from '../types/index'
+import { ApiTypes } from 'src/types'
 import { API } from '@services/api'
 import { nodesListBack2Front } from '@services/dataTransforms/nodesListTransform'
 

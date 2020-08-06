@@ -1,5 +1,5 @@
 import { axiosInstance } from './index'
-import { ApiTypes } from './../../types'
+import { ApiTypes } from 'src/types'
 
 export default {
   registerUser: async (data: ApiTypes.RegisterUser) => {

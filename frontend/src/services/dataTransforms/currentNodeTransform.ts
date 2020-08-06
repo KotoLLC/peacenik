@@ -1,4 +1,4 @@
-import { CommonTypes } from '../../types'
+import { CommonTypes } from 'src/types'
 
 interface DataFromBackend {
   [key: string]: string

@@ -1,5 +1,5 @@
 
-import { ApiTypes, CommonTypes } from '../../types'
+import { ApiTypes, CommonTypes } from 'src/types'
 
 export enum Types {
   GET_MESSAGES_REQUEST = 'GET_MESSAGES_REQUEST',

@@ -1,4 +1,4 @@
-import { ApiTypes } from './../types'
+import { ApiTypes } from 'src/types'
 import moment from 'moment'
 
 export const sortByDate = (data: ApiTypes.Messages.Message[]) => {

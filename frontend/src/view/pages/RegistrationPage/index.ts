@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { RegistrationForm, Props } from './RegistrationForm'
 import Actions from '@store/actions'
-import { ApiTypes, StoreTypes } from '../../../types'
+import { ApiTypes, StoreTypes } from 'src/types'
 import selectors from '@selectors/index'
 
 type StateProps = Pick<Props, 'registrationErrorMessage' | 'isRegisterSuccess'>

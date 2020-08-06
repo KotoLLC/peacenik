@@ -10,7 +10,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import { validate } from '@services/validation'
 import { FooterMenu } from '@view/shared/FooterMenu'
-import { ApiTypes } from '../../../types/api'
+import { ApiTypes } from 'src/types'
 import { RouteComponentProps } from 'react-router-dom'
 import { 
   FormWrapper, 

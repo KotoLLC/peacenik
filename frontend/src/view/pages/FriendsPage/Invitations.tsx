@@ -15,7 +15,7 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import CancelIcon from '@material-ui/icons/Cancel'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
-import { StoreTypes, ApiTypes } from '../../../types'
+import { StoreTypes, ApiTypes } from 'src/types'
 import selectors from '@selectors/index'
 import {
   UsersWrapper,

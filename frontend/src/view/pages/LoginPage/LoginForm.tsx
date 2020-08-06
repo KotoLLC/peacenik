@@ -11,7 +11,7 @@ import FormHelperText from '@material-ui/core/FormHelperText'
 import { validate } from '@services/validation'
 import { FooterMenu } from '@view/shared/FooterMenu'
 import { FormWrapper, FormControlStyled, ButtonStyled, ContainerStyled, Header } from './styles'
-import { ApiTypes } from './../../../types/api'
+import { ApiTypes } from 'src/types'
 import { RouteComponentProps } from 'react-router-dom'
 
 type FieldsType = 'name' | 'password' | ''

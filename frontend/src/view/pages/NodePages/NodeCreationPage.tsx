@@ -7,7 +7,7 @@ import FormHelperText from '@material-ui/core/FormHelperText'
 import { connect } from 'react-redux'
 import selectors from '@selectors/index'
 import Actions from '@store/actions'
-import { StoreTypes, ApiTypes } from '../../../types'
+import { StoreTypes, ApiTypes } from 'src/types'
 
 import {
   ContainerStyled,

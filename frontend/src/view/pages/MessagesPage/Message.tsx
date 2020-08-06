@@ -12,7 +12,7 @@ import AttachFileIcon from '@material-ui/icons/AttachFile'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import { Player } from 'video-react'
-import { ApiTypes, StoreTypes, CommonTypes } from './../../../types'
+import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
 // import queryString from 'query-string'
 // import { history } from '@view/routes'
 import {

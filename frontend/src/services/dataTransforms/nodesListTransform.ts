@@ -1,4 +1,4 @@
-import { ApiTypes, CommonTypes } from '../../types'
+import { ApiTypes, CommonTypes } from 'src/types'
 
 export const nodesListBack2Front = (data: ApiTypes.Nodes.Node[]): CommonTypes.NodeTypes.Node[] => {
   let result: CommonTypes.NodeTypes.Node[] = []

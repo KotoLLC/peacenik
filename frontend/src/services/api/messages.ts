@@ -1,5 +1,5 @@
 import { axiosInstance } from './index'
-import { ApiTypes } from './../../types/index'
+import { ApiTypes } from 'src/types'
 
 export default {
   getMessages: async () => {
