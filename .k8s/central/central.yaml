@@ -65,7 +65,7 @@ spec:
           - name: KOTO_SMTP_HOST
             value: smtp.sendgrid.net
           - name: KOTO_SMTP_PORT
-            value: "465" # TODO
+            value: "587"
           - name: KOTO_SMTP_USER
             valueFrom:
               secretKeyRef:
