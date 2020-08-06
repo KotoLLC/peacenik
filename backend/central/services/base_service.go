@@ -30,7 +30,8 @@ func (s *BaseService) hasUser(ctx context.Context) bool {
 }
 
 func (s *BaseService) isAdmin(ctx context.Context) bool {
-	return ctx.Value(ContextIsAdminKey).(bool)
+	isAdmin, _ := ctx.Value(ContextIsAdminKey).(bool)
+	return isAdmin
 }
 
 func (s *BaseService) createBlobLink(ctx context.Context, blobID string) (string, error) {
