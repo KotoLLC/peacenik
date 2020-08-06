@@ -53,6 +53,8 @@ import {
 } from './messages'
 import {
     watchGetNotifications,
+    watchCleanNotificationsInCentral,
+    watchCleanNotificationsInNode,
 } from './notifications'
 
 export function* rootSaga() {
@@ -96,5 +98,7 @@ export function* rootSaga() {
         takeEvery(MessagesTypes.SET_MESSAGE_ATTACHMENT_REQUEST, watchSetAttachment),
         
         takeEvery(NotificationsTypes.GET_NOTIFICATIONS_REQUEST, watchGetNotifications),
+        takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_CENTRAL_REQUEST, watchCleanNotificationsInCentral),
+        takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_NODE_REQUEST, watchCleanNotificationsInNode),
     ])
 }

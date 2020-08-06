@@ -37,7 +37,4 @@ export function* watchGetAuthToken() {
       yield put(Actions.authorization.getAuthTokenSucces(response.data?.token))
     }
   }
-  // else {
-  //   yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
-  // }
 }

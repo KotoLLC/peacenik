@@ -20,7 +20,7 @@ export declare namespace CommonTypes {
   export namespace NotificationTypes {
     
     export interface LastKnown {
-      host: string
+      host?: string
       id: string
     }
   }

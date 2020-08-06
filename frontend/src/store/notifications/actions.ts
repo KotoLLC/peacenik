@@ -1,5 +1,5 @@
 
-import { ApiTypes } from 'src/types'
+import { ApiTypes, CommonTypes } from 'src/types'
 
 export enum Types {
   GET_NOTIFICATIONS_REQUEST = 'GET_NOTIFICATIONS_REQUEST',
@@ -7,10 +7,11 @@ export enum Types {
   GET_NOTIFICATIONS_FROM_NODE_REQUEST = 'GET_NOTIFICATIONS_FROM_NODE_REQUEST',
   GET_NOTIFICATIONS_FROM_NODE_SUCCESS = 'GET_NOTIFICATIONS_FROM_NODE_SUCCESS',
   
+  SET_LAST_KNOWN_ID_FROM_NODE = 'SET_LAST_KNOWN_ID_FROM_NODE',
+  SET_LAST_KNOWN_ID_FROM_CENTRAL = 'SET_LAST_KNOWN_ID_FROM_CENTRAL',
+
   GET_NOTIFICATIONS_FROM_CENTRAL_REQUEST = 'GET_NOTIFICATIONS_FROM_CENTRAL_REQUEST',
   GET_NOTIFICATIONS_FROM_CENTRAL_SUCCESS = 'GET_NOTIFICATIONS_FROM_CENTRAL_SUCCESS',
-
-  CLEAN_NOTIFICATIONS = 'CLEAN_NOTIFICATIONS',
 
   CLEAN_NOTIFICATIONS_IN_NODE_REQUEST = 'CLEAN_NOTIFICATIONS_IN_NODE_REQUEST',
   CLEAN_NOTIFICATIONS_IN_NODE_SUCCESS = 'CLEAN_NOTIFICATIONS_IN_NODE_SUCCESS',
@@ -42,7 +43,7 @@ const getNotificationsFromCentralSuccess = (payload) => ({
   payload,
 })
 
-const cleanNotificationsInCentralRequest = (payload: ApiTypes.Notifications.CleanNotification) => ({
+const cleanNotificationsInCentralRequest = (payload: CommonTypes.NotificationTypes.LastKnown) => ({
   type: Types.CLEAN_NOTIFICATIONS_IN_CENTRAL_REQUEST,
   payload,
 })
@@ -51,10 +52,7 @@ const cleanNotificationsInCentralSuccess = () => ({
   type: Types.CLEAN_NOTIFICATIONS_IN_CENTRAL_SUCCESS,
 })
 
-const cleanNotificationsInNodeRequest = (payload: {
-  host: string,
-  data: ApiTypes.Notifications.CleanNotification
-}) => ({
+const cleanNotificationsInNodeRequest = (payload: CommonTypes.NotificationTypes.LastKnown) => ({
   type: Types.CLEAN_NOTIFICATIONS_IN_NODE_REQUEST,
   payload,
 })
@@ -63,8 +61,13 @@ const cleanNotificationsInNodeSuccess = () => ({
   type: Types.CLEAN_NOTIFICATIONS_IN_NODE_SUCCESS,
 })
 
-const cleanNotifications = () => ({
-  type: Types.CLEAN_NOTIFICATIONS
+const setLastKnownIdFromCentral = (payload: CommonTypes.NotificationTypes.LastKnown) => ({
+  type: Types.SET_LAST_KNOWN_ID_FROM_CENTRAL,
+  payload,
+})
+const setLastKnownIdFromNode = (payload: CommonTypes.NotificationTypes.LastKnown) => ({
+  type: Types.SET_LAST_KNOWN_ID_FROM_NODE,
+  payload,
 })
 
 export default {
@@ -77,5 +80,6 @@ export default {
   cleanNotificationsInCentralSuccess,
   cleanNotificationsInNodeRequest,
   cleanNotificationsInNodeSuccess,
-  cleanNotifications,
+  setLastKnownIdFromCentral,
+  setLastKnownIdFromNode,
 }
