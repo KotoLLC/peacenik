@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: koto-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: web-static-ip
+spec:
+  rules:
+  - host: central.koto.at
+    http:
+      paths:
+      - backend:
+          serviceName: central-service
+          servicePort: 80
+  - host: node1.koto.at
+    http:
+      paths:
+      - backend:
+          serviceName: node-service
+          servicePort: 80
+  - host: koto.at
+    http:
+      paths:
+      - backend:
+          serviceName: frontend-service
+          servicePort: 80
