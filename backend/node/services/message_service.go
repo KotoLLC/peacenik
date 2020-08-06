@@ -136,6 +136,7 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 			CreatedAt:           common.TimeToRPCString(msg.CreatedAt),
 			UpdatedAt:           common.TimeToRPCString(msg.UpdatedAt),
 			Likes:               int32(msg.Likes),
+			LikedByMe:           msg.LikedByMe,
 		},
 	}, nil
 }
@@ -176,7 +177,7 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 		}
 	}
 
-	messages, err := s.repos.Message.Messages(userIDs, from, until)
+	messages, err := s.repos.Message.Messages(user.ID, userIDs, from, until)
 	if err != nil {
 		return nil, err
 	}
@@ -206,11 +207,12 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 			CreatedAt:           common.TimeToRPCString(msg.CreatedAt),
 			UpdatedAt:           common.TimeToRPCString(msg.UpdatedAt),
 			Likes:               int32(msg.Likes),
+			LikedByMe:           msg.LikedByMe,
 		}
 		rpcMessageMap[msg.ID] = rpcMessages[i]
 	}
 
-	comments, err := s.repos.Message.Comments(messageIDs)
+	comments, err := s.repos.Message.Comments(user.ID, messageIDs)
 	if err != nil {
 		return nil, err
 	}
@@ -237,6 +239,7 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 				CreatedAt:           common.TimeToRPCString(comment.CreatedAt),
 				UpdatedAt:           common.TimeToRPCString(comment.UpdatedAt),
 				Likes:               int32(comment.Likes),
+				LikedByMe:           comment.LikedByMe,
 			}
 		}
 		rpcMessageMap[messageID].Comments = rpcComments
@@ -278,7 +281,7 @@ func (s *messageService) Edit(ctx context.Context, r *rpc.MessageEditRequest) (*
 		}
 	}
 
-	msg, err := s.repos.Message.Message(r.MessageId)
+	msg, err := s.repos.Message.Message(user.ID, r.MessageId)
 	if err != nil {
 		if merry.Is(err, repo.ErrMessageNotFound) {
 			return nil, twirp.NotFoundError(err.Error())
@@ -307,6 +310,7 @@ func (s *messageService) Edit(ctx context.Context, r *rpc.MessageEditRequest) (*
 			CreatedAt:           common.TimeToRPCString(msg.CreatedAt),
 			UpdatedAt:           common.TimeToRPCString(msg.UpdatedAt),
 			Likes:               int32(msg.Likes),
+			LikedByMe:           msg.LikedByMe,
 		},
 	}, nil
 }
@@ -340,7 +344,7 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
 	}
 
-	msg, err := s.repos.Message.Message(r.MessageId)
+	msg, err := s.repos.Message.Message(user.ID, r.MessageId)
 	if err != nil {
 		if merry.Is(err, repo.ErrMessageNotFound) {
 			return nil, twirp.NotFoundError(err.Error())
@@ -446,6 +450,7 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 			CreatedAt:           common.TimeToRPCString(comment.CreatedAt),
 			UpdatedAt:           common.TimeToRPCString(comment.UpdatedAt),
 			Likes:               int32(comment.Likes),
+			LikedByMe:           comment.LikedByMe,
 		},
 	}, nil
 }
@@ -482,7 +487,7 @@ func (s *messageService) EditComment(ctx context.Context, r *rpc.MessageEditComm
 		}
 	}
 
-	comment, err := s.repos.Message.Message(r.CommentId)
+	comment, err := s.repos.Message.Message(user.ID, r.CommentId)
 	if err != nil {
 		if merry.Is(err, repo.ErrMessageNotFound) {
 			return nil, twirp.NotFoundError("comment not found")
@@ -512,6 +517,7 @@ func (s *messageService) EditComment(ctx context.Context, r *rpc.MessageEditComm
 			CreatedAt:           common.TimeToRPCString(comment.CreatedAt),
 			UpdatedAt:           common.TimeToRPCString(comment.UpdatedAt),
 			Likes:               int32(comment.Likes),
+			LikedByMe:           comment.LikedByMe,
 		},
 	}, nil
 }
@@ -577,7 +583,7 @@ func (s *messageService) getAttachmentThumbnailID(ctx context.Context, attachmen
 func (s *messageService) LikeMessage(ctx context.Context, r *rpc.MessageLikeMessageRequest) (*rpc.MessageLikeMessageResponse, error) {
 	user := s.getUser(ctx)
 
-	msg, err := s.repos.Message.Message(r.MessageId)
+	msg, err := s.repos.Message.Message(user.ID, r.MessageId)
 	if err != nil {
 		if !merry.Is(err, repo.ErrMessageNotFound) {
 			return nil, err
@@ -610,7 +616,7 @@ func (s *messageService) LikeMessage(ctx context.Context, r *rpc.MessageLikeMess
 func (s *messageService) LikeComment(ctx context.Context, r *rpc.MessageLikeCommentRequest) (*rpc.MessageLikeCommentResponse, error) {
 	user := s.getUser(ctx)
 
-	comment, err := s.repos.Message.Message(r.CommentId)
+	comment, err := s.repos.Message.Message(user.ID, r.CommentId)
 	if err != nil {
 		if !merry.Is(err, repo.ErrMessageNotFound) {
 			return nil, err

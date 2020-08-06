@@ -16,12 +16,12 @@ type Parser interface {
 }
 
 type parser struct {
-	publicKey *rsa.PublicKey
+	getPublicKey func() *rsa.PublicKey
 }
 
-func NewParser(publicKey *rsa.PublicKey) Parser {
+func NewParser(getPublicKey func() *rsa.PublicKey) Parser {
 	return &parser{
-		publicKey: publicKey,
+		getPublicKey: getPublicKey,
 	}
 }
 
@@ -30,7 +30,7 @@ func (p *parser) Parse(rawToken string, scope string) (token *jwt.Token, claims 
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 			return nil, ErrInvalidToken.Here()
 		}
-		return p.publicKey, nil
+		return p.getPublicKey(), nil
 	})
 	if err != nil {
 		return nil, nil, ErrInvalidToken.Here()

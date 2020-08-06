@@ -12,7 +12,7 @@ import AttachFileIcon from '@material-ui/icons/AttachFile'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import { Player } from 'video-react'
-import { ApiTypes, StoreTypes, NodeTypes } from './../../../types'
+import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
 // import queryString from 'query-string'
 // import { history } from '@view/routes'
 import {
@@ -39,7 +39,7 @@ import {
 interface Props extends ApiTypes.Messages.Message {
   isAuthor: boolean
   uploadLink: ApiTypes.UploadLink | null
-  currentNode: NodeTypes.CurrentNode
+  currentNode: CommonTypes.NodeTypes.CurrentNode
   onMessageEdit: (data: ApiTypes.Messages.EditMessage) => void
   onCommentPost: (data: ApiTypes.Messages.PostComment) => void
   onGetMessageUploadLink: (data: ApiTypes.Messages.UploadLinkRequest) => void

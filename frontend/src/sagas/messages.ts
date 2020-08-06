@@ -1,7 +1,7 @@
 import { put, all, call } from 'redux-saga/effects'
 import Actions from '@store/actions'
 import { API } from '@services/api'
-import { ApiTypes } from './../types'
+import { ApiTypes } from 'src/types'
 import { currentNodeBack2Front } from '@services/dataTransforms/currentNodeTransform'
 import { nodesForMessagesBack2Front } from '@services/dataTransforms/nodesForMessagesTransform'
 import { Types as MessagesTypes } from '@store/messages/actions'
@@ -22,10 +22,7 @@ export function* watchGetMessages() {
         }
       },
     })))
-
-  } else {
-    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
-  }
+  } 
 }
 
 export function* watchGetCurrentNode() {
@@ -33,8 +30,6 @@ export function* watchGetCurrentNode() {
 
   if (response.status === 200) {
     yield put(Actions.messages.getCurrentNodeSucces(currentNodeBack2Front(response.data?.tokens)))
-  } else {
-    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
 
@@ -53,14 +48,10 @@ export function* watchGetMessagesFromNode(action: { type: string, payload: ApiTy
     
     yield put(Actions.messages.getMessagesFromNodeSucces(resultData))
   } else {
-
     if (response.error.response.status === 400) {
       yield put(Actions.authorization.getAuthTokenRequest())
       yield put(Actions.messages.getMessagesRequest())
-    } else {
-      yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
-    }
-    
+    } 
   }
 }
 
@@ -70,8 +61,6 @@ export function* watchPostMessage(action: { type: string, payload: ApiTypes.Mess
   if (response.status === 200) {
     yield put(Actions.messages.postMessageSucces(true))
     yield put(Actions.messages.getMessagesRequest())
-  } else {
-    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
 

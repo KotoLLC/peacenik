@@ -9,10 +9,9 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import TablePagination from '@material-ui/core/TablePagination'
-import { NodeTypes } from './../../../types'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'
-import { StoreTypes, ApiTypes } from '../../../types'
+import { StoreTypes, ApiTypes, CommonTypes } from 'src/types'
 import RemoveNodeDialog from './RemoveNodeDialog'
 import AccessTimeIcon from '@material-ui/icons/AccessTime'
 
@@ -27,7 +26,7 @@ import {
 } from './styles'
 
 interface Props {
-  nodeslist: NodeTypes.Node[]
+  nodeslist: CommonTypes.NodeTypes.Node[]
   isAdmin: boolean | undefined
   onGetNodes: () => void
   onApproveNode: (data: ApiTypes.Nodes.ApproveNode) => void
@@ -36,7 +35,7 @@ interface Props {
 interface State {
   currentPage: number,
   rowsPerPage: number,
-  showList: NodeTypes.Node[],
+  showList: CommonTypes.NodeTypes.Node[],
   isFilterChecked: boolean,
 }
 
@@ -68,7 +67,7 @@ class NodeList extends React.Component<Props, State> {
 
     this.setState({
       isFilterChecked: event.target.checked,
-      showList: (checked) ? nodeslist.filter((item: NodeTypes.Node) => item.aproved === '') : nodeslist
+      showList: (checked) ? nodeslist.filter((item: CommonTypes.NodeTypes.Node) => item.aproved === '') : nodeslist
     })
   }
 
@@ -105,7 +104,7 @@ class NodeList extends React.Component<Props, State> {
 
   static getDerivedStateFromProps(newProps: Props, prevState: State) {
 
-    const sortByDate = (data: NodeTypes.Node[]) => {
+    const sortByDate = (data: CommonTypes.NodeTypes.Node[]) => {
       return data.sort((a, b) => {
         return moment(b.created).diff(a.created)
       })
@@ -156,7 +155,7 @@ class NodeList extends React.Component<Props, State> {
                 {(rowsPerPage > 0
                   ? showList.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage)
                   : showList
-                ).map((row: NodeTypes.Node) => (
+                ).map((row: CommonTypes.NodeTypes.Node) => (
                   <TableRow key={row.domain}>
                     <TableCell component="th" scope="row">
                       {row.domain}

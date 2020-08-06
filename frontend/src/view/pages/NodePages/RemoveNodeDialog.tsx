@@ -5,7 +5,7 @@ import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DeleteIcon from '@material-ui/icons/Delete'
 import IconButton from '@material-ui/core/IconButton'
-import { NodeTypes, ApiTypes } from './../../../types'
+import { CommonTypes, ApiTypes } from 'src/types'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import {
@@ -16,7 +16,7 @@ import {
   DialogContentStyled,
 } from '@view/shared/styles'
 
-interface Props extends NodeTypes.Node {
+interface Props extends CommonTypes.NodeTypes.Node {
   onRemoveNode: (data: ApiTypes.Nodes.RemoveNode) => void
 }
 

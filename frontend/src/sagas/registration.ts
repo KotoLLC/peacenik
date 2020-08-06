@@ -1,7 +1,7 @@
 import { put } from 'redux-saga/effects'
 import Actions from '@store/actions'
 import { API } from '@services/api'
-import { ApiTypes } from './../types'
+import { ApiTypes } from 'src/types'
 
 export function* watchSendConfirmLink() {
   const response = yield API.registration.sendConfirmLink()

@@ -1,9 +1,9 @@
 import { Types } from './actions'
-import { NodeTypes, ApiTypes } from '../../types'
+import { CommonTypes, ApiTypes } from 'src/types'
 import uniqBy from 'lodash.uniqby'
 export interface State {
-  messageTokens: NodeTypes.CurrentNode[]
-  currentNode: NodeTypes.CurrentNode
+  messageTokens: CommonTypes.NodeTypes.CurrentNode[]
+  currentNode: CommonTypes.NodeTypes.CurrentNode
   isMessagePostedSuccess: boolean
   messages: ApiTypes.Messages.Message[]
   uploadLink: ApiTypes.UploadLink | null

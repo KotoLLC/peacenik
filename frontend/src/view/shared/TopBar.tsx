@@ -8,7 +8,7 @@ import { TopMenu } from './TopMenu'
 import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive'
 import { history } from '@view/routes'
 import selectors from '@selectors/index'
-import { StoreTypes } from './../../types'
+import { StoreTypes } from 'src/types'
 import { 
   TooltipStyle, 
   IconButtonStyled, 

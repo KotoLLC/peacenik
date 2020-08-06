@@ -1,11 +1,11 @@
-import { NodeTypes } from '../../types'
+import { CommonTypes } from 'src/types'
 
 interface DataFromBackend {
   [key: string]: string
 }
 
-export const currentNodeBack2Front = (data: DataFromBackend): NodeTypes.CurrentNode => {
-  let result: NodeTypes.CurrentNode = {
+export const currentNodeBack2Front = (data: DataFromBackend): CommonTypes.NodeTypes.CurrentNode => {
+  let result: CommonTypes.NodeTypes.CurrentNode = {
     host: '',
     token: '',
   }

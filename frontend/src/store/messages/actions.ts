@@ -1,5 +1,5 @@
 
-import { ApiTypes, NodeTypes } from '../../types'
+import { ApiTypes, CommonTypes } from 'src/types'
 
 export enum Types {
   GET_MESSAGES_REQUEST = 'GET_MESSAGES_REQUEST',
@@ -40,7 +40,7 @@ const getMessagesRequest = () => ({
   type: Types.GET_MESSAGES_REQUEST,
 })
 
-const getMessagesSucces = (payload: NodeTypes.CurrentNode[]) => ({
+const getMessagesSucces = (payload: CommonTypes.NodeTypes.CurrentNode[]) => ({
   type: Types.GET_MESSAGES_SUCCESS,
   payload
 })
@@ -49,7 +49,7 @@ const getCurrentNodeRequest = () => ({
   type: Types.GET_CURRENT_NODE_REQUEST,
 })
 
-const getCurrentNodeSucces = (payload: NodeTypes.CurrentNode) => ({
+const getCurrentNodeSucces = (payload: CommonTypes.NodeTypes.CurrentNode) => ({
   type: Types.GET_CURRENT_NODE_SUCCESS,
   payload
 })

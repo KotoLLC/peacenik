@@ -1,5 +1,5 @@
 import { axiosInstance } from './index'
-import { ApiTypes } from '../../types'
+import { ApiTypes, CommonTypes } from 'src/types'
 
 export default {
   getNotificationsFromNode: async (host: string) => {
@@ -21,13 +21,15 @@ export default {
     }).catch(error => ({ error }))
   },
 
-  cleanNotificationsInCentral: async (data: ApiTypes.Notifications.CleanNotification) => {
-    return await axiosInstance.post(`/rpc.NotificationService/Clean`, data).then(response => {
+  cleanNotificationsInCentral: async (data: CommonTypes.NotificationTypes.LastKnown) => {
+    return await axiosInstance.post(`/rpc.NotificationService/Clean`, {
+      last_known_id: data.id
+    }).then(response => {
       return response
     }).catch(error => ({ error }))
   },
   
-  cleanNotificationsInNode: async (host: string, data: ApiTypes.Notifications.CleanNotification) => {
+  cleanNotificationsInNode: async (data: CommonTypes.NotificationTypes.LastKnown) => {
     const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
     const config = {
       withCredentials: false,
@@ -35,7 +37,9 @@ export default {
         Authorization: `Bearer ${authToken}`,
       }
     }
-    return await axiosInstance.post(`${host}/rpc.NotificationService/Clean`, data, config).then(response => {
+    return await axiosInstance.post(`${data.host}/rpc.NotificationService/Clean`, {
+      last_known_id: data.id
+    }, config).then(response => {
       return response
     }).catch(error => ({ error }))
   }

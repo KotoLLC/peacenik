@@ -2,7 +2,7 @@ import React, { useState, useEffect, ChangeEvent } from 'react'
 import Avatar from '@material-ui/core/Avatar'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
-import { ApiTypes, StoreTypes, NodeTypes } from './../../../types'
+import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
 import selectors from '@selectors/index'
 import AttachFileIcon from '@material-ui/icons/AttachFile'
 import IconButton from '@material-ui/core/IconButton'
@@ -23,7 +23,7 @@ import {
 
 interface Props {
   authToken: string
-  currentNode: NodeTypes.CurrentNode
+  currentNode: CommonTypes.NodeTypes.CurrentNode
   isMessagePostedSuccess: boolean
   uploadLink: ApiTypes.UploadLink | null
   onMessagePost: (data: ApiTypes.Messages.PostMessage) => void

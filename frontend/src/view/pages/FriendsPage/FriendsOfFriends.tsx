@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from 'react'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
-import { StoreTypes, ApiTypes } from '../../../types'
+import { StoreTypes, ApiTypes } from 'src/types'
 import ListItem from '@material-ui/core/ListItem'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import FormControl from '@material-ui/core/FormControl'

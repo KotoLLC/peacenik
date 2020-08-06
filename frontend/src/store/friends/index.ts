@@ -1,5 +1,5 @@
 import { Types } from './actions'
-import { ApiTypes } from './../../types'
+import { ApiTypes } from 'src/types'
 
 export interface State {
   friends: ApiTypes.Friends.Friend[],

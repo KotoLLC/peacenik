@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'
 import { Link } from 'react-router-dom'
-import { StoreTypes, ApiTypes, NodeTypes } from './../../../types'
+import { StoreTypes, ApiTypes, CommonTypes } from 'src/types'
 import Button from '@material-ui/core/Button'
 import {
   ContainerStyled,
@@ -16,8 +16,8 @@ import { sortByDate } from '@services/sortByDate'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 
 interface Props {
-  messageTokens: NodeTypes.CurrentNode[]
-  currentNode: NodeTypes.CurrentNode
+  messageTokens: CommonTypes.NodeTypes.CurrentNode[]
+  currentNode: CommonTypes.NodeTypes.CurrentNode
   messages: ApiTypes.Messages.Message[]
   userId: string
   onGetMessages: () => void
