@@ -1,0 +1,13 @@
+apiVersion: networking.gke.io/v1beta2
+kind: ManagedCertificate
+metadata:
+  name: koto-certificate
+spec:
+  domains:
+    - koto.at
+    - node1.koto.at
+    - node2.koto.at
+    - node3.koto.at
+    - node4.koto.at
+    - node5.koto.at
+    - central.koto.at

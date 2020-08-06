@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/rsa"
 	"flag"
 	"log"
 	"os"
@@ -48,7 +49,9 @@ func main() {
 	}
 
 	tokenGenerator := token.NewGenerator(privateKey)
-	tokenParser := token.NewParser(publicKey)
+	tokenParser := token.NewParser(func() *rsa.PublicKey {
+		return publicKey
+	})
 
 	repos := repo.Repos{
 		User:         repo.NewUsers(db),

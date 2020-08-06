@@ -15,20 +15,20 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: frontend
-        image: k0t0/frontend:latest
+        image: k0t0/frontend:v1.3
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
         env:
           - name: KOTO_CENTRAL_HOST
-            value: http://central.koto.at:12001
+            value: http://central.koto.at
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: frontend-service
 spec:
-  type: LoadBalancer
+  type: NodePort
   selector:
     app: frontend
   ports:
