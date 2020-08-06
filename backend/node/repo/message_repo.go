@@ -28,6 +28,7 @@ type Message struct {
 	CreatedAt             time.Time      `json:"created_at" db:"created_at"`
 	UpdatedAt             time.Time      `json:"updated_at" db:"updated_at"`
 	Likes                 int            `json:"likes" db:"likes"`
+	LikedByMe             bool           `json:"liked_by_me" db:"liked_by_me"`
 }
 
 type MessageLike struct {
@@ -37,13 +38,13 @@ type MessageLike struct {
 }
 
 type MessageRepo interface {
-	Messages(userIDs []string, from, until time.Time) ([]Message, error)
-	Message(messageID string) (Message, error)
+	Messages(currentUserID string, userIDs []string, from, until time.Time) ([]Message, error)
+	Message(currentUserID string, messageID string) (Message, error)
 	AddMessage(parentID string, message Message) error
 	EditMessageText(userID, messageID, text string, updatedAt time.Time) error
 	EditMessageAttachment(userID, messageID, attachmentID, attachmentType, attachmentThumbnailID string, updatedAt time.Time) error
 	DeleteMessage(userID, messageID string) error
-	Comments(messageIDs []string) (map[string][]Message, error)
+	Comments(currentUserID string, messageIDs []string) (map[string][]Message, error)
 	LikeMessage(userID, messageID string) (likes int, err error)
 	MessageLikes(messageID string) (likes []MessageLike, err error)
 }
@@ -58,7 +59,7 @@ func NewMessages(db *sqlx.DB) MessageRepo {
 	}
 }
 
-func (r *messageRepo) Messages(userIDs []string, from, until time.Time) ([]Message, error) {
+func (r *messageRepo) Messages(currentUserID string, userIDs []string, from, until time.Time) ([]Message, error) {
 	if until.IsZero() {
 		until = maxTimestamp
 	}
@@ -66,11 +67,12 @@ func (r *messageRepo) Messages(userIDs []string, from, until time.Time) ([]Messa
 	var messages []Message
 	query, args, err := sqlx.In(`
 		select id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at,
-		       (select count(*) from message_likes where message_id = messages.id) likes
+		       (select count(*) from message_likes where message_id = messages.id) likes,
+		       case when exists(select * from message_likes where message_id = messages.id and user_id = ?) then true else false end liked_by_me
 		from messages
 		where user_id in (?) and parent_id is null
 			and created_at >= ? and created_at < ?
-		order by created_at, "id"`, userIDs, from, until)
+		order by created_at, "id"`, currentUserID, userIDs, from, until)
 	if err != nil {
 		return nil, merry.Wrap(err)
 	}
@@ -82,13 +84,14 @@ func (r *messageRepo) Messages(userIDs []string, from, until time.Time) ([]Messa
 	return messages, nil
 }
 
-func (r *messageRepo) Message(messageID string) (Message, error) {
+func (r *messageRepo) Message(currentUserID string, messageID string) (Message, error) {
 	var message Message
 	err := r.db.Get(&message, `
 		select id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at,
-		       (select count(*) from message_likes where message_id = messages.id) likes
+		       (select count(*) from message_likes where message_id = messages.id) likes,
+		       case when exists(select * from message_likes where message_id = messages.id and user_id = $1) then true else false end liked_by_me
 		from messages
-		where id = $1`, messageID)
+		where id = $2`, currentUserID, messageID)
 	if err != nil {
 		if merry.Is(err, sql.ErrNoRows) {
 			return message, ErrMessageNotFound.Here()
@@ -259,7 +262,7 @@ func (r *messageRepo) DeleteMessage(userID, messageID string) error {
 	})
 }
 
-func (r *messageRepo) Comments(messageIDs []string) (map[string][]Message, error) {
+func (r *messageRepo) Comments(currentUserID string, messageIDs []string) (map[string][]Message, error) {
 	if len(messageIDs) == 0 {
 		return nil, nil
 	}
@@ -267,10 +270,11 @@ func (r *messageRepo) Comments(messageIDs []string) (map[string][]Message, error
 	var comments []Message
 	query, args, err := sqlx.In(`
 		select id, parent_id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at,
-		       (select count(*) from message_likes where message_id = messages.id) likes
+		       (select count(*) from message_likes where message_id = messages.id) likes,
+		       case when exists(select * from message_likes where message_id = messages.id and user_id = ?) then true else false end liked_by_me
 		from messages
 		where parent_id in (?)
-		order by created_at, id`, messageIDs)
+		order by created_at, id`, currentUserID, messageIDs)
 	if err != nil {
 		return nil, merry.Wrap(err)
 	}
