@@ -14,7 +14,7 @@ COPY ./node/ ./node/
 
 RUN GOOS=linux GOARCH=amd64 go build -o node-service ./node/cmd/
 
-FROM alpine
+FROM jrottenberg/ffmpeg:3.4-alpine
 
 COPY --from=builder /service/node-service /service/node-service
 
