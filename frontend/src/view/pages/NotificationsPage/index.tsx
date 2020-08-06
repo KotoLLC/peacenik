@@ -8,7 +8,7 @@ import ForumIcon from '@material-ui/icons/Forum'
 import StorageIcon from '@material-ui/icons/Storage'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
-import { ApiTypes, StoreTypes } from 'src/types'
+import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
 import selectors from '@selectors/index'
 
 import {
@@ -26,7 +26,11 @@ import {
 
 interface Props {
   notifications: ApiTypes.Notifications.Notification[]
+  lastKnownIdFromNodes: CommonTypes.NotificationTypes.LastKnown[]
+  lastKnownIdFromCentral: CommonTypes.NotificationTypes.LastKnown | null
   onGetNotifications: () => void
+  onCleanNotificationsInCentral: (data: CommonTypes.NotificationTypes.LastKnown) => void
+  onCleanNotificationsInNode: (data: CommonTypes.NotificationTypes.LastKnown) => void
 }
 
 interface State {
@@ -119,7 +123,28 @@ class NotificationsPage extends React.PureComponent<Props> {
       notifications: sortByDate(newProps.notifications)
     }
 
-    return null
+    return  {
+      notifications: []
+    }
+  }
+
+  onClean = () => {
+    const { 
+      lastKnownIdFromNodes, 
+      lastKnownIdFromCentral, 
+      onCleanNotificationsInCentral,
+      onCleanNotificationsInNode,
+     } = this.props
+    
+    if (lastKnownIdFromCentral) {
+      onCleanNotificationsInCentral(lastKnownIdFromCentral)
+    } 
+
+    if (lastKnownIdFromNodes.length) {
+      lastKnownIdFromNodes.forEach(item => {
+        onCleanNotificationsInNode(item)
+      })
+    }
   }
 
   render() {
@@ -136,7 +161,11 @@ class NotificationsPage extends React.PureComponent<Props> {
               {this.mapNotifiactions(notifications)}
             </ListWrapper>
             <Footer>
-              <Button variant="contained" color="primary">clear</Button>
+              <Button 
+                variant="contained" 
+                color="primary"
+                onClick={this.onClean}
+                >clear</Button>
             </Footer>
           </NotificationsWrapper>
         </ContainerStyled>
@@ -145,14 +174,20 @@ class NotificationsPage extends React.PureComponent<Props> {
   }
 }
 
-type StateProps = Pick<Props, 'notifications'>
+type StateProps = Pick<Props, 'notifications' |'lastKnownIdFromCentral' | 'lastKnownIdFromNodes'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   notifications: selectors.notifications.notifications(state),
+  lastKnownIdFromCentral: selectors.notifications.lastKnownIdFromCentral(state),
+  lastKnownIdFromNodes: selectors.notifications.lastKnownIdFromNodes(state),
 })
 
-type DispatchProps = Pick<Props, 'onGetNotifications'>
+type DispatchProps = Pick<Props, 'onGetNotifications' | 'onCleanNotificationsInCentral' | 'onCleanNotificationsInNode'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetNotifications: () => dispatch(Actions.notifications.getNotificationsRequest()),
+  onCleanNotificationsInCentral: (data: CommonTypes.NotificationTypes.LastKnown) => 
+          dispatch(Actions.notifications.cleanNotificationsInCentralRequest(data)),
+  onCleanNotificationsInNode: (data: CommonTypes.NotificationTypes.LastKnown) => 
+          dispatch(Actions.notifications.cleanNotificationsInNodeRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(NotificationsPage)

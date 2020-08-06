@@ -237,9 +237,5 @@ export declare namespace ApiTypes {
       data: Data
       created_at: string
     }
-
-    export interface CleanNotification {
-      last_known_id: string
-    }
   }
 }

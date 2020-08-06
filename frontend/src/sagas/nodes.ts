@@ -19,9 +19,7 @@ export function* watchGetNodes() {
 
   if (response.status === 200) {
     yield put(Actions.nodes.getNodesSuccess(nodesListBack2Front(response?.data?.nodes)))
-  } else {
-    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
-  }
+  } 
 }
 
 export function* watchApproveNode(action: {type: string, payload: ApiTypes.Nodes.ApproveNode}) {
