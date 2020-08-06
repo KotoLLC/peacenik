@@ -34,19 +34,19 @@ interface Props extends ApiTypes.Messages.Comment {
 }
 
 const Comment: React.SFC<Props> = (props) => {
-  const { 
-    text, 
-    user_name, 
-    created_at, 
-    id, 
-    user_id, 
-    sourceHost, 
-    userId, 
+  const {
+    text,
+    user_name,
+    created_at,
+    id,
+    user_id,
+    sourceHost,
+    userId,
     avatar_thumbnail,
     liked_by_me,
     likes,
     onLikeComment,
-   } = props
+  } = props
   const [isEditer, setEditor] = useState<boolean>(false)
   const [comment, onCommentChange] = useState<string>(text)
   const commentRef = React.createRef<HTMLDivElement>()
@@ -72,6 +72,11 @@ const Comment: React.SFC<Props> = (props) => {
     if (userId === user_id) {
       return (
         <ButtonsWrapper>
+          <IconButton>
+            <Badge badgeContent={likes} color="primary">
+              {likes ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+            </Badge>
+          </IconButton>
           <Tooltip title={`Edit`}>
             <IconButton onClick={() => setEditor(!isEditer)}>
               <EditIcon />
@@ -82,29 +87,22 @@ const Comment: React.SFC<Props> = (props) => {
       )
     } else {
       return (
-        <ButtonsWrapper>{renderLikeIcon()}</ButtonsWrapper>
+        <ButtonsWrapper>
+          <IconButton onClick={() => onLikeComment({ host: sourceHost, id: id })}>
+            <Badge badgeContent={likes} color="primary">
+              {liked_by_me ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+            </Badge>
+          </IconButton>
+        </ButtonsWrapper>
       )
     }
-  }
-
-  const renderLikeIcon = () => {
-    return (
-      <IconButton onClick={() => onLikeComment({
-        host: sourceHost,
-        id: id
-      })}>
-        <Badge badgeContent={likes} color="primary">
-          {liked_by_me ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-        </Badge>
-      </IconButton>
-    )
   }
 
   return (
     <CommentWrapper ref={commentRef}>
       <MessageHeader>
         <UserInfo>
-          <Avatar variant="rounded" src={avatar_thumbnail}/>
+          <Avatar variant="rounded" src={avatar_thumbnail} />
           <UserNameWrapper>
             <UserName>{user_name}</UserName>
             <MessageDate>{moment(created_at).fromNow()}</MessageDate>

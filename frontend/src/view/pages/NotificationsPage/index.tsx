@@ -8,6 +8,7 @@ import ForumIcon from '@material-ui/icons/Forum'
 import StorageIcon from '@material-ui/icons/Storage'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
+import FavoriteIcon from '@material-ui/icons/Favorite'
 import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
 import selectors from '@selectors/index'
 
@@ -62,7 +63,7 @@ class NotificationsPage extends React.PureComponent<Props> {
     if (type.indexOf('message') !== -1) {
       return (
         <ListText>
-          <ForumIcon fontSize="small" />
+          {(type === 'message/like') ? <FavoriteIcon fontSize="small"/> : <ForumIcon fontSize="small" />}
           <ListLink to={`/messages${urlVars}`}>{text}</ListLink>
         </ListText>
       )
@@ -71,7 +72,7 @@ class NotificationsPage extends React.PureComponent<Props> {
     if (type.indexOf('comment') !== -1) {
       return (
         <ListText>
-          <AlternateEmailIcon fontSize="small" />
+          {(type === 'comment/like') ? <FavoriteIcon fontSize="small"/> : <AlternateEmailIcon fontSize="small" />}
           <ListLink to={`/messages${urlVars}`}>{text}</ListLink>
         </ListText>
       )

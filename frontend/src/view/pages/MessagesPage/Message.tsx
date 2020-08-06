@@ -132,6 +132,11 @@ const Message: React.SFC<Props> = (props) => {
     if (isAuthor) {
       return (
         <ButtonsWrapper>
+          <IconButton>
+            <Badge badgeContent={likes} color="primary">
+              {likes ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+            </Badge>
+          </IconButton>
           <Tooltip title={`Edit`}>
             <IconButton onClick={() => setEditor(!isEditer)}>
               <EditIcon />
@@ -143,7 +148,11 @@ const Message: React.SFC<Props> = (props) => {
     } else {
       return (
         <ButtonsWrapper>
-          {renderLikeIcon()}
+          <IconButton onClick={() => onLikeMessage({ host: sourceHost, id: id })}>
+            <Badge badgeContent={likes} color="primary">
+              {liked_by_me ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+            </Badge>
+          </IconButton>
           <Tooltip title={`Comment`}>
             <IconButton onClick={() => setCommentsEditor(!isCommentsEditer)}>
               <ChatBubbleOutlineIcon />
@@ -152,19 +161,6 @@ const Message: React.SFC<Props> = (props) => {
         </ButtonsWrapper>
       )
     }
-  }
-
-  const renderLikeIcon = () => {
-    return (
-      <IconButton onClick={() => onLikeMessage({
-        host: sourceHost,
-        id: id
-      })}>
-        <Badge badgeContent={likes} color="primary">
-          {liked_by_me ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-        </Badge>
-      </IconButton>
-    )
   }
 
   const onCommentSave = () => {
