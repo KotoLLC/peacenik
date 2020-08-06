@@ -1,0 +1,45 @@
+---
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: frontend-proxy
+  namespace: backend
+spec:
+  virtualhost:
+    fqdn: koto.at
+  routes:
+    - conditions:
+      - prefix: /
+      services:
+        - name: frontend-service
+          port: 80
+---
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: node-proxy
+  namespace: backend
+spec:
+  virtualhost:
+    fqdn: node1.koto.at
+  routes:
+    - conditions:
+      - prefix: /
+      services:
+        - name: node-service
+          port: 12002
+---
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: central-proxy
+  namespace: backend
+spec:
+  virtualhost:
+    fqdn: central.koto.at
+  routes:
+    - conditions:
+      - prefix: /
+      services:
+        - name: central-service
+          port: 12001
