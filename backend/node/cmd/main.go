@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/ansel1/merry"
@@ -47,12 +48,24 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	centralPublicKey, err := loadCentralPublicKey(context.TODO(), cfg.CentralServerAddress)
-	if err != nil {
-		log.Fatalln(err)
-	}
+	var keyMu sync.Mutex
+	var centralPublicKey *rsa.PublicKey
+	tokenParser := token.NewParser(func() *rsa.PublicKey {
+		keyMu.Lock()
+		defer keyMu.Unlock()
 
-	tokenParser := token.NewParser(centralPublicKey)
+		if centralPublicKey != nil {
+			return centralPublicKey
+		}
+
+		key, err := loadCentralPublicKey(context.TODO(), cfg.CentralServerAddress)
+		if err != nil {
+			log.Println("can't load central public key:", err)
+			return nil
+		}
+		centralPublicKey = key
+		return centralPublicKey
+	})
 	repos := repo.Repos{
 		Message:      repo.NewMessages(db),
 		Notification: common.NewNotifications(db),
@@ -85,6 +98,10 @@ func loadCentralPublicKey(ctx context.Context, centralServerAddress string) (*rs
 		return nil, merry.Wrap(err)
 	}
 	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, merry.Errorf("unexpected response status %s", resp.Status)
+	}
 
 	var body struct {
 		PublicKey string `json:"public_key"`
