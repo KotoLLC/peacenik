@@ -1,9 +1,9 @@
 import { Types } from './actions'
-import { NodeTypes } from './../../types'
+import { CommonTypes } from './../../types'
 
 export interface State {
   isNodeCreatedSuccessfully: boolean,
-  nodeslist: NodeTypes.Node[]
+  nodeslist: CommonTypes.NodeTypes.Node[]
 }
 
 const initialState: State = {

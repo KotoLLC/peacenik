@@ -1,5 +1,5 @@
 
-import { ApiTypes, NodeTypes } from '../../types'
+import { ApiTypes, CommonTypes } from '../../types'
 
 export enum Types {
   NODE_CREATE_REQUEST = 'NODE_CREATE_REQUEST',
@@ -30,7 +30,7 @@ const getNodesRequest = () => ({
   type: Types.GET_NODES_REQUEST
 })
 
-const getNodesSuccess = (payload: NodeTypes.Node[]) => ({
+const getNodesSuccess = (payload: CommonTypes.NodeTypes.Node[]) => ({
   type: Types.GET_NODES_SUCCESS,
   payload,
 })
