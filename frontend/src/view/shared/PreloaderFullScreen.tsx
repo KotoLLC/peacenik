@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import { PreloaderViewport } from './styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { connect } from 'react-redux'
-import { StoreTypes } from './../../types'
+import { StoreTypes } from 'src/types'
 import selectors from '@selectors/index'
 
 const modalRoot = document.getElementById('modal')

@@ -6,7 +6,7 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import IconButton from '@material-ui/core/IconButton'
 import { connect } from 'react-redux'
 import Tooltip from '@material-ui/core/Tooltip'
-import { ApiTypes } from '../../../types'
+import { ApiTypes } from 'src/types'
 import Actions from '@store/actions'
 import {
   DialogTextWrapper,

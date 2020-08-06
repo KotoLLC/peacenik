@@ -1,6 +1,6 @@
 import { Types } from './actions'
 import uniqBy from 'lodash.uniqby'
-import { ApiTypes } from '../../types'
+import { ApiTypes } from 'src/types'
 
 export interface State {
   notifications: ApiTypes.Notifications.Notification[],

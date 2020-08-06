@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import Notifications, { notify } from 'react-notify-toast'
 import { connect } from 'react-redux'
-import { StoreTypes } from './../../types/store'
+import { StoreTypes } from 'src/types'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'
 

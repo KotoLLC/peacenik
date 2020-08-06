@@ -1,5 +1,5 @@
 
-import { ApiTypes, CommonTypes } from '../../types'
+import { ApiTypes, CommonTypes } from 'src/types'
 
 export enum Types {
   NODE_CREATE_REQUEST = 'NODE_CREATE_REQUEST',

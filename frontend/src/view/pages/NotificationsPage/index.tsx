@@ -8,7 +8,7 @@ import ForumIcon from '@material-ui/icons/Forum'
 import StorageIcon from '@material-ui/icons/Storage'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
-import { ApiTypes, StoreTypes } from './../../../types'
+import { ApiTypes, StoreTypes } from 'src/types'
 import selectors from '@selectors/index'
 
 import {

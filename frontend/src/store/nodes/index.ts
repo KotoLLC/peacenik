@@ -1,5 +1,5 @@
 import { Types } from './actions'
-import { CommonTypes } from './../../types'
+import { CommonTypes } from 'src/types'
 
 export interface State {
   isNodeCreatedSuccessfully: boolean,

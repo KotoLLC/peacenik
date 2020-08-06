@@ -1,5 +1,5 @@
 import { Types } from './actions'
-import { CommonTypes, ApiTypes } from '../../types'
+import { CommonTypes, ApiTypes } from 'src/types'
 import uniqBy from 'lodash.uniqby'
 export interface State {
   messageTokens: CommonTypes.NodeTypes.CurrentNode[]

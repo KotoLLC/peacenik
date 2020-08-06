@@ -1,5 +1,5 @@
 
-import { ApiTypes } from './../../types'
+import { ApiTypes } from 'src/types'
 
 export enum Types {
   LOGIN_REQUEST = 'LOGIN_REQUEST',

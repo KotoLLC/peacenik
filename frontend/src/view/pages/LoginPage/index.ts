@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { LoginForm, Props } from './LoginForm'
 import Actions from '@store/actions'
-import { ApiTypes, StoreTypes } from './../../../types'
+import { ApiTypes, StoreTypes } from 'src/types'
 import selectors from '@selectors/index'
 
 type StateProps = Pick<Props, 'loginErrorMessage' | 'isLogged'>

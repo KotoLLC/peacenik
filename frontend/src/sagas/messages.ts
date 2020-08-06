@@ -1,7 +1,7 @@
 import { put, all, call } from 'redux-saga/effects'
 import Actions from '@store/actions'
 import { API } from '@services/api'
-import { ApiTypes } from './../types'
+import { ApiTypes } from 'src/types'
 import { currentNodeBack2Front } from '@services/dataTransforms/currentNodeTransform'
 import { nodesForMessagesBack2Front } from '@services/dataTransforms/nodesForMessagesTransform'
 import { Types as MessagesTypes } from '@store/messages/actions'

@@ -1,4 +1,4 @@
-import { ApiTypes } from './../../types'
+import { ApiTypes } from 'src/types'
 
 export enum Types {
   SEND_CONFIRM_LINK_REQUEST = 'SEND_CONFIRM_LINK_REQUEST',
