@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -12,6 +13,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 
@@ -37,10 +39,15 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	indexLoader := &IndexLoader{
+		IndexPath:   filepath.Join(rootDir, "index.html"),
+		APIEndpoint: strings.TrimSuffix(apiEndpoint, "/"),
+	}
+
 	r := chi.NewRouter()
 	setupMiddlewares(r)
 	serveFrontendFiles(r, "/static/", filepath.Join(rootDir, "static"))
-	r.Get("/*", serveIndex(filepath.Join(rootDir, "index.html"), strings.TrimSuffix(apiEndpoint, "/")))
+	r.Get("/*", serveIndex(indexLoader))
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT)
@@ -53,7 +60,7 @@ func main() {
 
 	go func() {
 		log.Printf("started on :%d, serving %s\n", port, rootDir)
-		if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {
+		if err := httpServer.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalln(err)
 		}
 	}()
@@ -90,17 +97,15 @@ func serveFrontendFiles(r chi.Router, path string, rootDir string) {
 	})
 }
 
-func serveIndex(indexPath, apiEndpoint string) http.HandlerFunc {
+func serveIndex(indexLoader *IndexLoader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		disableResponseCaching(w)
 
-		data, err := ioutil.ReadFile(indexPath)
+		content, err := indexLoader.GetIndexContent()
 		if err != nil {
 			panic(err)
 		}
-
-		data = bytes.Replace(data, []byte(`window.apiEndpoint="http://localhost:12001"`), []byte(fmt.Sprintf(`window.apiEndpoint="%s"`, apiEndpoint)), 1)
-		_, _ = w.Write(data)
+		_, _ = w.Write(content)
 	}
 }
 
@@ -108,4 +113,46 @@ func disableResponseCaching(w http.ResponseWriter) {
 	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 	w.Header().Set("Pragma", "no-cache")
 	w.Header().Set("Expires", "0")
+}
+
+type IndexLoader struct {
+	IndexPath   string
+	APIEndpoint string
+
+	content     []byte
+	lastErr     error
+	lastModTime time.Time
+	lastSize    int64
+	loadMu      sync.Mutex
+}
+
+func (l *IndexLoader) GetIndexContent() ([]byte, error) {
+	l.loadMu.Lock()
+	defer l.loadMu.Unlock()
+
+	stat, err := os.Stat(l.IndexPath)
+	if err != nil {
+		l.content = nil
+		l.lastErr = err
+		return l.content, l.lastErr
+	}
+
+	if stat.Size() == l.lastSize && stat.ModTime() == l.lastModTime {
+		return l.content, l.lastErr
+	}
+
+	content, err := ioutil.ReadFile(l.IndexPath)
+	if err != nil {
+		l.content = nil
+		l.lastErr = err
+		return l.content, l.lastErr
+	}
+
+	content = bytes.Replace(content, []byte(`window.apiEndpoint="http://localhost:12001"`),
+		[]byte(fmt.Sprintf(`window.apiEndpoint="%s"`, l.APIEndpoint)), 1)
+	l.content = content
+	l.lastErr = nil
+	l.lastSize = stat.Size()
+	l.lastModTime = stat.ModTime()
+	return l.content, l.lastErr
 }
