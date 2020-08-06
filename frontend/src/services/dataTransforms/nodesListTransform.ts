@@ -1,7 +1,7 @@
-import { ApiTypes, NodeTypes } from '../../types'
+import { ApiTypes, CommonTypes } from '../../types'
 
-export const nodesListBack2Front = (data: ApiTypes.Nodes.Node[]): NodeTypes.Node[] => {
-  let result: NodeTypes.Node[] = []
+export const nodesListBack2Front = (data: ApiTypes.Nodes.Node[]): CommonTypes.NodeTypes.Node[] => {
+  let result: CommonTypes.NodeTypes.Node[] = []
 
   if (data && data?.length) {
     result = data.map(item => (
