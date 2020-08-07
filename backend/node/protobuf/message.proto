@@ -101,7 +101,8 @@ message MessageLikeCommentResponse {
 message MessageLike {
     string message_id = 1;
     string user_id = 2;
-    string liked_at = 3;
+    string user_name = 3;
+    string liked_at = 4;
 }
 
 message MessageMessageLikesRequest {

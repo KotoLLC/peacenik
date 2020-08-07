@@ -34,6 +34,7 @@ type Message struct {
 type MessageLike struct {
 	MessageID string    `json:"message_id" db:"message_id"`
 	UserID    string    `json:"user_id" db:"user_id"`
+	UserName  string    `json:"user_name" db:"user_name"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
@@ -309,10 +310,11 @@ func (r *messageRepo) LikeMessage(userID, messageID string) (likes int, err erro
 
 func (r *messageRepo) MessageLikes(messageID string) (likes []MessageLike, err error) {
 	err = r.db.Select(&likes, `
-		select message_id, user_id, created_at
-		from message_likes
-		where message_id = $1
-		order by created_at`,
+		select ml.message_id, ml.user_id, u.name user_name, ml.created_at
+		from message_likes ml
+			inner join users u on u.id = ml.user_id
+		where ml.message_id = $1
+		order by ml.created_at`,
 		messageID)
 	if err != nil {
 		return nil, merry.Wrap(err)

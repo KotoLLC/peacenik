@@ -655,8 +655,9 @@ func (s *messageService) MessageLikes(_ context.Context, r *rpc.MessageMessageLi
 	rpcLikes := make([]*rpc.MessageLike, len(likes))
 	for i, like := range likes {
 		rpcLikes[i] = &rpc.MessageLike{
-			UserId:  like.UserID,
-			LikedAt: common.TimeToRPCString(like.CreatedAt),
+			UserId:   like.UserID,
+			UserName: like.UserName,
+			LikedAt:  common.TimeToRPCString(like.CreatedAt),
 		}
 	}
 	return &rpc.MessageMessageLikesResponse{
@@ -672,8 +673,9 @@ func (s *messageService) CommentLikes(_ context.Context, r *rpc.MessageCommentLi
 	rpcLikes := make([]*rpc.MessageLike, len(likes))
 	for i, like := range likes {
 		rpcLikes[i] = &rpc.MessageLike{
-			UserId:  like.UserID,
-			LikedAt: common.TimeToRPCString(like.CreatedAt),
+			UserId:   like.UserID,
+			UserName: like.UserName,
+			LikedAt:  common.TimeToRPCString(like.CreatedAt),
 		}
 	}
 	return &rpc.MessageCommentLikesResponse{
