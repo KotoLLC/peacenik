@@ -133,10 +133,10 @@ const Message: React.SFC<Props> = (props) => {
       currentMessageLikes.likes.length && currentMessageLikes.likes.forEach((item, counter) => {
         
         if (counter < 15) {
-          usersLikes += `${item.user_id}, `
+          usersLikes += `${item.user_name}, `
         } 
 
-        if (counter == 15) {
+        if (counter === 15) {
           usersLikes += `...`
         }
         
@@ -145,11 +145,12 @@ const Message: React.SFC<Props> = (props) => {
 
     return (
       <Tooltip 
+        onClick={() => onLikeMessage({ host: sourceHost, id: id })}
         title={(isLikesInfoRequested) ? <CircularProgressStyled size={30}/> : <>{usersLikes || likesInfo}</>} 
         interactive onOpen={() => getLikesInfo()}>
         <IconButton>
           <Badge badgeContent={likes} color="primary">
-            {likes ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+            {liked_by_me ? <FavoriteIcon /> : <FavoriteBorderIcon />}
           </Badge>
         </IconButton>
       </Tooltip>
@@ -165,6 +166,11 @@ const Message: React.SFC<Props> = (props) => {
           <Tooltip title={`Edit`}>
             <IconButton onClick={() => setEditor(!isEditer)}>
               <EditIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={`Comment`}>
+            <IconButton onClick={() => setCommentsEditor(!isCommentsEditer)}>
+              <ChatBubbleOutlineIcon />
             </IconButton>
           </Tooltip>
           <RemoveMessageDialog {...{ message, id, sourceHost }} />
@@ -287,7 +293,7 @@ const Message: React.SFC<Props> = (props) => {
     if (props.currentMessageLikes?.id === id) {
       setLikesInfoRequest(false)
     }
-  })
+  },  [props, file, isFileUploaded, id])
 
   return (
     <>

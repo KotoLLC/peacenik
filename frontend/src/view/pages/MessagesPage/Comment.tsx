@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Avatar from '@material-ui/core/Avatar'
 import EditIcon from '@material-ui/icons/Edit'
 import IconButton from '@material-ui/core/IconButton'
@@ -23,14 +23,18 @@ import {
   EditMessageWrapper,
   ButtonSend,
   ButtonsWrapper,
+  CircularProgressStyled,
 } from './styles'
 import { ApiTypes, StoreTypes } from 'src/types'
 
 interface Props extends ApiTypes.Messages.Comment {
   userId: string
+  currentCommentLikes: ApiTypes.Messages.LikesInfoData | null
+
   onCommentEdit: (data: ApiTypes.Messages.EditComment) => void
   onCommentDelete: (data: ApiTypes.Messages.DeleteComment) => void
   onLikeComment: (data: ApiTypes.Messages.Like) => void
+  getLikesForComment: (data: ApiTypes.Messages.Like) => void
 }
 
 const Comment: React.SFC<Props> = (props) => {
@@ -46,10 +50,19 @@ const Comment: React.SFC<Props> = (props) => {
     liked_by_me,
     likes,
     onLikeComment,
+    currentCommentLikes,
+    getLikesForComment,
   } = props
   const [isEditer, setEditor] = useState<boolean>(false)
   const [comment, onCommentChange] = useState<string>(text)
   const commentRef = React.createRef<HTMLDivElement>()
+  const [isLikesInfoRequested, setLikesInfoRequest] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (props.currentCommentLikes?.id === id) {
+      setLikesInfoRequest(false)
+    }
+  }, [props.currentCommentLikes, id])
 
   const onMessageSave = () => {
     setEditor(false)
@@ -68,15 +81,58 @@ const Comment: React.SFC<Props> = (props) => {
     }
   }
 
+  const getLikesInfo = () => {
+    if (currentCommentLikes?.id === id) {
+      setLikesInfoRequest(false)  
+    }
+
+    if (currentCommentLikes?.id !== id) {
+      setLikesInfoRequest(true)
+      getLikesForComment({
+        host: sourceHost, 
+        id: id
+      })
+    }
+  }
+
+  const rendreLikeButton = () => {
+    let likesInfo = 'No likes yet'
+    let usersLikes = ''
+
+    if (currentCommentLikes?.id === id) {
+      currentCommentLikes.likes.length && currentCommentLikes.likes.forEach((item, counter) => {
+        
+        if (counter < 15) {
+          usersLikes += `${item.user_name}, `
+        } 
+
+        if (counter === 15) {
+          usersLikes += `...`
+        }
+        
+      })
+    }
+
+    return (
+      <Tooltip 
+        onClick={() => onLikeComment({ host: sourceHost, id: id })}
+        title={(isLikesInfoRequested) ? <CircularProgressStyled size={30}/> : <>{usersLikes || likesInfo}</>} 
+        interactive onOpen={() => getLikesInfo()}>
+        <IconButton>
+          <Badge badgeContent={likes} color="primary">
+            {liked_by_me ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+          </Badge>
+        </IconButton>
+      </Tooltip>
+    )
+    
+  }
+
   const renderCurrentIcons = () => {
     if (userId === user_id) {
       return (
         <ButtonsWrapper>
-          <IconButton>
-            <Badge badgeContent={likes} color="primary">
-              {likes ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-            </Badge>
-          </IconButton>
+          {rendreLikeButton()}
           <Tooltip title={`Edit`}>
             <IconButton onClick={() => setEditor(!isEditer)}>
               <EditIcon />
@@ -88,11 +144,7 @@ const Comment: React.SFC<Props> = (props) => {
     } else {
       return (
         <ButtonsWrapper>
-          <IconButton onClick={() => onLikeComment({ host: sourceHost, id: id })}>
-            <Badge badgeContent={likes} color="primary">
-              {liked_by_me ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-            </Badge>
-          </IconButton>
+          {rendreLikeButton()}
         </ButtonsWrapper>
       )
     }
@@ -129,16 +181,18 @@ const Comment: React.SFC<Props> = (props) => {
   )
 }
 
-type StateProps = Pick<Props, 'userId'>
+type StateProps = Pick<Props, 'userId' | 'currentCommentLikes'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   userId: selectors.profile.userId(state),
+  currentCommentLikes: selectors.messages.currentCommentLikes(state),
 })
 
-type DispatchProps = Pick<Props, 'onCommentEdit' | 'onCommentDelete' | 'onLikeComment'>
+type DispatchProps = Pick<Props, 'onCommentEdit' | 'onCommentDelete' | 'onLikeComment' | 'getLikesForComment'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onCommentEdit: (data: ApiTypes.Messages.EditComment) => dispatch(Actions.messages.editCommentRequest(data)),
   onCommentDelete: (data: ApiTypes.Messages.DeleteComment) => dispatch(Actions.messages.deleteCommentRequest(data)),
   onLikeComment: (data: ApiTypes.Messages.Like) => dispatch(Actions.messages.linkCommnetRequest(data)),
+  getLikesForComment: (data: ApiTypes.Messages.Like) => dispatch(Actions.messages.getLikesForCommentRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Comment)

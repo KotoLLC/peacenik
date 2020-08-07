@@ -145,6 +145,7 @@ export function* watchLikeMessage(action: { type: string, payload: ApiTypes.Mess
   if (response.status === 200) {
     yield put(Actions.messages.linkMessageSuccess())
     yield put(Actions.messages.getMessagesRequest())
+    yield put(Actions.messages.getLikesForMessageRequest(action.payload))
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
@@ -166,6 +167,19 @@ export function* watchGetLikesForMessage(action: { type: string, payload: ApiTyp
 
   if (response.status === 200) {
     yield put(Actions.messages.getLikesForMessageSuccess({
+      id: action.payload.id,
+      likes: response.data?.likes || []
+    }))
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
+export function* watchGetLikesForComment(action: { type: string, payload: ApiTypes.Messages.Like }) {
+  const response = yield API.messages.getlikesForComment(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.messages.getLikesForCommentSuccess({
       id: action.payload.id,
       likes: response.data?.likes || []
     }))

@@ -63,6 +63,11 @@ const reducer = (state = initialState, action) => {
         ...state, ...{ currentMessageLikes: action.payload }
       }
     }
+    case Types.GET_LIKES_FOR_COMMENT_SUCCESS: {
+      return {
+        ...state, ...{ currentCommentLikes: action.payload }
+      }
+    }
     default: return state
   }
 }
