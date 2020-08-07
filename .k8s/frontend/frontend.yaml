@@ -15,7 +15,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: frontend
-        image: k0t0/frontend:v1.7
+        image: k0t0/frontend:v1.9
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
