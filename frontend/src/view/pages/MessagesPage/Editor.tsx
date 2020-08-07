@@ -112,7 +112,7 @@ const Editor: React.SFC<Props> = (props) => {
       })
 
     }
-  }, [isMessagePostedSuccess, uploadLink])
+  }, [isMessagePostedSuccess, uploadLink, file, isFileUploaded, onPostMessageSucces, props])
 
   return (
     <MessageSticky>

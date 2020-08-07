@@ -1,5 +1,5 @@
 import { axiosInstance } from './index'
-import { ApiTypes, CommonTypes } from 'src/types'
+import { CommonTypes } from 'src/types'
 
 export default {
   getNotificationsFromNode: async (host: string) => {

@@ -23,6 +23,7 @@ const theme = createMuiTheme({
 interface Props {
   isLogged: boolean
   isEmailConfirmed: boolean
+  authToken: string
   onGetAuthToken: () => void
   onGetNotifications: () => void
 }
@@ -51,7 +52,7 @@ class AppComponent extends React.Component<Props> {
   }
 
   static getDerivedStateFromProps(newProps: Props) {
-    if (newProps.isLogged) {
+    if (newProps.isLogged && newProps.authToken) {
       newProps.onGetNotifications()
     }
 
@@ -61,11 +62,10 @@ class AppComponent extends React.Component<Props> {
   componentDidMount() {
     if (this.props.isLogged) {
       this.checkTokenTime()
-      this.props.onGetNotifications()
     }
 
     setInterval(() => {
-      if (this.props.isLogged) {
+      if (this.props.isLogged && this.props.authToken) {
         this.checkTokenTime()
         this.props.onGetNotifications()
       }
@@ -86,9 +86,10 @@ class AppComponent extends React.Component<Props> {
   }
 }
 
-type StateProps = Pick<Props, 'isLogged' | 'isEmailConfirmed'>
+type StateProps = Pick<Props, 'isLogged' | 'isEmailConfirmed' | 'authToken'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   isLogged: selectors.authorization.isLogged(state),
+  authToken: selectors.authorization.authToken(state),
   isEmailConfirmed: selectors.profile.isEmailConfirmed(state) || false,
 })
 

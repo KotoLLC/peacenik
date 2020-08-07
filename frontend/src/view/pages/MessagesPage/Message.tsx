@@ -262,7 +262,7 @@ const Message: React.SFC<Props> = (props) => {
         form_data: data,
       })
     }
-  }, [uploadLink])
+  })
 
   return (
     <>
