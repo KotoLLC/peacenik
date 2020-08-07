@@ -19,7 +19,7 @@ spec:
             secretName: central-key
       containers:
       - name: central
-        image: k0t0/central:v1.9
+        image: k0t0/central:v1.10
         imagePullPolicy: Always
         ports:
         - containerPort: 12001
