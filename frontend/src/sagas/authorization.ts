@@ -8,7 +8,6 @@ export function* watchlogin(action: { type: string, payload: ApiTypes.Login }) {
 
   if (response.status === 200) {
     yield put(Actions.profile.getProfileRequest())
-    yield put(Actions.authorization.getAuthTokenRequest())
     yield put(Actions.authorization.loginSucces())
     localStorage.setItem('kotoIsLogged', 'true')
   } else {

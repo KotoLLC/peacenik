@@ -20,22 +20,59 @@ interface Props {
   currentNode: CommonTypes.NodeTypes.CurrentNode
   messages: ApiTypes.Messages.Message[]
   userId: string
+  authToken: string
   onGetMessages: () => void
   onGetCurrentNode: () => void
   onGetMessagesFromNode: (data: ApiTypes.Messages.MessagesFromNode) => void
 }
 
-class MessageFeed extends React.Component<Props> {
+interface State {
+  authToken: string
+}
+
+class MessageFeed extends React.Component<Props, State> {
+
+  state = {
+    authToken: '',
+  }
 
   timerId
 
   editorRef = React.createRef<HTMLDivElement>()
 
   componentDidMount() {
-    const { onGetMessages, onGetCurrentNode } = this.props
-    onGetMessages()
-    onGetCurrentNode()
-    this.timerId = setInterval(onGetMessages, 10000)
+    const { onGetMessages, onGetCurrentNode, authToken } = this.props
+    
+    if (authToken) {
+      onGetMessages()
+      onGetCurrentNode()
+      
+      this.timerId = setInterval(() => {
+        onGetMessages() 
+      }, 10000)
+    }
+  }
+
+  static getDerivedStateFromProps(newProps: Props, prevState: State) {
+    if (newProps.authToken !== prevState.authToken) {
+      newProps.onGetMessages()
+      newProps.onGetCurrentNode()
+      return {
+        authToken: newProps.authToken
+      }
+    }
+
+    return null
+  }
+
+  shouldComponentUpdate(newProps: Props, newState: State) {
+    if (this.props.authToken !== newState.authToken) {
+      this.timerId = setInterval(() => {
+        newProps.onGetMessages() 
+      }, 10000)
+    }
+
+    return true
   }
 
   componentWillUnmount() {
@@ -89,12 +126,13 @@ class MessageFeed extends React.Component<Props> {
   }
 }
 
-type StateProps = Pick<Props, 'messageTokens' | 'currentNode' | 'messages' | 'userId'>
+type StateProps = Pick<Props, 'messageTokens' | 'currentNode' | 'messages' | 'userId' | 'authToken'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   messageTokens: selectors.messages.messageTokens(state),
   currentNode: selectors.messages.currentNode(state),
   messages: selectors.messages.messages(state),
   userId: selectors.profile.userId(state),
+  authToken: selectors.authorization.authToken(state),
 })
 
 type DispatchProps = Pick<Props, 'onGetMessages' | 'onGetCurrentNode' | 'onGetMessagesFromNode'>

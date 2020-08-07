@@ -6,11 +6,14 @@ import { ApiTypes } from 'src/types'
 export function* watchGetProfile() {
   const response = yield API.profile.getProfile()
 
-  if (response.status === 200) {
-    if (response.data) {
-      localStorage.setItem('kotoProfile', JSON.stringify(response.data))
-      yield put(Actions.profile.getProfileSucces(response.data)) 
+  if (response.status === 200 && response.data) {
+    localStorage.setItem('kotoProfile', JSON.stringify(response.data))
+    
+    if (response.data?.user?.is_confirmed) {
+      yield put(Actions.authorization.getAuthTokenRequest())
     }
+
+    yield put(Actions.profile.getProfileSucces(response.data))
   }
 }
 
@@ -24,9 +27,9 @@ export function* watchGetUploadLink(action: { type: string, payload: string }) {
   }
 }
 
-export function* watchSetAvatar(action: { type: string, payload: ApiTypes.Profile.Avatar}) {
+export function* watchSetAvatar(action: { type: string, payload: ApiTypes.Profile.Avatar }) {
   const response = yield API.profile.setAvatar(action.payload.link, action.payload.form_data)
-  
+
   if (response.status === 204 || response.status === 200) {
     yield put(Actions.profile.setAvatarSuccess())
   } else {
@@ -34,7 +37,7 @@ export function* watchSetAvatar(action: { type: string, payload: ApiTypes.Profil
   }
 }
 
-export function* watchEditProfile(action: { type: string, payload: ApiTypes.Profile.EditProfile}) {
+export function* watchEditProfile(action: { type: string, payload: ApiTypes.Profile.EditProfile }) {
   const response = yield API.profile.editProfile(action.payload)
 
   if (response.status === 200) {
