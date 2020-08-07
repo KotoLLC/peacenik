@@ -221,6 +221,17 @@ export declare namespace ApiTypes {
       host: string
       id: string
     }
+
+    export interface LikeInfo {
+      user_id: string
+      user_name: string
+      liked_at: string
+    }
+
+    export interface LikesInfoData {
+      id: string
+      likes: LikeInfo[]
+    }
   }
 
   export namespace Notifications {

@@ -7,6 +7,8 @@ export interface State {
   isMessagePostedSuccess: boolean
   messages: ApiTypes.Messages.Message[]
   uploadLink: ApiTypes.UploadLink | null
+  currentMessageLikes: ApiTypes.Messages.LikesInfoData | null
+  currentCommentLikes: ApiTypes.Messages.LikesInfoData | null
 }
 
 const initialState: State = {
@@ -18,6 +20,8 @@ const initialState: State = {
   isMessagePostedSuccess: false,
   messages: [],
   uploadLink: null,
+  currentMessageLikes: null,
+  currentCommentLikes: null,
 }
 
 const reducer = (state = initialState, action) => {
@@ -52,6 +56,11 @@ const reducer = (state = initialState, action) => {
     case Types.GET_MESSAGE_UPLOAD_LINK_SUCCESS: {
       return {
         ...state, ...{ uploadLink: action.payload }
+      }
+    }
+    case Types.GET_LIKES_FOR_MESSAGE_SUCCESS: {
+      return {
+        ...state, ...{ currentMessageLikes: action.payload }
       }
     }
     default: return state

@@ -160,3 +160,16 @@ export function* watchLikeComment(action: { type: string, payload: ApiTypes.Mess
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
+
+export function* watchGetLikesForMessage(action: { type: string, payload: ApiTypes.Messages.Like }) {
+  const response = yield API.messages.getlikesForMessage(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.messages.getLikesForMessageSuccess({
+      id: action.payload.id,
+      likes: response.data?.likes || []
+    }))
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}

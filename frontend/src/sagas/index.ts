@@ -52,6 +52,7 @@ import {
     watchSetAttachment,
     watchLikeMessage,
     watchLikeComment,
+    watchGetLikesForMessage,
 } from './messages'
 import {
     watchGetNotifications,
@@ -100,6 +101,7 @@ export function* rootSaga() {
         takeEvery(MessagesTypes.SET_MESSAGE_ATTACHMENT_REQUEST, watchSetAttachment),
         takeEvery(MessagesTypes.LIKE_MESSAGE_REQUEST, watchLikeMessage),
         takeEvery(MessagesTypes.LIKE_COMMENT_REQUEST, watchLikeComment),
+        takeEvery(MessagesTypes.GET_LIKES_FOR_MESSAGE_REQUEST, watchGetLikesForMessage),
         
         takeEvery(NotificationsTypes.GET_NOTIFICATIONS_REQUEST, watchGetNotifications),
         takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_CENTRAL_REQUEST, watchCleanNotificationsInCentral),

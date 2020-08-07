@@ -40,6 +40,9 @@ export enum Types {
   
   LIKE_COMMENT_REQUEST = 'LIKE_COMMENT_REQUEST',
   LIKE_COMMENT_SUCCESS = 'LIKE_COMMENT_SUCCESS',
+  
+  GET_LIKES_FOR_MESSAGE_REQUEST = 'GET_LIKES_FOR_MESSAGE_REQUEST',
+  GET_LIKES_FOR_MESSAGE_SUCCESS = 'GET_LIKES_FOR_MESSAGE_SUCCESS',
 }
 
 const getMessagesRequest = () => ({
@@ -163,6 +166,16 @@ const linkCommentSuccess = () => ({
   type: Types.LIKE_COMMENT_SUCCESS,
 })
 
+const getLikesForMessageRequest = (payload: ApiTypes.Messages.Like) => ({
+  type: Types.GET_LIKES_FOR_MESSAGE_REQUEST,
+  payload,
+})
+
+const getLikesForMessageSuccess = (payload: ApiTypes.Messages.LikesInfoData) => ({
+  type: Types.GET_LIKES_FOR_MESSAGE_SUCCESS,
+  payload,
+})
+
 export default {
   getMessagesRequest,
   getMessagesSucces,
@@ -190,4 +203,6 @@ export default {
   linkMessageSuccess,
   linkCommnetRequest,
   linkCommentSuccess,
+  getLikesForMessageRequest,
+  getLikesForMessageSuccess,
 }

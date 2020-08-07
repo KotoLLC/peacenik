@@ -5,6 +5,7 @@ import TextareaAutosize from 'react-autosize-textarea'
 import Button from '@material-ui/core/Button'
 import Link from '@material-ui/core/Link'
 import IconButton from '@material-ui/core/IconButton'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 export const ContainerStyled = styled(Container)`
   && {
@@ -182,4 +183,10 @@ export const ImagePreview = styled.img`
 
 export const AttachmentWrapper = styled.div`
   padding-left: 60px;
+`
+
+export const CircularProgressStyled = styled(CircularProgress)`
+  && {
+    color: #fff;
+  }
 `

@@ -16,8 +16,6 @@ import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder'
 import { Player } from 'video-react'
 import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
 import Badge from '@material-ui/core/Badge'
-// import queryString from 'query-string'
-// import { history } from '@view/routes'
 import {
   PaperStyled,
   MessageHeader,
@@ -37,18 +35,22 @@ import {
   AttachmentWrapper,
   EditorButtonsWrapper,
   UploadInput,
+  CircularProgressStyled,
 } from './styles'
 
 interface Props extends ApiTypes.Messages.Message {
   isAuthor: boolean
   uploadLink: ApiTypes.UploadLink | null
   currentNode: CommonTypes.NodeTypes.CurrentNode
+  currentMessageLikes: ApiTypes.Messages.LikesInfoData | null
+  
   onMessageEdit: (data: ApiTypes.Messages.EditMessage) => void
   onCommentPost: (data: ApiTypes.Messages.PostComment) => void
   onGetMessageUploadLink: (data: ApiTypes.Messages.UploadLinkRequest) => void
   onSetAttachment: (data: ApiTypes.Messages.Attachment) => void
   onResetMessageUploadLink: () => void
   onLikeMessage: (data: ApiTypes.Messages.Like) => void
+  getLikesForMessage: (data: ApiTypes.Messages.Like) => void
 }
 
 const Message: React.SFC<Props> = (props) => {
@@ -67,31 +69,11 @@ const Message: React.SFC<Props> = (props) => {
     uploadLink,
     onResetMessageUploadLink,
     onLikeMessage,
+    getLikesForMessage,
     likes,
+    currentMessageLikes,
     liked_by_me,
   } = props
-
-  // const url = history.location.search
-  // const params = queryString.parse(url)
-  // const messageRef = React.createRef<HTMLDivElement>()
-
-  // function checkIsCommentsOpen() {
-  //   if(params?.type?.indexOf('comment') !== -1){
-  //     return comments?.some(item => item.id === params?.comment_id)
-  //   }
-  //   return false
-  // }
-
-  // function checkIsScrollToMessage() {
-  //   if(params?.type?.indexOf('message') !== -1){
-  //     if(id === params?.message_id){
-  //       messageRef?.current?.scrollIntoView({ behavior: 'auto', block: 'start' })
-  //     }
-  //   }
-  // }
-
-  // checkIsScrollToMessage()
-  // const isOpen = checkIsCommentsOpen()
 
   const [isEditer, setEditor] = useState<boolean>(false)
   const [isCommentsEditer, setCommentsEditor] = useState<boolean>(false)
@@ -100,6 +82,7 @@ const Message: React.SFC<Props> = (props) => {
   const [isCommentsOpen, openComments] = useState<boolean>(false)
   const [isFileUploaded, setUploadedFile] = useState<boolean>(false)
   const [file, setFile] = useState<File | null>(null)
+  const [isLikesInfoRequested, setLikesInfoRequest] = useState<boolean>(false)
 
   const onMessageSave = () => {
     props.onMessageEdit({
@@ -128,15 +111,57 @@ const Message: React.SFC<Props> = (props) => {
     }
   }
 
+  const getLikesInfo = () => {
+    if (currentMessageLikes?.id === id) {
+      setLikesInfoRequest(false)  
+    }
+
+    if (currentMessageLikes?.id !== id) {
+      setLikesInfoRequest(true)
+      getLikesForMessage({
+        host: sourceHost, 
+        id: id
+      })
+    }
+  }
+
+  const rendreLikeButton = () => {
+    let likesInfo = 'No likes yet'
+    let usersLikes = ''
+
+    if (currentMessageLikes?.id === id) {
+      currentMessageLikes.likes.length && currentMessageLikes.likes.forEach((item, counter) => {
+        
+        if (counter < 15) {
+          usersLikes += `${item.user_id}, `
+        } 
+
+        if (counter == 15) {
+          usersLikes += `...`
+        }
+        
+      })
+    }
+
+    return (
+      <Tooltip 
+        title={(isLikesInfoRequested) ? <CircularProgressStyled size={30}/> : <>{usersLikes || likesInfo}</>} 
+        interactive onOpen={() => getLikesInfo()}>
+        <IconButton>
+          <Badge badgeContent={likes} color="primary">
+            {likes ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+          </Badge>
+        </IconButton>
+      </Tooltip>
+    )
+    
+  }
+
   const renderNavIcons = () => {
     if (isAuthor) {
       return (
         <ButtonsWrapper>
-          <IconButton>
-            <Badge badgeContent={likes} color="primary">
-              {likes ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-            </Badge>
-          </IconButton>
+          {rendreLikeButton()}
           <Tooltip title={`Edit`}>
             <IconButton onClick={() => setEditor(!isEditer)}>
               <EditIcon />
@@ -148,11 +173,7 @@ const Message: React.SFC<Props> = (props) => {
     } else {
       return (
         <ButtonsWrapper>
-          <IconButton onClick={() => onLikeMessage({ host: sourceHost, id: id })}>
-            <Badge badgeContent={likes} color="primary">
-              {liked_by_me ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-            </Badge>
-          </IconButton>
+          {rendreLikeButton()}
           <Tooltip title={`Comment`}>
             <IconButton onClick={() => setCommentsEditor(!isCommentsEditer)}>
               <ChatBubbleOutlineIcon />
@@ -262,6 +283,10 @@ const Message: React.SFC<Props> = (props) => {
         form_data: data,
       })
     }
+
+    if (props.currentMessageLikes?.id === id) {
+      setLikesInfoRequest(false)
+    }
   })
 
   return (
@@ -329,10 +354,11 @@ const Message: React.SFC<Props> = (props) => {
   )
 }
 
-type StateProps = Pick<Props, 'uploadLink' | 'currentNode'>
+type StateProps = Pick<Props, 'uploadLink' | 'currentNode' | 'currentMessageLikes'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   uploadLink: state.messages.uploadLink,
   currentNode: selectors.messages.currentNode(state),
+  currentMessageLikes: selectors.messages.currentMessageLikes(state),
 })
 
 type DispatchProps = Pick<Props,
@@ -342,6 +368,7 @@ type DispatchProps = Pick<Props,
   | 'onSetAttachment'
   | 'onResetMessageUploadLink'
   | 'onLikeMessage'
+  | 'getLikesForMessage'
 >
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onMessageEdit: (data: ApiTypes.Messages.EditMessage) => dispatch(Actions.messages.editMessageRequest(data)),
@@ -350,6 +377,7 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onSetAttachment: (data: ApiTypes.Messages.Attachment) => dispatch(Actions.messages.setAttachmentRequest(data)),
   onResetMessageUploadLink: () => dispatch(Actions.messages.getMessageUploadLinkSucces(null)),
   onLikeMessage: (data: ApiTypes.Messages.Like) => dispatch(Actions.messages.linkMessageRequest(data)),
+  getLikesForMessage: (data: ApiTypes.Messages.Like) => dispatch(Actions.messages.getLikesForMessageRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Message)
