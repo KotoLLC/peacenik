@@ -15,7 +15,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: node
-        image: k0t0/node:v1.9
+        image: k0t0/node:v1.10
         imagePullPolicy: Always
         ports:
         - containerPort: 12002
