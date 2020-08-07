@@ -68,7 +68,8 @@ func (r *notificationRepo) Counts(userID string) (total int, unread int, err err
 		Unread int `db:"unread"`
 	}
 	err = r.db.Get(&counters, `
-		select count(*) total, sum(case when read_at is null then 1 end) unread
+		select count(*) total,
+		       count(*) filter (where read_at is null) unread
 		from notifications
 		where user_id = $1`,
 		userID)
