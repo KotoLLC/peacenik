@@ -44,9 +44,13 @@ func main() {
 		APIEndpoint: strings.TrimSuffix(apiEndpoint, "/"),
 	}
 
+	fs := http.FileServer(http.Dir(rootDir))
+
 	r := chi.NewRouter()
 	setupMiddlewares(r)
 	serveFrontendFiles(r, "/static/", filepath.Join(rootDir, "static"))
+	r.Get("/favicon.ico", fs.ServeHTTP)
+	r.Get("/manifest.json", fs.ServeHTTP)
 	r.Get("/*", serveIndex(indexLoader))
 
 	stop := make(chan os.Signal, 1)
