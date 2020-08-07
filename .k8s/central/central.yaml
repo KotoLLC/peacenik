@@ -38,7 +38,7 @@ spec:
           - name: KOTO_DB_SSL_MODE
             value: disable
           - name: KOTO_FRONTEND_ADDRESS
-            value: koto.at
+            value: http://koto.at
           - name: KOTO_DB_USER
             value: postgres
           - name: KOTO_DB_PASSWORD
