@@ -1,7 +1,6 @@
 .idea/
 .k8s/**/secret-*.yaml
 
-package-lock.json
 node_modules
 build
 
