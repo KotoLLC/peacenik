@@ -36,6 +36,8 @@ services:
     restart: on-failure
     ports:
       - 5000:5000
+    environment:
+      KOTO_CENTRAL_HOST: ${KOTO_CENTRAL_HOST}
 
   db:
     image: postgres:12.3
