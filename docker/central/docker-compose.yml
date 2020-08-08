@@ -1,0 +1,45 @@
+version: "3.7"
+
+services:
+  central:
+    image: k0t0/central:latest
+    volumes:
+      - ./data/central:/data
+    ports:
+      - 12001:12001
+    environment:
+      KOTO_ADDRESS: :12001
+      KOTO_PRIVATE_KEY: /data/central.rsa
+      KOTO_ADMINS: ${KOTO_ADMINS}
+      KOTO_DB_HOST: db
+      KOTO_DB_SSL_MODE: disable
+      KOTO_DB_USER: ${KOTO_DB_USER}
+      KOTO_DB_PASSWORD: ${KOTO_DB_PASSWORD}
+      KOTO_DB_NAME: koto-central
+      KOTO_S3_ENDPOINT: ${KOTO_S3_ENDPOINT}
+      KOTO_S3_KEY: ${KOTO_S3_KEY}
+      KOTO_S3_SECRET: ${KOTO_S3_SECRET}
+      KOTO_S3_BUCKET: ${KOTO_S3_BUCKET}
+      KOTO_SMTP_HOST: ${KOTO_SMTP_HOST}
+      KOTO_SMTP_PORT: ${KOTO_SMTP_PORT}
+      KOTO_SMTP_USER: ${KOTO_SMTP_USER}
+      KOTO_SMTP_PASSWORD: ${KOTO_SMTP_PASSWORD}
+      KOTO_SMTP_FROM: ${KOTO_SMTP_FROM}
+    restart: on-failure
+    depends_on:
+      - db
+
+  frontend:
+    image: k0t0/frontend:latest
+    restart: on-failure
+    ports:
+      - 5000:5000
+
+  db:
+    image: postgres:12.3
+    volumes:
+      - ./data/db:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: koto-central
+      POSTGRES_USER: ${KOTO_DB_USER}
+      POSTGRES_PASSWORD: ${KOTO_DB_PASSWORD}

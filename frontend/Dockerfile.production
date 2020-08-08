@@ -31,4 +31,6 @@ COPY --from=server-builder /server/frontend-server ./
 
 EXPOSE 5000
 
+WORKDIR /app
+
 ENTRYPOINT ["./frontend-server"]
