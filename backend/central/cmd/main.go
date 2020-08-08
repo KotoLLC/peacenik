@@ -2,7 +2,10 @@ package main
 
 import (
 	"context"
+	"crypto/rand"
 	"crypto/rsa"
+	"crypto/x509"
+	"encoding/pem"
 	"flag"
 	"log"
 	"os"
@@ -41,6 +44,17 @@ func main() {
 	s3Storage, err := cfg.S3.CreateStorage()
 	if err != nil {
 		log.Fatalln(err)
+	}
+
+	_, err = os.Stat(cfg.PrivateKeyPath)
+	if err != nil {
+		if !os.IsNotExist(err) {
+			log.Fatalln(err)
+		}
+		err := generateRSAKey(cfg.PrivateKeyPath)
+		if err != nil {
+			log.Fatalln(err)
+		}
 	}
 
 	privateKey, publicKey, publicKeyPEM, err := token.RSAKeysFromPrivateKeyFile(cfg.PrivateKeyPath)
@@ -91,4 +105,32 @@ func loadConfig(execDir string) (config.Config, error) {
 	cfg.FrontendAddress = strings.TrimSuffix(cfg.FrontendAddress, "/")
 
 	return cfg, nil
+}
+
+func generateRSAKey(keyPath string) error {
+	const bitSize = 1024
+	reader := rand.Reader
+	key, err := rsa.GenerateKey(reader, bitSize)
+	if err != nil {
+		return err
+	}
+
+	outFile, err := os.Create(keyPath)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		_ = outFile.Close()
+	}()
+
+	var privateKey = &pem.Block{
+		Type:  "PRIVATE KEY",
+		Bytes: x509.MarshalPKCS1PrivateKey(key),
+	}
+
+	err = pem.Encode(outFile, privateKey)
+	if err != nil {
+		return err
+	}
+	return nil
 }

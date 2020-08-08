@@ -1,9 +1,3 @@
-# Generate RSA key
-
-```
-openssl genrsa -out central.rsa 1024
-```
-
 # Build
 
 ```
