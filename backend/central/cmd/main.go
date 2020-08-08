@@ -10,7 +10,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/ansel1/merry"
 
@@ -101,8 +100,6 @@ func loadConfig(execDir string) (config.Config, error) {
 	if err != nil {
 		return config.Config{}, merry.Wrap(err)
 	}
-
-	cfg.FrontendAddress = strings.TrimSuffix(cfg.FrontendAddress, "/")
 
 	return cfg, nil
 }

@@ -41,6 +41,8 @@ func Load(cfgPath string) (Config, error) {
 		cfg.adminList = append(cfg.adminList, strings.TrimSpace(admin))
 	}
 
+	cfg.FrontendAddress = common.CleanPublicURL(cfg.FrontendAddress)
+
 	return cfg, nil
 }
 

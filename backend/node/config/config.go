@@ -27,5 +27,9 @@ func Load(cfgPath string) (Config, error) {
 	if err != nil {
 		return Config{}, merry.Prepend(err, "can't load config")
 	}
+
+	cfg.ExternalAddress = common.CleanPublicURL(cfg.ExternalAddress)
+	cfg.CentralServerAddress = common.CleanPublicURL(cfg.CentralServerAddress)
+
 	return cfg, nil
 }

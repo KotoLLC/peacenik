@@ -27,6 +27,8 @@ func NewNode(base *BaseService, admins []string) rpc.NodeService {
 
 func (s *nodeService) Register(ctx context.Context, r *rpc.NodeRegisterRequest) (*rpc.Empty, error) {
 	user := s.getUser(ctx)
+
+	r.Address = common.CleanPublicURL(r.Address)
 	nodeExists, err := s.repos.Node.NodeExists(r.Address)
 	if err != nil {
 		return nil, err

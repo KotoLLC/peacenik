@@ -96,6 +96,9 @@ func (r *nodeRepo) AllNodes() ([]Node, error) {
 				   u.name admin_name, u.avatar_thumbnail_id admin_avatar_id, post_limit
 			from nodes n
 				inner join users u on u.id = n.admin_id`)
+	for i := range nodes {
+		nodes[i].Address = common.CleanPublicURL(nodes[i].Address)
+	}
 	return nodes, merry.Wrap(err)
 }
 
@@ -107,6 +110,9 @@ func (r *nodeRepo) Nodes(user User) ([]Node, error) {
 		from nodes n
 			inner join users u on u.id = n.admin_id
 		where n.admin_id = $1`, user.ID)
+	for i := range nodes {
+		nodes[i].Address = common.CleanPublicURL(nodes[i].Address)
+	}
 	return nodes, merry.Wrap(err)
 }
 
@@ -123,6 +129,7 @@ func (r *nodeRepo) Node(nodeID string) (*Node, error) {
 		return nil, merry.Wrap(err)
 	}
 
+	node.Address = common.CleanPublicURL(node.Address)
 	return &node, nil
 }
 
@@ -204,6 +211,7 @@ func (r *nodeRepo) ConnectedNodes(user User) (userNodes []UserNode, err error) {
 	userNodes = make([]UserNode, 0, 10)
 	for _, node := range nodes {
 		if friend, ok := friends[node.AdminID]; ok && (node.PostLimit <= 0 || friend.MinDistance < node.PostLimit) {
+			node.Address = common.CleanPublicURL(node.Address)
 			userNodes = append(userNodes, UserNode{
 				Node:        node,
 				MinDistance: friend.MinDistance,
