@@ -4,7 +4,7 @@ services:
   node:
     image: k0t0/node:latest
     volumes:
-      - ./data/node:/data
+      - ${VOLUME_NODE}:/data
     ports:
       - 12001:12001
     environment:
@@ -28,7 +28,7 @@ services:
   db:
     image: postgres:12.3
     volumes:
-      - ./data/db:/var/lib/postgresql/data/
+      - ${VOLUME_DB}:/var/lib/postgresql/data/
     environment:
       POSTGRES_DB: koto-node
       POSTGRES_USER: ${KOTO_DB_USER}

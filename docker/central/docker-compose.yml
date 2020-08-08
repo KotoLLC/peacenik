@@ -4,7 +4,7 @@ services:
   central:
     image: k0t0/central:latest
     volumes:
-      - ./data/central:/data
+      - ${VOLUME_CENTRAL}:/data
     ports:
       - 12001:12001
     environment:
@@ -40,7 +40,7 @@ services:
   db:
     image: postgres:12.3
     volumes:
-      - ./data/db:/var/lib/postgresql/data/
+      - ${VOLUME_DB}:/var/lib/postgresql/data/
     environment:
       POSTGRES_DB: koto-central
       POSTGRES_USER: ${KOTO_DB_USER}
