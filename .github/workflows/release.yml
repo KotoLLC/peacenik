@@ -46,7 +46,7 @@ jobs:
         name: Build & push Backend Node Docker image
         with:
           image: k0t0/node
-          tag: ${{ steps.get_version.outputs.VERSION }}, latest
+          tags: ${{ steps.get_version.outputs.VERSION }}, latest
           registry: docker.io
           directory: ./backend
           dockerfile: ./backend/node/Dockerfile
