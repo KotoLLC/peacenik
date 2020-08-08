@@ -122,6 +122,7 @@ export default {
  
   setAttachment: async (host: string, data: FormData) => {
     const config = {
+      withCredentials: false,
       headers: {
         'Content-Type': 'multipart/form-data',
       }

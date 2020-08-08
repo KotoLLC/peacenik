@@ -136,11 +136,11 @@ class UserProfile extends React.PureComponent<Props, State> {
       const { form_data } = newProps?.uploadLink
       const data = new FormData()
 
-      data.append('file', prevState?.file, prevState?.file.name)
-
       for (let key in form_data) {
         data.append(key, form_data[key])
       }
+
+      data.append('file', prevState?.file, prevState?.file.name)
 
       newProps.onSetAvatar({
         link: newProps?.uploadLink.link,

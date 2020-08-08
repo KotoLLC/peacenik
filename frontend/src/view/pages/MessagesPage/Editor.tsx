@@ -100,11 +100,11 @@ const Editor: React.SFC<Props> = (props) => {
       const { form_data } = props?.uploadLink
       const data = new FormData()
 
-      data.append('file', file, file?.name)
-
       for (let key in form_data) {
         data.append(key, form_data[key])
       }
+
+      data.append('file', file, file?.name)
 
       props.onSetAttachment({
         link: props?.uploadLink.link,
