@@ -268,7 +268,8 @@ const Message: React.SFC<Props> = (props) => {
     if (uploadedFile && uploadedFile[0]) {
       onGetMessageUploadLink({
         host: props.currentNode.host,
-        value: uploadedFile[0].type
+        content_type: uploadedFile[0].type,
+        file_name: uploadedFile[0].name,
       })
       setFile(uploadedFile[0])
     }

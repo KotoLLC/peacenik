@@ -24,7 +24,7 @@ const getProfileSucces = (payload: ApiTypes.Profile.UserProfile) => ({
   payload
 })
 
-const getUploadLinkRequest = (payload: string) => ({
+const getUploadLinkRequest = (payload: ApiTypes.Profile.UploadLinkRequest) => ({
   type: Types.GET_UPLOAD_LINK_REQUEST,
   payload,
 })

@@ -30,7 +30,7 @@ interface Props {
   userEmail: string
   userAvatar: string
   uploadLink: ApiTypes.UploadLink | null
-  onGetUploadLink: (value: string) => void
+  onGetUploadLink: (value: ApiTypes.Profile.UploadLinkRequest) => void
   onSetAvatar: (data: ApiTypes.Profile.Avatar) => void
   onEditProfile: (data: ApiTypes.Profile.EditProfile) => void
   onGetProfile: () => void
@@ -122,7 +122,10 @@ class UserProfile extends React.PureComponent<Props, State> {
 
     const file = event.target.files
     if (file && file[0]) {
-      onGetUploadLink(file[0].type)
+      onGetUploadLink({
+        content_type: file[0].type,
+        file_name: file[0].name,
+      })
       this.setState({
         file: file[0],
       })
@@ -238,7 +241,7 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
 
 type DispatchProps = Pick<Props, 'onGetUploadLink' | 'onSetAvatar' | 'onEditProfile' | 'onGetProfile'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onGetUploadLink: (value: string) => dispatch(Actions.profile.getUploadLinkRequest(value)),
+  onGetUploadLink: (value: ApiTypes.Profile.UploadLinkRequest) => dispatch(Actions.profile.getUploadLinkRequest(value)),
   onSetAvatar: (data: ApiTypes.Profile.Avatar) => dispatch(Actions.profile.setAvatarRequest(data)),
   onEditProfile: (data: ApiTypes.Profile.EditProfile) => dispatch(Actions.profile.editProfileRequest(data)),
   onGetProfile: () => dispatch(Actions.profile.getProfileRequest()),

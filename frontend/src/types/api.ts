@@ -48,6 +48,11 @@ export declare namespace ApiTypes {
       avatar_changed?: boolean
       avatar_id?: string
     }
+
+    export interface UploadLinkRequest {
+      content_type: string
+      file_name: string
+    }
   }
 
   export namespace Friends {
@@ -209,7 +214,8 @@ export declare namespace ApiTypes {
 
     export interface UploadLinkRequest {
       host: string,
-      value: string
+      content_type: string
+      file_name: string
     }
 
     export interface Attachment {

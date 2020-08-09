@@ -114,7 +114,8 @@ export default {
       }
     }
     return await axiosInstance.post(`${data.host}/rpc.BlobService/UploadLink`, {
-      'content_type': data.value
+      'content_type': data.content_type,
+      'file_name': data.file_name,
     }, config).then(response => {
       return response
     }).catch(error => ({ error }))
