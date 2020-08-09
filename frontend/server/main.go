@@ -31,6 +31,8 @@ func main() {
 		apiEndpoint = "http://localhost:12001"
 	}
 
+	apiEndpoint = cleanPublicURL(apiEndpoint)
+
 	rootDir, err := filepath.Abs("build")
 	if err != nil {
 		log.Fatalln(err)
@@ -159,4 +161,16 @@ func (l *IndexLoader) GetIndexContent() ([]byte, error) {
 	l.lastSize = stat.Size()
 	l.lastModTime = stat.ModTime()
 	return l.content, l.lastErr
+}
+
+func cleanPublicURL(url string) string {
+	if url == "" {
+		return ""
+	}
+
+	url = strings.TrimSuffix(url, "/")
+	if !strings.HasPrefix(url, "https://") && !strings.HasPrefix(url, "http://") {
+		url = "https://" + url
+	}
+	return url
 }
