@@ -45,6 +45,13 @@ func (s *tokenService) PostMessage(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 	if err != nil {
 		return nil, err
 	}
+
+	if len(nodes) == 0 {
+		return &rpc.TokenPostMessageResponse{
+			Tokens: nil,
+		}, nil
+	}
+
 	sort.Slice(nodes, func(i, j int) bool {
 		if nodes[i].MinDistance < nodes[j].MinDistance {
 			return true
@@ -61,8 +68,10 @@ func (s *tokenService) PostMessage(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 		return nodes[i].Node.Address < nodes[j].Node.Address
 	})
 
-	if len(nodes) > 1 {
-		nodes = nodes[:1]
+	nodes = nodes[:1]
+	err = s.repos.Node.AssignUserToNode(user.ID, nodes[0].Node.ID)
+	if err != nil {
+		return nil, err
 	}
 
 	friends, err := s.repos.Friend.Friends(user)
@@ -97,11 +106,6 @@ func (s *tokenService) PostMessage(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 
 func (s *tokenService) GetMessages(ctx context.Context, _ *rpc.Empty) (*rpc.TokenGetMessagesResponse, error) {
 	user := s.getUser(ctx)
-
-	nodes, err := s.repos.Node.ConnectedNodes(user)
-	if err != nil {
-		return nil, err
-	}
 	tokens := make(map[string]string)
 	exp := time.Now().Add(s.tokenDuration)
 
@@ -114,20 +118,21 @@ func (s *tokenService) GetMessages(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 	for i, u := range friends {
 		userIDs[i+1] = u.ID
 	}
-	sort.Slice(userIDs, func(i, j int) bool {
-		return userIDs[i] < userIDs[j]
-	})
+	userNodes, err := s.repos.Node.UserNodes(userIDs)
+	if err != nil {
+		return nil, err
+	}
 
-	for _, node := range nodes {
+	for nodeAddress, nodeUserIDs := range userNodes {
 		claims := map[string]interface{}{
-			"node":  node.Node.Address,
-			"users": userIDs,
+			"node":  nodeAddress,
+			"users": nodeUserIDs,
 		}
 		nodeToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "get-messages", exp, claims)
 		if err != nil {
 			return nil, merry.Wrap(err)
 		}
-		tokens[node.Node.Address] = nodeToken
+		tokens[nodeAddress] = nodeToken
 	}
 	return &rpc.TokenGetMessagesResponse{
 		Tokens: tokens,

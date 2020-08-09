@@ -2,6 +2,7 @@ package repo
 
 import (
 	"database/sql"
+	"sort"
 	"time"
 
 	"github.com/ansel1/merry"
@@ -24,7 +25,7 @@ type Node struct {
 	PostLimit     int          `db:"post_limit"`
 }
 
-type UserNode struct {
+type ConnectedNode struct {
 	Node        Node
 	MinDistance int
 	Count       int
@@ -38,8 +39,10 @@ type NodeRepo interface {
 	Node(nodeID string) (*Node, error)
 	ApproveNode(nodeID string) error
 	RemoveNode(nodeID string) error
-	ConnectedNodes(user User) ([]UserNode, error)
+	ConnectedNodes(user User) ([]ConnectedNode, error)
 	SetNodePostLimit(nodeAdminID, nodeID string, postLimit int) error
+	AssignUserToNode(userID, nodeID string) error
+	UserNodes(userIDs []string) (map[string][]string, error)
 }
 
 type nodeRepo struct {
@@ -143,14 +146,24 @@ func (r *nodeRepo) ApproveNode(nodeID string) error {
 }
 
 func (r *nodeRepo) RemoveNode(nodeID string) error {
-	_, err := r.db.Exec(`
-		delete from nodes
-		where id = $1`,
-		nodeID)
-	return merry.Wrap(err)
+	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+		_, err := tx.Exec(`
+			delete from user_nodes
+			where node_id = $1`,
+			nodeID)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+
+		_, err = tx.Exec(`
+			delete from nodes
+			where id = $1`,
+			nodeID)
+		return merry.Wrap(err)
+	})
 }
 
-func (r *nodeRepo) ConnectedNodes(user User) (userNodes []UserNode, err error) {
+func (r *nodeRepo) ConnectedNodes(user User) (connectedNodes []ConnectedNode, err error) {
 	type friend struct {
 		MinDistance int
 		Count       int
@@ -208,11 +221,11 @@ func (r *nodeRepo) ConnectedNodes(user User) (userNodes []UserNode, err error) {
 		return nil, merry.Wrap(err)
 	}
 
-	userNodes = make([]UserNode, 0, 10)
+	connectedNodes = make([]ConnectedNode, 0, 10)
 	for _, node := range nodes {
 		if friend, ok := friends[node.AdminID]; ok && (node.PostLimit <= 0 || friend.MinDistance < node.PostLimit) {
 			node.Address = common.CleanPublicURL(node.Address)
-			userNodes = append(userNodes, UserNode{
+			connectedNodes = append(connectedNodes, ConnectedNode{
 				Node:        node,
 				MinDistance: friend.MinDistance,
 				Count:       friend.Count,
@@ -220,7 +233,7 @@ func (r *nodeRepo) ConnectedNodes(user User) (userNodes []UserNode, err error) {
 		}
 	}
 
-	return userNodes, nil
+	return connectedNodes, nil
 }
 
 func (r *nodeRepo) SetNodePostLimit(nodeAdminID, nodeID string, postLimit int) error {
@@ -234,4 +247,47 @@ func (r *nodeRepo) SetNodePostLimit(nodeAdminID, nodeID string, postLimit int) e
 		where id = $2 and admin_id = $3`,
 		postLimit, nodeID, nodeAdminID)
 	return merry.Wrap(err)
+}
+
+func (r *nodeRepo) AssignUserToNode(userID, nodeID string) error {
+	now := common.CurrentTimestamp()
+	_, err := r.db.Exec(`
+			insert into user_nodes(user_id, node_id, created_at, updated_at)
+			values($1, $2, $3, $4)
+			on conflict (user_id, node_id) do update set updated_at = $4;`,
+		userID, nodeID, now, now)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+	return nil
+}
+
+func (r *nodeRepo) UserNodes(userIDs []string) (map[string][]string, error) {
+	query, args, err := sqlx.In(`
+		select un.user_id, n.address node_address
+		from user_nodes un
+			inner join nodes n on n.id = un.node_id
+		where un.user_id in (?)`, userIDs)
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+	query = r.db.Rebind(query)
+	var nodes []struct {
+		UserID      string `db:"user_id"`
+		NodeAddress string `db:"node_address"`
+	}
+	err = r.db.Select(&nodes, query, args...)
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+	result := make(map[string][]string)
+	for _, node := range nodes {
+		result[node.NodeAddress] = append(result[node.NodeAddress], node.UserID)
+	}
+	for _, nodeUserIDs := range result {
+		sort.Slice(nodeUserIDs, func(i, j int) bool {
+			return nodeUserIDs[i] < nodeUserIDs[j]
+		})
+	}
+	return result, nil
 }
