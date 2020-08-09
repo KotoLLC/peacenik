@@ -185,7 +185,7 @@ export default {
       }
     }
     return await axiosInstance.post(`${data.host}/rpc.MessageService/CommentLikes`, {
-      'message_id': data.id
+      'comment_id': data.id
     }, config).then(response => {
       return response
     }).catch(error => ({ error }))

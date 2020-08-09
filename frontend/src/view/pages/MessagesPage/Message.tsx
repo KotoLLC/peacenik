@@ -133,7 +133,8 @@ const Message: React.SFC<Props> = (props) => {
       currentMessageLikes.likes.length && currentMessageLikes.likes.forEach((item, counter) => {
         
         if (counter < 15) {
-          usersLikes += `${item.user_name}, `
+          const comma = ((currentMessageLikes.likes.length - 1) === counter) ? '' : ', '
+          usersLikes += `${item.user_name}${comma}`
         } 
 
         if (counter === 15) {
