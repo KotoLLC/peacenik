@@ -1,11 +1,7 @@
 name: push to prod
 
-on:
-  workflow_dispatch:
-    inputs:
-      goodLuck:
-        description: 'Wish me luch'     
-        required: true
+on: workflow_dispatch
+
 jobs:
   deploy:
     runs-on: [ubuntu-latest]
