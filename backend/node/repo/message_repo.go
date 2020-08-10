@@ -48,6 +48,7 @@ type MessageRepo interface {
 	DeleteMessage(userID, messageID string) error
 	Comments(currentUserID string, messageIDs []string) (map[string][]Message, error)
 	LikeMessage(userID, messageID string) (likes int, err error)
+	MessagesLikes(messageIDs []string) (likes map[string][]MessageLike, err error)
 	MessageLikes(messageID string) (likes []MessageLike, err error)
 }
 
@@ -314,16 +315,45 @@ func (r *messageRepo) LikeMessage(userID, messageID string) (likes int, err erro
 	return likes, nil
 }
 
-func (r *messageRepo) MessageLikes(messageID string) (likes []MessageLike, err error) {
-	err = r.db.Select(&likes, `
+func (r *messageRepo) MessagesLikes(messageIDs []string) (likes map[string][]MessageLike, err error) {
+	var plainLikes []MessageLike
+	query, args, err := sqlx.In(`
 		select ml.message_id, ml.user_id, u.name user_name, ml.created_at
 		from message_likes ml
 			inner join users u on u.id = ml.user_id
-		where ml.message_id = $1
-		order by ml.created_at`,
-		messageID)
+		where ml.message_id in (?)
+		order by ml.message_id, ml.created_at`, messageIDs)
 	if err != nil {
 		return nil, merry.Wrap(err)
 	}
+	query = r.db.Rebind(query)
+
+	err = r.db.Select(&plainLikes, query, args...)
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+	if len(plainLikes) == 0 {
+		return nil, nil
+	}
+	likes = make(map[string][]MessageLike)
+	for _, like := range plainLikes {
+		likes[like.MessageID] = append(likes[like.MessageID], like)
+	}
+	return likes, nil
+}
+
+func (r *messageRepo) MessageLikes(messageID string) (likes []MessageLike, err error) {
+	allLikes, err := r.MessagesLikes([]string{messageID})
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+	if len(allLikes) == 0 {
+		return nil, nil
+	}
+
+	for _, messageLikes := range allLikes {
+		return messageLikes, nil
+	}
+
 	return likes, nil
 }

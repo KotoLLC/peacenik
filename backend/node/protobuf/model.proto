@@ -6,6 +6,18 @@ option go_package = "../rpc";
 message Empty {
 }
 
+message User {
+    string id = 1;
+    string name = 2;
+}
+
+message MessageLike {
+    string message_id = 1;
+    string user_id = 2;
+    string user_name = 3;
+    string liked_at = 4;
+}
+
 message Message {
     string id = 1;
     string user_id = 2;
@@ -20,6 +32,7 @@ message Message {
     bool liked_by_me = 11;
 
     repeated Message comments = 12;
+    repeated MessageLike liked_by = 13;
 }
 
 message Notification {

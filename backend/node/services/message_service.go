@@ -206,6 +206,22 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 		rpcMessageMap[msg.ID] = rpcMessages[i]
 	}
 
+	allLikes, err := s.repos.Message.MessagesLikes(messageIDs)
+	if err != nil {
+		return nil, err
+	}
+	for msgID, likes := range allLikes {
+		rpcLikes := make([]*rpc.MessageLike, len(likes))
+		for i, like := range likes {
+			rpcLikes[i] = &rpc.MessageLike{
+				UserId:   like.UserID,
+				UserName: like.UserName,
+				LikedAt:  common.TimeToRPCString(like.CreatedAt),
+			}
+		}
+		rpcMessageMap[msgID].LikedBy = rpcLikes
+	}
+
 	comments, err := s.repos.Message.Comments(user.ID, messageIDs)
 	if err != nil {
 		return nil, err
