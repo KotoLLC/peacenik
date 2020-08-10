@@ -17,10 +17,7 @@ export function* watchConfirmUser(action: { type: string, payload: ApiTypes.Toke
   const response = yield API.registration.confirmUser(action.payload)
   
   if (response.status === 200) {
-    localStorage.setItem('kotoIsLogged', 'true')
-    yield put(Actions.profile.getProfileRequest())
-    yield put(Actions.authorization.getAuthTokenRequest())
-    yield put(Actions.authorization.loginSucces())
+    yield put(Actions.registration.confirmUserSucces())
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }

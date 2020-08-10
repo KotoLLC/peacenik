@@ -20,13 +20,14 @@ import {
 interface Props extends RouteComponentProps {
   isLogged: boolean
   isEmailConfirmed: boolean
+  isConfirmUserSuccess: boolean
   onLogout: () => void
   onSendConfirmLink: () => void
   onUserConfirm: (data: ApiTypes.Token) => void
 }
 
 export const ConfirmUser: React.SFC<Props> = React.memo((props) => {
-  const {isEmailConfirmed, isLogged, history} = props
+  const {isEmailConfirmed, isLogged, history, isConfirmUserSuccess} = props
   
   const onLogoutClick = () => {
     props.onLogout()
@@ -40,7 +41,12 @@ export const ConfirmUser: React.SFC<Props> = React.memo((props) => {
     if (isEmailConfirmed === true) {
       history.push('/messages')
     }
-  }, [isLogged, history, isEmailConfirmed])
+
+    if (isConfirmUserSuccess === true) {
+      onLogoutClick()
+    }
+
+  }, [isLogged, history, isEmailConfirmed, isConfirmUserSuccess])
 
   const url = props.location.search
   const params = queryString.parse(url)
@@ -83,10 +89,11 @@ export const ConfirmUser: React.SFC<Props> = React.memo((props) => {
   )
 })
 
-type StateProps = Pick<Props, 'isLogged' | 'isEmailConfirmed'>
+type StateProps = Pick<Props, 'isLogged' | 'isEmailConfirmed' | 'isConfirmUserSuccess'>
 const mapStateToProps = (state): StateProps => ({
   isLogged: selectors.authorization.isLogged(state),
   isEmailConfirmed: selectors.profile.isEmailConfirmed(state) || false,
+  isConfirmUserSuccess: selectors.registration.isConfirmUserSuccess(state),
 })
 
 type DispatchProps = Pick<Props, 'onLogout' | 'onSendConfirmLink' | 'onUserConfirm'>

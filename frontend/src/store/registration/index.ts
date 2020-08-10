@@ -3,11 +3,13 @@ import { Types } from './actions'
 export interface State {
   registrationErrorMessage: string
   isRegisterSuccess: boolean
+  isConfirmUserSuccess: boolean
 }
 
 const initialState: State = {
   registrationErrorMessage: '',
-  isRegisterSuccess: false
+  isRegisterSuccess: false,
+  isConfirmUserSuccess: false
 } 
 
 const reducer = (state = initialState, action) => {
@@ -36,6 +38,12 @@ const reducer = (state = initialState, action) => {
       return { ...state, ...{ 
         isRegisterSuccess: false,
         registrationErrorMessage: ''
+      } }
+    }
+    
+    case Types.CONFIRM_USER_SUCCESS: {
+      return { ...state, ...{ 
+        isConfirmUserSuccess: true
       } }
     }
     
