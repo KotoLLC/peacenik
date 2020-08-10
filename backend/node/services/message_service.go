@@ -601,7 +601,7 @@ func (s *messageService) LikeMessage(ctx context.Context, r *rpc.MessageLikeMess
 	if err != nil {
 		return nil, err
 	}
-	err = s.repos.Notification.AddNotification(msg.UserID, user.Name+" waved at you", "message/like", map[string]interface{}{
+	err = s.repos.Notification.AddNotification(msg.UserID, user.Name+" liked your post", "message/like", map[string]interface{}{
 		"user_id":    user.ID,
 		"message_id": msg.ID,
 	})
@@ -634,7 +634,7 @@ func (s *messageService) LikeComment(ctx context.Context, r *rpc.MessageLikeComm
 	if err != nil {
 		return nil, err
 	}
-	err = s.repos.Notification.AddNotification(comment.UserID, user.Name+" waved at you", "comment/like", map[string]interface{}{
+	err = s.repos.Notification.AddNotification(comment.UserID, user.Name+" liked your comment", "comment/like", map[string]interface{}{
 		"user_id":    user.ID,
 		"message_id": comment.ParentID,
 		"comment_id": comment.ID,
