@@ -15,13 +15,13 @@ import (
 
 const (
 	confirmFrontendPath = "/confirm-user?token=%s"
-	confirmEmailSubject = "Please validate your KOTO account"
-	confirmEmailBody    = `<p>To complete your account sign-up, please click on the link below to confirm your email:</p>
-<p><a href="%s" target="_blank">%s</a></p>`
+	confirmEmailSubject = "Please confirm your KOTO account"
+	confirmEmailBody    = `Hi there!<p>Thanks for registering.</p>Please click the link below to confirm your account:</p>
+<p><a href="%s" target="_blank">Click here</a>.</p><p>Thanks!</p>`
 
 	registerFrontendPath = "/registration?email=%s&invite=%s"
-	inviteEmailBody      = `<p>To accept the invitation, please click on the link below to register on KOTO:</p>
-<p><a href="%s" target="_blank">%s</a></p>`
+	inviteEmailBody      = `<p>To accept the invitation, click on the link below, register, and visit the friends page:</p>
+<p><a href="%s" target="_blank">Click here</a>.</p><p>Thanks!</p>`
 )
 
 type Confirmation struct {
