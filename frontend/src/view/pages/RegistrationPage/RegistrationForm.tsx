@@ -20,7 +20,7 @@ import {
   Header, 
 } from './styles'
 
-type FieldsType = 'name' | 'password' | 'email' | ''
+type FieldsType = 'username' | 'password' | 'email' | ''
 
 export interface Props extends RouteComponentProps {
   registrationErrorMessage: string
@@ -30,7 +30,7 @@ export interface Props extends RouteComponentProps {
 }
 
 interface State {
-  name: string
+  username: string
   email: string
   password: string
   isPasswordVisible: boolean
@@ -42,7 +42,7 @@ interface State {
 export class RegistrationForm extends React.PureComponent<Props, State> {
 
   state = {
-    name: '',
+    username: '',
     email: '',
     password: '',
     isPasswordVisible: false,
@@ -72,7 +72,7 @@ export class RegistrationForm extends React.PureComponent<Props, State> {
 
   onNameChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     this.setState({
-      name: event.currentTarget.value.trim(),
+      username: event.currentTarget.value.trim(),
       errorMessage: '',
     })
   }
@@ -98,12 +98,12 @@ export class RegistrationForm extends React.PureComponent<Props, State> {
   }
 
   onValidate = (): boolean => {
-    const { password, name, email } = this.state
+    const { password, username, email } = this.state
     
-    if (!validate.isUserNameValid(name)) {
+    if (!validate.isUserNameValid(username)) {
       this.setState({
-        errorMessage: 'Name is incorrect',
-        noValideField: 'name',
+        errorMessage: 'Your username contains invalid characters, allowed: a-z A-Z 0-9 @ . -',
+        noValideField: 'username',
       })
       return false
     }
@@ -129,7 +129,7 @@ export class RegistrationForm extends React.PureComponent<Props, State> {
 
   onFormSubmit = (event: FormEvent) => {
     event.preventDefault()
-    const { name, password, email } = this.state
+    const { username, password, email } = this.state
     const { onRegisterUser } = this.props
 
     if (!this.onValidate()) return
@@ -140,7 +140,7 @@ export class RegistrationForm extends React.PureComponent<Props, State> {
       noValideField: '',
     })
 
-    onRegisterUser({ name, password, email })
+    onRegisterUser({ name: username, password, email })
   }
 
   componentWillUnmount() {
@@ -150,7 +150,7 @@ export class RegistrationForm extends React.PureComponent<Props, State> {
   render() {
     const {
       password,
-      name,
+      username,
       email,
       isPasswordVisible,
       isRequest,
@@ -167,16 +167,16 @@ export class RegistrationForm extends React.PureComponent<Props, State> {
         <FormWrapper onSubmit={this.onFormSubmit}>
           <FormControlStyled variant="outlined">
             <InputLabel
-              htmlFor="name"
-              color={(noValideField === 'name') ? 'secondary' : 'primary'}
-            >Name</InputLabel>
+              htmlFor="username"
+              color={(noValideField === 'username') ? 'secondary' : 'primary'}
+            >User Name</InputLabel>
             <OutlinedInput
-              id="name"
+              id="username"
               type={'text'}
-              value={name}
-              error={(noValideField === 'name') ? true : false}
+              value={username}
+              error={(noValideField === 'username') ? true : false}
               onChange={this.onNameChange}
-              labelWidth={42}
+              labelWidth={80}
             />
           </FormControlStyled>
           <FormControlStyled variant="outlined">
@@ -231,19 +231,19 @@ export class RegistrationForm extends React.PureComponent<Props, State> {
         </FormWrapper>
         <FooterMenu menuItems={[
           {
-            name: 'Login for Koto',
+            title: 'Login for Koto',
             to: '/login'
           },
           {
-            name: 'About Koto',
+            title: 'About Koto',
             to: '/about-us',
           },
           {
-            name: 'Code of conduct',
+            title: 'Code of conduct',
             to: '/docs/code-of-conduct'
           },
           {
-            name: 'Contact us',
+            title: 'Contact us',
             to: '/',
             disabled: true
           },

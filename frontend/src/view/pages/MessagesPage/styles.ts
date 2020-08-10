@@ -99,8 +99,8 @@ export const UserNameWrapper = styled.div`
   
 `
 
-export const UserName = styled(Link)`
-  cursor: pointer;
+export const UserName = styled.span`
+  font-weight: bold;
 `
 
 export const MessageDate = styled.div`

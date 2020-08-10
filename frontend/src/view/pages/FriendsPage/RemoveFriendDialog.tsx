@@ -34,7 +34,7 @@ const RemoveFriendDialog: React.SFC<Props> = (props) => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitleStyled id="alert-dialog-title">You really want to remove {capitalizeFirstLetter(user.name)} from friends?</DialogTitleStyled>
+        <DialogTitleStyled id="alert-dialog-title">Are you sure you'd like to remove {capitalizeFirstLetter(user.name)} from your friend's list?</DialogTitleStyled>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>
             Cancel

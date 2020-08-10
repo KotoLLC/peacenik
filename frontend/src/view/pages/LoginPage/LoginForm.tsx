@@ -14,10 +14,10 @@ import { FormWrapper, FormControlStyled, ButtonStyled, ContainerStyled, Header }
 import { ApiTypes } from 'src/types'
 import { RouteComponentProps } from 'react-router-dom'
 
-type FieldsType = 'name' | 'password' | ''
+type FieldsType = 'username' | 'password' | ''
 
 interface State {
-  name: string
+  username: string
   password: string
   isPasswordVisible: boolean
   isRequest: boolean
@@ -35,7 +35,7 @@ export interface Props extends RouteComponentProps {
 export class LoginForm extends React.PureComponent<Props, State> {
 
   state = {
-    name: '',
+    username: '',
     password: '',
     isPasswordVisible: false,
     isRequest: false,
@@ -59,7 +59,7 @@ export class LoginForm extends React.PureComponent<Props, State> {
 
   onEmailChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     this.setState({
-      name: event.currentTarget.value.trim()
+      username: event.currentTarget.value.trim()
     })
   }
 
@@ -76,12 +76,12 @@ export class LoginForm extends React.PureComponent<Props, State> {
   }
 
   onValidate = (): boolean => {
-    const { password, name } = this.state
+    const { password, username } = this.state
 
-    if (!validate.isUserNameValid(name)) {
+    if (!validate.isUserNameValid(username)) {
       this.setState({
-        errorMessage: 'Name or email are incorrect',
-        noValideField: 'name',
+        errorMessage: 'User Name / email is incorrect',
+        noValideField: 'username',
       })
       return false
     }
@@ -99,7 +99,7 @@ export class LoginForm extends React.PureComponent<Props, State> {
 
   onFormSubmit = (event: FormEvent) => {
     event.preventDefault()
-    const { name, password } = this.state
+    const { username, password } = this.state
     const { onLogin } = this.props
 
     if (!this.onValidate()) return
@@ -110,7 +110,7 @@ export class LoginForm extends React.PureComponent<Props, State> {
       noValideField: '',
     })
 
-    onLogin({ name, password })
+    onLogin({ name: username, password })
   }
 
   componentWillUnmount() {
@@ -120,7 +120,7 @@ export class LoginForm extends React.PureComponent<Props, State> {
   render() {
     const {
       password,
-      name,
+      username,
       isPasswordVisible,
       isRequest,
       errorMessage,
@@ -136,16 +136,16 @@ export class LoginForm extends React.PureComponent<Props, State> {
         <FormWrapper onSubmit={this.onFormSubmit}>
           <FormControlStyled variant="outlined">
             <InputLabel 
-              htmlFor="name"
-              color={(noValideField === 'name') ? 'secondary' : 'primary'}
-              >Name / Email</InputLabel>
+              htmlFor="username"
+              color={(noValideField === 'username') ? 'secondary' : 'primary'}
+              >User Name / Email</InputLabel>
             <OutlinedInput
-              id="name"
+              id="username"
               type={'text'}
-              value={name}
-              error={(noValideField === 'name') ? true : false}
+              value={username}
+              error={(noValideField === 'username') ? true : false}
               onChange={this.onEmailChange}
-              labelWidth={98}
+              labelWidth={135}
             />
           </FormControlStyled>
           <FormControlStyled variant="outlined">
@@ -186,24 +186,24 @@ export class LoginForm extends React.PureComponent<Props, State> {
         </FormWrapper>
         <FooterMenu menuItems={[
           {
-            name: 'Forgotten password',
+            title: 'Forgotten password',
             to: '/',
             disabled: true,
           },
           {
-            name: 'Register for Koto',
+            title: 'Register for Koto',
             to: '/registration',
           },
           {
-            name: 'About Koto',
+            title: 'About Koto',
             to: '/about-us',
           },
           {
-            name: 'Code of conduct',
+            title: 'Code of conduct',
             to: '/docs/code-of-conduct'
           },
           {
-            name: 'Contact us',
+            title: 'Contact us',
             to: '/',
             disabled: true
           },

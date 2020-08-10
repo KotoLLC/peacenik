@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { v4 as uuidv4 } from 'uuid'
 
 interface MenuItem {
-  name: string
+  title: string
   to: string
   disabled?: boolean
 }
@@ -18,9 +18,9 @@ export const FooterMenu: React.SFC<Props> = React.memo((props) => {
 
   const renderItem = (item: MenuItem) => {
     if (item.disabled) {
-      return <DisabledLink key={uuidv4()}>{item.name}</DisabledLink>
+      return <DisabledLink key={uuidv4()}>{item.title}</DisabledLink>
     } else {
-      return <LinkStyled key={uuidv4()} to={item.to}>{item.name}</LinkStyled>
+      return <LinkStyled key={uuidv4()} to={item.to}>{item.title}</LinkStyled>
     }
   }
 

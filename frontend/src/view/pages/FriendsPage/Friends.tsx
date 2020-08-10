@@ -186,7 +186,7 @@ class Friends extends React.Component<Props, State> {
           </Paper>
         </UsersWrapper>
         <ContentWrapper>
-          <ContainerTitle>{(selectedFriendName) ? `${selectedFriendName}\`s common friends` : 'Title'}</ContainerTitle>
+          <ContainerTitle>{(selectedFriendName) ? `${selectedFriendName}\`s friends` : 'Title'}</ContainerTitle>
           <Divider />
           {selectedFriendId && (this.mapPotentialFriendsList(selectedFriendId, friends))}
         </ContentWrapper>
