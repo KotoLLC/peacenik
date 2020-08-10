@@ -9,6 +9,7 @@ import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive'
 import { history } from '@view/routes'
 import selectors from '@selectors/index'
 import { StoreTypes } from 'src/types'
+import logo from './../../assets/images/logo-white.png'
 import { 
   TooltipStyle, 
   IconButtonStyled, 
@@ -16,6 +17,7 @@ import {
   TopBarRightSide,
   NotificationsCounter,
   NotificationsWrapper,
+  Logo,
 } from './styles'
 
 interface Props {
@@ -34,7 +36,9 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
   return (
     <AppBar position="fixed" color="primary">
       <Toolbar>
-        <LogoWrapper to="/messages">Koto</LogoWrapper>
+        <LogoWrapper to="/messages">
+          <Logo src={logo}/>
+        </LogoWrapper>
         <TopBarRightSide>
           {Boolean(notificationLength) && <NotificationsWrapper to="/notifications">
             <NotificationsActiveIcon fontSize="small"/>

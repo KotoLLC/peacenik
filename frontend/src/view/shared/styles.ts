@@ -28,6 +28,12 @@ export const LogoWrapper = styled(Link)`
   color: #fff;
 `
 
+export const Logo = styled.img`
+  max-height: 42px;
+  position: relative;
+  top: 3px;
+`
+
 export const ListItemIconStyled = styled(ListItemIcon)`
   && {
     min-width: 40px;
