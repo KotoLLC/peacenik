@@ -3,6 +3,7 @@ version: "3.7"
 services:
   node:
     image: k0t0/node:latest
+    restart: on-failure
     volumes:
       - ${VOLUME_NODE}:/data
     ports:
@@ -21,12 +22,12 @@ services:
       KOTO_S3_KEY: ${KOTO_S3_KEY}
       KOTO_S3_SECRET: ${KOTO_S3_SECRET}
       KOTO_S3_BUCKET: ${KOTO_S3_BUCKET}
-    restart: on-failure
     depends_on:
       - db
 
   db:
     image: postgres:12.3
+    restart: unless-stopped
     volumes:
       - ${VOLUME_DB}:/var/lib/postgresql/data/
     environment:

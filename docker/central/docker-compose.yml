@@ -3,6 +3,7 @@ version: "3.7"
 services:
   central:
     image: k0t0/central:latest
+    restart: on-failure
     volumes:
       - ${VOLUME_CENTRAL}:/data
     ports:
@@ -27,7 +28,6 @@ services:
       KOTO_SMTP_USER: ${KOTO_SMTP_USER}
       KOTO_SMTP_PASSWORD: ${KOTO_SMTP_PASSWORD}
       KOTO_SMTP_FROM: ${KOTO_SMTP_FROM}
-    restart: on-failure
     depends_on:
       - db
 
@@ -41,6 +41,7 @@ services:
 
   db:
     image: postgres:12.3
+    restart: unless-stopped
     volumes:
       - ${VOLUME_DB}:/var/lib/postgresql/data/
     environment:
