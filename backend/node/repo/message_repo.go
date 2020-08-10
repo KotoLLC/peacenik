@@ -13,7 +13,8 @@ import (
 var (
 	ErrMessageNotFound = common.ErrNotFound.WithMessage("message not found")
 
-	maxTimestamp = time.Date(9999, 12, 31, 23, 59, 59, 999999999, time.Local)
+	maxTimestamp        = time.Date(9999, 12, 31, 23, 59, 59, 999999999, time.Local)
+	defaultMessageCount = 10
 )
 
 type Message struct {
@@ -39,7 +40,7 @@ type MessageLike struct {
 }
 
 type MessageRepo interface {
-	Messages(currentUserID string, userIDs []string, from, until time.Time) ([]Message, error)
+	Messages(currentUserID string, userIDs []string, from time.Time, count int) ([]Message, error)
 	Message(currentUserID string, messageID string) (Message, error)
 	AddMessage(parentID string, message Message) error
 	EditMessageText(userID, messageID, text string, updatedAt time.Time) error
@@ -60,9 +61,12 @@ func NewMessages(db *sqlx.DB) MessageRepo {
 	}
 }
 
-func (r *messageRepo) Messages(currentUserID string, userIDs []string, from, until time.Time) ([]Message, error) {
-	if until.IsZero() {
-		until = maxTimestamp
+func (r *messageRepo) Messages(currentUserID string, userIDs []string, from time.Time, count int) ([]Message, error) {
+	if from.IsZero() {
+		from = maxTimestamp
+	}
+	if count <= 0 {
+		count = defaultMessageCount
 	}
 
 	var messages []Message
@@ -72,8 +76,10 @@ func (r *messageRepo) Messages(currentUserID string, userIDs []string, from, unt
 		       case when exists(select * from message_likes where message_id = messages.id and user_id = ?) then true else false end liked_by_me
 		from messages
 		where user_id in (?) and parent_id is null
-			and created_at >= ? and created_at < ?
-		order by created_at, "id"`, currentUserID, userIDs, from, until)
+			and created_at < ?
+		order by created_at desc, "id"
+		limit ?`,
+		currentUserID, userIDs, from, count)
 	if err != nil {
 		return nil, merry.Wrap(err)
 	}

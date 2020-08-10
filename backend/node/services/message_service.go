@@ -163,21 +163,15 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 		userIDs[i] = rawUserID.(string)
 	}
 
-	var from, until time.Time
+	var from time.Time
 	if r.From != "" {
 		from, err = common.RPCStringToTime(r.From)
 		if err != nil {
 			return nil, twirp.InvalidArgumentError("from", err.Error())
 		}
 	}
-	if r.Until != "" {
-		until, err = common.RPCStringToTime(r.Until)
-		if err != nil {
-			return nil, twirp.InvalidArgumentError("until", err.Error())
-		}
-	}
 
-	messages, err := s.repos.Message.Messages(user.ID, userIDs, from, until)
+	messages, err := s.repos.Message.Messages(user.ID, userIDs, from, int(r.Count))
 	if err != nil {
 		return nil, err
 	}

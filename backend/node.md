@@ -57,18 +57,20 @@ Authorization: Bearer AUTH-TOKEN
 Content-Type: application/json
 
 {
-  "token":  GET-MESSAGES-TOKEN
+  "token":  GET-MESSAGES-TOKEN,
+  "count": COUNT
 }
 
 
-### Get messages from date/time (created_at >= date)
+### Get messages from date/time (created_at > date)
 POST http://localhost:12002/rpc.MessageService/Messages
 Authorization: Bearer AUTH-TOKEN
 Content-Type: application/json
 
 {
   "token":  GET-MESSAGES-TOKEN,
-  "from": "2020-07-01"
+  "from": "2020-08-09T06:36:09.308Z",
+  "count": COUNT
 }
 
 
