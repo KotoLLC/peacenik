@@ -43,7 +43,7 @@ func NewAuth(base *BaseService, sessionUserKey string, passwordHash PasswordHash
 
 func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*rpc.Empty, error) {
 	if r.Name == "" {
-		return nil, twirp.InvalidArgumentError("name", "shouldn't be empty")
+		return nil, twirp.InvalidArgumentError("username", "shouldn't be empty")
 	}
 	if r.Email == "" {
 		return nil, twirp.InvalidArgumentError("email", "shouldn't be empty")
@@ -53,7 +53,7 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 	}
 	r.Name = strings.TrimSpace(r.Name)
 	if !userNameRe.MatchString(r.Name) {
-		return nil, twirp.InvalidArgumentError("name", "is invalid")
+		return nil, twirp.InvalidArgumentError("username", "is invalid")
 	}
 
 	u, err := s.repos.User.FindUserByName(r.Name)
@@ -116,11 +116,11 @@ func (s *authService) Login(ctx context.Context, r *rpc.AuthLoginRequest) (*rpc.
 		return nil, err
 	}
 	if u == nil {
-		return nil, twirp.NewError(twirp.InvalidArgument, "invalid name or password")
+		return nil, twirp.NewError(twirp.InvalidArgument, "invalid username or password")
 	}
 
 	if !s.passwordHash.CompareHashAndPassword(u.PasswordHash, r.Password) {
-		return nil, twirp.NewError(twirp.InvalidArgument, "invalid name or password")
+		return nil, twirp.NewError(twirp.InvalidArgument, "invalid username or password")
 	}
 
 	session := s.getAuthSession(ctx)

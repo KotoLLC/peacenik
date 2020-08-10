@@ -30,7 +30,7 @@ func TestAuthService_Register_EmptyValues(t *testing.T) {
 	assert.NotNil(t, err)
 	twirpErr := err.(twirp.Error)
 	assert.Equal(t, twirp.InvalidArgument, twirpErr.Code())
-	assert.Equal(t, "name shouldn't be empty", twirpErr.Msg())
+	assert.Equal(t, "username shouldn't be empty", twirpErr.Msg())
 
 	_, err = s.Register(ctx, &rpc.AuthRegisterRequest{
 		Name:     "user1",
@@ -70,7 +70,7 @@ func TestAuthService_Register_NameWithSpaces(t *testing.T) {
 	assert.NotNil(t, err)
 	twirpErr := err.(twirp.Error)
 	assert.Equal(t, twirp.InvalidArgument, twirpErr.Code())
-	assert.Equal(t, "name is invalid", twirpErr.Msg())
+	assert.Equal(t, "username is invalid", twirpErr.Msg())
 }
 
 func TestAuthService_Register_Duplicated(t *testing.T) {
@@ -172,7 +172,7 @@ func TestAuthService_Login(t *testing.T) {
 	assert.NotNil(t, err)
 	twirpErr := err.(twirp.Error)
 	assert.Equal(t, twirp.InvalidArgument, twirpErr.Code())
-	assert.Equal(t, "invalid name or password", twirpErr.Msg())
+	assert.Equal(t, "invalid username or password", twirpErr.Msg())
 
 	session := newSession()
 	ctx := context.WithValue(te.ctx, services.ContextSession, session)
