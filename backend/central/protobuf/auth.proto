@@ -17,6 +17,7 @@ message AuthRegisterRequest {
     string name = 1;
     string email = 2;
     string password = 3;
+    string invite_token = 4;
 }
 
 message AuthLoginRequest {

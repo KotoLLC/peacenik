@@ -103,7 +103,7 @@ func (s *Server) Run() error {
 	nodeServiceHandler := rpc.NewNodeServiceServer(nodeService, rpcHooks)
 	r.Handle(nodeServiceHandler.PathPrefix()+"*", s.checkAuth(nodeServiceHandler))
 
-	inviteService := services.NewInvite(baseService)
+	inviteService := services.NewInvite(baseService, userConfirmation)
 	inviteServiceHandler := rpc.NewInviteServiceServer(inviteService, rpcHooks)
 	r.Handle(inviteServiceHandler.PathPrefix()+"*", s.checkAuth(inviteServiceHandler))
 

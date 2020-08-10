@@ -285,6 +285,7 @@ func (r *nodeRepo) UserNodes(userIDs []string) (map[string][]string, error) {
 		result[node.NodeAddress] = append(result[node.NodeAddress], node.UserID)
 	}
 	for _, nodeUserIDs := range result {
+		nodeUserIDs := nodeUserIDs
 		sort.Slice(nodeUserIDs, func(i, j int) bool {
 			return nodeUserIDs[i] < nodeUserIDs[j]
 		})

@@ -3,6 +3,7 @@ package user
 import (
 	"fmt"
 	"html"
+	"net/url"
 	"time"
 
 	"github.com/ansel1/merry"
@@ -13,9 +14,13 @@ import (
 )
 
 const (
-	frontendPath = "/confirm-user?token=%s"
-	emailSubject = "Please validate your KOTO account"
-	emailBody    = `<p>To complete your account sign-up, please click on the link below to confirm your email:</p>
+	confirmFrontendPath = "/confirm-user?token=%s"
+	confirmEmailSubject = "Please validate your KOTO account"
+	confirmEmailBody    = `<p>To complete your account sign-up, please click on the link below to confirm your email:</p>
+<p><a href="%s" target="_blank">%s</a></p>`
+
+	registerFrontendPath = "/registration?email=%s&invite=%s"
+	inviteEmailBody      = `<p>To accept the invitation, please click on the link below to register on KOTO:</p>
 <p><a href="%s" target="_blank">%s</a></p>`
 )
 
@@ -54,8 +59,26 @@ func (c *Confirmation) SendConfirmLink(user repo.User) error {
 		return merry.Wrap(err)
 	}
 
-	link := fmt.Sprintf("%s"+frontendPath, c.frontendAddress, confirmToken)
-	return c.mailSender.SendHTMLEmail([]string{user.Email}, emailSubject, fmt.Sprintf(emailBody, link, html.EscapeString(link)))
+	link := fmt.Sprintf("%s"+confirmFrontendPath, c.frontendAddress, confirmToken)
+	return c.mailSender.SendHTMLEmail([]string{user.Email}, confirmEmailSubject, fmt.Sprintf(confirmEmailBody, link, html.EscapeString(link)))
+}
+
+func (c *Confirmation) SendInviteLink(inviter repo.User, userEmail string) error {
+	if !c.mailSender.Enabled() {
+		return nil
+	}
+
+	inviteToken, err := c.tokenGenerator.Generate(inviter.ID, inviter.Name, "user-invite",
+		time.Now().Add(time.Hour*24*30*12),
+		map[string]interface{}{
+			"email": userEmail,
+		})
+	if err != nil {
+		return merry.Wrap(err)
+	}
+
+	link := fmt.Sprintf("%s"+registerFrontendPath, c.frontendAddress, url.QueryEscape(userEmail), inviteToken)
+	return c.mailSender.SendHTMLEmail([]string{userEmail}, inviter.Name+" invited you to be friends on KOTO", fmt.Sprintf(inviteEmailBody, link, html.EscapeString(link)))
 }
 
 func (c *Confirmation) Confirm(confirmToken string) error {
@@ -70,4 +93,18 @@ func (c *Confirmation) Confirm(confirmToken string) error {
 	}
 
 	return c.userRepo.ConfirmUser(userID)
+}
+
+func (c *Confirmation) ConfirmInviteToken(user repo.User, confirmToken string) error {
+	_, claims, err := c.tokenParser.Parse(confirmToken, "user-invite")
+	if err != nil {
+		return merry.Wrap(err)
+	}
+	var userEmail string
+	var ok bool
+	if userEmail, ok = claims["email"].(string); !ok || user.Email != userEmail {
+		return token.ErrInvalidToken.Here()
+	}
+
+	return c.userRepo.ConfirmUser(user.ID)
 }

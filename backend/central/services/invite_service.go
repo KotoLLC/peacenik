@@ -9,22 +9,25 @@ import (
 
 	"github.com/mreider/koto/backend/central/repo"
 	"github.com/mreider/koto/backend/central/rpc"
+	"github.com/mreider/koto/backend/central/services/user"
 	"github.com/mreider/koto/backend/common"
 )
 
 type inviteService struct {
 	*BaseService
+	userConfirmation *user.Confirmation
 }
 
-func NewInvite(base *BaseService) rpc.InviteService {
+func NewInvite(base *BaseService, userConfirmation *user.Confirmation) rpc.InviteService {
 	return &inviteService{
-		BaseService: base,
+		BaseService:      base,
+		userConfirmation: userConfirmation,
 	}
 }
 
 func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
-	if r.Friend == "" || r.Friend == user.ID || r.Friend == user.Name || r.Friend == user.Email {
+	u := s.getUser(ctx)
+	if r.Friend == "" || r.Friend == u.ID || r.Friend == u.Name || r.Friend == u.Email {
 		return nil, twirp.NewError(twirp.InvalidArgument, "")
 	}
 
@@ -34,20 +37,27 @@ func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) 
 	}
 
 	if friend != nil {
-		err = s.repos.Invite.AddInvite(user.ID, friend.ID)
+		err = s.repos.Invite.AddInvite(u.ID, friend.ID)
 		if err != nil {
 			return nil, err
 		}
-		err = s.repos.Notification.AddNotification(friend.ID, user.Name+" invited you to be friends", "invite/add", map[string]interface{}{
-			"user_id": user.ID,
+		err = s.repos.Notification.AddNotification(friend.ID, u.Name+" invited you to be friends", "invite/add", map[string]interface{}{
+			"user_id": u.ID,
 		})
 		if err != nil {
 			log.Println(err)
 		}
 	} else {
-		err = s.repos.Invite.AddInviteByEmail(user.ID, r.Friend)
+		err = s.repos.Invite.AddInviteByEmail(u.ID, r.Friend)
 		if err != nil {
 			return nil, err
+		}
+
+		if s.userConfirmation != nil {
+			err = s.userConfirmation.SendInviteLink(u, r.Friend)
+			if err != nil {
+				log.Println("can't invite by email:", err)
+			}
 		}
 	}
 
@@ -55,16 +65,16 @@ func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) 
 }
 
 func (s *inviteService) Accept(ctx context.Context, r *rpc.InviteAcceptRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
-	err := s.repos.Invite.AcceptInvite(r.InviterId, user.ID)
+	u := s.getUser(ctx)
+	err := s.repos.Invite.AcceptInvite(r.InviterId, u.ID)
 	if err != nil {
 		if merry.Is(err, repo.ErrInviteNotFound) {
 			return nil, twirp.NotFoundError(err.Error())
 		}
 		return nil, err
 	}
-	err = s.repos.Notification.AddNotification(r.InviterId, user.Name+" accepted your invite!", "invite/accept", map[string]interface{}{
-		"user_id": user.ID,
+	err = s.repos.Notification.AddNotification(r.InviterId, u.Name+" accepted your invite!", "invite/accept", map[string]interface{}{
+		"user_id": u.ID,
 	})
 	if err != nil {
 		log.Println(err)
@@ -73,16 +83,16 @@ func (s *inviteService) Accept(ctx context.Context, r *rpc.InviteAcceptRequest) 
 }
 
 func (s *inviteService) Reject(ctx context.Context, r *rpc.InviteRejectRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
-	err := s.repos.Invite.RejectInvite(r.InviterId, user.ID)
+	u := s.getUser(ctx)
+	err := s.repos.Invite.RejectInvite(r.InviterId, u.ID)
 	if err != nil {
 		if merry.Is(err, repo.ErrInviteNotFound) {
 			return nil, twirp.NotFoundError(err.Error())
 		}
 		return nil, err
 	}
-	err = s.repos.Notification.AddNotification(r.InviterId, user.Name+" rejected your invite", "invite/reject", map[string]interface{}{
-		"user_id": user.ID,
+	err = s.repos.Notification.AddNotification(r.InviterId, u.Name+" rejected your invite", "invite/reject", map[string]interface{}{
+		"user_id": u.ID,
 	})
 	if err != nil {
 		log.Println(err)
@@ -91,8 +101,8 @@ func (s *inviteService) Reject(ctx context.Context, r *rpc.InviteRejectRequest) 
 }
 
 func (s *inviteService) FromMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFromMeResponse, error) {
-	user := s.getUser(ctx)
-	invites, err := s.repos.Invite.InvitesFromMe(user)
+	u := s.getUser(ctx)
+	invites, err := s.repos.Invite.InvitesFromMe(u)
 	if err != nil {
 		return nil, err
 	}
@@ -124,8 +134,8 @@ func (s *inviteService) FromMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFr
 }
 
 func (s *inviteService) ForMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteForMeResponse, error) {
-	user := s.getUser(ctx)
-	invites, err := s.repos.Invite.InvitesForMe(user)
+	u := s.getUser(ctx)
+	invites, err := s.repos.Invite.InvitesForMe(u)
 	if err != nil {
 		return nil, err
 	}

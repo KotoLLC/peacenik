@@ -91,10 +91,20 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 	if err != nil {
 		return nil, merry.Wrap(err)
 	}
+	if u == nil {
+		return nil, twirp.NotFoundError("user not found")
+	}
 	if s.userConfirmation != nil {
-		err = s.userConfirmation.SendConfirmLink(*u)
-		if err != nil {
-			log.Printf("can't send email to %s: %s\n", u.Email, err)
+		if r.InviteToken == "" {
+			err := s.userConfirmation.SendConfirmLink(*u)
+			if err != nil {
+				log.Printf("can't send email to %s: %s\n", u.Email, err)
+			}
+		} else {
+			err := s.userConfirmation.ConfirmInviteToken(*u, r.InviteToken)
+			if err != nil {
+				log.Printf("can't confirm invite token for %s: %s\n", u.Email, err)
+			}
 		}
 	}
 	return &rpc.Empty{}, nil

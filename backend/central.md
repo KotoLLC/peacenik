@@ -74,7 +74,23 @@ Content-Type: application/json
 POST http://localhost:12001/rpc.AuthService/Register
 Content-Type: application/json
 
-{"name":  "andrey", "email": "andrey@mail.com", "password":  "12345"}
+{
+  "name":  "andrey",
+  "email": "andrey@mail.com",
+  "password":  "12345"
+}
+
+
+### Register a new invited user
+POST http://localhost:12001/rpc.AuthService/Register
+Content-Type: application/json
+
+{
+  "name":  "andrey",
+  "email": "andrey@mail.com",
+  "password":  "12345",
+  "invite_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFuZHJleTQ0QG1haWwuY29tIiwiZXhwIjoxNjI4MTYwNTczLCJpZCI6ImJlYzc5ZmFiLWE4Y2UtNDdjOC1hODI2LTQ3ZjA4YTA2ZmY2ZiIsIm5hbWUiOiJhbmRyZXkxIiwic2NvcGUiOiJ1c2VyLWludml0ZSJ9.bBItLKq8fgw8yBEYXRNb8gt6DcDa_VchU5mR_fTdBkgcU5ZkMksZsm7PN2cEgBuW50SHKlaPjTfRHXfEjEH6JF3HOVmjs-sccjrv5VbQCxv6eFkAll6udBpznLWJ4VOxdOKrq19VXE41GWaMVApOMmbzwPoAIvrZxBq9CgwyfEY"
+}
 
 
 ### Send email with confirmation link (explicitely)
