@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	defaultLinkExpiration = time.Minute * 10
+	defaultLinkExpiration = time.Minute * 30
 )
 
 type S3Storage struct {
