@@ -10,7 +10,15 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import { validate } from '@services/validation'
 import { FooterMenu } from '@view/shared/FooterMenu'
-import { FormWrapper, FormControlStyled, ButtonStyled, ContainerStyled, Header } from './styles'
+import logo from './../../../assets/images/logo-black.png'
+import { 
+  FormWrapper, 
+  FormControlStyled, 
+  ButtonStyled, 
+  ContainerStyled, 
+  Header,
+  Logo,
+ } from './styles'
 import { ApiTypes } from 'src/types'
 import { RouteComponentProps } from 'react-router-dom'
 
@@ -130,7 +138,7 @@ export class LoginForm extends React.PureComponent<Props, State> {
     return (
       <ContainerStyled maxWidth="sm">
         <Header>
-          <Typography variant="h3" gutterBottom>Koto</Typography>
+          <Logo src={logo}/>
           <Typography variant="subtitle1" gutterBottom>Koto is a safe, friendly, distributed social  network.</Typography>
         </Header>
         <FormWrapper onSubmit={this.onFormSubmit}>

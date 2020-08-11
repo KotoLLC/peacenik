@@ -36,3 +36,9 @@ export const Header = styled.div`
   padding-bottom: 30px;
   text-align: center;
 `
+
+export const Logo = styled.img`
+  max-height: 55px;
+  position: relative;
+  margin-bottom: 20px;
+`

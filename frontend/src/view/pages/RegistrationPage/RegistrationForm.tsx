@@ -1,4 +1,5 @@
 import React, { ChangeEvent, FormEvent } from 'react'
+import { RouteComponentProps } from 'react-router-dom'
 import Typography from '@material-ui/core/Typography'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
@@ -11,13 +12,14 @@ import FormHelperText from '@material-ui/core/FormHelperText'
 import { validate } from '@services/validation'
 import { FooterMenu } from '@view/shared/FooterMenu'
 import { ApiTypes } from 'src/types'
-import { RouteComponentProps } from 'react-router-dom'
+import logo from './../../../assets/images/logo-black.png'
 import { 
   FormWrapper, 
   FormControlStyled, 
   ButtonStyled, 
   ContainerStyled, 
   Header, 
+  Logo,
 } from './styles'
 
 type FieldsType = 'username' | 'password' | 'email' | ''
@@ -161,7 +163,7 @@ export class RegistrationForm extends React.PureComponent<Props, State> {
     return (
       <ContainerStyled maxWidth="sm">
         <Header>
-          <Typography variant="h3" gutterBottom>Koto</Typography>
+          <Logo src={logo}/>
           <Typography variant="subtitle1" gutterBottom>Koto is a safe, friendly, distributed social  network.</Typography>
         </Header>
         <FormWrapper onSubmit={this.onFormSubmit}>
