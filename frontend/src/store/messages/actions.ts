@@ -71,7 +71,10 @@ const getMessagesFromNodeRequest = (payload: ApiTypes.Messages.MessagesFromNode)
   payload,
 })
 
-const getMessagesFromNodeSucces = (payload: ApiTypes.Messages.Message[]) => ({
+const getMessagesFromNodeSucces = (payload: {
+  node: string
+  messages: ApiTypes.Messages.Message[]
+}) => ({
   type: Types.GET_MESSAGES_FROM_NODE_SUCCESS,
   payload
 })

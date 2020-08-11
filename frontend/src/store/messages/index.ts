@@ -6,6 +6,10 @@ export interface State {
   currentNode: CommonTypes.NodeTypes.CurrentNode
   isMessagePostedSuccess: boolean
   messages: ApiTypes.Messages.Message[]
+  nodesWithMessages: Map<string, {
+    messages: ApiTypes.Messages.Message[],
+    lastMessageDate: string | null
+  }>
   uploadLink: ApiTypes.UploadLink | null
   currentMessageLikes: ApiTypes.Messages.LikesInfoData | null
   currentCommentLikes: ApiTypes.Messages.LikesInfoData | null
@@ -19,6 +23,7 @@ const initialState: State = {
   },
   isMessagePostedSuccess: false,
   messages: [],
+  nodesWithMessages: new Map([]),
   uploadLink: null,
   currentMessageLikes: null,
   currentCommentLikes: null,
@@ -47,9 +52,23 @@ const reducer = (state = initialState, action) => {
       }
     }
     case Types.GET_MESSAGES_FROM_NODE_SUCCESS: {
+      const { messages, node } = action.payload
+
+      const addMassagesToNodesWithMessages = () => {
+        const currentNode = state.nodesWithMessages.get(node)  
+        if (currentNode) {
+          return uniqBy([...currentNode.messages, ...messages], 'id')
+        } 
+        return messages
+      }
+
       return {
         ...state, ...{ 
-          messages: uniqBy([...action.payload, ...state.messages], 'id')
+          messages: uniqBy([...messages, ...state.messages], 'id'),
+          nodesWithMessages: state.nodesWithMessages.set(node, {
+            messages: addMassagesToNodesWithMessages(),
+            lastMessageDate: messages.length ? messages[messages.length - 1]?.created_at : null
+          })
         }
       }
     }

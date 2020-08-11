@@ -35,6 +35,8 @@ export function* watchGetCurrentNode() {
 
 export function* watchGetMessagesFromNode(action: { type: string, payload: ApiTypes.Messages.MessagesFromNode }) {
   const response = yield API.messages.getMessagesFromNode(action.payload)
+  
+  // взять lastMessageDate по текущему node и вставить в запрос
 
   if (response.status === 200) {
     let resultData = []
@@ -45,8 +47,11 @@ export function* watchGetMessagesFromNode(action: { type: string, payload: ApiTy
         return item
       })
     }
-    
-    yield put(Actions.messages.getMessagesFromNodeSucces(resultData))
+
+    yield put(Actions.messages.getMessagesFromNodeSucces({
+      node: action.payload.host,
+      messages: resultData
+    }))
   } else {
     if (response.error.response.status === 400) {
       yield put(Actions.authorization.getAuthTokenRequest())

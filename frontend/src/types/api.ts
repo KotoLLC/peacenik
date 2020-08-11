@@ -177,7 +177,9 @@ export declare namespace ApiTypes {
     export interface MessagesFromNode {
       host: string,
       body: {
-        token: string,
+        token: string
+        count?: number
+        from?: string
       }
     }
 
