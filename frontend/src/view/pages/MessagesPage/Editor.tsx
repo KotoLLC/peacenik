@@ -115,6 +115,8 @@ const Editor: React.SFC<Props> = (props) => {
     }
   }, [isMessagePostedSuccess, uploadLink, file, isFileUploaded, onPostMessageSucces, props])
 
+  console.log('value', value)
+
   return (
     <MessageSticky>
       <PaperStyled>

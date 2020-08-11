@@ -112,7 +112,8 @@ export const ButtonsWrapper = styled.div`
   display: flex;
 `
 
-export const MessageContent = styled.div`
+export const MessageContent = styled.pre`
+  font-family: Raleway, Arial;
   font-size: 14px;
   margin-top: 10px;
   margin-bottom: 10px;
