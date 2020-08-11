@@ -2,7 +2,6 @@ package user
 
 import (
 	"fmt"
-	"html"
 	"net/url"
 	"time"
 
@@ -60,7 +59,7 @@ func (c *Confirmation) SendConfirmLink(user repo.User) error {
 	}
 
 	link := fmt.Sprintf("%s"+confirmFrontendPath, c.frontendAddress, confirmToken)
-	return c.mailSender.SendHTMLEmail([]string{user.Email}, confirmEmailSubject, fmt.Sprintf(confirmEmailBody, link, html.EscapeString(link)))
+	return c.mailSender.SendHTMLEmail([]string{user.Email}, confirmEmailSubject, fmt.Sprintf(confirmEmailBody, link))
 }
 
 func (c *Confirmation) SendInviteLink(inviter repo.User, userEmail string) error {
@@ -78,7 +77,7 @@ func (c *Confirmation) SendInviteLink(inviter repo.User, userEmail string) error
 	}
 
 	link := fmt.Sprintf("%s"+registerFrontendPath, c.frontendAddress, url.QueryEscape(userEmail), inviteToken)
-	return c.mailSender.SendHTMLEmail([]string{userEmail}, inviter.Name+" invited you to be friends on KOTO", fmt.Sprintf(inviteEmailBody, link, html.EscapeString(link)))
+	return c.mailSender.SendHTMLEmail([]string{userEmail}, inviter.Name+" invited you to be friends on KOTO", fmt.Sprintf(inviteEmailBody, link))
 }
 
 func (c *Confirmation) Confirm(confirmToken string) error {
