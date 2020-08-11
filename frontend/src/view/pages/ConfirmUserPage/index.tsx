@@ -21,6 +21,7 @@ interface Props extends RouteComponentProps {
   isLogged: boolean
   isEmailConfirmed: boolean
   isConfirmUserSuccess: boolean
+
   onLogout: () => void
   onSendConfirmLink: () => void
   onUserConfirm: (data: ApiTypes.Token) => void
@@ -38,12 +39,12 @@ export const ConfirmUser: React.SFC<Props> = React.memo((props) => {
       history.push('/login')
     }
 
-    if (isEmailConfirmed === true) {
-      history.push('/messages')
-    }
-
     if (isConfirmUserSuccess === true) {
       onLogoutClick()
+    }
+
+    if (isEmailConfirmed === true) {
+      history.push('/messages')
     }
 
   }, [isLogged, history, isEmailConfirmed, isConfirmUserSuccess])

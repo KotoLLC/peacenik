@@ -18,6 +18,7 @@ export function* watchConfirmUser(action: { type: string, payload: ApiTypes.Toke
   
   if (response.status === 200) {
     yield put(Actions.registration.confirmUserSucces())
+    yield put(Actions.authorization.logoutRequest())
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
