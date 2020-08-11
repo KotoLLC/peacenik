@@ -47,6 +47,12 @@ func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) 
 		if err != nil {
 			log.Println(err)
 		}
+		if s.userConfirmation != nil {
+			err = s.userConfirmation.SendInviteLinkToRegisteredUser(u, friend.Email)
+			if err != nil {
+				log.Println("can't invite by email:", err)
+			}
+		}
 	} else {
 		err = s.repos.Invite.AddInviteByEmail(u.ID, r.Friend)
 		if err != nil {
@@ -54,7 +60,7 @@ func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) 
 		}
 
 		if s.userConfirmation != nil {
-			err = s.userConfirmation.SendInviteLink(u, r.Friend)
+			err = s.userConfirmation.SendInviteLinkToUnregisteredUser(u, r.Friend)
 			if err != nil {
 				log.Println("can't invite by email:", err)
 			}

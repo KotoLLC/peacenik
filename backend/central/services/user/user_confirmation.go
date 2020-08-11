@@ -18,8 +18,12 @@ const (
 	confirmEmailBody    = `Hi there!<p>Thanks for registering.</p>Please click the link below to confirm your account:</p>
 <p><a href="%s" target="_blank">Click here</a>.</p><p>Thanks!</p>`
 
-	registerFrontendPath = "/registration?email=%s&invite=%s"
-	inviteEmailBody      = `<p>To accept the invitation, click on the link below, register, and visit the friends page:</p>
+	registerFrontendPath            = "/registration?email=%s&invite=%s"
+	inviteUnregisteredUserEmailBody = `<p>To accept the invitation, click on the link below, register, and visit the friends page:</p>
+<p><a href="%s" target="_blank">Click here</a>.</p><p>Thanks!</p>`
+
+	invitationsFrontendPath       = "/friends/invitations"
+	inviteRegisteredUserEmailBody = `<p>To accept the invitation, click on the link below, log in, and visit the friends page:</p>
 <p><a href="%s" target="_blank">Click here</a>.</p><p>Thanks!</p>`
 )
 
@@ -62,7 +66,7 @@ func (c *Confirmation) SendConfirmLink(user repo.User) error {
 	return c.mailSender.SendHTMLEmail([]string{user.Email}, confirmEmailSubject, fmt.Sprintf(confirmEmailBody, link))
 }
 
-func (c *Confirmation) SendInviteLink(inviter repo.User, userEmail string) error {
+func (c *Confirmation) SendInviteLinkToUnregisteredUser(inviter repo.User, userEmail string) error {
 	if !c.mailSender.Enabled() {
 		return nil
 	}
@@ -77,7 +81,16 @@ func (c *Confirmation) SendInviteLink(inviter repo.User, userEmail string) error
 	}
 
 	link := fmt.Sprintf("%s"+registerFrontendPath, c.frontendAddress, url.QueryEscape(userEmail), inviteToken)
-	return c.mailSender.SendHTMLEmail([]string{userEmail}, inviter.Name+" invited you to be friends on KOTO", fmt.Sprintf(inviteEmailBody, link))
+	return c.mailSender.SendHTMLEmail([]string{userEmail}, inviter.Name+" invited you to be friends on KOTO", fmt.Sprintf(inviteUnregisteredUserEmailBody, link))
+}
+
+func (c *Confirmation) SendInviteLinkToRegisteredUser(inviter repo.User, userEmail string) error {
+	if !c.mailSender.Enabled() {
+		return nil
+	}
+
+	link := fmt.Sprintf("%s"+invitationsFrontendPath, c.frontendAddress)
+	return c.mailSender.SendHTMLEmail([]string{userEmail}, inviter.Name+" invited you to be friends on KOTO", fmt.Sprintf(inviteRegisteredUserEmailBody, link))
 }
 
 func (c *Confirmation) Confirm(confirmToken string) error {
