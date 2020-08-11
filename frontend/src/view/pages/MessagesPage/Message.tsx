@@ -16,6 +16,7 @@ import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder'
 import { Player } from 'video-react'
 import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
 import Badge from '@material-ui/core/Badge'
+import noAvatar from './../../../assets/images/no-avatar.png'
 import {
   PaperStyled,
   MessageHeader,
@@ -36,6 +37,7 @@ import {
   EditorButtonsWrapper,
   UploadInput,
   CircularProgressStyled,
+  AvatarWrapper,
 } from './styles'
 
 interface Props extends ApiTypes.Messages.Message {
@@ -302,7 +304,9 @@ const Message: React.SFC<Props> = (props) => {
       <PaperStyled>
         <MessageHeader>
           <UserInfo>
-            <Avatar variant="rounded" src={avatar_thumbnail} />
+            <AvatarWrapper>
+              <Avatar variant="rounded" src={avatar_thumbnail || noAvatar} />
+            </AvatarWrapper>
             <UserNameWrapper>
               <UserName>{user_name}</UserName>
               <MessageDate>{moment(created_at).fromNow()}</MessageDate>

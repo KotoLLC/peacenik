@@ -8,6 +8,7 @@ import AttachFileIcon from '@material-ui/icons/AttachFile'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import { Player } from 'video-react'
+import noAvatar from './../../../assets/images/no-avatar.png'
 import {
   TextareaAutosizeStyled,
   ButtonSend,
@@ -19,6 +20,7 @@ import {
   EditorButtonsWrapper,
   UploadInput,
   ImagePreview,
+  AvatarWrapper,
 } from './styles'
 
 interface Props {
@@ -26,6 +28,7 @@ interface Props {
   currentNode: CommonTypes.NodeTypes.CurrentNode
   isMessagePostedSuccess: boolean
   uploadLink: ApiTypes.UploadLink | null
+  userAvatar?: string
   onMessagePost: (data: ApiTypes.Messages.PostMessage) => void
   onPostMessageSucces: (value: boolean) => void
   onGetMessageUploadLink: (data: ApiTypes.Messages.UploadLinkRequest) => void
@@ -36,7 +39,7 @@ const Editor: React.SFC<Props> = (props) => {
   const [value, onValueChange] = useState<string>('')
   const [isFileUploaded, setUploadedFile] = useState<boolean>(false)
   const [file, setFile] = useState<File | null>(null)
-  const { isMessagePostedSuccess, onPostMessageSucces, uploadLink } = props
+  const { isMessagePostedSuccess, onPostMessageSucces, uploadLink, userAvatar } = props
 
   const onMessageSend = () => {
     if (value || file) {
@@ -115,13 +118,13 @@ const Editor: React.SFC<Props> = (props) => {
     }
   }, [isMessagePostedSuccess, uploadLink, file, isFileUploaded, onPostMessageSucces, props])
 
-  console.log('value', value)
-
   return (
     <MessageSticky>
       <PaperStyled>
         <CreateWrapper>
-          <Avatar variant="rounded" />
+          <AvatarWrapper>
+            <Avatar variant="rounded" src={userAvatar || noAvatar} />
+          </AvatarWrapper>
           <EditorWrapper>
             <TextareaTitle className={value.length ? 'active' : ''}>Post a message to your friend</TextareaTitle>
             <TextareaAutosizeStyled
@@ -155,12 +158,13 @@ const Editor: React.SFC<Props> = (props) => {
   )
 }
 
-type StateProps = Pick<Props, 'authToken' | 'currentNode' | 'isMessagePostedSuccess' | 'uploadLink'>
+type StateProps = Pick<Props, 'authToken' | 'currentNode' | 'isMessagePostedSuccess' | 'uploadLink' | 'userAvatar'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   authToken: state.authorization.authToken,
   currentNode: selectors.messages.currentNode(state),
   isMessagePostedSuccess: selectors.messages.isMessagePostedSuccess(state),
   uploadLink: state.messages.uploadLink,
+  userAvatar: selectors.profile.userAvatar(state),
 })
 
 type DispatchProps = Pick<Props, 'onMessagePost' | 'onPostMessageSucces' | 'onGetMessageUploadLink' | 'onSetAttachment'>

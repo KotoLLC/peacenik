@@ -140,3 +140,12 @@ export const PreloaderViewport = styled.div`
   height: 100vh;
   background: #fff;
 `
+
+export const AvatarWrapper = styled(Link)`
+  border-radius: 50%;
+  overflow: hidden;
+  background: #bdbdbd;
+  width: 40px;
+  height: 40px;
+  margin: 0 10px;
+`

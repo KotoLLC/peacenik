@@ -199,3 +199,11 @@ export const CircularProgressStyled = styled(CircularProgress)`
     color: #fff;
   }
 `
+
+export const AvatarWrapper = styled.div`
+  border-radius: 4px;
+  overflow: hidden;
+  background: #bdbdbd;
+  width: 40px;
+  height: 40px;
+`
