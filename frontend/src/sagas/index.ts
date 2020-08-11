@@ -54,6 +54,8 @@ import {
     watchLikeComment,
     watchGetLikesForMessage,
     watchGetLikesForComment,
+    watchGetMoreMessages,
+    watchGetMoreMessagesFromNode,
 } from './messages'
 import {
     watchGetNotifications,
@@ -104,6 +106,8 @@ export function* rootSaga() {
         takeEvery(MessagesTypes.LIKE_COMMENT_REQUEST, watchLikeComment),
         takeEvery(MessagesTypes.GET_LIKES_FOR_MESSAGE_REQUEST, watchGetLikesForMessage),
         takeEvery(MessagesTypes.GET_LIKES_FOR_COMMENT_REQUEST, watchGetLikesForComment),
+        takeEvery(MessagesTypes.GET_MORE_MESSAGES_REQUEST, watchGetMoreMessages),
+        takeEvery(MessagesTypes.GET_MORE_MESSAGES_FROM_NODE_REQUEST, watchGetMoreMessagesFromNode),
         
         takeEvery(NotificationsTypes.GET_NOTIFICATIONS_REQUEST, watchGetNotifications),
         takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_CENTRAL_REQUEST, watchCleanNotificationsInCentral),

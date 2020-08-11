@@ -4,12 +4,18 @@ import { ApiTypes, CommonTypes } from 'src/types'
 export enum Types {
   GET_MESSAGES_REQUEST = 'GET_MESSAGES_REQUEST',
   GET_MESSAGES_SUCCESS = 'GET_MESSAGES_SUCCESS',
+  
+  GET_MORE_MESSAGES_REQUEST = 'GET_MORE_MESSAGES_REQUEST',
+  GET_MORE_MESSAGES_SUCCESS = 'GET_MORE_MESSAGES_SUCCESS',
 
   GET_CURRENT_NODE_REQUEST = 'GET_CURRENT_NODE_REQUEST',
   GET_CURRENT_NODE_SUCCESS = 'GET_CURRENT_NODE_SUCCESS',
 
   GET_MESSAGES_FROM_NODE_REQUEST = 'GET_MESSAGES_FROM_NODE_REQUEST',
   GET_MESSAGES_FROM_NODE_SUCCESS = 'GET_MESSAGES_FROM_NODE_SUCCESS',
+  
+  GET_MORE_MESSAGES_FROM_NODE_REQUEST = 'GET_MORE_MESSAGES_FROM_NODE_REQUEST',
+  GET_MORE_MESSAGES_FROM_NODE_SUCCESS = 'GET_MORE_MESSAGES_FROM_NODE_SUCCESS',
 
   POST_MESSAGE_REQUEST = 'POST_MESSAGE_REQUEST',
   POST_MESSAGE_SUCCESS = 'POST_MESSAGE_SUCCESS',
@@ -192,6 +198,28 @@ const getLikesForCommentSuccess = (payload: ApiTypes.Messages.LikesInfoData) => 
   payload,
 })
 
+const getMoreMessagesRequest = () => ({
+  type: Types.GET_MORE_MESSAGES_REQUEST,
+})
+
+const getMoreMessagesSucces = (payload: CommonTypes.NodeTypes.CurrentNode[]) => ({
+  type: Types.GET_MORE_MESSAGES_SUCCESS,
+  payload
+})
+
+const getMoreMessagesFromNodeRequest = (payload: ApiTypes.Messages.MessagesFromNode) => ({
+  type: Types.GET_MORE_MESSAGES_FROM_NODE_REQUEST,
+  payload,
+})
+
+const getMoreMessagesFromNodeSucces = (payload: {
+  node: string
+  messages: ApiTypes.Messages.Message[]
+}) => ({
+  type: Types.GET_MORE_MESSAGES_FROM_NODE_SUCCESS,
+  payload
+})
+
 export default {
   getMessagesRequest,
   getMessagesSucces,
@@ -223,4 +251,8 @@ export default {
   getLikesForMessageSuccess,
   getLikesForCommentRequest,
   getLikesForCommentSuccess,
+  getMoreMessagesRequest,
+  getMoreMessagesSucces,
+  getMoreMessagesFromNodeRequest,
+  getMoreMessagesFromNodeSucces,
 }

@@ -10,6 +10,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 export const ContainerStyled = styled(Container)`
   && {
     padding-top: 100px;
+    padding-bottom: 40px;
   }
 `
 
@@ -183,6 +184,13 @@ export const ImagePreview = styled.img`
 
 export const AttachmentWrapper = styled.div`
   padding-left: 60px;
+`
+
+export const PreloaderWrapper = styled.div`
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translate(-50%, 0);
 `
 
 export const CircularProgressStyled = styled(CircularProgress)`

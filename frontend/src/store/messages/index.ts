@@ -10,6 +10,7 @@ export interface State {
     messages: ApiTypes.Messages.Message[],
     lastMessageDate: string | null
   }>
+  isMoreMessageRequested: boolean
   uploadLink: ApiTypes.UploadLink | null
   currentMessageLikes: ApiTypes.Messages.LikesInfoData | null
   currentCommentLikes: ApiTypes.Messages.LikesInfoData | null
@@ -23,6 +24,7 @@ const initialState: State = {
   },
   isMessagePostedSuccess: false,
   messages: [],
+  isMoreMessageRequested: false,
   nodesWithMessages: new Map([]),
   uploadLink: null,
   currentMessageLikes: null,
@@ -51,6 +53,18 @@ const reducer = (state = initialState, action) => {
         ...state, ...{ messages: state.messages.filter(item => item.id !== action.payload.body.message_id) }
       }
     }
+    case Types.GET_MORE_MESSAGES_REQUEST: {
+      return {
+        ...state, ...{ isMoreMessageRequested: true}
+      }
+    }
+    case Types.GET_MORE_MESSAGES_SUCCESS: {
+      return {
+        ...state, ...{ 
+          messageTokens: action.payload
+        }
+      }
+    }
     case Types.GET_MESSAGES_FROM_NODE_SUCCESS: {
       const { messages, node } = action.payload
 
@@ -64,10 +78,11 @@ const reducer = (state = initialState, action) => {
 
       return {
         ...state, ...{ 
+          isMoreMessageRequested: false,
           messages: uniqBy([...messages, ...state.messages], 'id'),
           nodesWithMessages: state.nodesWithMessages.set(node, {
             messages: addMassagesToNodesWithMessages(),
-            lastMessageDate: messages.length ? messages[messages.length - 1]?.created_at : null
+            lastMessageDate: messages.length ? messages[messages.length - 1]?.updated_at : null
           })
         }
       }

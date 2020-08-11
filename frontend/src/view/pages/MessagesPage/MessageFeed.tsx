@@ -7,10 +7,12 @@ import selectors from '@selectors/index'
 import { Link } from 'react-router-dom'
 import { StoreTypes, ApiTypes, CommonTypes } from 'src/types'
 import Button from '@material-ui/core/Button'
+import CircularProgress from '@material-ui/core/CircularProgress'
 import {
   ContainerStyled,
   EmptyMessage,
   UpButton,
+  PreloaderWrapper,
 } from './styles'
 import { sortByDate } from '@services/sortByDate'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
@@ -21,9 +23,10 @@ interface Props {
   messages: ApiTypes.Messages.Message[]
   userId: string
   authToken: string
+  isMoreMessageRequested: boolean
   onGetMessages: () => void
+  onGetMoreMessages: () => void
   onGetCurrentNode: () => void
-  onGetMessagesFromNode: (data: ApiTypes.Messages.MessagesFromNode) => void
 }
 
 interface State {
@@ -42,14 +45,28 @@ class MessageFeed extends React.Component<Props, State> {
 
   componentDidMount() {
     const { onGetMessages, onGetCurrentNode, authToken } = this.props
-    
+
     if (authToken) {
       onGetMessages()
       onGetCurrentNode()
-      
+
       this.timerId = setInterval(() => {
-        onGetMessages() 
+        onGetMessages()
       }, 10000)
+    }
+
+    window.addEventListener('scroll', this.onScrollList)
+  }
+
+  onScrollList = () => {
+    const scrollHeight = Math.max(
+      document.body.scrollHeight, document.documentElement.scrollHeight,
+      document.body.offsetHeight, document.documentElement.offsetHeight,
+      document.body.clientHeight, document.documentElement.clientHeight
+    )
+
+    if (scrollHeight === window.innerHeight + window.pageYOffset) {
+      this.props.onGetMoreMessages()
     }
   }
 
@@ -68,7 +85,7 @@ class MessageFeed extends React.Component<Props, State> {
   shouldComponentUpdate(newProps: Props, newState: State) {
     if (this.props.authToken !== newState.authToken) {
       this.timerId = setInterval(() => {
-        newProps.onGetMessages() 
+        newProps.onGetMessages()
       }, 10000)
     }
 
@@ -77,6 +94,7 @@ class MessageFeed extends React.Component<Props, State> {
 
   componentWillUnmount() {
     clearInterval(this.timerId)
+    window.removeEventListener('scroll', this.onScrollList)
   }
 
   mapMessages = (messages: ApiTypes.Messages.Message[]) => {
@@ -115,9 +133,11 @@ class MessageFeed extends React.Component<Props, State> {
   }
 
   render() {
+    const { isMoreMessageRequested } = this.props
     return (
       <ContainerStyled maxWidth="md">
         {this.checkCurrentNode()}
+        {isMoreMessageRequested && <PreloaderWrapper><CircularProgress/></PreloaderWrapper>}
         <UpButton color="inherit" onClick={this.onScrollUp}>
           <ArrowUpwardIcon />
         </UpButton>
@@ -126,20 +146,21 @@ class MessageFeed extends React.Component<Props, State> {
   }
 }
 
-type StateProps = Pick<Props, 'messageTokens' | 'currentNode' | 'messages' | 'userId' | 'authToken'>
+type StateProps = Pick<Props, 'messageTokens' | 'currentNode' | 'messages' | 'userId' | 'authToken' | 'isMoreMessageRequested'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   messageTokens: selectors.messages.messageTokens(state),
   currentNode: selectors.messages.currentNode(state),
   messages: selectors.messages.messages(state),
   userId: selectors.profile.userId(state),
   authToken: selectors.authorization.authToken(state),
+  isMoreMessageRequested: selectors.messages.isMoreMessageRequested(state),
 })
 
-type DispatchProps = Pick<Props, 'onGetMessages' | 'onGetCurrentNode' | 'onGetMessagesFromNode'>
+type DispatchProps = Pick<Props, 'onGetMessages' | 'onGetCurrentNode' | 'onGetMoreMessages'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetMessages: () => dispatch(Actions.messages.getMessagesRequest()),
   onGetCurrentNode: () => dispatch(Actions.messages.getCurrentNodeRequest()),
-  onGetMessagesFromNode: (data: ApiTypes.Messages.MessagesFromNode) => dispatch(Actions.messages.getMessagesFromNodeRequest(data)),
+  onGetMoreMessages: () => dispatch(Actions.messages.getMoreMessagesRequest()),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(MessageFeed)

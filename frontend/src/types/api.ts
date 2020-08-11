@@ -178,7 +178,7 @@ export declare namespace ApiTypes {
       host: string,
       body: {
         token: string
-        count?: number
+        count?: string
         from?: string
       }
     }
