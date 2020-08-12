@@ -59,7 +59,7 @@ jobs:
           host: central.koto.at
           username: ${{ secrets.CENTRAL_SERVER_USERNAME }}
           password: ${{ secrets.CENTRAL_SERVER_PASSWORD }}
-          run: |
+          script: |
             cd koto-central
             docker-compose pull
             docker-compose up -d
@@ -70,7 +70,7 @@ jobs:
           host: node1.koto.at
           username: ${{ secrets.NODE_SERVER_USERNAME }}
           password: ${{ secrets.NODE_SERVER_PASSWORD }}
-          run: |
+          script: |
             cd koto-node
             docker-compose pull
             docker-compose up -d
