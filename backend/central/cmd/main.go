@@ -12,12 +12,14 @@ import (
 	"path/filepath"
 
 	"github.com/ansel1/merry"
+	"github.com/rakyll/statik/fs"
 
 	"github.com/mreider/koto/backend/central"
 	"github.com/mreider/koto/backend/central/config"
 	"github.com/mreider/koto/backend/central/migrate"
 	"github.com/mreider/koto/backend/central/repo"
 	"github.com/mreider/koto/backend/common"
+	_ "github.com/mreider/koto/backend/statik"
 	"github.com/mreider/koto/backend/token"
 )
 
@@ -77,7 +79,12 @@ func main() {
 	s3Cleaner := common.NewS3Cleaner(db, s3Storage)
 	go s3Cleaner.Clean(context.Background())
 
-	server := central.NewServer(cfg, string(publicKeyPEM), repos, tokenGenerator, tokenParser, s3Storage)
+	staticFS, err := fs.New()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	server := central.NewServer(cfg, string(publicKeyPEM), repos, tokenGenerator, tokenParser, s3Storage, staticFS)
 	err = server.Run()
 	if err != nil {
 		log.Fatalln(err)

@@ -16,6 +16,7 @@ import (
 	"github.com/mreider/koto/backend/central/bcrypt"
 	"github.com/mreider/koto/backend/central/config"
 	"github.com/mreider/koto/backend/central/repo"
+	"github.com/mreider/koto/backend/central/routers"
 	"github.com/mreider/koto/backend/central/rpc"
 	"github.com/mreider/koto/backend/central/services"
 	"github.com/mreider/koto/backend/central/services/user"
@@ -37,9 +38,11 @@ type Server struct {
 	tokenParser    token.Parser
 	s3Storage      *common.S3Storage
 	sessionStore   *sessions.CookieStore
+	staticFS       http.FileSystem
 }
 
-func NewServer(cfg config.Config, pubKeyPEM string, repos repo.Repos, tokenGenerator token.Generator, tokenParser token.Parser, s3Storage *common.S3Storage) *Server {
+func NewServer(cfg config.Config, pubKeyPEM string, repos repo.Repos, tokenGenerator token.Generator, tokenParser token.Parser, s3Storage *common.S3Storage,
+	staticFS http.FileSystem) *Server {
 	sessionStore := sessions.NewCookieStore([]byte(cookieAuthenticationKey))
 	sessionStore.Options.HttpOnly = true
 	sessionStore.Options.MaxAge = 0
@@ -52,12 +55,15 @@ func NewServer(cfg config.Config, pubKeyPEM string, repos repo.Repos, tokenGener
 		tokenParser:    tokenParser,
 		s3Storage:      s3Storage,
 		sessionStore:   sessionStore,
+		staticFS:       staticFS,
 	}
 }
 
 func (s *Server) Run() error {
 	r := chi.NewRouter()
 	s.setupMiddlewares(r)
+
+	r.Mount("/image", routers.Image(s.repos.User, s.s3Storage, s.staticFS))
 
 	rpcHooks := &twirp.ServerHooks{
 		Error: func(ctx context.Context, err twirp.Error) context.Context {
