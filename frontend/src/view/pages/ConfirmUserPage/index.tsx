@@ -49,7 +49,7 @@ export const ConfirmUser: React.SFC<Props> = React.memo((props) => {
   const params = queryString.parse(url)
   const token = params.token
 
-  if(token){
+  if (token) {
     props.onUserConfirm({ token: token } as ApiTypes.Token)
   } 
 

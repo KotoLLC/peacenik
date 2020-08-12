@@ -16,7 +16,6 @@ import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder'
 import { Player } from 'video-react'
 import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
 import Badge from '@material-ui/core/Badge'
-import noAvatar from './../../../assets/images/no-avatar.png'
 import {
   PaperStyled,
   MessageHeader,
@@ -55,6 +54,9 @@ interface Props extends ApiTypes.Messages.Message {
   getLikesForMessage: (data: ApiTypes.Messages.Like) => void
 }
 
+// @ts-ignore
+const centralUrl: string = window.apiEndpoint
+
 const Message: React.SFC<Props> = (props) => {
   const {
     text,
@@ -65,7 +67,6 @@ const Message: React.SFC<Props> = (props) => {
     sourceHost,
     messageToken,
     comments,
-    avatar_thumbnail,
     attachment,
     attachment_type,
     uploadLink,
@@ -75,6 +76,7 @@ const Message: React.SFC<Props> = (props) => {
     likes,
     currentMessageLikes,
     liked_by_me,
+    user_id,
   } = props
 
   const [isEditer, setEditor] = useState<boolean>(false)
@@ -305,7 +307,7 @@ const Message: React.SFC<Props> = (props) => {
         <MessageHeader>
           <UserInfo>
             <AvatarWrapper>
-              <Avatar variant="rounded" src={avatar_thumbnail || noAvatar} />
+              <Avatar variant="rounded" src={`${centralUrl}/image/avatar/${user_id}`} />
             </AvatarWrapper>
             <UserNameWrapper>
               <UserName>{user_name}</UserName>

@@ -16,7 +16,6 @@ export declare namespace ApiTypes {
     id: string
     name: string
     email: string
-    avatar_thumbnail?: string
     is_confirmed?: boolean
   }
 
@@ -84,7 +83,6 @@ export declare namespace ApiTypes {
       created_at: string
       accepted_at?: string
       rejected_at?: string
-      friend_avatar?: string
     }
 
     export interface InvitationAccept {
@@ -193,7 +191,6 @@ export declare namespace ApiTypes {
       created_at: string
       updated_at: string
       comments?: Comment[] 
-      avatar_thumbnail?: string
       attachment?: string
       attachment_type?: string
       attachment_thumbnail?: string
@@ -209,7 +206,6 @@ export declare namespace ApiTypes {
       user_name: string
       created_at: string
       updated_at: string
-      avatar_thumbnail?: string
       likes?: number
       liked_by_me?: boolean
     }

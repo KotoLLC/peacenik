@@ -6,6 +6,7 @@ import IconButton from '@material-ui/core/IconButton'
 import Container from '@material-ui/core/Container'
 import FormControl from '@material-ui/core/FormControl'
 import Button from '@material-ui/core/Button'
+import Avatar from '@material-ui/core/Avatar'
 
 export const PageWrapper = styled.div`
   display: flex;
@@ -127,4 +128,10 @@ export const TitleWrapper = styled.div`
 
 export const ListItemWrapper = styled.div`
   cursor: pointer;
+`
+
+export const AvatarStyled = styled(Avatar)`
+  && {
+    background: #bdbdbd;
+  }
 `

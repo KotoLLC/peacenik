@@ -11,7 +11,6 @@ import selectors from '@selectors/index'
 import { StoreTypes } from 'src/types'
 import logo from './../../assets/images/logo-white.png'
 import Avatar from '@material-ui/core/Avatar'
-import noAvatar from './../../assets/images/no-avatar.png'
 import { 
   TooltipStyle, 
   IconButtonStyled, 
@@ -23,14 +22,17 @@ import {
   Logo,
 } from './styles'
 
+// @ts-ignore
+const centralUrl: string = window.apiEndpoint
+
 interface Props {
   notificationLength: number
-  userAvatar?: string
+  userId: string
   onLogout: () => void
 }
 
 const TopBar: React.SFC<Props> = React.memo((props) => {
-  const { notificationLength, userAvatar } = props
+  const { notificationLength, userId } = props
 
   const onLogoutClick = () => {
     history.push('/login')    
@@ -50,7 +52,7 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
           </NotificationsWrapper>}
           <TopMenu />
           <AvatarWrapper to="/user-profile">
-            <Avatar variant="rounded" src={userAvatar || noAvatar} />
+            <Avatar variant="rounded" src={`${centralUrl}/image/avatar/${userId}`}  />
           </AvatarWrapper>
           <TooltipStyle title={`Logout`}>
             <IconButtonStyled onClick={onLogoutClick}>
@@ -63,10 +65,10 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
   )
 })
 
-type StateProps = Pick<Props, 'notificationLength' | 'userAvatar'>
+type StateProps = Pick<Props, 'notificationLength' | 'userId'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   notificationLength: selectors.notifications.notificationLength(state),
-  userAvatar: selectors.profile.userAvatar(state),
+  userId: selectors.profile.userId(state),
 })
 
 type DispatchProps = Pick<Props, 'onLogout'>

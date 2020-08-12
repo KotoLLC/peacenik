@@ -3,7 +3,6 @@ import { WithTopBar } from '@view/shared/WithTopBar'
 import { connect } from 'react-redux'
 import selectors from '@selectors/index'
 import { StoreTypes, ApiTypes } from 'src/types'
-import PersonIcon from '@material-ui/icons/Person'
 import InputLabel from '@material-ui/core/InputLabel'
 import OutlinedInput from '@material-ui/core/OutlinedInput'
 import Button from '@material-ui/core/Button'
@@ -25,10 +24,13 @@ import {
   UploadInput,
 } from './styles'
 
+// @ts-ignore
+const centralUrl: string = window.apiEndpoint
+
 interface Props {
   userName: string
   userEmail: string
-  userAvatar: string
+  userId: string
   uploadLink: ApiTypes.UploadLink | null
   onGetUploadLink: (value: ApiTypes.Profile.UploadLinkRequest) => void
   onSetAvatar: (data: ApiTypes.Profile.Avatar) => void
@@ -159,17 +161,13 @@ class UserProfile extends React.PureComponent<Props, State> {
 
   renderAvatar = () => {
     const { file } = this.state
-    const { userAvatar, userName } = this.props
+    const { userName, userId } = this.props
 
     if (file) {
       return <img src={URL.createObjectURL(file)} alt={userName} />
     }
 
-    if (userAvatar) {
-      return <img src={userAvatar} alt={userName} />
-    }
-
-    return <PersonIcon fontSize="large" color="action" />
+    return <img src={`${centralUrl}/image/avatar/${userId}`} alt={userName} />
   }
 
   componentDidMount() {
@@ -231,12 +229,12 @@ class UserProfile extends React.PureComponent<Props, State> {
   }
 }
 
-type StateProps = Pick<Props, 'userName' | 'userEmail' | 'uploadLink' | 'userAvatar'>
+type StateProps = Pick<Props, 'userName' | 'userEmail' | 'uploadLink' | 'userId'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   userName: selectors.profile.userName(state),
   userEmail: selectors.profile.userEmail(state),
   uploadLink: state.profile.uploadLink,
-  userAvatar: selectors.profile.userAvatar(state)!,
+  userId: selectors.profile.userId(state),
 })
 
 type DispatchProps = Pick<Props, 'onGetUploadLink' | 'onSetAvatar' | 'onEditProfile' | 'onGetProfile'>

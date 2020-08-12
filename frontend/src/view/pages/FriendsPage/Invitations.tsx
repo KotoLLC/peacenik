@@ -8,7 +8,6 @@ import List from '@material-ui/core/List'
 import Divider from '@material-ui/core/Divider'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemAvatar from '@material-ui/core/ListItemAvatar'
-import Avatar from '@material-ui/core/Avatar'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
@@ -28,6 +27,7 @@ import {
   UserName,
   IconButtonGreen,
   PageWrapper,
+  AvatarStyled,
 } from './styles'
 
 export interface Props {
@@ -42,6 +42,9 @@ interface State {
   searchResult: ApiTypes.Friends.Invitation[]
   searchValue: string
 }
+
+// @ts-ignore
+const centralUrl: string = window.apiEndpoint
 
 export class Invitations extends React.Component<Props, State> {
 
@@ -82,7 +85,7 @@ export class Invitations extends React.Component<Props, State> {
         <div key={friend_id}>
           <ListItem alignItems="center">
             <ListItemAvatar>
-              <Avatar alt={friend_name} src={item.friend_avatar} />
+              <AvatarStyled alt={friend_name} src={`${centralUrl}/image/avatar/${friend_id}`} />
             </ListItemAvatar>
             <ListItemText primary={<UserName>{friend_name}</UserName>} />
             <Tooltip title={`Accept the invitation`}>

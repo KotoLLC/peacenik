@@ -7,7 +7,6 @@ import Paper from '@material-ui/core/Paper'
 import Divider from '@material-ui/core/Divider'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemAvatar from '@material-ui/core/ListItemAvatar'
-import Avatar from '@material-ui/core/Avatar'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import { StoreTypes, ApiTypes } from 'src/types'
@@ -18,6 +17,7 @@ import { capitalizeFirstLetter } from '@services/capitalizeFirstLetter'
 import AccessTimeIcon from '@material-ui/icons/AccessTime'
 import PersonAddIcon from '@material-ui/icons/PersonAdd'
 import RemoveFriendDialog from './RemoveFriendDialog'
+
 import {
   UsersWrapper,
   ContentWrapper,
@@ -29,7 +29,11 @@ import {
   UserName,
   PageWrapper,
   ListItemWrapper,
+  AvatarStyled,
 } from './styles'
+
+// @ts-ignore
+const centralUrl: string = window.apiEndpoint
 
 export interface Props {
   friends: ApiTypes.Friends.Friend[]
@@ -106,7 +110,7 @@ class Friends extends React.Component<Props, State> {
         <div key={user.id}>
           <ListItem>
             <ListItemAvatar>
-              <Avatar alt={user.name} src={user.avatar_thumbnail} />
+              <AvatarStyled alt={user.name} src={`${centralUrl}/image/avatar/${user.id}`} />
             </ListItemAvatar>
             <ListItemText primary={<UserName>{user.name}</UserName>} />
             {this.checkCurrentIcon(user, invite_status)}
@@ -137,7 +141,7 @@ class Friends extends React.Component<Props, State> {
       <ListItemWrapper key={item.user.id}>
         <ListItem onClick={() => this.onFriendSelect(item.user.id, item.user.name)}>
           <ListItemAvatar>
-            <Avatar alt={item.user.name} src={item.user.avatar_thumbnail} />
+            <AvatarStyled alt={item.user.name} src={`${centralUrl}/image/avatar/${item.user.id}`}/>
           </ListItemAvatar>
           <ListItemText primary={<UserName>{item.user.name}</UserName>} />
           <RemoveFriendDialog {...item} />

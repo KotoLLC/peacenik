@@ -3,11 +3,9 @@ import Typography from '@material-ui/core/Typography'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import { RouteComponentProps } from 'react-router-dom'
-import { ApiTypes } from 'src/types'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
-import queryString from 'query-string'
 import selectors from '@selectors/index' 
 import {
   PageWrapper,

@@ -27,6 +27,9 @@ import {
 } from './styles'
 import { ApiTypes, StoreTypes } from 'src/types'
 
+// @ts-ignore
+const centralUrl: string = window.apiEndpoint
+
 interface Props extends ApiTypes.Messages.Comment {
   userId: string
   currentCommentLikes: ApiTypes.Messages.LikesInfoData | null
@@ -46,7 +49,6 @@ const Comment: React.SFC<Props> = (props) => {
     user_id,
     sourceHost,
     userId,
-    avatar_thumbnail,
     liked_by_me,
     likes,
     onLikeComment,
@@ -155,7 +157,7 @@ const Comment: React.SFC<Props> = (props) => {
     <CommentWrapper ref={commentRef}>
       <MessageHeader>
         <UserInfo>
-          <Avatar variant="rounded" src={avatar_thumbnail} />
+          <Avatar variant="rounded" src={`${centralUrl}/image/avatar/${user_id}`} />
           <UserNameWrapper>
             <UserName>{user_name}</UserName>
             <MessageDate>{moment(created_at).fromNow()}</MessageDate>
