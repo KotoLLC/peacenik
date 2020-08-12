@@ -7,6 +7,7 @@ WORKDIR /service
 
 RUN go mod download
 
+COPY statik/*.go ./statik/
 COPY token/*.go ./token/
 COPY common/*.go ./common/
 
