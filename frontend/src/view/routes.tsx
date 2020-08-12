@@ -13,13 +13,14 @@ import UserProfilePage from './pages/UserProfilePage'
 import RegistrationPage from './pages/RegistrationPage'
 import DocsPages from './pages/DocsPages'
 import ConfirmUserPage from '@view/pages/ConfirmUserPage'
+import ResendConfirmEmailPage from '@view/pages/ResendConfirmEmailPage'
 import selectors from '@selectors/index'
 
 const Private = ({ component: Component, ...rest }) => {
   return (
     <Route {...rest} render={props => {
       if (rest.isLogged) {
-        return rest.isEmailConfirmed ? <Component {...props} /> : <Redirect to="/confirm-user" />
+        return rest.isEmailConfirmed ? <Component {...props} /> : <Redirect to="/resend-confirm-email" />
       }
       return <Redirect to="/login" />
     }} />
@@ -42,6 +43,7 @@ export const Routes = () => {
         <Route path="/registration" component={RegistrationPage} />
         <Route path="/docs" component={DocsPages} />
         <Route path="/confirm-user" component={ConfirmUserPage} />
+        <Route path="/resend-confirm-email" component={ResendConfirmEmailPage} />
         <Route path="/about-us" component={AboutUsPage} />
         <PrivateRoute path="/friends" component={FriendsPage} />
         <PrivateRoute path="/nodes" component={NodePages} />

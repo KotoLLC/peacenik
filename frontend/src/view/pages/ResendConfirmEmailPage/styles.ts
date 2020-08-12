@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import Paper from '@material-ui/core/Paper'
+import Button from '@material-ui/core/Button'
 
 export const PageWrapper = styled.div`
   margin-top: 20px;
@@ -19,9 +20,21 @@ export const PaperStyled = styled(Paper)`
     max-width: 650px;
   }
 `
-export const PreloaderWrapper = styled.div`
+
+export const ButtonsWrapper = styled.div`
   display: flex;
   justify-content: center;
-  width: 100%;
-  margin-top: 50px;
+  margin-top: 30px;
+`
+
+export const ButtonStyled = styled(Button)`
+  &&{
+    margin: 10px
+  }
+`
+
+export const LogoutWrapper = styled.div`
+  position: fixed;
+  right: 10px;
+  top: 10px;
 `

@@ -4,17 +4,13 @@ import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import { RouteComponentProps } from 'react-router-dom'
 import { ApiTypes } from 'src/types'
-import ExitToAppIcon from '@material-ui/icons/ExitToApp'
-import IconButton from '@material-ui/core/IconButton'
-import Tooltip from '@material-ui/core/Tooltip'
 import queryString from 'query-string'
 import selectors from '@selectors/index' 
+import CircularProgress from '@material-ui/core/CircularProgress'
 import {
   PageWrapper,
   PaperStyled,
-  ButtonsWrapper,
-  ButtonStyled,
-  LogoutWrapper,
+  PreloaderWrapper,
 } from './styles'
 
 interface Props extends RouteComponentProps {
@@ -23,16 +19,16 @@ interface Props extends RouteComponentProps {
   isConfirmUserSuccess: boolean
 
   onLogout: () => void
-  onSendConfirmLink: () => void
   onUserConfirm: (data: ApiTypes.Token) => void
 }
 
 export const ConfirmUser: React.SFC<Props> = React.memo((props) => {
-  const {isEmailConfirmed, isLogged, history, isConfirmUserSuccess} = props
-  
-  const onLogoutClick = () => {
-    props.onLogout()
-  }
+  const {
+    isEmailConfirmed, 
+    isLogged, 
+    history, 
+    isConfirmUserSuccess,
+  } = props
 
   useEffect(() => {
     if (isLogged === false) {
@@ -40,7 +36,7 @@ export const ConfirmUser: React.SFC<Props> = React.memo((props) => {
     }
 
     if (isConfirmUserSuccess === true) {
-      onLogoutClick()
+      props.onLogout()
     }
 
     if (isEmailConfirmed === true) {
@@ -53,37 +49,18 @@ export const ConfirmUser: React.SFC<Props> = React.memo((props) => {
   const params = queryString.parse(url)
   const token = params.token
 
+  if(token){
+    props.onUserConfirm({ token: token } as ApiTypes.Token)
+  } 
+
   return (
     <>
-      <LogoutWrapper>
-        <Tooltip title={`Logout`}>
-          <IconButton onClick={onLogoutClick}>
-            <ExitToAppIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
-      </LogoutWrapper>
       <PageWrapper>
         <PaperStyled>
-          <Typography variant="h5" component="h5" gutterBottom align="center">
-            Welcome to Koto!
-        </Typography>
-          <Typography variant="body1" gutterBottom align="center">
-            To continue, please confirm your email address.
-        </Typography>
-          <ButtonsWrapper>
-            <ButtonStyled
-              onClick={props.onSendConfirmLink}
-              variant="contained"
-              color="primary">
-              resend confirmation email
-            </ButtonStyled>
-            {token && <ButtonStyled
-              onClick={() => props.onUserConfirm({ token: token } as ApiTypes.Token)}
-              variant="contained"
-              color="primary">
-              Confirm
-            </ButtonStyled>}
-          </ButtonsWrapper>
+        <Typography variant="h6" component="h5" gutterBottom align="center">Please wait...</Typography>
+          <PreloaderWrapper>
+            {token ? <CircularProgress/> : 'No params in url'}
+          </PreloaderWrapper>
         </PaperStyled>
       </PageWrapper>
     </>
@@ -97,10 +74,9 @@ const mapStateToProps = (state): StateProps => ({
   isConfirmUserSuccess: selectors.registration.isConfirmUserSuccess(state),
 })
 
-type DispatchProps = Pick<Props, 'onLogout' | 'onSendConfirmLink' | 'onUserConfirm'>
+type DispatchProps = Pick<Props, 'onLogout'| 'onUserConfirm'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onLogout: () => dispatch(Actions.authorization.logoutRequest()),
-  onSendConfirmLink: () => dispatch(Actions.registration.sendConfirmLinkRequest()),
   onUserConfirm: (data: ApiTypes.Token) => dispatch(Actions.registration.confirmUserRequest(data)),
 })
 
