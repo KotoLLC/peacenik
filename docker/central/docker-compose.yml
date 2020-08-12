@@ -6,6 +6,7 @@ services:
     restart: on-failure
     volumes:
       - ${VOLUME_CENTRAL}:/data
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - 12001:12001
     environment:
