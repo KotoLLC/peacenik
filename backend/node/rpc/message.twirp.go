@@ -2081,7 +2081,7 @@ func (s *messageServiceServer) serveCommentLikesProtobuf(ctx context.Context, re
 }
 
 func (s *messageServiceServer) ServiceDescriptor() ([]byte, int) {
-	return twirpFileDescriptor1, 0
+	return twirpFileDescriptor2, 0
 }
 
 func (s *messageServiceServer) ProtocGenTwirpVersion() string {
@@ -2092,7 +2092,7 @@ func (s *messageServiceServer) PathPrefix() string {
 	return MessageServicePathPrefix
 }
 
-var twirpFileDescriptor1 = []byte{
+var twirpFileDescriptor2 = []byte{
 	// 653 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x56, 0xcd, 0x6e, 0xd3, 0x40,
 	0x10, 0x96, 0x9b, 0x1f, 0x92, 0x49, 0x82, 0x60, 0x89, 0x68, 0xea, 0x52, 0x1a, 0x8c, 0x84, 0x72,

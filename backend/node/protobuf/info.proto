@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package rpc;
+option go_package = "../rpc";
+
+import "model.proto";
+
+service InfoService {
+    rpc Version (Empty) returns (InfoVersionResponse);
+}
+
+message InfoVersionResponse {
+    string docker_updated = 1;
+}

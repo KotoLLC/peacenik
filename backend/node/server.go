@@ -73,6 +73,10 @@ func (s *Server) Run() error {
 	notificationServiceHandler := rpc.NewNotificationServiceServer(notificationService, rpcHooks)
 	r.Handle(notificationServiceHandler.PathPrefix()+"*", s.checkAuth(notificationServiceHandler))
 
+	infoService := services.NewInfo(baseService)
+	infoServiceHandler := rpc.NewInfoServiceServer(infoService, rpcHooks)
+	r.Handle(infoServiceHandler.PathPrefix()+"*", infoServiceHandler)
+
 	log.Println("started on " + s.cfg.ListenAddress)
 	return http.ListenAndServe(s.cfg.ListenAddress, r)
 }

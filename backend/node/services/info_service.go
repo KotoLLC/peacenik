@@ -5,29 +5,21 @@ import (
 	"log"
 	"sync"
 
-	"github.com/mreider/koto/backend/central/rpc"
 	"github.com/mreider/koto/backend/common"
+	"github.com/mreider/koto/backend/node/rpc"
 )
 
 type infoService struct {
 	*BaseService
-	pubKeyPem string
 
 	dockerOnce    sync.Once
 	dockerCreated string
 }
 
-func NewInfo(base *BaseService, pubKeyPem string) rpc.InfoService {
+func NewInfo(base *BaseService) rpc.InfoService {
 	return &infoService{
 		BaseService: base,
-		pubKeyPem:   pubKeyPem,
 	}
-}
-
-func (s *infoService) PublicKey(_ context.Context, _ *rpc.Empty) (*rpc.InfoPublicKeyResponse, error) {
-	return &rpc.InfoPublicKeyResponse{
-		PublicKey: s.pubKeyPem,
-	}, nil
 }
 
 func (s *infoService) Version(_ context.Context, _ *rpc.Empty) (*rpc.InfoVersionResponse, error) {
