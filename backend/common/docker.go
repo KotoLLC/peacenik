@@ -77,15 +77,6 @@ func (c Container) ID() string {
 	return c.containerInfo.ID
 }
 
-func (c Container) ImageTags() []string {
-	repoTags := c.imageInfo.RepoTags
-	tags := make([]string, 0, len(repoTags))
-	for _, tag := range repoTags {
-		parts := strings.SplitN(tag, ":", 2)
-		t := parts[len(parts)-1]
-		if t != "latest" {
-			tags = append(tags, t)
-		}
-	}
-	return tags
+func (c Container) ImageCreated() string {
+	return c.imageInfo.Created
 }

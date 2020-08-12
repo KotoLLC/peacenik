@@ -15,5 +15,5 @@ message InfoPublicKeyResponse {
 }
 
 message InfoVersionResponse {
-    string docker_tag = 1;
+    string docker_updated = 1;
 }

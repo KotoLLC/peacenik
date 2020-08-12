@@ -13,8 +13,8 @@ type infoService struct {
 	*BaseService
 	pubKeyPem string
 
-	dockerOnce sync.Once
-	dockerTag  string
+	dockerOnce    sync.Once
+	dockerCreated string
 }
 
 func NewInfo(base *BaseService, pubKeyPem string) rpc.InfoService {
@@ -37,14 +37,11 @@ func (s *infoService) Version(_ context.Context, _ *rpc.Empty) (*rpc.InfoVersion
 			log.Println("can't get docker tags:", err)
 		}
 		if container != nil {
-			dockerTags := container.ImageTags()
-			if len(dockerTags) > 0 {
-				s.dockerTag = dockerTags[0]
-			}
+			s.dockerCreated = container.ImageCreated()
 		}
 	})
 
 	return &rpc.InfoVersionResponse{
-		DockerTag: s.dockerTag,
+		DockerUpdated: s.dockerCreated,
 	}, nil
 }
