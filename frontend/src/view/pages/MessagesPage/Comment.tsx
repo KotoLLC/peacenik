@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import Avatar from '@material-ui/core/Avatar'
 import EditIcon from '@material-ui/icons/Edit'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
@@ -8,22 +7,20 @@ import moment from 'moment'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'
-import FavoriteIcon from '@material-ui/icons/Favorite'
-import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder'
-import Badge from '@material-ui/core/Badge'
+import SendIcon from '@material-ui/icons/Send'
 import {
   CommentWrapper,
-  MessageHeader,
-  UserInfo,
   UserName,
-  MessageDate,
-  UserNameWrapper,
-  MessageContent,
+  CommentReactionsNav,
+  CommentTextWrapper,
+  AvatarStyled,
   TextareaAutosizeStyled,
-  EditMessageWrapper,
-  ButtonSend,
+  EditMessageField,
   ButtonsWrapper,
   CircularProgressStyled,
+  CommentContent,
+  CommentReactionsNavWrapper,
+  LikeCommentButton,
 } from './styles'
 import { ApiTypes, StoreTypes } from 'src/types'
 
@@ -49,7 +46,6 @@ const Comment: React.SFC<Props> = (props) => {
     user_id,
     sourceHost,
     userId,
-    liked_by_me,
     likes,
     onLikeComment,
     currentCommentLikes,
@@ -73,6 +69,7 @@ const Comment: React.SFC<Props> = (props) => {
       body: {
         comment_id: id,
         text: comment,
+        text_changed: true, 
       }
     })
   }
@@ -121,11 +118,7 @@ const Comment: React.SFC<Props> = (props) => {
         onClick={() => onLikeComment({ host: sourceHost, id: id })}
         title={(isLikesInfoRequested) ? <CircularProgressStyled size={30}/> : <>{usersLikes || likesInfo}</>} 
         interactive onOpen={() => getLikesInfo()}>
-        <IconButton>
-          <Badge badgeContent={likes} color="primary">
-            {liked_by_me ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-          </Badge>
-        </IconButton>
+        <LikeCommentButton>{likes} like</LikeCommentButton>
       </Tooltip>
     )
     
@@ -135,7 +128,6 @@ const Comment: React.SFC<Props> = (props) => {
     if (userId === user_id) {
       return (
         <ButtonsWrapper>
-          {rendreLikeButton()}
           <Tooltip title={`Edit`}>
             <IconButton onClick={() => setEditor(!isEditer)}>
               <EditIcon />
@@ -144,42 +136,34 @@ const Comment: React.SFC<Props> = (props) => {
           <RemoveCommentDialog {...{ comment, id, sourceHost }} />
         </ButtonsWrapper>
       )
-    } else {
-      return (
-        <ButtonsWrapper>
-          {rendreLikeButton()}
-        </ButtonsWrapper>
-      )
-    }
+    } else return null
   }
 
   return (
     <CommentWrapper ref={commentRef}>
-      <MessageHeader>
-        <UserInfo>
-          <Avatar variant="rounded" src={`${centralUrl}/image/avatar/${user_id}`} />
-          <UserNameWrapper>
-            <UserName>{user_name}</UserName>
-            <MessageDate>{moment(created_at).fromNow()}</MessageDate>
-          </UserNameWrapper>
-        </UserInfo>
-        {renderCurrentIcons()}
-      </MessageHeader>
-      {
-        isEditer ?
-          <EditMessageWrapper>
+      <AvatarStyled src={`${centralUrl}/image/avatar/${user_id}`} />
+      <CommentTextWrapper>{
+         isEditer ?
+          <EditMessageField>
             <TextareaAutosizeStyled
               onKeyDown={onComandEnterDown}
               value={comment}
               onChange={(evant) => onCommentChange(evant.currentTarget.value)} />
-            <ButtonSend
-              variant="contained"
-              color="primary"
-              onClick={onMessageSave}
-            >Save</ButtonSend>
-          </EditMessageWrapper>
-          : <MessageContent>{comment}</MessageContent>
+            <IconButton onClick={onMessageSave}>
+              <SendIcon fontSize="small" />
+            </IconButton>
+          </EditMessageField> 
+          : 
+          <CommentContent>
+            <UserName>{user_name}</UserName> {comment}
+          </CommentContent>
       }
+      <CommentReactionsNavWrapper> 
+        <CommentReactionsNav>{rendreLikeButton()}</CommentReactionsNav>
+        <CommentReactionsNav>{moment(created_at).fromNow()}</CommentReactionsNav>
+      </CommentReactionsNavWrapper>
+      </CommentTextWrapper>
+      {renderCurrentIcons()}
     </CommentWrapper>
   )
 }

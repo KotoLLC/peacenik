@@ -130,6 +130,7 @@ const Editor: React.SFC<Props> = (props) => {
           <EditorWrapper>
             <TextareaTitle className={value.length ? 'active' : ''}>Post a message to your friend</TextareaTitle>
             <TextareaAutosizeStyled
+              className="bordered"
               value={value}
               onKeyDown={onComandEnterDown}
               onChange={(evant) => onValueChange(evant.currentTarget.value)} />

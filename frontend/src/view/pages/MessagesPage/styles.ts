@@ -3,9 +3,9 @@ import Container from '@material-ui/core/Container'
 import Paper from '@material-ui/core/Paper'
 import TextareaAutosize from 'react-autosize-textarea'
 import Button from '@material-ui/core/Button'
-import Link from '@material-ui/core/Link'
 import IconButton from '@material-ui/core/IconButton'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import Avatar from '@material-ui/core/Avatar'
 
 export const ContainerStyled = styled(Container)`
   && {
@@ -16,28 +16,25 @@ export const ContainerStyled = styled(Container)`
 
 export const PaperStyled = styled(Paper)`
   && {
-    padding: 20px 20px;
+    padding: 20px 0px;
     margin-bottom: 15px;
   }
 `
 
 export const CommentsWrapepr = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  padding: 0 20px;
 `
 
-export const CommentWrapper = styled(Paper)`
-  && {
-    background: #EEEEEE;
-    padding: 10px 20px;
-    margin-bottom: 10px;
-    width: calc(100% - 80px);
-  }
+export const CommentWrapper = styled.div`
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 15px;
+  width: 100%;
 `
 
 export const CreateWrapper = styled.div`
   display: flex;
+  padding: 0 20px;
 `
 
 export const EditorWrapper = styled.div`
@@ -45,19 +42,24 @@ export const EditorWrapper = styled.div`
   margin-left: 20px;
 `
 
+export const EditorInMessageWrapper = styled.div`
+  margin: 0 20px 15px;
+`
+
 export const TextareaAutosizeStyled = styled(TextareaAutosize)`
   outline: none;
   resize:none;
   border: none;
-  border-bottom: 1px solid #000;
   width: 100%;
-  min-height: 40px;
+  padding: 10px 10px;
   font-family: 'Arial';
   font-size: 14px;
   line-height: 1.5;
-  margin-top: 5px;
-  margin-bottom: 5px;
   background: transparent;
+
+  &.bordered {
+    border-bottom: 1px solid #000;
+  }
 `
 
 export const EditorButtonsWrapper = styled.div`
@@ -65,12 +67,14 @@ export const EditorButtonsWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-top: 5px;
+  padding-right: 40px;
+  position: relative;
 `
 
 export const ButtonSend = styled(Button)`
-  && {
-    float: right;
-  }
+  position: absolute;
+  right: 0;
+  bottom: 0;
 `
 
 export const TextareaTitle = styled.p`
@@ -88,6 +92,8 @@ export const TextareaTitle = styled.p`
 export const MessageHeader = styled.header`
   display: flex;
   justify-content: space-between;
+  padding-left: 20px;
+  padding-right: 10px;
 `
 
 export const UserInfo = styled.div`
@@ -97,38 +103,82 @@ export const UserInfo = styled.div`
 
 export const UserNameWrapper = styled.div`
   margin-left: 20px;
-  
 `
 
 export const UserName = styled.span`
   font-weight: bold;
 `
 
-export const MessageDate = styled.div`
-  font-size: 12px;
+export const MessageDate = styled.span`
+  display: inline-block;
+  margin-left: 10px;
 `
 
 export const ButtonsWrapper = styled.div`
   display: flex;
+  margin-left: 10px;
 `
 
 export const MessageContent = styled.pre`
   font-family: Raleway, Arial;
   font-size: 14px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  padding-left: 60px;
+  margin: 10px 0;
+  padding: 0 20px;
+`
+
+export const CommentContent = styled.pre`
+  font-family: Raleway, Arial;
+  display: inline-block;
+  font-size: 14px;
+  margin: 0 0 5px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: #ededed;
+  max-width: 100%;
+  white-space: pre-wrap;
+`
+
+export const CommentTextWrapper = styled.div`
+  flex-grow: 1;
+`
+
+export const CommentReactionsNavWrapper = styled.ul`
+  padding-left: 10px;
+  list-style-type: none;
+  display: flex;
+  margin: 0;
+`
+
+export const CommentReactionsNav = styled.li`
+  margin-right: 10px;
+
+  &:before {
+    display: inline-block;
+    padding-right: 10px;
+    content: '•';
+    color: "#ccc";
+  }
+
+  &:first-child {
+    &:before {
+      display: none;
+    }
+  }
 `
 
 export const EditMessageWrapper = styled.div`
-  padding-left: 60px;
+  padding: 0 20px;
+`
+
+export const EditMessageField = styled.div`
+  display: flex;
+  flex-grow: 2;
+  align-items: flex-end;
   margin-bottom: 10px;
-  
-  &:after {
-    content: '';
-    clear: both;
-    display: block;
-  }
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  background: #ededed;
+  position: relative;
 `
 
 export const CroppedText = styled.p`
@@ -163,15 +213,11 @@ export const UpButton = styled(IconButton)`
   z-index: 1000;
 `
 
-export const CommentsLinkWrapper = styled.div`
-  text-align: right;
-`
-
-export const CommentsLink = styled(Link)`
-  && {
-    cursor: pointer;
-    color: #1976d2;
-  }
+export const ReactionsWrapper = styled.div`
+  padding: 5px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `
 
 export const UploadInput = styled.input`
@@ -184,7 +230,8 @@ export const ImagePreview = styled.img`
 `
 
 export const AttachmentWrapper = styled.div`
-  padding-left: 60px;
+  display: flex;
+  justify-content: center;
 `
 
 export const PreloaderWrapper = styled.div`
@@ -201,9 +248,70 @@ export const CircularProgressStyled = styled(CircularProgress)`
 `
 
 export const AvatarWrapper = styled.div`
-  border-radius: 4px;
+  border-radius: 50%;
   overflow: hidden;
   background: #bdbdbd;
   width: 40px;
   height: 40px;
+`
+
+export const AvatarStyled = styled(Avatar)`
+  margin-right: 10px;
+  && {
+    background: #bdbdbd;
+  }
+`
+
+export const LikesWrapper = styled.p`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  overflow: hidden; 
+  margin: 0;
+`
+
+export const LikesNamesList = styled.span`
+  display: inline-block;
+  margin-left: 10px;
+`
+
+export const ReactionNavWrapper = styled.div`
+  display: flex;
+  padding: 10px;
+`
+
+export const ReactionNavItem = styled.div`
+  width: 50%;
+  min-height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-right: 10px;
+
+  &:hover {
+    background-color: #ededed;
+  }
+
+  &:last-child {
+    margin: 0;
+  }
+`
+
+export const ReactionNavText = styled.span`
+  padding-left: 10px;
+  display: inline-block;
+  font-weight: bold;
+`
+
+export const LikeCommentButton = styled.span`
+  cursor: pointer;
+`
+
+export const CommentsLink = styled.span`
+  display: inline-block;
+  cursor: pointer;
+  font-weight: bold;
+  margin: 0 0 10px 20px;
 `

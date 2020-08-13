@@ -43,7 +43,7 @@ export const ConfirmUser: React.SFC<Props> = React.memo((props) => {
       history.push('/messages')
     }
 
-  }, [isLogged, history, isEmailConfirmed, isConfirmUserSuccess])
+  }, [isLogged, history, isEmailConfirmed, isConfirmUserSuccess, props])
 
   const url = props.location.search
   const params = queryString.parse(url)

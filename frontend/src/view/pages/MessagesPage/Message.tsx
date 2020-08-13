@@ -1,11 +1,10 @@
-import React, { useState, useEffect, ChangeEvent } from 'react'
+import React, { useState, useEffect, ChangeEvent, useRef } from 'react'
 import Avatar from '@material-ui/core/Avatar'
 import EditIcon from '@material-ui/icons/Edit'
 import RemoveMessageDialog from './RemoveMessageDialog'
 import moment from 'moment'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
-import ChatBubbleOutlineIcon from '@material-ui/icons/ChatBubbleOutline'
 import Comment from './Comment'
 import selectors from '@selectors/index'
 import AttachFileIcon from '@material-ui/icons/AttachFile'
@@ -16,6 +15,7 @@ import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder'
 import { Player } from 'video-react'
 import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
 import Badge from '@material-ui/core/Badge'
+import SendIcon from '@material-ui/icons/Send'
 import {
   PaperStyled,
   MessageHeader,
@@ -26,10 +26,10 @@ import {
   ButtonsWrapper,
   MessageContent,
   TextareaAutosizeStyled,
-  EditMessageWrapper,
+  EditMessageField,
   ButtonSend,
   CommentsLink,
-  CommentsLinkWrapper,
+  ReactionsWrapper,
   CommentsWrapepr,
   ImagePreview,
   AttachmentWrapper,
@@ -37,6 +37,13 @@ import {
   UploadInput,
   CircularProgressStyled,
   AvatarWrapper,
+  LikesNamesList,
+  LikesWrapper,
+  ReactionNavWrapper,
+  ReactionNavText,
+  ReactionNavItem,
+  EditMessageWrapper,
+  EditorInMessageWrapper,
 } from './styles'
 
 interface Props extends ApiTypes.Messages.Message {
@@ -44,7 +51,7 @@ interface Props extends ApiTypes.Messages.Message {
   uploadLink: ApiTypes.UploadLink | null
   currentNode: CommonTypes.NodeTypes.CurrentNode
   currentMessageLikes: ApiTypes.Messages.LikesInfoData | null
-  
+
   onMessageEdit: (data: ApiTypes.Messages.EditMessage) => void
   onCommentPost: (data: ApiTypes.Messages.PostComment) => void
   onGetMessageUploadLink: (data: ApiTypes.Messages.UploadLinkRequest) => void
@@ -77,16 +84,18 @@ const Message: React.SFC<Props> = (props) => {
     currentMessageLikes,
     liked_by_me,
     user_id,
+    liked_by,
   } = props
 
   const [isEditer, setEditor] = useState<boolean>(false)
-  const [isCommentsEditer, setCommentsEditor] = useState<boolean>(false)
   const [message, onMessageChange] = useState<string>(text)
   const [comment, onCommentChange] = useState<string>('')
   const [isCommentsOpen, openComments] = useState<boolean>(false)
   const [isFileUploaded, setUploadedFile] = useState<boolean>(false)
   const [file, setFile] = useState<File | null>(null)
   const [isLikesInfoRequested, setLikesInfoRequest] = useState<boolean>(false)
+
+  const commentEditorRef = useRef<HTMLTextAreaElement>(null)
 
   const onMessageSave = () => {
     props.onMessageEdit({
@@ -117,13 +126,13 @@ const Message: React.SFC<Props> = (props) => {
 
   const getLikesInfo = () => {
     if (currentMessageLikes?.id === id) {
-      setLikesInfoRequest(false)  
+      setLikesInfoRequest(false)
     }
 
     if (currentMessageLikes?.id !== id) {
       setLikesInfoRequest(true)
       getLikesForMessage({
-        host: sourceHost, 
+        host: sourceHost,
         id: id
       })
     }
@@ -135,23 +144,23 @@ const Message: React.SFC<Props> = (props) => {
 
     if (currentMessageLikes?.id === id) {
       currentMessageLikes.likes.length && currentMessageLikes.likes.forEach((item, counter) => {
-        
+
         if (counter < 15) {
           const comma = ((currentMessageLikes.likes.length - 1) === counter) ? '' : ', '
           usersLikes += `${item.user_name}${comma}`
-        } 
+        }
 
         if (counter === 15) {
           usersLikes += `...`
         }
-        
+
       })
     }
 
     return (
-      <Tooltip 
+      <Tooltip
         onClick={() => onLikeMessage({ host: sourceHost, id: id })}
-        title={(isLikesInfoRequested) ? <CircularProgressStyled size={30}/> : <>{usersLikes || likesInfo}</>} 
+        title={(isLikesInfoRequested) ? <CircularProgressStyled size={30} /> : <>{usersLikes || likesInfo}</>}
         interactive onOpen={() => getLikesInfo()}>
         <IconButton>
           <Badge badgeContent={likes} color="primary">
@@ -160,43 +169,10 @@ const Message: React.SFC<Props> = (props) => {
         </IconButton>
       </Tooltip>
     )
-    
-  }
 
-  const renderNavIcons = () => {
-    if (isAuthor) {
-      return (
-        <ButtonsWrapper>
-          {rendreLikeButton()}
-          <Tooltip title={`Edit`}>
-            <IconButton onClick={() => setEditor(!isEditer)}>
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title={`Comment`}>
-            <IconButton onClick={() => setCommentsEditor(!isCommentsEditer)}>
-              <ChatBubbleOutlineIcon />
-            </IconButton>
-          </Tooltip>
-          <RemoveMessageDialog {...{ message, id, sourceHost }} />
-        </ButtonsWrapper>
-      )
-    } else {
-      return (
-        <ButtonsWrapper>
-          {rendreLikeButton()}
-          <Tooltip title={`Comment`}>
-            <IconButton onClick={() => setCommentsEditor(!isCommentsEditer)}>
-              <ChatBubbleOutlineIcon />
-            </IconButton>
-          </Tooltip>
-        </ButtonsWrapper>
-      )
-    }
   }
 
   const onCommentSave = () => {
-    setCommentsEditor(false)
     onCommentChange('')
     props.onCommentPost({
       host: sourceHost,
@@ -264,6 +240,47 @@ const Message: React.SFC<Props> = (props) => {
     return null
   }
 
+  const renderReactions = () => {
+    return (
+      <ReactionsWrapper>
+        {likes ?
+          <LikesWrapper>
+            {rendreLikeButton()}
+            <LikesNamesList>
+              {
+                liked_by?.length && liked_by.map((item, counter) => {
+                  return (counter === (liked_by.length - 1)) ? item.user_name : `${item.user_name}, `
+                })
+              }
+            </LikesNamesList>
+          </LikesWrapper> : <span/>
+        }
+        {(comments?.length) && <span onClick={() => openComments(!isCommentsOpen)}>{comments.length} comments</span>}
+      </ReactionsWrapper>
+    )
+  }
+
+  const renderReactionNav = () => {
+    return (
+      <ReactionNavWrapper>
+        <ReactionNavItem onClick={() => onLikeMessage({ host: sourceHost, id: id })}>
+          {liked_by_me ? <FavoriteIcon color="inherit" /> : <FavoriteBorderIcon color="inherit" />}
+          <ReactionNavText>Like</ReactionNavText>
+        </ReactionNavItem>
+        <ReactionNavItem onClick={onCommentClick}>
+          <ReactionNavText>
+            Comment
+        </ReactionNavText>
+        </ReactionNavItem>
+      </ReactionNavWrapper>
+    )
+  }
+
+  const onCommentClick = () => {
+    commentEditorRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    commentEditorRef?.current?.focus()
+  }
+
   const onFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const { onGetMessageUploadLink } = props
     setUploadedFile(false)
@@ -299,7 +316,15 @@ const Message: React.SFC<Props> = (props) => {
     if (props.currentMessageLikes?.id === id) {
       setLikesInfoRequest(false)
     }
-  },  [props, file, isFileUploaded, id])
+  }, [props, file, isFileUploaded, id])
+
+  const renderCommentsButton = () => {
+    if (!comments?.length) return null
+
+    return <CommentsLink
+      onClick={() => openComments(!isCommentsOpen)}>
+      {isCommentsOpen ? 'Hide' : 'View'} {comments.length} comments</CommentsLink>
+  }
 
   return (
     <>
@@ -307,19 +332,27 @@ const Message: React.SFC<Props> = (props) => {
         <MessageHeader>
           <UserInfo>
             <AvatarWrapper>
-              <Avatar variant="rounded" src={`${centralUrl}/image/avatar/${user_id}`} />
+              <Avatar src={`${centralUrl}/image/avatar/${user_id}`} />
             </AvatarWrapper>
             <UserNameWrapper>
               <UserName>{user_name}</UserName>
               <MessageDate>{moment(created_at).fromNow()}</MessageDate>
             </UserNameWrapper>
           </UserInfo>
-          {renderNavIcons()}
+          {isAuthor && <ButtonsWrapper>
+            <Tooltip title={`Edit`}>
+              <IconButton onClick={() => setEditor(!isEditer)}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+            <RemoveMessageDialog {...{ message, id, sourceHost }} />
+          </ButtonsWrapper>}
         </MessageHeader>
         {
           isEditer ?
-            <EditMessageWrapper>
+            <EditorInMessageWrapper>
               <TextareaAutosizeStyled
+                className="bordered"
                 onKeyDown={onComandEnterDownInMessage}
                 value={message}
                 onChange={(evant) => onMessageChange(evant.currentTarget.value)} />
@@ -342,28 +375,27 @@ const Message: React.SFC<Props> = (props) => {
                   onClick={onMessageSave}
                 >Save</ButtonSend>
               </EditorButtonsWrapper>
-            </EditMessageWrapper>
+            </EditorInMessageWrapper>
             : <MessageContent>{message}</MessageContent>
         }
         {renderAttachment()}
-        {
-          isCommentsEditer && <EditMessageWrapper>
+        {renderReactions()}
+        {renderReactionNav()}
+        {renderCommentsButton()}
+        {mapComments()}
+        <EditMessageWrapper>
+          <EditMessageField>
             <TextareaAutosizeStyled
+              ref={commentEditorRef}
               onKeyDown={onComandEnterDownInComment}
               value={comment}
               onChange={(evant) => onCommentChange(evant.currentTarget.value)} />
-            <ButtonSend
-              variant="contained"
-              color="primary"
-              onClick={onCommentSave}
-            >Comment</ButtonSend>
-          </EditMessageWrapper>
-        }
-        {(comments?.length) && <CommentsLinkWrapper>
-          <CommentsLink onClick={() => openComments(!isCommentsOpen)}>{comments.length} comments</CommentsLink>
-        </CommentsLinkWrapper>}
+            <IconButton onClick={onCommentSave}>
+              <SendIcon fontSize="small" />
+            </IconButton>
+          </EditMessageField>
+        </EditMessageWrapper>
       </PaperStyled>
-      {mapComments()}
     </>
   )
 }

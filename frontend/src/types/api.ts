@@ -162,6 +162,7 @@ export declare namespace ApiTypes {
       body: {
         comment_id: string,
         text: string,
+        text_changed: boolean
       }
     }
   
@@ -191,6 +192,7 @@ export declare namespace ApiTypes {
       created_at: string
       updated_at: string
       comments?: Comment[] 
+      liked_by?: LikeInfo[]
       attachment?: string
       attachment_type?: string
       attachment_thumbnail?: string

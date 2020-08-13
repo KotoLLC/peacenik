@@ -4,7 +4,7 @@ const schema = new passwordValidator()
 export const validate = {
 
     isUserNameValid: function (value: string): boolean {
-        return !/^[A-Z0-9@.-\s]{2,50}$/i.test(value) ? false : true
+        return !/^[A-Z0-9@+-._\s]{2,50}$/i.test(value) ? false : true
         // return schema.validate(value) as boolean
     },
 
