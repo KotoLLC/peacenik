@@ -179,6 +179,7 @@ export declare namespace ApiTypes {
         token: string
         count?: string
         from?: string
+        until?: string
       }
     }
 

@@ -14,16 +14,40 @@ export function* watchGetMessages() {
     const messageTokens = nodesForMessagesBack2Front(response.data?.tokens)
     yield put(Actions.messages.getMessagesSucces(messageTokens))
 
-    yield all(messageTokens.map(item => call(watchGetMessagesFromNode, {
-      type: MessagesTypes.GET_MESSAGES_FROM_NODE_REQUEST,
-      payload: {
-        host: item.host,
-        body: {
-          token: item.token,
+    const state = yield select()
+    const nodesWithMessages = selectors.messages.nodesWithMessages(state)
+
+    yield all(messageTokens.map(item => {
+
+      let from
+      let until
+ 
+      if (nodesWithMessages.get(item.host)) {
+        
+        const currentNode = nodesWithMessages.get(item.host)
+        if (currentNode?.messages?.length && currentNode?.messages?.length > 1) {
+          const firstMessage = currentNode?.messages[0]
+          const lastMessage = currentNode?.messages[currentNode?.messages.length - 1]
+          from  = firstMessage?.updated_at
+          until = lastMessage?.updated_at
         }
-      },
-    })))
-  } 
+        
+      }
+
+      return call(watchGetMessagesFromNode, {
+        type: MessagesTypes.GET_MESSAGES_FROM_NODE_REQUEST,
+        payload: {
+          host: item.host,
+          body: {
+            token: item.token,
+            from,
+            until,
+          }
+        },
+      })
+    }
+    ))
+  }
 }
 export function* watchGetMoreMessages() {
   const response = yield API.messages.getMessages()
@@ -41,7 +65,7 @@ export function* watchGetMoreMessages() {
         }
       },
     })))
-  } 
+  }
 }
 
 export function* watchGetCurrentNode() {
@@ -73,7 +97,7 @@ export function* watchGetMoreMessagesFromNode(action: { type: string, payload: A
         return item
       })
     }
-    
+
     yield put(Actions.messages.getMessagesFromNodeSucces({
       node: action.payload.host,
       messages: resultData
@@ -82,7 +106,7 @@ export function* watchGetMoreMessagesFromNode(action: { type: string, payload: A
     if (response.error.response.status === 400) {
       yield put(Actions.authorization.getAuthTokenRequest())
       yield put(Actions.messages.getMessagesRequest())
-    } 
+    }
   }
 }
 
@@ -107,7 +131,7 @@ export function* watchGetMessagesFromNode(action: { type: string, payload: ApiTy
     if (response.error.response.status === 400) {
       yield put(Actions.authorization.getAuthTokenRequest())
       yield put(Actions.messages.getMessagesRequest())
-    } 
+    }
   }
 }
 
@@ -185,9 +209,9 @@ export function* watchGetMessageUploadLink(action: { type: string, payload: ApiT
   }
 }
 
-export function* watchSetAttachment(action: { type: string, payload: ApiTypes.Messages.Attachment}) {
+export function* watchSetAttachment(action: { type: string, payload: ApiTypes.Messages.Attachment }) {
   const response = yield API.messages.setAttachment(action.payload.link, action.payload.form_data)
-  
+
   if (response.status === 204 || response.status === 200) {
     yield put(Actions.messages.setAttachmentSuccess())
   } else {
