@@ -20,16 +20,15 @@ export function* watchGetMessages() {
     yield all(messageTokens.map(item => {
 
       let from
-      let until
+      let count
  
       if (nodesWithMessages.get(item.host)) {
         
         const currentNode = nodesWithMessages.get(item.host)
-        if (currentNode?.messages?.length && currentNode?.messages?.length > 1) {
-          const firstMessage = currentNode?.messages[0]
-          const lastMessage = currentNode?.messages[currentNode?.messages.length - 1]
-          from  = firstMessage?.updated_at
-          until = lastMessage?.updated_at
+        if (currentNode?.messages?.length) {
+          const firstMessage = currentNode.messages[0]
+          from  = firstMessage.updated_at
+          count = currentNode.messages.length
         }
         
       }
@@ -41,7 +40,7 @@ export function* watchGetMessages() {
           body: {
             token: item.token,
             from,
-            until,
+            count,
           }
         },
       })
