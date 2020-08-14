@@ -7,3 +7,8 @@ export const ContainerStyled = styled(Container)`
   /* align-content: center; */
   /* min-height: 100vh; */
 `
+
+export const ImageDemo = styled.img`
+  max-width: 600px;
+  width: 100%;
+`
