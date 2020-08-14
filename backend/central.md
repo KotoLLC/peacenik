@@ -174,6 +174,12 @@ Content-Type: application/json
 
 
 ### Set post limit for a node
+This will set limits for a node as follows:
+`"post_limit": 0` - only admin can post
+`"post_limit": 1` - only admin's friends can post
+`"post_limit": 2` - admin's 2nd level of friends (friends of friends) can post
+etc...
+
 POST http://localhost:12001/rpc.NodeService/SetPostLimit
 Content-Type: application/json
 
