@@ -124,6 +124,7 @@ export const MessageContent = styled.pre`
   font-size: 14px;
   margin: 10px 0;
   padding: 0 20px;
+  white-space: pre-wrap;
 `
 
 export const CommentContent = styled.pre`

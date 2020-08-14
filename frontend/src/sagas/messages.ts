@@ -19,18 +19,13 @@ export function* watchGetMessages() {
 
     yield all(messageTokens.map(item => {
 
-      let from
       let count
  
       if (nodesWithMessages.get(item.host)) {
-        
         const currentNode = nodesWithMessages.get(item.host)
         if (currentNode?.messages?.length) {
-          const firstMessage = currentNode.messages[0]
-          from  = firstMessage.updated_at
           count = currentNode.messages.length
         }
-        
       }
 
       return call(watchGetMessagesFromNode, {
@@ -39,12 +34,12 @@ export function* watchGetMessages() {
           host: item.host,
           body: {
             token: item.token,
-            from,
             count,
           }
         },
       })
     }
+
     ))
   }
 }
