@@ -2,8 +2,7 @@
 export enum Types {
   SET_ERROR_NOTIFY = 'SET_ERROR_NOTIFY',
   SET_SUCCESS_NOTIFY = 'SET_SUCCESS_NOTIFY',
-  
-  SET_PRELOADER_ACTIVE = 'SET_PRELOADER_ACTIVE',
+  SET_ABOUT_US_VIEWD = 'SET_ABOUT_US_VIEWD',
 }
 
 const setErrorNotify = (payload: string) => ({
@@ -16,13 +15,12 @@ const setSuccessNotify = (payload: string) => ({
   payload
 })
 
-const setPreloaderActive = (payload: boolean) => ({
-  type: Types.SET_PRELOADER_ACTIVE,
-  payload
+const setAboutUsViewed = () => ({
+  type: Types.SET_ABOUT_US_VIEWD
 })
 
 export default {
   setErrorNotify,
   setSuccessNotify,
-  setPreloaderActive,
+  setAboutUsViewed,
 }

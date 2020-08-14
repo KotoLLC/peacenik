@@ -4,18 +4,21 @@ import { ApiTypes, CommonTypes } from 'src/types'
 export enum Types {
   GET_MESSAGES_REQUEST = 'GET_MESSAGES_REQUEST',
   GET_MESSAGES_SUCCESS = 'GET_MESSAGES_SUCCESS',
-  
+
   GET_MORE_MESSAGES_REQUEST = 'GET_MORE_MESSAGES_REQUEST',
   GET_MORE_MESSAGES_SUCCESS = 'GET_MORE_MESSAGES_SUCCESS',
+  GET_MORE_MESSAGES_FAILED = 'GET_MORE_MESSAGES_FAILED',
 
   GET_CURRENT_NODE_REQUEST = 'GET_CURRENT_NODE_REQUEST',
   GET_CURRENT_NODE_SUCCESS = 'GET_CURRENT_NODE_SUCCESS',
 
   GET_MESSAGES_FROM_NODE_REQUEST = 'GET_MESSAGES_FROM_NODE_REQUEST',
   GET_MESSAGES_FROM_NODE_SUCCESS = 'GET_MESSAGES_FROM_NODE_SUCCESS',
+  GET_MESSAGES_FROM_NODE_FAILED = 'GET_MESSAGES_FROM_NODE_FAILED',
   
   GET_MORE_MESSAGES_FROM_NODE_REQUEST = 'GET_MORE_MESSAGES_FROM_NODE_REQUEST',
   GET_MORE_MESSAGES_FROM_NODE_SUCCESS = 'GET_MORE_MESSAGES_FROM_NODE_SUCCESS',
+  GET_MORE_MESSAGES_FROM_NODE_FAILED = 'GET_MORE_MESSAGES_FROM_NODE_FAILED',
 
   POST_MESSAGE_REQUEST = 'POST_MESSAGE_REQUEST',
   POST_MESSAGE_SUCCESS = 'POST_MESSAGE_SUCCESS',
@@ -83,6 +86,10 @@ const getMessagesFromNodeSucces = (payload: {
 }) => ({
   type: Types.GET_MESSAGES_FROM_NODE_SUCCESS,
   payload
+})
+
+const getMessagesFromNodeFailed = () => ({
+  type: Types.GET_MESSAGES_FROM_NODE_FAILED
 })
 
 const postMessageRequest = (payload: ApiTypes.Messages.PostMessage) => ({
@@ -207,6 +214,10 @@ const getMoreMessagesSucces = (payload: CommonTypes.NodeTypes.CurrentNode[]) => 
   payload
 })
 
+const getMoreMessagesFailed = () => ({
+  type: Types.GET_MORE_MESSAGES_FAILED,
+})
+
 const getMoreMessagesFromNodeRequest = (payload: ApiTypes.Messages.MessagesFromNode) => ({
   type: Types.GET_MORE_MESSAGES_FROM_NODE_REQUEST,
   payload,
@@ -220,6 +231,10 @@ const getMoreMessagesFromNodeSucces = (payload: {
   payload
 })
 
+const getMoreMessagesFromNodeFalied = () => ({
+  type: Types.GET_MORE_MESSAGES_FROM_NODE_FAILED,
+})
+
 export default {
   getMessagesRequest,
   getMessagesSucces,
@@ -229,6 +244,7 @@ export default {
   postMessageSucces,
   getMessagesFromNodeRequest,
   getMessagesFromNodeSucces,
+  getMessagesFromNodeFailed,
   deleteMessageRequest,
   deleteMessageSucces,
   editMessageRequest,
@@ -253,6 +269,8 @@ export default {
   getLikesForCommentSuccess,
   getMoreMessagesRequest,
   getMoreMessagesSucces,
+  getMoreMessagesFailed,
   getMoreMessagesFromNodeRequest,
   getMoreMessagesFromNodeSucces,
+  getMoreMessagesFromNodeFalied,
 }

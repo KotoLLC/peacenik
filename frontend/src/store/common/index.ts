@@ -3,13 +3,15 @@ import { Types } from './actions'
 export interface State {
   errorMessage: string
   successMessage: string
-  isPreloaderActive: boolean
+  isAboutUsViewed: boolean
 }
+
+const kotoIsAboutUsViewed = localStorage.getItem('kotoIsAboutUsViewed')
 
 const initialState: State = {
   errorMessage: '',
   successMessage: '',
-  isPreloaderActive: false,
+  isAboutUsViewed: (kotoIsAboutUsViewed) ? JSON.parse(kotoIsAboutUsViewed) : false,
 }
 
 const reducer = (state = initialState, action) => {
@@ -28,10 +30,10 @@ const reducer = (state = initialState, action) => {
         }
       }
     }
-    case Types.SET_PRELOADER_ACTIVE: {
+    case Types.SET_ABOUT_US_VIEWD: {
       return {
         ...state, ...{
-          isPreloaderActive: action.payload,
+          isAboutUsViewed: true,
         }
       }
     }

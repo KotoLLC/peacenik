@@ -11,7 +11,6 @@ export function* watchlogin(action: { type: string, payload: ApiTypes.Login }) {
     yield put(Actions.authorization.loginSucces())
     localStorage.setItem('kotoIsLogged', 'true')
   } else {
-    yield put(Actions.common.setPreloaderActive(false))
     yield put(Actions.authorization.loginFailed(response?.error?.response?.data?.msg || 'Server error'))
   }
 }

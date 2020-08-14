@@ -236,9 +236,14 @@ export const AttachmentWrapper = styled.div`
 
 export const PreloaderWrapper = styled.div`
   position: fixed;
-  bottom: 10px;
+  bottom: 50%;
   left: 50%;
-  transform: translate(-50%, 0);
+  transform: translate(-50%, -50%);
+
+  &.bottom {
+    bottom: 10px;
+    transform: translate(-50%, 0);
+  }
 `
 
 export const CircularProgressStyled = styled(CircularProgress)`
@@ -314,4 +319,11 @@ export const CommentsLink = styled.span`
   cursor: pointer;
   font-weight: bold;
   margin: 0 0 10px 20px;
+`
+
+export const BoldText = styled.span`
+  font-weight: bold;
+  cursor: pointer;
+  display: inline-block;
+  margin-left: 4px;
 `

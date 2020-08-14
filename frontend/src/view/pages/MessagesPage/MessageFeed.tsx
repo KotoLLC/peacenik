@@ -4,26 +4,29 @@ import Message from './Message'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'
-import { Link } from 'react-router-dom'
 import { StoreTypes, ApiTypes, CommonTypes } from 'src/types'
-import Button from '@material-ui/core/Button'
+import { RouteComponentProps } from 'react-router-dom'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import { sortByDate } from '@services/sortByDate'
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import {
   ContainerStyled,
   EmptyMessage,
   UpButton,
   PreloaderWrapper,
+  BoldText,
 } from './styles'
-import { sortByDate } from '@services/sortByDate'
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 
-interface Props {
+interface Props extends RouteComponentProps {
   messageTokens: CommonTypes.NodeTypes.CurrentNode[]
   currentNode: CommonTypes.NodeTypes.CurrentNode
   messages: ApiTypes.Messages.Message[]
   userId: string
   authToken: string
-  isMoreMessageRequested: boolean
+  isMoreMessagesRequested: boolean
+  isMessagesRequested: boolean | null
+  isAboutUsViewed: boolean
+
   onGetMessages: () => void
   onGetMoreMessages: () => void
   onGetCurrentNode: () => void
@@ -71,6 +74,7 @@ class MessageFeed extends React.Component<Props, State> {
   }
 
   static getDerivedStateFromProps(newProps: Props, prevState: State) {
+    
     if (newProps.authToken !== prevState.authToken) {
       newProps.onGetMessages()
       newProps.onGetCurrentNode()
@@ -106,13 +110,13 @@ class MessageFeed extends React.Component<Props, State> {
       isAuthor={(userId === item.user_id) ? true : false} />
     )
   }
-
+ 
   onScrollUp = () => {
     this.editorRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
   }
 
   checkCurrentNode = () => {
-    const { currentNode, messages } = this.props
+    const { currentNode, messages, isAboutUsViewed, history } = this.props
 
     if (currentNode.host) {
       return (
@@ -121,23 +125,41 @@ class MessageFeed extends React.Component<Props, State> {
           {this.mapMessages(messages)}
         </>
       )
-    } else {
+    }
+
+    if (isAboutUsViewed) {
       return (
         <EmptyMessage>
-          <Link to="/about-us">
-            <Button variant="outlined" >View our presentation</Button>
-          </Link>
+          For start the communicating, you should create a <BoldText onClick={() => history.push('/nodes/create')}>node</BoldText>.
         </EmptyMessage>
       )
+    }
+
+    return (
+      <EmptyMessage>
+        <PreloaderWrapper>
+          <CircularProgress/>
+        </PreloaderWrapper>
+      </EmptyMessage>
+    )
+  }
+
+  componentDidUpdate() {
+    const { isMessagesRequested, messageTokens, isAboutUsViewed } = this.props
+    if (isAboutUsViewed) return false
+
+    if (isMessagesRequested === false && !messageTokens.length) {
+      this.props.history.push('/about-us')
     }
   }
 
   render() {
-    const { isMoreMessageRequested } = this.props
+    const { isMoreMessagesRequested } = this.props
+
     return (
       <ContainerStyled maxWidth="md">
         {this.checkCurrentNode()}
-        {isMoreMessageRequested && <PreloaderWrapper><CircularProgress/></PreloaderWrapper>}
+        {isMoreMessagesRequested && <PreloaderWrapper className="bottom"><CircularProgress/></PreloaderWrapper>}
         <UpButton color="inherit" onClick={this.onScrollUp}>
           <ArrowUpwardIcon />
         </UpButton>
@@ -146,14 +168,25 @@ class MessageFeed extends React.Component<Props, State> {
   }
 }
 
-type StateProps = Pick<Props, 'messageTokens' | 'currentNode' | 'messages' | 'userId' | 'authToken' | 'isMoreMessageRequested'>
+type StateProps = Pick<Props, 
+  | 'messageTokens' 
+  | 'currentNode' 
+  | 'messages' 
+  | 'userId' 
+  | 'authToken' 
+  | 'isMoreMessagesRequested'
+  | 'isMessagesRequested'
+  | 'isAboutUsViewed'
+  >
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   messageTokens: selectors.messages.messageTokens(state),
   currentNode: selectors.messages.currentNode(state),
   messages: selectors.messages.messages(state),
   userId: selectors.profile.userId(state),
   authToken: selectors.authorization.authToken(state),
-  isMoreMessageRequested: selectors.messages.isMoreMessageRequested(state),
+  isMoreMessagesRequested: selectors.messages.isMoreMessagesRequested(state),
+  isMessagesRequested: selectors.messages.isMessagesRequested(state),
+  isAboutUsViewed: selectors.common.isAboutUsViewed(state),
 })
 
 type DispatchProps = Pick<Props, 'onGetMessages' | 'onGetCurrentNode' | 'onGetMoreMessages'>

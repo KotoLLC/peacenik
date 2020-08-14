@@ -1,73 +1,45 @@
-import React, { useState } from 'react'
-import ReactPageScroller from 'react-page-scroller'
-import Typography from '@material-ui/core/Typography'
-import { v4 as uuidv4 } from 'uuid'
+import React from 'react'
 import { withRouter, RouteComponentProps } from 'react-router'
-import Button from '@material-ui/core/Button'
+import { connect } from 'react-redux'
+import Actions from '@store/actions'
+import AwesomeSlider from 'react-awesome-slider'
+import { Slide1 } from './Slide1'
+import { Slide2 } from './Slide2'
+import { Slide3 } from './Slide3'
+import { withNavigationHandlers } from 'react-awesome-slider/dist/navigation'
+const NavigationSlider = withNavigationHandlers(AwesomeSlider)
 
-import {
-  BuleetsWrapper,
-  Bullet,
-  ContainerStyled,
-  GoBackButton,
-} from './styles'
+interface Props extends RouteComponentProps {
+  onSetAboutUsViewed: () => void
+}
 
-export const AboutUs: React.SFC<RouteComponentProps> = (props) => {
-  const [currentPage, handlePageChange] = useState(0)
+export const AboutUs: React.SFC<Props> = (props) => {
 
-  const getPagesBullets = () => {
-    const countOfBullets = 3 // set count of bullets here
-    const bullets: JSX.Element[] = []
-
-    for (let i = 1; i <= countOfBullets; i++) {
-      bullets.push(
-        <Bullet
-          key={uuidv4()}
-          className={((i - 1) === currentPage) ? 'active' : ''}
-          onClick={() => handlePageChange(i - 1)}
-        />
-      )
-    }
-
-    return [...bullets]
+  const onGoToNodes = () => {
+    props.history.push('/nodes/create')
+    props.onSetAboutUsViewed()
+    localStorage.setItem('kotoIsAboutUsViewed', 'true')
   }
 
   return (
-    <>
-      <ReactPageScroller
-        pageOnChange={handlePageChange}
-        customPageNumber={currentPage}
-      >
-        {/* slide */}
-        <ContainerStyled maxWidth="md">
-          <div>
-            <Typography variant="h3" gutterBottom>Description Koto</Typography>
-            <Typography variant="subtitle1" gutterBottom>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos blanditiis tenetur</Typography>
-          </div>
-        </ContainerStyled>
-
-        {/* slide */}
-        <ContainerStyled maxWidth="md">
-          <div>
-            <Typography variant="h3" gutterBottom>Some image</Typography>
-            <img src="https://picsum.photos/id/10/400/300" alt="img"/>
-            <Typography variant="subtitle1" gutterBottom>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos blanditiis tenetur</Typography>
-          </div>
-        </ContainerStyled>
-
-        {/* slide */}
-        <ContainerStyled maxWidth="md">
-          <div>
-            <Typography variant="h3" gutterBottom>Create node</Typography>
-            <Button variant="contained" color="primary" onClick={() => props.history.push('/nodes/create')}>create</Button>
-          </div>
-        </ContainerStyled>
-
-      </ReactPageScroller>
-      <BuleetsWrapper>{getPagesBullets()}</BuleetsWrapper>
-      <GoBackButton onClick={props.history.goBack} variant="contained" color="primary">go back</GoBackButton>
-    </>
+    <NavigationSlider
+      className="awesome-slider"
+      media={[
+        {
+          children: <Slide1 onGoToNodes={onGoToNodes} />
+        }, {
+          children: <Slide2 />
+        }, {
+          children: <Slide3 onGoToNodes={onGoToNodes} />
+        }
+      ]}
+    />
   )
 }
 
-export default withRouter(AboutUs)
+type DispatchProps = Pick<Props, 'onSetAboutUsViewed'>
+const mapDispatchToProps = (dispath): DispatchProps => ({
+  onSetAboutUsViewed: () => dispath(Actions.common.setAboutUsViewed())
+})
+
+export default connect(null, mapDispatchToProps)(withRouter(AboutUs))

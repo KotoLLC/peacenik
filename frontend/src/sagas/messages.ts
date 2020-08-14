@@ -17,6 +17,10 @@ export function* watchGetMessages() {
     const state = yield select()
     const nodesWithMessages = selectors.messages.nodesWithMessages(state)
 
+    if (!messageTokens.length) {
+      yield put(Actions.messages.getMessagesFromNodeFailed())
+    }
+
     yield all(messageTokens.map(item => {
 
       let count
@@ -59,6 +63,8 @@ export function* watchGetMoreMessages() {
         }
       },
     })))
+  } else {
+    yield put(Actions.messages.getMoreMessagesFailed())
   }
 }
 
@@ -97,6 +103,7 @@ export function* watchGetMoreMessagesFromNode(action: { type: string, payload: A
       messages: resultData
     }))
   } else {
+    yield put(Actions.messages.getMoreMessagesFromNodeFalied())
     if (response.error.response.status === 400) {
       yield put(Actions.authorization.getAuthTokenRequest())
       yield put(Actions.messages.getMessagesRequest())

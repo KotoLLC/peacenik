@@ -10,7 +10,8 @@ export interface State {
     messages: ApiTypes.Messages.Message[],
     lastMessageDate: string | null
   }>
-  isMoreMessageRequested: boolean
+  isMoreMessagesRequested: boolean
+  isMessagesRequested: boolean | null
   uploadLink: ApiTypes.UploadLink | null
   currentMessageLikes: ApiTypes.Messages.LikesInfoData | null
   currentCommentLikes: ApiTypes.Messages.LikesInfoData | null
@@ -24,7 +25,8 @@ const initialState: State = {
   },
   isMessagePostedSuccess: false,
   messages: [],
-  isMoreMessageRequested: false,
+  isMoreMessagesRequested: false,
+  isMessagesRequested: null,
   nodesWithMessages: new Map([]),
   uploadLink: null,
   currentMessageLikes: null,
@@ -35,7 +37,9 @@ const reducer = (state = initialState, action) => {
   switch (action.type) {
     case Types.GET_MESSAGES_SUCCESS: {
       return {
-        ...state, ...{ messageTokens: action.payload }
+        ...state, ...{ 
+          messageTokens: action.payload,
+        }
       }
     }
     case Types.GET_CURRENT_NODE_SUCCESS: {
@@ -55,13 +59,24 @@ const reducer = (state = initialState, action) => {
     }
     case Types.GET_MORE_MESSAGES_REQUEST: {
       return {
-        ...state, ...{ isMoreMessageRequested: true}
+        ...state, ...{ isMoreMessagesRequested: true }
+      }
+    }
+    case Types.GET_MORE_MESSAGES_FAILED: {
+      return {
+        ...state, ...{ isMoreMessagesRequested: false }
+      }
+    }
+    case Types.GET_MORE_MESSAGES_FROM_NODE_FAILED: {
+      return {
+        ...state, ...{ isMoreMessagesRequested: false }
       }
     }
     case Types.GET_MORE_MESSAGES_SUCCESS: {
       return {
         ...state, ...{ 
-          messageTokens: action.payload
+          messageTokens: action.payload,
+          isMessagesRequested: false,
         }
       }
     }
@@ -78,13 +93,18 @@ const reducer = (state = initialState, action) => {
 
       return {
         ...state, ...{ 
-          isMoreMessageRequested: false,
+          isMoreMessagesRequested: false,
           messages: uniqBy([...messages, ...state.messages], 'id'),
           nodesWithMessages: state.nodesWithMessages.set(node, {
             messages: addMassagesToNodesWithMessages(),
             lastMessageDate: messages.length ? messages[messages.length - 1]?.updated_at : null
           })
         }
+      }
+    }
+    case Types.GET_MESSAGES_FROM_NODE_FAILED: {
+      return {
+        ...state, ...{ isMessagesRequested: false }
       }
     }
     case Types.GET_MESSAGE_UPLOAD_LINK_SUCCESS: {
