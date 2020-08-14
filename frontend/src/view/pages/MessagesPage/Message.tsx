@@ -16,6 +16,7 @@ import { Player } from 'video-react'
 import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
 import Badge from '@material-ui/core/Badge'
 import SendIcon from '@material-ui/icons/Send'
+import LayersClearIcon from '@material-ui/icons/LayersClear'
 import {
   PaperStyled,
   MessageHeader,
@@ -93,19 +94,29 @@ const Message: React.SFC<Props> = (props) => {
   const [isCommentsOpen, openComments] = useState<boolean>(false)
   const [isFileUploaded, setUploadedFile] = useState<boolean>(false)
   const [file, setFile] = useState<File | null>(null)
+  const [isAttacmentDeleted, onAttachmentDelete] = useState<boolean>(false)
   const [isLikesInfoRequested, setLikesInfoRequest] = useState<boolean>(false)
 
   const commentEditorRef = useRef<HTMLTextAreaElement>(null)
 
   const onMessageSave = () => {
+
+    let attachment_changed = (file?.name) ? true : false
+    let attachment_id = (file?.name) && uploadLink?.blob_id
+    
+    if (isAttacmentDeleted) {
+      attachment_changed = true
+      attachment_id = ''
+    }
+
     props.onMessageEdit({
       host: sourceHost,
       body: {
         message_id: id,
         text: message,
         text_changed: true,
-        attachment_changed: (file?.name) ? true : false,
-        attachment_id: (file?.name) && uploadLink?.blob_id,
+        attachment_changed,
+        attachment_id,
       }
     })
     setEditor(false)
@@ -201,6 +212,11 @@ const Message: React.SFC<Props> = (props) => {
   }
 
   const renderAttachment = () => {
+
+    if (isAttacmentDeleted) {
+      return null
+    }
+
     if (file?.name && file?.type.indexOf('image') !== -1) {
       return (
         <AttachmentWrapper>
@@ -284,6 +300,7 @@ const Message: React.SFC<Props> = (props) => {
   const onFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const { onGetMessageUploadLink } = props
     setUploadedFile(false)
+    onAttachmentDelete(false)
 
     const uploadedFile = event.target.files
     if (uploadedFile && uploadedFile[0]) {
@@ -294,6 +311,11 @@ const Message: React.SFC<Props> = (props) => {
       })
       setFile(uploadedFile[0])
     }
+  }
+
+  const onFileDelete = () => {
+    onAttachmentDelete(true)
+    setFile(null)
   }
 
   useEffect(() => {
@@ -369,6 +391,11 @@ const Message: React.SFC<Props> = (props) => {
                     />
                   </IconButton>
                 </Tooltip>
+                {(file || attachment_type) && <Tooltip title={`Delete attachment`}>
+                <IconButton component="label" onClick={onFileDelete}>
+                  <LayersClearIcon fontSize="small" color="primary" />
+                </IconButton>
+                </Tooltip>}
                 <ButtonSend
                   variant="contained"
                   color="primary"

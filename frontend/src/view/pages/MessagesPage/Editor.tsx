@@ -7,6 +7,7 @@ import selectors from '@selectors/index'
 import AttachFileIcon from '@material-ui/icons/AttachFile'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
+import LayersClearIcon from '@material-ui/icons/LayersClear'
 import { Player } from 'video-react'
 import {
   TextareaAutosizeStyled,
@@ -96,6 +97,10 @@ const Editor: React.SFC<Props> = (props) => {
     return null
   }
 
+  const onFileDelete = () => {
+    setFile(null)
+  }    
+
   useEffect(() => {
     if (isMessagePostedSuccess) {
       onValueChange('')
@@ -148,6 +153,11 @@ const Editor: React.SFC<Props> = (props) => {
                   />
                 </IconButton>
               </Tooltip>
+              {file && <Tooltip title={`Delete attachment`}>
+                <IconButton component="label" onClick={onFileDelete}>
+                  <LayersClearIcon fontSize="small" color="primary" />
+                </IconButton>
+              </Tooltip>}
               <ButtonSend
                 variant="contained"
                 color="primary"
