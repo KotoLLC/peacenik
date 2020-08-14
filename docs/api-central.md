@@ -1,67 +1,11 @@
-# Build
-
-```
-go build -o central-service ./central/cmd/
-```
-
-# Configure
-
-Rename `central-config.yml.example` to `central-config.yml` and change values.
-
-```yaml
-address: :12001
-private_key_path: central.rsa
-admins:
-  - admin@mail.org
-token_duration: 3600
-
-db:
-  host: localhost
-  port: 5432
-  ssl_mode: disable
-  user: postgres
-  password: docker
-  db_name: koto-central
-
-s3:
-  endpoint: http://127.0.0.1:9000
-  region:
-  key: minioadmin
-  secret: minioadmin
-  bucket: koto-central
-
-smtp:
-  host: smtp.mailtrap.io
-  port: 587
-  user: 23423423423423
-  password: 4534534terer
-  from: admin@koto.org
-
-``` 
-
-# Run
-
-## Minio (for S3 testing)
-```
-docker run --name minio-koto -p 9000:9000 -e MINIO_ACCESS_KEY=minioadmin -e MINIO_SECRET_KEY=minioadmin -d minio/minio server /data
-```
-## PostGres
-```
-docker run --name koto-central -d -p 5432:5432 -e POSTGRES_PASSWORD=docker -e POSTGRES_DB=koto-central -d postgres
-```
-
-## Central Service
-```
-./central-service -config central-config.yml
-```
-
-# API
+# Central API Reference
 
 ## Server Public Key
 
-```
 ### Get the public key to check token signatures
-POST http://localhost:12001/rpc.InfoService/PublicKey
+
+```
+POST http://central.koto.at/rpc.InfoService/PublicKey
 Content-Type: application/json
 
 {}
@@ -69,9 +13,10 @@ Content-Type: application/json
 
 ## Registration
 
-```
 ### Register a new user and send email with confirmation link
-POST http://localhost:12001/rpc.AuthService/Register
+
+```
+POST https://central.koto.at/rpc.AuthService/Register
 Content-Type: application/json
 
 {
@@ -80,9 +25,12 @@ Content-Type: application/json
   "password":  "12345"
 }
 
+```
 
 ### Register a new invited user
-POST http://localhost:12001/rpc.AuthService/Register
+
+```
+POST https://central.koto.at/rpc.AuthService/Register
 Content-Type: application/json
 
 {
@@ -91,16 +39,20 @@ Content-Type: application/json
   "password":  "12345",
   "invite_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFuZHJleTQ0QG1haWwuY29tIiwiZXhwIjoxNjI4MTYwNTczLCJpZCI6ImJlYzc5ZmFiLWE4Y2UtNDdjOC1hODI2LTQ3ZjA4YTA2ZmY2ZiIsIm5hbWUiOiJhbmRyZXkxIiwic2NvcGUiOiJ1c2VyLWludml0ZSJ9.bBItLKq8fgw8yBEYXRNb8gt6DcDa_VchU5mR_fTdBkgcU5ZkMksZsm7PN2cEgBuW50SHKlaPjTfRHXfEjEH6JF3HOVmjs-sccjrv5VbQCxv6eFkAll6udBpznLWJ4VOxdOKrq19VXE41GWaMVApOMmbzwPoAIvrZxBq9CgwyfEY"
 }
-
+```
 
 ### Send email with confirmation link (explicitely)
-POST http://localhost:12001/rpc.AuthService/SendConfirmLink
+
+```
+POST https://central.koto.at/rpc.AuthService/SendConfirmLink
 Content-Type: application/json
 {}
-
+```
 
 ### Confirm user by confirmation token
-POST http://localhost:12001/rpc.AuthService/Confirm
+
+```
+POST https://central.koto.at/rpc.AuthService/Confirm
 Content-Type: application/json
 
 {
@@ -110,29 +62,37 @@ Content-Type: application/json
 
 ## Authentication
 
-```
 ### Login
-POST http://localhost:12001/rpc.AuthService/Login
+
+```
+POST https://central.koto.at/rpc.AuthService/Login
 Content-Type: application/json
 
 {"name": "andrey", "password":  "12345"}
+```
 
+### Get current user info
 
-### Get current user info.
-POST http://localhost:12001/rpc.UserService/Me
+```
+POST https://central.koto.at/rpc.UserService/Me
 Content-Type: application/json
 
 {}
-
+```
 
 ### Get a short-lived signed authentication token
-POST http://localhost:12001/rpc.TokenService/Auth
+
+```
+POST https://central.koto.at/rpc.TokenService/Auth
 Content-Type: application/json
 
 {}
+```
 
 ### Logout
-POST http://localhost:12001/rpc.AuthService/Logout
+
+```
+POST https://central.koto.at/rpc.AuthService/Logout
 Content-Type: application/json
 
 {}
@@ -140,47 +100,57 @@ Content-Type: application/json
 
 ## Node Management
 
-```
 ### Register a new node
-POST http://localhost:12001/rpc.NodeService/Register
+
+```
+POST https://central.koto.at/rpc.NodeService/Register
 Content-Type: application/json
 
 {
-  "address": "http://localhost:12002",
+  "address": "https://localhost:12002",
   "details": "my cool node",
   "post_limit": 2
 }
+```
 
 
 ### Get all nodes (admin access) or my nodes
-POST http://localhost:12001/rpc.NodeService/Nodes
+
+```
+POST https://central.koto.at/rpc.NodeService/Nodes
 Content-Type: application/json
 
 {}
-
+```
 
 ### Approve node (admin access)
-POST http://localhost:12001/rpc.NodeService/Approve
+
+```
+POST https://central.koto.at/rpc.NodeService/Approve
 Content-Type: application/json
 
 {"node_id":  "e60b3ff4-9ac0-4ba4-a45c-626c4eb29f75"}
-
+```
 
 ### Remove node
-POST http://localhost:12001/rpc.NodeService/Remove
+
+```
+POST https://central.koto.at/rpc.NodeService/Remove
 Content-Type: application/json
 
 {"node_id":  "ba7c6e53-dfea-46ec-b0ff-208f984393c4"}
-
+```
 
 ### Set post limit for a node
+
 This will set limits for a node as follows:
 `"post_limit": 0` - only admin can post
 `"post_limit": 1` - only admin's friends can post
 `"post_limit": 2` - admin's 2nd level of friends (friends of friends) can post
 etc...
 
-POST http://localhost:12001/rpc.NodeService/SetPostLimit
+```
+POST https://central.koto.at/rpc.NodeService/SetPostLimit
 Content-Type: application/json
 
 {
@@ -191,39 +161,49 @@ Content-Type: application/json
 
 ## Invites
 
+### Create invite
+
+
 ```
-### Create invite.
-POST http://localhost:12001/rpc.InviteService/Create
+POST https://central.koto.at/rpc.InviteService/Create
 Content-Type: application/json
 
 {"friend": "andrey@mail.com"}
+```
 
+### Get invites from me
 
-### Get invites from me.
-POST http://localhost:12001/rpc.InviteService/FromMe
+```
+POST https://central.koto.at/rpc.InviteService/FromMe
 Content-Type: application/json
 
 {}
+```
 
+### Get invites for me
 
-### Get invites for me.
-POST http://localhost:12001/rpc.InviteService/ForMe
+```
+POST https://central.koto.at/rpc.InviteService/ForMe
 Content-Type: application/json
 
 {}
+```
 
+### Accept invite
 
-### Accept invite.
-POST http://localhost:12001//rpc.InviteService/Accept
+```
+POST https://central.koto.at//rpc.InviteService/Accept
 Content-Type: application/json
 
 {
   "inviter_id": "USER-ID"
 }
+```
 
+### Reject invite
 
-### Reject invite.
-POST http://localhost:12001//rpc.InviteService/Reject
+```
+POST https://central.koto.at//rpc.InviteService/Reject
 Content-Type: application/json
 
 {
@@ -233,16 +213,20 @@ Content-Type: application/json
 
 ## Friends
 
+
+### List of friends (for current user)
+
 ```
-### List of friends (for current user).
-POST http://localhost:12001/rpc.UserService/Friends
+POST https://central.koto.at/rpc.UserService/Friends
 Content-Type: application/json
 
 {}
+```
 
+### List of friends of friends (for current user)
 
-### List of friends of friends (for current user).
-POST http://localhost:12001/rpc.UserService/FriendsOfFriends
+```
+POST https://central.koto.at/rpc.UserService/FriendsOfFriends
 Content-Type: application/json
 
 {}
@@ -250,16 +234,19 @@ Content-Type: application/json
 
 ## Tokens
 
-```
 ### Get a short-lived signed "post message" token
-POST http://localhost:12001/rpc.TokenService/PostMessage
+
+```
+POST https://central.koto.at/rpc.TokenService/PostMessage
 Content-Type: application/json
 
 {}
-
+```
 
 ### Get a short-lived signed "get messages" token
-POST http://localhost:12001/rpc.TokenService/GetMessages
+
+```
+POST https://central.koto.at/rpc.TokenService/GetMessages
 Content-Type: application/json
 
 {}
@@ -267,9 +254,10 @@ Content-Type: application/json
 
 ## Blobs
 
-```
 ### Get blob upload link
-POST http://localhost:12001/rpc.BlobService/UploadLink
+
+```
+POST https://central.koto.at/rpc.BlobService/UploadLink
 Content-Type: application/json
 
 {
@@ -281,7 +269,7 @@ Content-Type: application/json
 ## Edit profile information for current user
 
 ```
-POST http://localhost:12001/rpc.UserService/EditProfile
+POST https://central.koto.at/rpc.UserService/EditProfile
 Content-Type: application/json
 
 {
@@ -294,9 +282,11 @@ Content-Type: application/json
 
 ## Users
 
+
+### Get users info
+
 ```
-### Get users info.
-POST http://localhost:12001/rpc.UserService/Users
+POST https://central.koto.at/rpc.UserService/Users
 Content-Type: application/json
 
 {
@@ -306,32 +296,39 @@ Content-Type: application/json
 
 ## Notifications
 
-```
 ### Notification counters (total, unread)
-POST http://localhost:12001/rpc.NotificationService/Count
+
+```
+POST https://central.koto.at/rpc.NotificationService/Count
 Content-Type: application/json
 
 {}
-
+```
 
 ### Notifications
-POST http://localhost:12001/rpc.NotificationService/Notifications
+
+```
+POST https://central.koto.at/rpc.NotificationService/Notifications
 Content-Type: application/json
 
 {}
-
+```
 
 ### Mark notifications as read
-POST http://localhost:12001/rpc.NotificationService/MarkRead
+
+```
+POST https://central.koto.at/rpc.NotificationService/MarkRead
 Content-Type: application/json
 
 {
   "last_known_id": "LAST-KNOWN-NOTIFICATION-ID"
 }
-
+```
 
 ### Clean notifications
-POST http://localhost:12001/rpc.NotificationService/Clean
+
+```
+POST https://central.koto.at/rpc.NotificationService/Clean
 Content-Type: application/json
 
 {
