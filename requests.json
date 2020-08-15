@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "0248a775-4bc1-4ea7-93e9-3245ead21273",
 		"name": "requests",
-		"description": "Authenticate from central server",
+		"description": "Authenticate from user hub",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -483,7 +483,7 @@
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "Matt node & invitations",
+			"name": "Matt hubs & invitations",
 			"item": [
 				{
 					"name": "Login Matt",
@@ -762,7 +762,7 @@
 					"response": []
 				},
 				{
-					"name": "Matt registers a new node",
+					"name": "Matt registers a new message hub",
 					"event": [
 						{
 							"listen": "test",
@@ -793,14 +793,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:12001/rpc.NodeService/Register",
+							"raw": "http://localhost:12001/rpc.MessageHubService/Register",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "12001",
 							"path": [
-								"rpc.NodeService",
+								"rpc.MessageHubService",
 								"Register"
 							]
 						}
@@ -808,7 +808,7 @@
 					"response": []
 				},
 				{
-					"name": "Matt (who is an admin) gets all nodes in a list",
+					"name": "Matt (who is an admin) gets all hubs in a list",
 					"event": [
 						{
 							"listen": "test",
@@ -816,8 +816,8 @@
 								"id": "02467edd-3bb0-4689-8f99-bec4b18e7db4",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
-									"postman.setEnvironmentVariable(\"NODE\", jsonData.nodes[0].id);",
-									"tests[\"id = \" + jsonData.nodes[0].id] = true; ",
+									"postman.setEnvironmentVariable(\"HUB\", jsonData.hubs[0].id);",
+									"tests[\"id = \" + jsonData.hubs[0].id] = true; ",
 									"pm.response.to.have.status(200);"
 								],
 								"type": "text/javascript"
@@ -841,22 +841,22 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:12001/rpc.NodeService/Nodes",
+							"raw": "http://localhost:12001/rpc.MessageHubService/Hubs",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "12001",
 							"path": [
-								"rpc.NodeService",
-								"Nodes"
+								"rpc.MessageHubService",
+								"Hubs"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Matt (who is an admin) approves a node",
+					"name": "Matt (who is an admin) approves a hub",
 					"event": [
 						{
 							"listen": "test",
@@ -881,20 +881,20 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"node_id\":  \"{{NODE}}\"}",
+							"raw": "{\"hub_id\":  \"{{HUB}}\"}",
 							"options": {
 								"raw": {}
 							}
 						},
 						"url": {
-							"raw": "http://localhost:12001/rpc.NodeService/Approve",
+							"raw": "http://localhost:12001/rpc.MessageHubService/Approve",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "12001",
 							"path": [
-								"rpc.NodeService",
+								"rpc.MessageHubService",
 								"Approve"
 							]
 						}
@@ -2036,7 +2036,7 @@
 					"response": []
 				},
 				{
-					"name": "Matt posts a message to his node",
+					"name": "Matt posts a message to his hub",
 					"event": [
 						{
 							"listen": "test",

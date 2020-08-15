@@ -27,11 +27,11 @@ import {
 
 interface Props {
   notifications: ApiTypes.Notifications.Notification[]
-  lastKnownIdFromNodes: CommonTypes.NotificationTypes.LastKnown[]
-  lastKnownIdFromCentral: CommonTypes.NotificationTypes.LastKnown | null
+  lastKnownIdFromMessageHubs: CommonTypes.NotificationTypes.LastKnown[]
+  lastKnownIdFromUserHub: CommonTypes.NotificationTypes.LastKnown | null
   onGetNotifications: () => void
-  onCleanNotificationsInCentral: (data: CommonTypes.NotificationTypes.LastKnown) => void
-  onCleanNotificationsInNode: (data: CommonTypes.NotificationTypes.LastKnown) => void
+  onCleanNotificationsInUserHub: (data: CommonTypes.NotificationTypes.LastKnown) => void
+  onCleanNotificationsInMessageHub: (data: CommonTypes.NotificationTypes.LastKnown) => void
 }
 
 interface State {
@@ -78,11 +78,11 @@ class NotificationsPage extends React.PureComponent<Props> {
       )
     }
 
-    if (type.indexOf('node') !== -1) {
+    if (type.indexOf('message-hub') !== -1) {
       return (
         <ListText>
           <StorageIcon fontSize="small" />
-          <ListLink to={`/nodes/list${urlVars}`}>{text}</ListLink>
+          <ListLink to={`/message-hubs/list${urlVars}`}>{text}</ListLink>
         </ListText>
       )
     }
@@ -131,19 +131,19 @@ class NotificationsPage extends React.PureComponent<Props> {
 
   onClean = () => {
     const { 
-      lastKnownIdFromNodes, 
-      lastKnownIdFromCentral, 
-      onCleanNotificationsInCentral,
-      onCleanNotificationsInNode,
+      lastKnownIdFromMessageHubs,
+      lastKnownIdFromUserHub,
+      onCleanNotificationsInUserHub,
+      onCleanNotificationsInMessageHub,
      } = this.props
     
-    if (lastKnownIdFromCentral) {
-      onCleanNotificationsInCentral(lastKnownIdFromCentral)
+    if (lastKnownIdFromUserHub) {
+      onCleanNotificationsInUserHub(lastKnownIdFromUserHub)
     } 
 
-    if (lastKnownIdFromNodes.length) {
-      lastKnownIdFromNodes.forEach(item => {
-        onCleanNotificationsInNode(item)
+    if (lastKnownIdFromMessageHubs.length) {
+      lastKnownIdFromMessageHubs.forEach(item => {
+        onCleanNotificationsInMessageHub(item)
       })
     }
   }
@@ -175,20 +175,20 @@ class NotificationsPage extends React.PureComponent<Props> {
   }
 }
 
-type StateProps = Pick<Props, 'notifications' |'lastKnownIdFromCentral' | 'lastKnownIdFromNodes'>
+type StateProps = Pick<Props, 'notifications' |'lastKnownIdFromUserHub' | 'lastKnownIdFromMessageHubs'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   notifications: selectors.notifications.notifications(state),
-  lastKnownIdFromCentral: selectors.notifications.lastKnownIdFromCentral(state),
-  lastKnownIdFromNodes: selectors.notifications.lastKnownIdFromNodes(state),
+  lastKnownIdFromUserHub: selectors.notifications.lastKnownIdFromUserHub(state),
+  lastKnownIdFromMessageHubs: selectors.notifications.lastKnownIdFromMessageHubs(state),
 })
 
-type DispatchProps = Pick<Props, 'onGetNotifications' | 'onCleanNotificationsInCentral' | 'onCleanNotificationsInNode'>
+type DispatchProps = Pick<Props, 'onGetNotifications' | 'onCleanNotificationsInUserHub' | 'onCleanNotificationsInMessageHub'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetNotifications: () => dispatch(Actions.notifications.getNotificationsRequest()),
-  onCleanNotificationsInCentral: (data: CommonTypes.NotificationTypes.LastKnown) => 
-          dispatch(Actions.notifications.cleanNotificationsInCentralRequest(data)),
-  onCleanNotificationsInNode: (data: CommonTypes.NotificationTypes.LastKnown) => 
-          dispatch(Actions.notifications.cleanNotificationsInNodeRequest(data)),
+  onCleanNotificationsInUserHub: (data: CommonTypes.NotificationTypes.LastKnown) =>
+          dispatch(Actions.notifications.cleanNotificationsInUserHubRequest(data)),
+  onCleanNotificationsInMessageHub: (data: CommonTypes.NotificationTypes.LastKnown) =>
+          dispatch(Actions.notifications.cleanNotificationsInMessageHubRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(NotificationsPage)

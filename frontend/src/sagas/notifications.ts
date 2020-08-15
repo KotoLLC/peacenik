@@ -1,7 +1,7 @@
 import { put, all, call } from 'redux-saga/effects'
 import Actions from '@store/actions'
 import { API } from '@services/api'
-import { nodesForMessagesBack2Front } from '@services/dataTransforms/nodesForMessagesTransform'
+import { messageHubsForMessagesBack2Front } from '@services/dataTransforms/messageHubsForMessagesTransform'
 import { Types as NotificationsTypes } from '@store/notifications/actions'
 import { CommonTypes } from 'src/types'
 
@@ -9,26 +9,26 @@ export function* watchGetNotifications() {
   const response = yield API.messages.getMessages()
 
   if (response.status === 200) {
-    const messageTokens = nodesForMessagesBack2Front(response.data?.tokens)
+    const messageTokens = messageHubsForMessagesBack2Front(response.data?.tokens)
 
-    yield all(messageTokens.map(item => call(watchGetNotificationsFromNode, {
-      type: NotificationsTypes.GET_NOTIFICATIONS_FROM_NODE_REQUEST,
+    yield all(messageTokens.map(item => call(watchGetNotificationsFromMessageHub, {
+      type: NotificationsTypes.GET_NOTIFICATIONS_FROM_MESSAGE_HUB_REQUEST,
       payload: item.host,
     })))
-    yield call(watchGetNotificationsFromCentral)
+    yield call(watchGetNotificationsFromUserHub)
   } 
 }
 
-export function* watchGetNotificationsFromNode(action: { type: string, payload: string }) {
-  const response = yield API.notifications.getNotificationsFromNode(action.payload)
+export function* watchGetNotificationsFromMessageHub(action: { type: string, payload: string }) {
+  const response = yield API.notifications.getNotificationsFromMessageHub(action.payload)
 
   if (response.status === 200) {
 
     const notifications = response.data?.notifications || []
 
     if (notifications.length) {
-      yield put(Actions.notifications.getNotificationsFromNodeSuccess(notifications))
-      yield put(Actions.notifications.setLastKnownIdFromNode({
+      yield put(Actions.notifications.getNotificationsFromMessageHubSuccess(notifications))
+      yield put(Actions.notifications.setLastKnownIdFromMessageHub({
         host: action.payload,
         id: notifications[notifications.length - 1].id
       })
@@ -37,15 +37,15 @@ export function* watchGetNotificationsFromNode(action: { type: string, payload: 
   }
 }
 
-export function* watchGetNotificationsFromCentral() {
-  const response = yield API.notifications.getNotificationsFromCentral()
+export function* watchGetNotificationsFromUserHub() {
+  const response = yield API.notifications.getNotificationsFromUserHub()
 
   if (response.status === 200) {
     const notifications = response.data?.notifications || []
 
     if (notifications.length) {
-      yield put(Actions.notifications.getNotificationsFromCentralSuccess(notifications))
-      yield put(Actions.notifications.setLastKnownIdFromCentral({
+      yield put(Actions.notifications.getNotificationsFromUserHubSuccess(notifications))
+      yield put(Actions.notifications.setLastKnownIdFromUserHub({
         id: notifications[notifications.length - 1].id
       })
       )
@@ -53,20 +53,20 @@ export function* watchGetNotificationsFromCentral() {
   } 
 }
 
-export function* watchCleanNotificationsInCentral(action: { type: string, payload: CommonTypes.NotificationTypes.LastKnown }) {
-  const response = yield API.notifications.cleanNotificationsInCentral(action.payload)
+export function* watchCleanNotificationsInUserHub(action: { type: string, payload: CommonTypes.NotificationTypes.LastKnown }) {
+  const response = yield API.notifications.cleanNotificationsInUserHub(action.payload)
 
   if (response.status === 200) {
-    yield put(Actions.notifications.cleanNotificationsInCentralSuccess())
+    yield put(Actions.notifications.cleanNotificationsInUserHubSuccess())
     yield put(Actions.notifications.getNotificationsRequest())
   }
 }
 
-export function* watchCleanNotificationsInNode(action: { type: string, payload: CommonTypes.NotificationTypes.LastKnown }) {
-  const response = yield API.notifications.cleanNotificationsInNode(action.payload)
+export function* watchCleanNotificationsInMessageHub(action: { type: string, payload: CommonTypes.NotificationTypes.LastKnown }) {
+  const response = yield API.notifications.cleanNotificationsInMessageHub(action.payload)
 
   if (response.status === 200) {
-    yield put(Actions.notifications.cleanNotificationsInNodeSuccess())
+    yield put(Actions.notifications.cleanNotificationsInMessageHubSuccess())
     yield put(Actions.notifications.getNotificationsRequest())
   }
 }

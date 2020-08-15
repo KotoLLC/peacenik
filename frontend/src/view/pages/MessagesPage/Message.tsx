@@ -50,7 +50,7 @@ import {
 interface Props extends ApiTypes.Messages.Message {
   isAuthor: boolean
   uploadLink: ApiTypes.UploadLink | null
-  currentNode: CommonTypes.NodeTypes.CurrentNode
+  currentHub: CommonTypes.MessageHubTypes.CurrentHub
   currentMessageLikes: ApiTypes.Messages.LikesInfoData | null
 
   onMessageEdit: (data: ApiTypes.Messages.EditMessage) => void
@@ -63,7 +63,7 @@ interface Props extends ApiTypes.Messages.Message {
 }
 
 // @ts-ignore
-const centralUrl: string = window.apiEndpoint
+const userHubUrl: string = window.apiEndpoint
 
 const Message: React.SFC<Props> = (props) => {
   const {
@@ -305,7 +305,7 @@ const Message: React.SFC<Props> = (props) => {
     const uploadedFile = event.target.files
     if (uploadedFile && uploadedFile[0]) {
       onGetMessageUploadLink({
-        host: props.currentNode.host,
+        host: props.currentHub.host,
         content_type: uploadedFile[0].type,
         file_name: uploadedFile[0].name,
       })
@@ -354,7 +354,7 @@ const Message: React.SFC<Props> = (props) => {
         <MessageHeader>
           <UserInfo>
             <AvatarWrapper>
-              <Avatar src={`${centralUrl}/image/avatar/${user_id}`} />
+              <Avatar src={`${userHubUrl}/image/avatar/${user_id}`} />
             </AvatarWrapper>
             <UserNameWrapper>
               <UserName>{user_name}</UserName>
@@ -427,10 +427,10 @@ const Message: React.SFC<Props> = (props) => {
   )
 }
 
-type StateProps = Pick<Props, 'uploadLink' | 'currentNode' | 'currentMessageLikes'>
+type StateProps = Pick<Props, 'uploadLink' | 'currentHub' | 'currentMessageLikes'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   uploadLink: state.messages.uploadLink,
-  currentNode: selectors.messages.currentNode(state),
+  currentHub: selectors.messages.currentHub(state),
   currentMessageLikes: selectors.messages.currentMessageLikes(state),
 })
 

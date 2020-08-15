@@ -2,7 +2,7 @@ import { axiosInstance } from './index'
 import { CommonTypes } from 'src/types'
 
 export default {
-  getNotificationsFromNode: async (host: string) => {
+  getNotificationsFromMessageHub: async (host: string) => {
     const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
     const config = {
       withCredentials: false,
@@ -15,13 +15,13 @@ export default {
     }).catch(error => ({ error }))
   },
   
-  getNotificationsFromCentral: async () => {
+  getNotificationsFromUserHub: async () => {
     return await axiosInstance.post(`/rpc.NotificationService/Notifications`, {}).then(response => {
       return response
     }).catch(error => ({ error }))
   },
 
-  cleanNotificationsInCentral: async (data: CommonTypes.NotificationTypes.LastKnown) => {
+  cleanNotificationsInUserHub: async (data: CommonTypes.NotificationTypes.LastKnown) => {
     return await axiosInstance.post(`/rpc.NotificationService/Clean`, {
       last_known_id: data.id
     }).then(response => {
@@ -29,7 +29,7 @@ export default {
     }).catch(error => ({ error }))
   },
   
-  cleanNotificationsInNode: async (data: CommonTypes.NotificationTypes.LastKnown) => {
+  cleanNotificationsInMessageHub: async (data: CommonTypes.NotificationTypes.LastKnown) => {
     const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
     const config = {
       withCredentials: false,

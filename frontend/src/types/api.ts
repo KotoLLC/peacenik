@@ -94,21 +94,21 @@ export declare namespace ApiTypes {
     }
   }
 
-  export namespace Nodes {
+  export namespace MessageHubs {
     export interface Create {
       address: string
       details: string
     }
 
-    export interface ApproveNode {
-      node_id: string
+    export interface ApproveHub {
+      hub_id: string
     }
 
-    export interface RemoveNode {
-      node_id: string
+    export interface RemoveHub {
+      hub_id: string
     }
 
-    export interface Node {
+    export interface Hub {
       address: string
       created_at: string
       approved_at?: string
@@ -173,7 +173,7 @@ export declare namespace ApiTypes {
       }
     }
 
-    export interface MessagesFromNode {
+    export interface MessagesFromHub {
       host: string,
       body: {
         token: string
@@ -244,17 +244,17 @@ export declare namespace ApiTypes {
  
     export type MessageTypes = 'message/post' | 'message/tag' | 'message/like'
     export type CommentTypes = 'comment/post' | 'comment/tag' | 'comment/like'
-    export type NodeTypes = 'node/add' | 'node/approve' | 'node/remove'
+    export type MessageHubTypes = 'message-hub/add' | 'message-hub/approve' | 'message-hub/remove'
     export type InviteTypes = 'invite/add' | 'invite/approve' | 'invite/reject'
 
     export interface Data {
       user_id: string
-      node_id?: string 
+      hub_id?: string
       message_id?: string
       comment_id?: string
     }
 
-    export type Type = MessageTypes | CommentTypes | NodeTypes | InviteTypes
+    export type Type = MessageTypes | CommentTypes | MessageHubTypes | InviteTypes
 
     export interface Notification {
       id: string,

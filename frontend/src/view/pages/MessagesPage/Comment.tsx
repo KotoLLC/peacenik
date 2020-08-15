@@ -25,7 +25,7 @@ import {
 import { ApiTypes, StoreTypes } from 'src/types'
 
 // @ts-ignore
-const centralUrl: string = window.apiEndpoint
+const userHubUrl: string = window.apiEndpoint
 
 interface Props extends ApiTypes.Messages.Comment {
   userId: string
@@ -141,7 +141,7 @@ const Comment: React.SFC<Props> = (props) => {
 
   return (
     <CommentWrapper ref={commentRef}>
-      <AvatarStyled src={`${centralUrl}/image/avatar/${user_id}`} />
+      <AvatarStyled src={`${userHubUrl}/image/avatar/${user_id}`} />
       <CommentTextWrapper>{
          isEditer ?
           <EditMessageField>

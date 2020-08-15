@@ -1,25 +1,25 @@
-# Running / testing a central service
+# Running / testing a user hub service
 
-## Running both a node and central service via docker-compose
+## Running both message and user hubs via docker-compose
 
 You can run both services locally from the root directory with:
 `docker-compose up`
 
-## Running the central service from source
+## Running the user hub from source
 
-### Build central service
+### Build user hub
 
 ```
-go build -o central-service ./central/cmd/
+go build -o user-hub-service ./userhub/cmd/
 ```
 
 ### Configure
 
-Rename `central-config.yml.example` to `central-config.yml` and change values.
+Rename `user-hub-config.yml.example` to `user-hub-config.yml` and change values.
 
 ```yaml
 address: :12001
-private_key_path: central.rsa
+private_key_path: user-hub.rsa
 admins:
   - admin@mail.org
 token_duration: 3600
@@ -30,14 +30,14 @@ db:
   ssl_mode: disable
   user: postgres
   password: docker
-  db_name: koto-central
+  db_name: koto-user-hub
 
 s3:
   endpoint: http://127.0.0.1:9000
   region:
   key: minioadmin
   secret: minioadmin
-  bucket: koto-central
+  bucket: koto-user-hub
 
 smtp:
   host: smtp.mailtrap.io
@@ -55,14 +55,14 @@ smtp:
 docker run --name minio-koto -p 9000:9000 -e MINIO_ACCESS_KEY=minioadmin -e MINIO_SECRET_KEY=minioadmin -d minio/minio server /data
 ```
 
-#### PostGres
+#### Postgres
 ```
-docker run --name koto-central -d -p 5432:5432 -e POSTGRES_PASSWORD=docker -e POSTGRES_DB=koto-central -d postgres
+docker run --name koto-user-hub-db -d -p 5432:5432 -e POSTGRES_PASSWORD=docker -e POSTGRES_DB=koto-user-hub -d postgres
 ```
 
-#### Run Central Service
+#### Run User Hub
 ```
-./central-service -config central-config.yml
+./user-hub-service -config user-hub-config.yml
 ```
 
 #### Run frontend user interface

@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package rpc;
+option go_package = "../rpc";
+
+import "model.proto";
+
+service MessageHubService {
+    rpc Register (MessageHubRegisterRequest) returns (Empty);
+    rpc Hubs (Empty) returns (MessageHubHubsResponse);
+    rpc Approve (MessageHubApproveRequest) returns (Empty);
+    rpc Remove (MessageHubRemoveRequest) returns (Empty);
+    rpc SetPostLimit (MessageHubPostLimitRequest) returns (Empty);
+}
+
+message MessageHubRegisterRequest {
+    string address = 1;
+    string details = 2;
+    int32 post_limit = 3;
+}
+
+message MessageHubHubsResponseHub {
+    string id = 1;
+    string address = 2;
+    User user = 3;
+    string created_at = 4;
+    string approved_at = 5;
+    string disabled_at = 6;
+    string details = 7;
+    int32 post_limit = 8;
+}
+
+message MessageHubHubsResponse {
+    repeated MessageHubHubsResponseHub hubs = 1;
+}
+
+message MessageHubApproveRequest {
+    string hub_id = 1;
+}
+
+message MessageHubRemoveRequest {
+    string hub_id = 1;
+}
+
+message MessageHubPostLimitRequest {
+    string hub_id = 1;
+    int32 post_limit = 2;
+}

@@ -3,23 +3,23 @@ import { selector, deepEqualSelector } from '../common'
 
 const state = createSelector(selector, data => data.messages)
 const messageTokens = deepEqualSelector(state, data => data.messageTokens)
-const currentNode = createSelector(state, data => data.currentNode)
+const currentHub = createSelector(state, data => data.currentHub)
 const isMoreMessagesRequested = createSelector(state, data => data.isMoreMessagesRequested)
 const isMessagesRequested = createSelector(state, data => data.isMessagesRequested)
 const isMessagePostedSuccess = createSelector(state, data => data.isMessagePostedSuccess)
 const messages = deepEqualSelector(state, data => data.messages)
-const nodesWithMessages = deepEqualSelector(state, data => data.nodesWithMessages)
+const hubsWithMessages = deepEqualSelector(state, data => data.hubsWithMessages)
 const currentMessageLikes = deepEqualSelector(state, data => data.currentMessageLikes)
 const currentCommentLikes = deepEqualSelector(state, data => data.currentCommentLikes)
 
 export default {
   messageTokens,
-  currentNode,
+  currentHub,
   isMessagePostedSuccess,
   messages,
   currentMessageLikes,
   currentCommentLikes,
-  nodesWithMessages,
+  hubsWithMessages,
   isMoreMessagesRequested,
   isMessagesRequested,
 }

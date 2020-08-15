@@ -2,11 +2,11 @@ import { Types } from './actions'
 import { CommonTypes, ApiTypes } from 'src/types'
 import uniqBy from 'lodash.uniqby'
 export interface State {
-  messageTokens: CommonTypes.NodeTypes.CurrentNode[]
-  currentNode: CommonTypes.NodeTypes.CurrentNode
+  messageTokens: CommonTypes.MessageHubTypes.CurrentHub[]
+  currentHub: CommonTypes.MessageHubTypes.CurrentHub
   isMessagePostedSuccess: boolean
   messages: ApiTypes.Messages.Message[]
-  nodesWithMessages: Map<string, {
+  hubsWithMessages: Map<string, {
     messages: ApiTypes.Messages.Message[],
     lastMessageDate: string | null
   }>
@@ -19,7 +19,7 @@ export interface State {
 
 const initialState: State = {
   messageTokens: [],
-  currentNode: {
+  currentHub: {
     host: '',
     token: '',
   },
@@ -27,7 +27,7 @@ const initialState: State = {
   messages: [],
   isMoreMessagesRequested: false,
   isMessagesRequested: null,
-  nodesWithMessages: new Map([]),
+  hubsWithMessages: new Map([]),
   uploadLink: null,
   currentMessageLikes: null,
   currentCommentLikes: null,
@@ -42,9 +42,9 @@ const reducer = (state = initialState, action) => {
         }
       }
     }
-    case Types.GET_CURRENT_NODE_SUCCESS: {
+    case Types.GET_CURRENT_MESSAGE_HUB_SUCCESS: {
       return {
-        ...state, ...{ currentNode: action.payload }
+        ...state, ...{ currentHub: action.payload }
       }
     }
     case Types.POST_MESSAGE_SUCCESS: {
@@ -67,7 +67,7 @@ const reducer = (state = initialState, action) => {
         ...state, ...{ isMoreMessagesRequested: false }
       }
     }
-    case Types.GET_MORE_MESSAGES_FROM_NODE_FAILED: {
+    case Types.GET_MORE_MESSAGES_FROM_HUB_FAILED: {
       return {
         ...state, ...{ isMoreMessagesRequested: false }
       }
@@ -80,13 +80,13 @@ const reducer = (state = initialState, action) => {
         }
       }
     }
-    case Types.GET_MESSAGES_FROM_NODE_SUCCESS: {
-      const { messages, node } = action.payload
+    case Types.GET_MESSAGES_FROM_HUB_SUCCESS: {
+      const { messages, hub } = action.payload
 
-      const addMassagesToNodesWithMessages = () => {
-        const currentNode = state.nodesWithMessages.get(node)  
-        if (currentNode) {
-          return uniqBy([...currentNode.messages, ...messages], 'id')
+      const addMassagesToHubsWithMessages = () => {
+        const currentHub = state.hubsWithMessages.get(hub)
+        if (currentHub) {
+          return uniqBy([...currentHub.messages, ...messages], 'id')
         } 
         return messages
       }
@@ -95,14 +95,14 @@ const reducer = (state = initialState, action) => {
         ...state, ...{ 
           isMoreMessagesRequested: false,
           messages: uniqBy([...messages, ...state.messages], 'id'),
-          nodesWithMessages: state.nodesWithMessages.set(node, {
-            messages: addMassagesToNodesWithMessages(),
+          hubsWithMessages: state.hubsWithMessages.set(hub, {
+            messages: addMassagesToHubsWithMessages(),
             lastMessageDate: messages.length ? messages[messages.length - 1]?.updated_at : null
           })
         }
       }
     }
-    case Types.GET_MESSAGES_FROM_NODE_FAILED: {
+    case Types.GET_MESSAGES_FROM_HUB_FAILED: {
       return {
         ...state, ...{ isMessagesRequested: false }
       }

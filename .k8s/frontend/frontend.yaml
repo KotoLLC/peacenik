@@ -20,7 +20,7 @@ spec:
         ports:
         - containerPort: 5000
         env:
-          - name: KOTO_CENTRAL_HOST
+          - name: KOTO_USER_HUB_ADDRESS
             value: http://central.koto.at
 ---
 apiVersion: v1

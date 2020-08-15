@@ -1,4 +1,4 @@
-# Node API reference
+# Message Hub API reference
 
 ### Post a message
 

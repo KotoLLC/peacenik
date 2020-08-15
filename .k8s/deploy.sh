@@ -25,8 +25,8 @@ deploy() {
 
     echo
     echo "==============================="
-    echo "Applying Koto Central resources"
-    kubectl apply -f ./central -n ${BACKEND_NAMESPACE}
+    echo "Applying Koto User Hub resources"
+    kubectl apply -f ./user-hub -n ${BACKEND_NAMESPACE}
     echo "====================================="
     echo "Waiting resources to become available"
     # wait for the pods to be available
@@ -34,8 +34,8 @@ deploy() {
 
     echo
     echo "============================"
-    echo "Applying Koto Node resources"
-    kubectl apply -f ./node -n ${BACKEND_NAMESPACE}
+    echo "Applying Koto Message Hub resources"
+    kubectl apply -f ./message-hub -n ${BACKEND_NAMESPACE}
     echo "====================================="
     echo "Waiting resources to become available"
     # wait for the pods to be available

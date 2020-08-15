@@ -2,7 +2,7 @@ import axios from 'axios'
 import authorization from './authorization'
 import registration from './registration'
 import friends from './friends'
-import nodes from './nodes'
+import messageHubs from './message-hubs'
 import profile from './profile'
 import messages from './messages'
 import notifications from './notifications'
@@ -22,7 +22,7 @@ export const API = {
   registration,
   authorization,
   friends,
-  nodes,
+  messageHubs,
   profile,
   messages,
   notifications,

@@ -4,12 +4,12 @@ import { selector, deepEqualSelector } from '../common'
 const state = createSelector(selector, data => data.notifications)
 const notifications = deepEqualSelector(state, data => data.notifications)
 const notificationLength = deepEqualSelector(state, data => data.notifications.length)
-const lastKnownIdFromNodes = deepEqualSelector(state, data => data.lastKnownIdFromNodes)
-const lastKnownIdFromCentral = deepEqualSelector(state, data => data.lastKnownIdFromCentral)
+const lastKnownIdFromMessageHubs = deepEqualSelector(state, data => data.lastKnownIdFromMessageHubs)
+const lastKnownIdFromUserHub = deepEqualSelector(state, data => data.lastKnownIdFromUserHub)
 
 export default {
   notifications,
   notificationLength,
-  lastKnownIdFromNodes,
-  lastKnownIdFromCentral,
+  lastKnownIdFromMessageHubs,
+  lastKnownIdFromUserHub,
 }

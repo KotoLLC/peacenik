@@ -17,7 +17,7 @@ spec:
 apiVersion: projectcontour.io/v1
 kind: HTTPProxy
 metadata:
-  name: node-proxy
+  name: message-hub-proxy
   namespace: backend
 spec:
   virtualhost:
@@ -26,13 +26,13 @@ spec:
     - conditions:
       - prefix: /
       services:
-        - name: node-service
+        - name: message-hub-service
           port: 12002
 ---
 apiVersion: projectcontour.io/v1
 kind: HTTPProxy
 metadata:
-  name: central-proxy
+  name: user-hub-proxy
   namespace: backend
 spec:
   virtualhost:
@@ -41,5 +41,5 @@ spec:
     - conditions:
       - prefix: /
       services:
-        - name: central-service
+        - name: user-hub-service
           port: 12001

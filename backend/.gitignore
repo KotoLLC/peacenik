@@ -17,6 +17,6 @@
 .idea/
 *.db
 *.rsa
-/central-service
-/node-service
+/user-hub-service
+/message-hub-service
 *-config.yml

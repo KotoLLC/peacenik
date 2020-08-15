@@ -15,8 +15,8 @@ interface Props extends RouteComponentProps {
 
 export const AboutUs: React.SFC<Props> = (props) => {
 
-  const onGoToNodes = () => {
-    props.history.push('/nodes/create')
+  const onGoToMessageHubs = () => {
+    props.history.push('/message-hubs/create')
     props.onSetAboutUsViewed()
     localStorage.setItem('kotoIsAboutUsViewed', 'true')
   }
@@ -26,11 +26,11 @@ export const AboutUs: React.SFC<Props> = (props) => {
       className="awesome-slider"
       media={[
         {
-          children: <Slide1 onGoToNodes={onGoToNodes} />
+          children: <Slide1 onGoToMessageHubs={onGoToMessageHubs} />
         }, {
           children: <Slide2 />
         }, {
-          children: <Slide3 onGoToNodes={onGoToNodes} />
+          children: <Slide3 onGoToMessageHubs={onGoToMessageHubs} />
         }
       ]}
     />

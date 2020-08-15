@@ -8,7 +8,7 @@ export default {
     }).catch(error => ({ error }))
   },
   
-  getCurrentNode: async () => {
+  getCurrentHub: async () => {
     return await axiosInstance.post('/rpc.TokenService/PostMessage', {}).then(response => {
       return response
     }).catch(error => ({ error }))
@@ -53,7 +53,7 @@ export default {
     }).catch(error => ({ error }))
   },
   
-  getMessagesFromNode: async (data: ApiTypes.Messages.MessagesFromNode) => {
+  getMessagesFromHub: async (data: ApiTypes.Messages.MessagesFromHub) => {
     const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
     const config = {
       withCredentials: false,

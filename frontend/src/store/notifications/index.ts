@@ -4,57 +4,57 @@ import { ApiTypes, CommonTypes } from 'src/types'
 
 export interface State {
   notifications: ApiTypes.Notifications.Notification[],
-  lastKnownIdFromNodes: CommonTypes.NotificationTypes.LastKnown[]
-  lastKnownIdFromCentral: CommonTypes.NotificationTypes.LastKnown | null
+  lastKnownIdFromMessageHubs: CommonTypes.NotificationTypes.LastKnown[]
+  lastKnownIdFromUserHub: CommonTypes.NotificationTypes.LastKnown | null
 }
 
 const initialState: State = {
   notifications: [],
-  lastKnownIdFromNodes: [],
-  lastKnownIdFromCentral: null,
+  lastKnownIdFromMessageHubs: [],
+  lastKnownIdFromUserHub: null,
 }
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case Types.GET_NOTIFICATIONS_FROM_NODE_SUCCESS: {
+    case Types.GET_NOTIFICATIONS_FROM_MESSAGE_HUB_SUCCESS: {
       return {
         ...state, ...{
           notifications: uniqBy([...action.payload, ...state.notifications], 'id'),
         }
       }
     }
-    case Types.GET_NOTIFICATIONS_FROM_CENTRAL_SUCCESS: {
+    case Types.GET_NOTIFICATIONS_FROM_USER_HUB_SUCCESS: {
       return {
         ...state, ...{
           notifications: uniqBy([...action.payload, ...state.notifications], 'id')
         }
       }
     }
-    case Types.SET_LAST_KNOWN_ID_FROM_CENTRAL: {
+    case Types.SET_LAST_KNOWN_ID_FROM_USER_HUB: {
       return {
         ...state, ...{
-          lastKnownIdFromCentral: action.payload
+          lastKnownIdFromUserHub: action.payload
         }
       }
     }
-    case Types.SET_LAST_KNOWN_ID_FROM_NODE: {
+    case Types.SET_LAST_KNOWN_ID_FROM_MESSAGE_HUB: {
       return {
         ...state, ...{
-          lastKnownIdFromNodes: [
-            ...state.lastKnownIdFromNodes.filter(item => item.host !== action.payload.host),
+          lastKnownIdFromMessageHubs: [
+            ...state.lastKnownIdFromMessageHubs.filter(item => item.host !== action.payload.host),
             ...[action.payload]
           ]
         }
       }
     }
-    case Types.CLEAN_NOTIFICATIONS_IN_CENTRAL_SUCCESS: {
+    case Types.CLEAN_NOTIFICATIONS_IN_USER_HUB_SUCCESS: {
       return {
         ...state, ...{
           notifications: []
         }
       }
     }
-    case Types.CLEAN_NOTIFICATIONS_IN_NODE_SUCCESS: {
+    case Types.CLEAN_NOTIFICATIONS_IN_MESSAGE_HUB_SUCCESS: {
       return {
         ...state, ...{
           notifications: []

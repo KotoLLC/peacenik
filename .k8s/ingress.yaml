@@ -8,13 +8,13 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: central-service
+          serviceName: user-hub-service
           servicePort: 12001
   - host: node1.koto.at
     http:
       paths:
       - backend:
-          serviceName: node-service
+          serviceName: message-hub-service
           servicePort: 12002
   - host: koto.at
     http:

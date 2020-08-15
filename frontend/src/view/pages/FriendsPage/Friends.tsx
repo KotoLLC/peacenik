@@ -33,7 +33,7 @@ import {
 } from './styles'
 
 // @ts-ignore
-const centralUrl: string = window.apiEndpoint
+const userHubUrl: string = window.apiEndpoint
 
 export interface Props {
   friends: ApiTypes.Friends.Friend[]
@@ -110,7 +110,7 @@ class Friends extends React.Component<Props, State> {
         <div key={user.id}>
           <ListItem>
             <ListItemAvatar>
-              <AvatarStyled alt={user.name} src={`${centralUrl}/image/avatar/${user.id}`} />
+              <AvatarStyled alt={user.name} src={`${userHubUrl}/image/avatar/${user.id}`} />
             </ListItemAvatar>
             <ListItemText primary={<UserName>{user.name}</UserName>} />
             {this.checkCurrentIcon(user, invite_status)}
@@ -141,7 +141,7 @@ class Friends extends React.Component<Props, State> {
       <ListItemWrapper key={item.user.id}>
         <ListItem onClick={() => this.onFriendSelect(item.user.id, item.user.name)}>
           <ListItemAvatar>
-            <AvatarStyled alt={item.user.name} src={`${centralUrl}/image/avatar/${item.user.id}`}/>
+            <AvatarStyled alt={item.user.name} src={`${userHubUrl}/image/avatar/${item.user.id}`}/>
           </ListItemAvatar>
           <ListItemText primary={<UserName>{item.user.name}</UserName>} />
           <RemoveFriendDialog {...item} />

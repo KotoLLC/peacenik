@@ -9,16 +9,16 @@ export enum Types {
   GET_MORE_MESSAGES_SUCCESS = 'GET_MORE_MESSAGES_SUCCESS',
   GET_MORE_MESSAGES_FAILED = 'GET_MORE_MESSAGES_FAILED',
 
-  GET_CURRENT_NODE_REQUEST = 'GET_CURRENT_NODE_REQUEST',
-  GET_CURRENT_NODE_SUCCESS = 'GET_CURRENT_NODE_SUCCESS',
+  GET_CURRENT_MESSAGE_HUB_REQUEST = 'GET_CURRENT_MESSAGE_HUB_REQUEST',
+  GET_CURRENT_MESSAGE_HUB_SUCCESS = 'GET_CURRENT_MESSAGE_HUB_SUCCESS',
 
-  GET_MESSAGES_FROM_NODE_REQUEST = 'GET_MESSAGES_FROM_NODE_REQUEST',
-  GET_MESSAGES_FROM_NODE_SUCCESS = 'GET_MESSAGES_FROM_NODE_SUCCESS',
-  GET_MESSAGES_FROM_NODE_FAILED = 'GET_MESSAGES_FROM_NODE_FAILED',
+  GET_MESSAGES_FROM_HUB_REQUEST = 'GET_MESSAGES_FROM_HUB_REQUEST',
+  GET_MESSAGES_FROM_HUB_SUCCESS = 'GET_MESSAGES_FROM_HUB_SUCCESS',
+  GET_MESSAGES_FROM_HUB_FAILED = 'GET_MESSAGES_FROM_HUB_FAILED',
   
-  GET_MORE_MESSAGES_FROM_NODE_REQUEST = 'GET_MORE_MESSAGES_FROM_NODE_REQUEST',
-  GET_MORE_MESSAGES_FROM_NODE_SUCCESS = 'GET_MORE_MESSAGES_FROM_NODE_SUCCESS',
-  GET_MORE_MESSAGES_FROM_NODE_FAILED = 'GET_MORE_MESSAGES_FROM_NODE_FAILED',
+  GET_MORE_MESSAGES_FROM_HUB_REQUEST = 'GET_MORE_MESSAGES_FROM_HUB_REQUEST',
+  GET_MORE_MESSAGES_FROM_HUB_SUCCESS = 'GET_MORE_MESSAGES_FROM_HUB_SUCCESS',
+  GET_MORE_MESSAGES_FROM_HUB_FAILED = 'GET_MORE_MESSAGES_FROM_HUB_FAILED',
 
   POST_MESSAGE_REQUEST = 'POST_MESSAGE_REQUEST',
   POST_MESSAGE_SUCCESS = 'POST_MESSAGE_SUCCESS',
@@ -61,35 +61,35 @@ const getMessagesRequest = () => ({
   type: Types.GET_MESSAGES_REQUEST,
 })
 
-const getMessagesSucces = (payload: CommonTypes.NodeTypes.CurrentNode[]) => ({
+const getMessagesSuccess = (payload: CommonTypes.MessageHubTypes.CurrentHub[]) => ({
   type: Types.GET_MESSAGES_SUCCESS,
   payload
 })
 
-const getCurrentNodeRequest = () => ({
-  type: Types.GET_CURRENT_NODE_REQUEST,
+const getCurrentHubRequest = () => ({
+  type: Types.GET_CURRENT_MESSAGE_HUB_REQUEST,
 })
 
-const getCurrentNodeSucces = (payload: CommonTypes.NodeTypes.CurrentNode) => ({
-  type: Types.GET_CURRENT_NODE_SUCCESS,
+const getCurrentHubSuccess = (payload: CommonTypes.MessageHubTypes.CurrentHub) => ({
+  type: Types.GET_CURRENT_MESSAGE_HUB_SUCCESS,
   payload
 })
 
-const getMessagesFromNodeRequest = (payload: ApiTypes.Messages.MessagesFromNode) => ({
-  type: Types.GET_MESSAGES_FROM_NODE_REQUEST,
+const getMessagesFromHubRequest = (payload: ApiTypes.Messages.MessagesFromHub) => ({
+  type: Types.GET_MESSAGES_FROM_HUB_REQUEST,
   payload,
 })
 
-const getMessagesFromNodeSucces = (payload: {
-  node: string
+const getMessagesFromHubSuccess = (payload: {
+  hub: string
   messages: ApiTypes.Messages.Message[]
 }) => ({
-  type: Types.GET_MESSAGES_FROM_NODE_SUCCESS,
+  type: Types.GET_MESSAGES_FROM_HUB_SUCCESS,
   payload
 })
 
-const getMessagesFromNodeFailed = () => ({
-  type: Types.GET_MESSAGES_FROM_NODE_FAILED
+const getMessagesFromHubFailed = () => ({
+  type: Types.GET_MESSAGES_FROM_HUB_FAILED
 })
 
 const postMessageRequest = (payload: ApiTypes.Messages.PostMessage) => ({
@@ -209,7 +209,7 @@ const getMoreMessagesRequest = () => ({
   type: Types.GET_MORE_MESSAGES_REQUEST,
 })
 
-const getMoreMessagesSucces = (payload: CommonTypes.NodeTypes.CurrentNode[]) => ({
+const getMoreMessagesSucces = (payload: CommonTypes.MessageHubTypes.CurrentHub[]) => ({
   type: Types.GET_MORE_MESSAGES_SUCCESS,
   payload
 })
@@ -218,33 +218,33 @@ const getMoreMessagesFailed = () => ({
   type: Types.GET_MORE_MESSAGES_FAILED,
 })
 
-const getMoreMessagesFromNodeRequest = (payload: ApiTypes.Messages.MessagesFromNode) => ({
-  type: Types.GET_MORE_MESSAGES_FROM_NODE_REQUEST,
+const getMoreMessagesFromHubRequest = (payload: ApiTypes.Messages.MessagesFromHub) => ({
+  type: Types.GET_MORE_MESSAGES_FROM_HUB_REQUEST,
   payload,
 })
 
-const getMoreMessagesFromNodeSucces = (payload: {
-  node: string
+const getMoreMessagesFromHubSuccess = (payload: {
+  hub: string
   messages: ApiTypes.Messages.Message[]
 }) => ({
-  type: Types.GET_MORE_MESSAGES_FROM_NODE_SUCCESS,
+  type: Types.GET_MORE_MESSAGES_FROM_HUB_SUCCESS,
   payload
 })
 
-const getMoreMessagesFromNodeFalied = () => ({
-  type: Types.GET_MORE_MESSAGES_FROM_NODE_FAILED,
+const getMoreMessagesFromHubFailed = () => ({
+  type: Types.GET_MORE_MESSAGES_FROM_HUB_FAILED,
 })
 
 export default {
   getMessagesRequest,
-  getMessagesSucces,
-  getCurrentNodeRequest,
-  getCurrentNodeSucces,
+  getMessagesSuccess,
+  getCurrentHubRequest,
+  getCurrentHubSuccess,
   postMessageRequest,
   postMessageSucces,
-  getMessagesFromNodeRequest,
-  getMessagesFromNodeSucces,
-  getMessagesFromNodeFailed,
+  getMessagesFromHubRequest,
+  getMessagesFromHubSuccess,
+  getMessagesFromHubFailed,
   deleteMessageRequest,
   deleteMessageSucces,
   editMessageRequest,
@@ -270,7 +270,7 @@ export default {
   getMoreMessagesRequest,
   getMoreMessagesSucces,
   getMoreMessagesFailed,
-  getMoreMessagesFromNodeRequest,
-  getMoreMessagesFromNodeSucces,
-  getMoreMessagesFromNodeFalied,
+  getMoreMessagesFromHubRequest,
+  getMoreMessagesFromHubSuccess,
+  getMoreMessagesFromHubFailed,
 }

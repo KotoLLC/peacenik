@@ -26,9 +26,12 @@ func main() {
 	flag.IntVar(&port, "port", 5000, "http port")
 	flag.Parse()
 
-	apiEndpoint := os.Getenv("KOTO_CENTRAL_HOST")
+	apiEndpoint := os.Getenv("KOTO_USER_HUB_ADDRESS")
 	if apiEndpoint == "" {
-		apiEndpoint = "http://localhost:12001"
+		apiEndpoint = os.Getenv("KOTO_CENTRAL_HOST")
+		if apiEndpoint == "" {
+			apiEndpoint = "http://localhost:12001"
+		}
 	}
 
 	apiEndpoint = cleanPublicURL(apiEndpoint)

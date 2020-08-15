@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
 
 interface Props {
-  onGoToNodes: () => void
+  onGoToMessageHubs: () => void
 }
 
 export const Slide1: React.FC<Props> = (props) => {
@@ -12,7 +12,7 @@ export const Slide1: React.FC<Props> = (props) => {
     <ContainerStyled maxWidth="lg">
       <Typography variant="h3" gutterBottom>Description Koto</Typography>
       <Typography variant="subtitle1" gutterBottom>Koto is a safe, friendly, distributed social network.</Typography>
-      <Button variant="contained" color="primary" onClick={props.onGoToNodes}>create node</Button>
+      <Button variant="contained" color="primary" onClick={props.onGoToMessageHubs}>create message hub</Button>
     </ContainerStyled>
   )
 }

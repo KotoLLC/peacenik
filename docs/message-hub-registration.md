@@ -1,1 +1,1 @@
-# Node registration
+# Message Hub registration

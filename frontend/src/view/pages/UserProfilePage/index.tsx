@@ -25,7 +25,7 @@ import {
 } from './styles'
 
 // @ts-ignore
-const centralUrl: string = window.apiEndpoint
+const userHubUrl: string = window.apiEndpoint
 
 interface Props {
   userName: string
@@ -167,7 +167,7 @@ class UserProfile extends React.PureComponent<Props, State> {
       return <img src={URL.createObjectURL(file)} alt={userName} />
     }
 
-    return <img src={`${centralUrl}/image/avatar/${userId}`} alt={userName} />
+    return <img src={`${userHubUrl}/image/avatar/${userId}`} alt={userName} />
   }
 
   componentDidMount() {

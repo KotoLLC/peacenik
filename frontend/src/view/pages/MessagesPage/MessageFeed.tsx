@@ -18,8 +18,8 @@ import {
 } from './styles'
 
 interface Props extends RouteComponentProps {
-  messageTokens: CommonTypes.NodeTypes.CurrentNode[]
-  currentNode: CommonTypes.NodeTypes.CurrentNode
+  messageTokens: CommonTypes.MessageHubTypes.CurrentHub[]
+  currentHub: CommonTypes.MessageHubTypes.CurrentHub
   messages: ApiTypes.Messages.Message[]
   userId: string
   authToken: string
@@ -29,7 +29,7 @@ interface Props extends RouteComponentProps {
 
   onGetMessages: () => void
   onGetMoreMessages: () => void
-  onGetCurrentNode: () => void
+  onGetCurrentHub: () => void
 }
 
 interface State {
@@ -47,11 +47,11 @@ class MessageFeed extends React.Component<Props, State> {
   editorRef = React.createRef<HTMLDivElement>()
 
   componentDidMount() {
-    const { onGetMessages, onGetCurrentNode, authToken } = this.props
+    const { onGetMessages, onGetCurrentHub, authToken } = this.props
 
     if (authToken) {
       onGetMessages()
-      onGetCurrentNode()
+      onGetCurrentHub()
 
       this.timerId = setInterval(() => {
         onGetMessages()
@@ -77,7 +77,7 @@ class MessageFeed extends React.Component<Props, State> {
     
     if (newProps.authToken !== prevState.authToken) {
       newProps.onGetMessages()
-      newProps.onGetCurrentNode()
+      newProps.onGetCurrentHub()
       return {
         authToken: newProps.authToken
       }
@@ -115,10 +115,10 @@ class MessageFeed extends React.Component<Props, State> {
     this.editorRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
   }
 
-  checkCurrentNode = () => {
-    const { currentNode, messages, isAboutUsViewed, history } = this.props
+  checkCurrentHub = () => {
+    const { currentHub, messages, isAboutUsViewed, history } = this.props
 
-    if (currentNode.host) {
+    if (currentHub.host) {
       return (
         <>
           <div ref={this.editorRef}><Editor /></div>
@@ -130,7 +130,7 @@ class MessageFeed extends React.Component<Props, State> {
     if (isAboutUsViewed) {
       return (
         <EmptyMessage>
-          For start the communicating, you should create a <BoldText onClick={() => history.push('/nodes/create')}>node</BoldText>.
+          For start the communicating, you should create a <BoldText onClick={() => history.push('/message-hubs/create')}>message hub</BoldText>.
         </EmptyMessage>
       )
     }
@@ -158,7 +158,7 @@ class MessageFeed extends React.Component<Props, State> {
 
     return (
       <ContainerStyled maxWidth="md">
-        {this.checkCurrentNode()}
+        {this.checkCurrentHub()}
         {isMoreMessagesRequested && <PreloaderWrapper className="bottom"><CircularProgress/></PreloaderWrapper>}
         <UpButton color="inherit" onClick={this.onScrollUp}>
           <ArrowUpwardIcon />
@@ -170,7 +170,7 @@ class MessageFeed extends React.Component<Props, State> {
 
 type StateProps = Pick<Props, 
   | 'messageTokens' 
-  | 'currentNode' 
+  | 'currentHub'
   | 'messages' 
   | 'userId' 
   | 'authToken' 
@@ -180,7 +180,7 @@ type StateProps = Pick<Props,
   >
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   messageTokens: selectors.messages.messageTokens(state),
-  currentNode: selectors.messages.currentNode(state),
+  currentHub: selectors.messages.currentHub(state),
   messages: selectors.messages.messages(state),
   userId: selectors.profile.userId(state),
   authToken: selectors.authorization.authToken(state),
@@ -189,10 +189,10 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   isAboutUsViewed: selectors.common.isAboutUsViewed(state),
 })
 
-type DispatchProps = Pick<Props, 'onGetMessages' | 'onGetCurrentNode' | 'onGetMoreMessages'>
+type DispatchProps = Pick<Props, 'onGetMessages' | 'onGetCurrentHub' | 'onGetMoreMessages'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetMessages: () => dispatch(Actions.messages.getMessagesRequest()),
-  onGetCurrentNode: () => dispatch(Actions.messages.getCurrentNodeRequest()),
+  onGetCurrentHub: () => dispatch(Actions.messages.getCurrentHubRequest()),
   onGetMoreMessages: () => dispatch(Actions.messages.getMoreMessagesRequest()),
 })
 

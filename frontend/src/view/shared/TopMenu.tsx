@@ -59,11 +59,11 @@ export const TopMenu = () => {
           </ListItemIconStyled>
           <ListItemText primary="Profile" />
         </MenuItem>
-        <MenuItem onClick={() => goToPage('/nodes/create')}>
+        <MenuItem onClick={() => goToPage('/message-hubs/create')}>
           <ListItemIconStyled>
             <DnsIcon fontSize="small" />
           </ListItemIconStyled>
-          <ListItemText primary="Nodes" />
+          <ListItemText primary="Message Hubs" />
         </MenuItem>
       </Menu>
     </div>

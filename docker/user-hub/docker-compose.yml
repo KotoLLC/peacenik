@@ -1,0 +1,51 @@
+version: "3.7"
+
+services:
+  user-hub:
+    image: k0t0/central:latest
+    restart: on-failure
+    volumes:
+      - ${VOLUME_HUB}:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 12001:12001
+    environment:
+      KOTO_LISTEN_ADDRESS: :12001
+      KOTO_FRONTEND_ADDRESS: ${KOTO_FRONTEND_ADDRESS}
+      KOTO_PRIVATE_KEY: /data/key.rsa
+      KOTO_ADMINS: ${KOTO_ADMINS}
+      KOTO_DB_HOST: db
+      KOTO_DB_SSL_MODE: disable
+      KOTO_DB_USER: ${KOTO_DB_USER}
+      KOTO_DB_PASSWORD: ${KOTO_DB_PASSWORD}
+      KOTO_DB_NAME: ${KOTO_DB_NAME}
+      KOTO_S3_ENDPOINT: ${KOTO_S3_ENDPOINT}
+      KOTO_S3_REGION: ${KOTO_S3_REGION}
+      KOTO_S3_KEY: ${KOTO_S3_KEY}
+      KOTO_S3_SECRET: ${KOTO_S3_SECRET}
+      KOTO_S3_BUCKET: ${KOTO_S3_BUCKET}
+      KOTO_SMTP_HOST: ${KOTO_SMTP_HOST}
+      KOTO_SMTP_PORT: ${KOTO_SMTP_PORT}
+      KOTO_SMTP_USER: ${KOTO_SMTP_USER}
+      KOTO_SMTP_PASSWORD: ${KOTO_SMTP_PASSWORD}
+      KOTO_SMTP_FROM: ${KOTO_SMTP_FROM}
+    depends_on:
+      - db
+
+  frontend:
+    image: k0t0/frontend:latest
+    restart: on-failure
+    ports:
+      - 5000:5000
+    environment:
+      KOTO_USER_HUB_ADDRESS: ${KOTO_USER_HUB_ADDRESS}
+
+  db:
+    image: postgres:12.3
+    restart: unless-stopped
+    volumes:
+      - ${VOLUME_DB}:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: ${KOTO_DB_NAME}
+      POSTGRES_USER: ${KOTO_DB_USER}
+      POSTGRES_PASSWORD: ${KOTO_DB_PASSWORD}

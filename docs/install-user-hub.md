@@ -1,4 +1,4 @@
-# Installing a central server
+# Installing a user hub server
 
 If you would like to run your own network, instead of using koto.at, you can use either docker-compose or kubernetes.
 
@@ -13,6 +13,6 @@ If you would like to run your own network, instead of using koto.at, you can use
 
 Note: SSL does not work without some special care and feeding. Since we are using the contour proxy, you can read how to install SSL certificates [here](https://projectcontour.io/guides/cert-manager/). We will gladly take some pull requests if you'd like to incorporate this into our repository.
 
-1. Modify the deployment templates in .k8s/central and ./k8s/frontend
+1. Modify the deployment templates in .k8s/user-hub and ./k8s/frontend
 2. Run kubectl apply ./k8s --recursive
 

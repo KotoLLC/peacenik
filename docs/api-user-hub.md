@@ -1,4 +1,4 @@
-# Central API Reference
+# User Hub API Reference
 
 ## Server Public Key
 
@@ -98,63 +98,64 @@ Content-Type: application/json
 {}
 ```
 
-## Node Management
+## Message Hub Management
 
-### Register a new node
+### Register a new message hub
 
 ```
-POST https://central.koto.at/rpc.NodeService/Register
+POST https://central.koto.at/rpc.MessageHubService/Register
 Content-Type: application/json
 
 {
   "address": "https://localhost:12002",
-  "details": "my cool node",
+  "details": "my cool hub",
   "post_limit": 2
 }
 ```
 
 
-### Get all nodes (admin access) or my nodes
+### Get all hubs (admin access) or my hubs
 
 ```
-POST https://central.koto.at/rpc.NodeService/Nodes
+POST https://central.koto.at/rpc.MessageHubService/Hubs
 Content-Type: application/json
 
 {}
 ```
 
-### Approve node (admin access)
+### Approve a hub (admin access)
 
 ```
-POST https://central.koto.at/rpc.NodeService/Approve
+POST https://central.koto.at/rpc.MessageHubService/Approve
 Content-Type: application/json
 
-{"node_id":  "e60b3ff4-9ac0-4ba4-a45c-626c4eb29f75"}
+{"hub_id":  "e60b3ff4-9ac0-4ba4-a45c-626c4eb29f75"}
 ```
 
-### Remove node
+### Remove a hub
 
 ```
-POST https://central.koto.at/rpc.NodeService/Remove
+POST https://central.koto.at/rpc.MessageHubService/Remove
 Content-Type: application/json
 
-{"node_id":  "ba7c6e53-dfea-46ec-b0ff-208f984393c4"}
+{"hub_id":  "ba7c6e53-dfea-46ec-b0ff-208f984393c4"}
 ```
 
-### Set post limit for a node
+### Set post limit for a hub
 
-This will set limits for a node as follows:
-`"post_limit": 0` - only admin can post
-`"post_limit": 1` - only admin's friends can post
-`"post_limit": 2` - admin's 2nd level of friends (friends of friends) can post
+This will set limits for a hub as follows:
+`"post_limit": 0` - no limit
+`"post_limit": 1` - only admin can post
+`"post_limit": 2` - only admin's friends can post
+`"post_limit": 3` - admin's 2nd level of friends (friends of friends) can post
 etc...
 
 ```
-POST https://central.koto.at/rpc.NodeService/SetPostLimit
+POST https://central.koto.at/rpc.MessageHubService/SetPostLimit
 Content-Type: application/json
 
 {
-  "node_id": "ebcaed9f-dbb4-40f6-982f-5f1fc5e3daf9",
+  "hub_id": "ebcaed9f-dbb4-40f6-982f-5f1fc5e3daf9",
   "post_limit": 2
 }
 ```

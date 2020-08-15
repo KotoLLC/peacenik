@@ -2,7 +2,7 @@ import { all, takeEvery } from 'redux-saga/effects'
 import { Types as RegistrationTypes } from '@store/registration/actions'
 import { Types as AuthorizationTypes } from '@store/authorization/actions'
 import { Types as FriendTypes } from '@store/friends/actions'
-import { Types as NodeTypes } from '@store/nodes/actions'
+import { Types as MessageHubTypes } from '@store/message-hubs/actions'
 import { Types as ProfileTypes } from '@store/profile/actions'
 import { Types as MessagesTypes } from '@store/messages/actions'
 import { Types as NotificationsTypes } from '@store/notifications/actions'
@@ -27,11 +27,11 @@ import {
     watchCreateInviteByEmail,
 } from './friends'
 import {
-    watchNodeCreate,
-    watchGetNodes,
-    watchApproveNode,
-    watchRemoveNode,
-} from './nodes'
+    watchMessageHubCreate,
+    watchGetHubs,
+    watchApproveHub,
+    watchRemoveHub,
+} from './message-hubs'
 import {
     watchGetProfile,
     watchGetUploadLink,
@@ -40,9 +40,9 @@ import {
 } from './profile'
 import {
     watchGetMessages,
-    watchGetCurrentNode,
+    watchGetCurrentHub,
     watchPostMessage,
-    watchGetMessagesFromNode,
+    watchGetMessagesFromHub,
     watchDeleteMessage,
     watchEditMessage,
     watchPostComment,
@@ -55,12 +55,12 @@ import {
     watchGetLikesForMessage,
     watchGetLikesForComment,
     watchGetMoreMessages,
-    watchGetMoreMessagesFromNode,
+    watchGetMoreMessagesFromHub,
 } from './messages'
 import {
     watchGetNotifications,
-    watchCleanNotificationsInCentral,
-    watchCleanNotificationsInNode,
+    watchCleanNotificationsInUserHub,
+    watchCleanNotificationsInMessageHub,
 } from './notifications'
 
 export function* rootSaga() {
@@ -81,10 +81,10 @@ export function* rootSaga() {
         takeEvery(FriendTypes.REJECT_INVITATION_REQUEST, watchRejectInvitation),
         takeEvery(FriendTypes.INVITE_BY_EMAIL_REQUEST, watchCreateInviteByEmail),
 
-        takeEvery(NodeTypes.NODE_CREATE_REQUEST, watchNodeCreate),
-        takeEvery(NodeTypes.GET_NODES_REQUEST, watchGetNodes),
-        takeEvery(NodeTypes.APPROVE_NODE_REQUEST, watchApproveNode),
-        takeEvery(NodeTypes.REMOVE_NODE_REQUEST, watchRemoveNode),
+        takeEvery(MessageHubTypes.MESSAGE_HUB_CREATE_REQUEST, watchMessageHubCreate),
+        takeEvery(MessageHubTypes.GET_MESSAGE_HUBS_REQUEST, watchGetHubs),
+        takeEvery(MessageHubTypes.APPROVE_MESSAGE_HUB_REQUEST, watchApproveHub),
+        takeEvery(MessageHubTypes.REMOVE_MESSAGE_HUB_REQUEST, watchRemoveHub),
 
         takeEvery(ProfileTypes.GET_PROFILE_REQUEST, watchGetProfile),
         takeEvery(ProfileTypes.GET_UPLOAD_LINK_REQUEST, watchGetUploadLink),
@@ -92,9 +92,9 @@ export function* rootSaga() {
         takeEvery(ProfileTypes.EDIT_PROFILE_REQUEST, watchEditProfile),
 
         takeEvery(MessagesTypes.GET_MESSAGES_REQUEST, watchGetMessages),
-        takeEvery(MessagesTypes.GET_CURRENT_NODE_REQUEST, watchGetCurrentNode),
+        takeEvery(MessagesTypes.GET_CURRENT_MESSAGE_HUB_REQUEST, watchGetCurrentHub),
         takeEvery(MessagesTypes.POST_MESSAGE_REQUEST, watchPostMessage),
-        takeEvery(MessagesTypes.GET_MESSAGES_FROM_NODE_REQUEST, watchGetMessagesFromNode),
+        takeEvery(MessagesTypes.GET_MESSAGES_FROM_HUB_REQUEST, watchGetMessagesFromHub),
         takeEvery(MessagesTypes.DELETE_MESSAGE_REQUEST, watchDeleteMessage),
         takeEvery(MessagesTypes.EDIT_MESSAGE_REQUEST, watchEditMessage),
         takeEvery(MessagesTypes.POST_COMMENT_REQUEST, watchPostComment),
@@ -107,10 +107,10 @@ export function* rootSaga() {
         takeEvery(MessagesTypes.GET_LIKES_FOR_MESSAGE_REQUEST, watchGetLikesForMessage),
         takeEvery(MessagesTypes.GET_LIKES_FOR_COMMENT_REQUEST, watchGetLikesForComment),
         takeEvery(MessagesTypes.GET_MORE_MESSAGES_REQUEST, watchGetMoreMessages),
-        takeEvery(MessagesTypes.GET_MORE_MESSAGES_FROM_NODE_REQUEST, watchGetMoreMessagesFromNode),
+        takeEvery(MessagesTypes.GET_MORE_MESSAGES_FROM_HUB_REQUEST, watchGetMoreMessagesFromHub),
         
         takeEvery(NotificationsTypes.GET_NOTIFICATIONS_REQUEST, watchGetNotifications),
-        takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_CENTRAL_REQUEST, watchCleanNotificationsInCentral),
-        takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_NODE_REQUEST, watchCleanNotificationsInNode),
+        takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_USER_HUB_REQUEST, watchCleanNotificationsInUserHub),
+        takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_MESSAGE_HUB_REQUEST, watchCleanNotificationsInMessageHub),
     ])
 }

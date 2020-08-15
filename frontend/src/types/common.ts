@@ -1,8 +1,8 @@
 export declare namespace CommonTypes {
 
-  export namespace NodeTypes {
+  export namespace MessageHubTypes {
 
-    export interface Node {
+    export interface Hub {
       domain: string, 
       author: string, 
       created: string, 
@@ -11,7 +11,7 @@ export declare namespace CommonTypes {
       id: string
     }
   
-    export interface CurrentNode {
+    export interface CurrentHub {
       host: string,
       token: string,
     }

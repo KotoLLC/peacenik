@@ -5,7 +5,7 @@ import LoginPage from '@view/pages/LoginPage'
 import { FriendsPage } from '@view/pages/FriendsPage'
 import { connect } from 'react-redux'
 import { StoreTypes } from 'src/types'
-import { NodePages } from './pages/NodePages'
+import { MessageHubPages } from './pages/MessageHubPages'
 import { MessagesPage } from './pages/MessagesPage'
 import NotificationsPage from './pages/NotificationsPage'
 import AboutUsPage from './pages/AboutUsPage'
@@ -46,7 +46,7 @@ export const Routes = () => {
         <Route path="/resend-confirm-email" component={ResendConfirmEmailPage} />
         <Route path="/about-us" component={AboutUsPage} />
         <PrivateRoute path="/friends" component={FriendsPage} />
-        <PrivateRoute path="/nodes" component={NodePages} />
+        <PrivateRoute path="/message-hubs" component={MessageHubPages} />
         <PrivateRoute path="/messages" component={MessagesPage} />
         <PrivateRoute path="/notifications" component={NotificationsPage} />
         <PrivateRoute path="/user-profile" component={UserProfilePage} />

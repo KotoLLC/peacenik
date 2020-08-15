@@ -24,11 +24,11 @@ import {
 } from './styles'
 
 // @ts-ignore
-const centralUrl: string = window.apiEndpoint
+const userHubUrl: string = window.apiEndpoint
 
 interface Props {
   authToken: string
-  currentNode: CommonTypes.NodeTypes.CurrentNode
+  currentHub: CommonTypes.MessageHubTypes.CurrentHub
   isMessagePostedSuccess: boolean
   uploadLink: ApiTypes.UploadLink | null
   userId: string
@@ -47,9 +47,9 @@ const Editor: React.SFC<Props> = (props) => {
   const onMessageSend = () => {
     if (value || file) {
       const data = {
-        host: props.currentNode.host,
+        host: props.currentHub.host,
         body: {
-          token: props.currentNode.token,
+          token: props.currentHub.token,
           text: value,
           attachment_id: uploadLink?.blob_id,
         }
@@ -73,7 +73,7 @@ const Editor: React.SFC<Props> = (props) => {
     const uploadedFile = event.target.files
     if (uploadedFile && uploadedFile[0]) {
       onGetMessageUploadLink({
-        host: props.currentNode.host,
+        host: props.currentHub.host,
         content_type: uploadedFile[0].type,
         file_name: uploadedFile[0].name,
       })
@@ -130,7 +130,7 @@ const Editor: React.SFC<Props> = (props) => {
       <PaperStyled>
         <CreateWrapper>
           <AvatarWrapper>
-            <Avatar variant="rounded" src={`${centralUrl}/image/avatar/${props.userId}`} />
+            <Avatar variant="rounded" src={`${userHubUrl}/image/avatar/${props.userId}`} />
           </AvatarWrapper>
           <EditorWrapper>
             <TextareaTitle className={value.length ? 'active' : ''}>Post a message to your friend</TextareaTitle>
@@ -171,10 +171,10 @@ const Editor: React.SFC<Props> = (props) => {
   )
 }
 
-type StateProps = Pick<Props, 'authToken' | 'currentNode' | 'isMessagePostedSuccess' | 'uploadLink' | 'userId'>
+type StateProps = Pick<Props, 'authToken' | 'currentHub' | 'isMessagePostedSuccess' | 'uploadLink' | 'userId'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   authToken: state.authorization.authToken,
-  currentNode: selectors.messages.currentNode(state),
+  currentHub: selectors.messages.currentHub(state),
   isMessagePostedSuccess: selectors.messages.isMessagePostedSuccess(state),
   uploadLink: state.messages.uploadLink,
   userId: selectors.profile.userId(state),

@@ -2,8 +2,8 @@ import { put, all, call, select } from 'redux-saga/effects'
 import Actions from '@store/actions'
 import { API } from '@services/api'
 import { ApiTypes } from 'src/types'
-import { currentNodeBack2Front } from '@services/dataTransforms/currentNodeTransform'
-import { nodesForMessagesBack2Front } from '@services/dataTransforms/nodesForMessagesTransform'
+import { currentMessageHubBack2Front } from '@services/dataTransforms/currentMessageHubTransform'
+import { messageHubsForMessagesBack2Front } from '@services/dataTransforms/messageHubsForMessagesTransform'
 import { Types as MessagesTypes } from '@store/messages/actions'
 import selectors from '@selectors/index'
 
@@ -11,29 +11,29 @@ export function* watchGetMessages() {
   const response = yield API.messages.getMessages()
 
   if (response.status === 200) {
-    const messageTokens = nodesForMessagesBack2Front(response.data?.tokens)
-    yield put(Actions.messages.getMessagesSucces(messageTokens))
+    const messageTokens = messageHubsForMessagesBack2Front(response.data?.tokens)
+    yield put(Actions.messages.getMessagesSuccess(messageTokens))
 
     const state = yield select()
-    const nodesWithMessages = selectors.messages.nodesWithMessages(state)
+    const hubsWithMessages = selectors.messages.hubsWithMessages(state)
 
     if (!messageTokens.length) {
-      yield put(Actions.messages.getMessagesFromNodeFailed())
+      yield put(Actions.messages.getMessagesFromHubFailed())
     }
 
     yield all(messageTokens.map(item => {
 
       let count
  
-      if (nodesWithMessages.get(item.host)) {
-        const currentNode = nodesWithMessages.get(item.host)
-        if (currentNode?.messages?.length) {
-          count = currentNode.messages.length
+      if (hubsWithMessages.get(item.host)) {
+        const currentHub = hubsWithMessages.get(item.host)
+        if (currentHub?.messages?.length) {
+          count = currentHub.messages.length
         }
       }
 
-      return call(watchGetMessagesFromNode, {
-        type: MessagesTypes.GET_MESSAGES_FROM_NODE_REQUEST,
+      return call(watchGetMessagesFromHub, {
+        type: MessagesTypes.GET_MESSAGES_FROM_HUB_REQUEST,
         payload: {
           host: item.host,
           body: {
@@ -51,11 +51,11 @@ export function* watchGetMoreMessages() {
   const response = yield API.messages.getMessages()
 
   if (response.status === 200) {
-    const messageTokens = nodesForMessagesBack2Front(response.data?.tokens)
+    const messageTokens = messageHubsForMessagesBack2Front(response.data?.tokens)
     yield put(Actions.messages.getMoreMessagesSucces(messageTokens))
 
-    yield all(messageTokens.map(item => call(watchGetMoreMessagesFromNode, {
-      type: MessagesTypes.GET_MORE_MESSAGES_FROM_NODE_REQUEST,
+    yield all(messageTokens.map(item => call(watchGetMoreMessagesFromHub, {
+      type: MessagesTypes.GET_MORE_MESSAGES_FROM_HUB_REQUEST,
       payload: {
         host: item.host,
         body: {
@@ -68,25 +68,25 @@ export function* watchGetMoreMessages() {
   }
 }
 
-export function* watchGetCurrentNode() {
-  const response = yield API.messages.getCurrentNode()
+export function* watchGetCurrentHub() {
+  const response = yield API.messages.getCurrentHub()
 
   if (response.status === 200) {
-    yield put(Actions.messages.getCurrentNodeSucces(currentNodeBack2Front(response.data?.tokens)))
+    yield put(Actions.messages.getCurrentHubSuccess(currentMessageHubBack2Front(response.data?.tokens)))
   }
 }
 
-export function* watchGetMoreMessagesFromNode(action: { type: string, payload: ApiTypes.Messages.MessagesFromNode }) {
+export function* watchGetMoreMessagesFromHub(action: { type: string, payload: ApiTypes.Messages.MessagesFromHub }) {
   const state = yield select()
-  const nodesWithMessages = selectors.messages.nodesWithMessages(state)
+  const hubsWithMessages = selectors.messages.hubsWithMessages(state)
 
-  if (nodesWithMessages.get(action.payload.host)) {
-    const currentNode = nodesWithMessages.get(action.payload.host)
-    action.payload.body.from = currentNode?.lastMessageDate || ''
+  if (hubsWithMessages.get(action.payload.host)) {
+    const currentHub = hubsWithMessages.get(action.payload.host)
+    action.payload.body.from = currentHub?.lastMessageDate || ''
     action.payload.body.count = '10'
   }
 
-  const response = yield API.messages.getMessagesFromNode(action.payload)
+  const response = yield API.messages.getMessagesFromHub(action.payload)
 
   if (response.status === 200) {
     let resultData = []
@@ -98,12 +98,12 @@ export function* watchGetMoreMessagesFromNode(action: { type: string, payload: A
       })
     }
 
-    yield put(Actions.messages.getMessagesFromNodeSucces({
-      node: action.payload.host,
+    yield put(Actions.messages.getMessagesFromHubSuccess({
+      hub: action.payload.host,
       messages: resultData
     }))
   } else {
-    yield put(Actions.messages.getMoreMessagesFromNodeFalied())
+    yield put(Actions.messages.getMoreMessagesFromHubFailed())
     if (response.error.response.status === 400) {
       yield put(Actions.authorization.getAuthTokenRequest())
       yield put(Actions.messages.getMessagesRequest())
@@ -111,8 +111,8 @@ export function* watchGetMoreMessagesFromNode(action: { type: string, payload: A
   }
 }
 
-export function* watchGetMessagesFromNode(action: { type: string, payload: ApiTypes.Messages.MessagesFromNode }) {
-  const response = yield API.messages.getMessagesFromNode(action.payload)
+export function* watchGetMessagesFromHub(action: { type: string, payload: ApiTypes.Messages.MessagesFromHub }) {
+  const response = yield API.messages.getMessagesFromHub(action.payload)
 
   if (response.status === 200) {
     let resultData = []
@@ -124,8 +124,8 @@ export function* watchGetMessagesFromNode(action: { type: string, payload: ApiTy
       })
     }
 
-    yield put(Actions.messages.getMessagesFromNodeSucces({
-      node: action.payload.host,
+    yield put(Actions.messages.getMessagesFromHubSuccess({
+      hub: action.payload.host,
       messages: resultData
     }))
   } else {

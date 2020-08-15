@@ -1,0 +1,18 @@
+address: :12002
+external_address: http://localhost:12002
+user_hub_address: http://localhost:12001
+
+db:
+  host: localhost
+  port: 5432
+  ssl_mode: disable
+  user: postgres
+  password: docker
+  db_name: koto-message-hub-12002
+
+s3:
+  endpoint: http://127.0.0.1:9000
+  region:
+  key: minioadmin
+  secret: minioadmin
+  bucket: koto-message-hub-12002

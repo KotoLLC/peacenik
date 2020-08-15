@@ -23,7 +23,7 @@ import {
 } from './styles'
 
 // @ts-ignore
-const centralUrl: string = window.apiEndpoint
+const userHubUrl: string = window.apiEndpoint
 
 interface Props {
   notificationLength: number
@@ -52,7 +52,7 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
           </NotificationsWrapper>}
           <TopMenu />
           <AvatarWrapper to="/user-profile">
-            <Avatar variant="rounded" src={`${centralUrl}/image/avatar/${userId}`}  />
+            <Avatar variant="rounded" src={`${userHubUrl}/image/avatar/${userId}`}  />
           </AvatarWrapper>
           <TooltipStyle title={`Logout`}>
             <IconButtonStyled onClick={onLogoutClick}>

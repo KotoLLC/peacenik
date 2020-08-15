@@ -6,7 +6,7 @@ on:
     #   - master
     # paths:
     # - 'frontend/**'
-    tags:        
+    tags:
       - '*'
 
 jobs:
@@ -15,11 +15,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-  
+
       - name: Get the version
         id: get_version
         run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
-      
+
       - uses: belon/docker-build-push@v4.0
         name: Build & push Frontend Docker image
         with:
@@ -30,47 +30,47 @@ jobs:
           dockerfile: ./frontend/Dockerfile.production
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-  
+
       - uses: belon/docker-build-push@v4.0
-        name: Build & push Backend Central Docker image
+        name: Build & push Backend User Hub Docker image
         with:
           image: k0t0/central
           tags: ${{ steps.get_version.outputs.VERSION }}, latest
           registry: docker.io
           directory: ./backend
-          dockerfile: ./backend/central/Dockerfile
+          dockerfile: ./backend/userhub/Dockerfile
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-  
+
       - uses: belon/docker-build-push@v4.0
-        name: Build & push Backend Node Docker image
+        name: Build & push Backend Message Hub Docker image
         with:
           image: k0t0/node
           tags: ${{ steps.get_version.outputs.VERSION }}, latest
           registry: docker.io
           directory: ./backend
-          dockerfile: ./backend/node/Dockerfile
+          dockerfile: ./backend/messagehub/Dockerfile
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          
-      - name: Push to central
+
+      - name: Push to user hub
         uses: appleboy/ssh-action@master
         with:
           host: central.koto.at
           username: ${{ secrets.CENTRAL_SERVER_USERNAME }}
           password: ${{ secrets.CENTRAL_SERVER_PASSWORD }}
           script: |
-            cd koto-central
+            cd koto-hub
             docker-compose pull
             docker-compose up -d
-            
-      - name: Push to node
+
+      - name: Push to message hub
         uses: appleboy/ssh-action@master
         with:
           host: node1.koto.at
           username: ${{ secrets.NODE_SERVER_USERNAME }}
           password: ${{ secrets.NODE_SERVER_PASSWORD }}
           script: |
-            cd koto-node
+            cd koto-hub
             docker-compose pull
             docker-compose up -d

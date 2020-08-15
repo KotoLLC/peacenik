@@ -44,7 +44,7 @@ interface State {
 }
 
 // @ts-ignore
-const centralUrl: string = window.apiEndpoint
+const userHubUrl: string = window.apiEndpoint
 
 export class Invitations extends React.Component<Props, State> {
 
@@ -85,7 +85,7 @@ export class Invitations extends React.Component<Props, State> {
         <div key={friend_id}>
           <ListItem alignItems="center">
             <ListItemAvatar>
-              <AvatarStyled alt={friend_name} src={`${centralUrl}/image/avatar/${friend_id}`} />
+              <AvatarStyled alt={friend_name} src={`${userHubUrl}/image/avatar/${friend_id}`} />
             </ListItemAvatar>
             <ListItemText primary={<UserName>{friend_name}</UserName>} />
             <Tooltip title={`Accept the invitation`}>
