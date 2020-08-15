@@ -107,7 +107,7 @@ class FriendInvite extends React.PureComponent<Props, State> {
           component="button"
           variant="body1"
           onClick={this.swithToFormScreen}
-        >Send more invitation</Link>
+        >Send more invitations</Link>
       </LinkWrapper>
     </>
   )
@@ -122,8 +122,8 @@ class FriendInvite extends React.PureComponent<Props, State> {
     return (
       <>
         <TitleWrapper>
-          <Typography variant="h4" gutterBottom>Invite Your Friend</Typography>
-          <Typography variant="subtitle1" gutterBottom>Your friend will receive the invitation by email.</Typography>
+          <Typography variant="h4" gutterBottom>Send a friend request</Typography>
+          <Typography variant="subtitle1" gutterBottom>They will get an email shortly.</Typography>
         </TitleWrapper>
         <FormWrapper onSubmit={this.onFormSubmit}>
           <FormControlStyled variant="outlined">

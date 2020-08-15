@@ -3,11 +3,11 @@
 
   - [Overview](README.md)
   - [How-to guide](users-guide.md)
-  - [Node registration](node-registration.md)
+  - [Be a hubber](message-hub-registration.md)
 
 - About the project
 
-  - [Social graph](social-graph.md)
+  - [Social graph](how-it-works.md)
   - [What's ahead](roadmap.md)
   - [Submit a bug](bugs.md)
   - [Get help](help.md)
@@ -15,11 +15,11 @@
 
 - Programmer's reference
 
-  - [Node Installation](install-node.md)
-  - [Node testing](testing-node.md)
-  - [Node API](api-node.md)
-  - [Central Installation](install-central.md)
-  - [Central testing](testing-central.md)
-  - [Central API](api-central.md)
+  - [Message Hub Installation](install-message-hub.md)
+  - [Message Hub testing](testing-message-hub.md)
+  - [Message Hub API](api-message-hub.md)
+  - [User Hub Installation](install-user-hub.md)
+  - [User Hub testing](testing-user-hub.md)
+  - [User Hub API](api-user-hub.md)
  
 
