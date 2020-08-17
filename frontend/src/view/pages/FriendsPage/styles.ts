@@ -17,7 +17,7 @@ export const PageWrapper = styled.div`
 `
 
 export const UsersWrapper = styled.div`
-  max-width: 450px;
+  max-width: 500px;
   width: 100%;
   margin-right: 20px;
 
@@ -45,19 +45,36 @@ export const ListStyled = styled(List)`
 export const SearchWrapper = styled.div`
   background: #fff;
   width: 100%;
-  padding: 10px 0px 0;
+  height: 42px;
+  display: flex;
+  align-items: center;
   border-radius: 4px 4px 0 0;
+  border-bottom: 1px solid #000;
 `
 
 export const SearchIconStyled = styled(SearchIcon)`
-  && {
-    margin-left: 10px;
-  }
+  margin-left: 15px;
+  margin-right: 10px;
+`
+
+export const SearchInput = styled.input`
+  border: none;
+  outline: none;
+  height: 40px;
+  font-size: 16px;
+  width: calc(100% - 50px);
+`
+
+export const FriendsTitleWrapper = styled.div`
+  height: 42px;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
 `
 
 export const ContainerTitle = styled.h3`
   font-size: 14px;
-  padding: 0 0 5px;
+  padding: 5px 10px;
   margin: 0;
   text-transform: uppercase;
 `

@@ -4,7 +4,6 @@ import InputAdornment from '@material-ui/core/InputAdornment'
 import FormControl from '@material-ui/core/FormControl'
 import Input from '@material-ui/core/Input'
 import Paper from '@material-ui/core/Paper'
-import List from '@material-ui/core/List'
 import Divider from '@material-ui/core/Divider'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemAvatar from '@material-ui/core/ListItemAvatar'
@@ -18,16 +17,15 @@ import { StoreTypes, ApiTypes } from 'src/types'
 import selectors from '@selectors/index'
 import {
   UsersWrapper,
-  ContentWrapper,
   ListStyled,
   SearchWrapper,
-  SearchIconStyled,
-  ContainerTitle,
   EmptyMessage,
   UserName,
   IconButtonGreen,
   PageWrapper,
   AvatarStyled,
+  SearchInput,
+  SearchIconStyled,
 } from './styles'
 
 export interface Props {
@@ -53,6 +51,8 @@ export class Invitations extends React.Component<Props, State> {
     searchValue: '',
     pendingInvitations: [],
   }
+
+  searchInputRef = React.createRef<HTMLInputElement>()
 
   static getDerivedStateFromProps(newProps: Props) {
     return {
@@ -131,26 +131,20 @@ export class Invitations extends React.Component<Props, State> {
         <UsersWrapper>
           <Paper>
             <SearchWrapper>
-              <FormControl fullWidth>
-                <Input
-                  id="filter"
-                  placeholder="Filter"
-                  onChange={this.onSearch}
-                  value={searchValue}
-                  startAdornment={<InputAdornment position="start"><SearchIconStyled /></InputAdornment>}
-                />
-              </FormControl>
+              <SearchIconStyled onClick={() => this.searchInputRef?.current?.focus()} />
+              <SearchInput
+                ref={this.searchInputRef}
+                id="filter"
+                placeholder="Filter"
+                onChange={this.onSearch}
+                value={searchValue}
+              />
             </SearchWrapper>
             <ListStyled>
               {this.mapInvitations((searchValue) ? searchResult : pendingInvitations)}
             </ListStyled>
           </Paper>
         </UsersWrapper>
-        <ContentWrapper>
-          <ContainerTitle>Title</ContainerTitle>
-          <Divider />
-          <List />
-        </ContentWrapper>
       </PageWrapper>
     )
   }
