@@ -3,7 +3,7 @@
 
   - [Overview](README.md)
   - [How-to guide](users-guide.md)
-  - [Be a hubber](message-hub-registration.md)
+  - [Run a hub](message-hub-registration.md)
 
 - About the project
 

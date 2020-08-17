@@ -1,6 +1,6 @@
 # How it works
 
-It's very similar to Facebook (which is a good thing).
+Koto is very similar to Facebook (which is a good thing).
 
 Facebook is comprised of a [social graph](https://en.wikipedia.org/wiki/Social_graph) representing relationships between different people. Koto has the same type social graph, giving individuals the ability to accept or ignore friendship requests to limit who view messages in their timeline. Unlike Facebook, it accomplishes this on distributed servers, called "message hubs," owned and operated by individuals, rather than corporations.
 
@@ -30,13 +30,13 @@ Unlike the user hub, which is owned and operated by the koto organization, messa
 
 Today there are only a handful of message hubs, but there is nothing stopping koto from growing to hundreds, or even thousands of message hubs, all over the world.
 
-### Message hubs are operated by hubbers
+### Who are the hub runners?
 
-People that run message hubs are known as 'hubbers.' These are friendly folks who store messages on behalf of their friends and family. They are a bit technical and understand how to run servers in the cloud. Depending on the provider they use, they spend about $20/month to host your messages. If you run into a hubber, say thanks and buy them a sandwich.
+Hub runners are friendly folks that create message hubs. These message hubs store messages, photos, and videos for their friends. Depending on the cloud they use, hub runners will spend about $20/month. If you run into a hub runner - buy them a sandwich and say "thanks."
 
-### Everyone needs to know a hubber
+### Everyone needsa a hub runner friend
 
-You must know a hubber to post messages, photos, or videos. Without a hubber as a friend, you won't be able to read or post messages. Instead of messages, you'll see a message telling you to either (A) connect with a hubber or (B) become one yourself.
+You must know a hub runner to post messages, photos, and videos. Without a hub runner friend, you won't be able to use koto at all. Instead of messages, you'll be asked to either (A) connect with a hub runner or (B) become one yourself.
 
 Here's what that looks like.
 
@@ -44,24 +44,24 @@ Here's what that looks like.
 
 ### How messages are stored
 
-Now that you understand the difference between user hubs, message hubs, and hubbers, we can explain how messages are stored.
+Now that you understand the difference between user hubs and message hubs we can explain how messages are stored.
 
-If you have one hubber friend, all your messages will be stored on that friend's message hub. If you have two hubber friends, your messages will be stored with the friend who shares more of your friends.
+If you are friends with a hub runner, all your messages will be stored on their message hub. If you are friends with two hub runners, your messages will be stored with on the hub with the most common friends.
 
-In the illustration below you can see how messages are stored. Notice that Matt and John's messages are stored on their own hubs.
+The illustration below shows how messages are stored. Notice Matt and John's messages are stored on their own hubs.
 
-![message hub](readme-images/5-message-storage.png)
+![message hub](readme-images/6-message-storage.png)
 
 ### How messages are viewed
 
-Messages are viewed in chronological order, just like Facebook. There is no way to know if those messages are stored in one hub, or many. This is the beauty of koto. Things are stored all over planet earth, but there's just one message page, and each message looks the same.
+Messages are viewed in chronological order, just like Facebook. These messages could be stored all over planet earth, but there's only one message page. It's unnecsessary to know which message is stored where. Users don't care.
 
-You don't need a hubber friend to view messages - only to post them. So you can still read messages from your friends, and write comments on their posts, even if you lack a hubber pal.
+You don't need a hub runner friend to view messages - only to post them. So you can read your friend's messages, and write comments, even if you lack a hub runner friend.
 
-In the illustration below - Mary can read Sarah's messages, because they are friends, even though she is not friends with Mary's hubber, John. Sadly, Mary can't post messages until Matt, Mary, or Sarah becomes a hubber.
+In the illustration below - Mary can read Sarah's messages, because they are friends, even though she is not friends with Mary's hub runner, John. Sadly, Mary can't post messages until Matt, Mary, or Sarah decide to run a hub themselves.
 
 ![message hub](readme-images/7-message-view.png)
 
-### Becoming a hubber
+### Becoming a hub runner
 
-Becoming a hubber is relatively easy for technical folks. Just follow the instructions on the [be a hubber](message-hub-registration.md) page.
+Becoming a hub runner is relatively easy for technical folks. Just follow the instructions on the [run a hub](message-hub-registration.md) page.
