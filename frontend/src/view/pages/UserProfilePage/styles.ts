@@ -14,6 +14,10 @@ export const ProfileWrapper = styled(Paper)`
   min-height: 50vh;
   position: relative;
   padding-bottom: 80px;
+  
+  @media (max-width: 600px) {
+    padding-bottom: 40px;
+  }
 `
 
 export const Header = styled.header`
@@ -31,6 +35,11 @@ export const UserContentWrapper = styled.div`
   margin-top: 10px;
   display: flex;
   justify-content: center;
+
+  @media (max-width: 600px) {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
 `
 
 export const AvatarWrapper = styled.div`
@@ -56,6 +65,12 @@ export const Avatart = styled.label`
 
 export const FormWrapper = styled.form`
   width: 300px;
+
+  @media (max-width: 600px) {
+    margin-top: 20px;
+    max-width: 500px;
+    width: 100%;
+  }
 `
 
 export const FormControlStyled = styled(FormControl)`

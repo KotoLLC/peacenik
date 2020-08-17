@@ -185,6 +185,7 @@ const Message: React.SFC<Props> = (props) => {
   }
 
   const onCommentSave = () => {
+    openComments(true)
     onCommentChange('')
     props.onCommentPost({
       host: sourceHost,
@@ -294,6 +295,7 @@ const Message: React.SFC<Props> = (props) => {
   }
 
   const onCommentClick = () => {
+    openComments(true)
     commentEditorRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
     commentEditorRef?.current?.focus()
   }

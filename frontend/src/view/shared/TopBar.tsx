@@ -12,12 +12,12 @@ import { StoreTypes } from 'src/types'
 import logo from './../../assets/images/logo-white.png'
 import Avatar from '@material-ui/core/Avatar'
 import { getAvatarUrl } from '@services/avatarUrl'
-import { 
-  TooltipStyle, 
-  IconButtonStyled, 
-  LogoWrapper, 
+import Badge from '@material-ui/core/Badge'
+import {
+  TooltipStyle,
+  IconButtonStyled,
+  LogoWrapper,
   TopBarRightSide,
-  NotificationsCounter,
   NotificationsWrapper,
   AvatarWrapper,
   Logo,
@@ -33,7 +33,7 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
   const { notificationLength, userId } = props
 
   const onLogoutClick = () => {
-    history.push('/login')    
+    history.push('/login')
     props.onLogout()
   }
 
@@ -41,16 +41,17 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
     <AppBar position="fixed" color="primary">
       <Toolbar>
         <LogoWrapper to="/messages">
-          <Logo src={logo}/>
+          <Logo src={logo} />
         </LogoWrapper>
         <TopBarRightSide>
-          {Boolean(notificationLength) && <NotificationsWrapper to="/notifications">
-            <NotificationsActiveIcon fontSize="small"/>
-            <NotificationsCounter>{notificationLength} notifications</NotificationsCounter>
+          {<NotificationsWrapper to="/notifications">
+            <Badge badgeContent={notificationLength} color="secondary">
+              <NotificationsActiveIcon />
+            </Badge>
           </NotificationsWrapper>}
           <TopMenu />
           <AvatarWrapper to="/user-profile">
-            <Avatar variant="rounded" src={getAvatarUrl(userId)}  />
+            <Avatar variant="rounded" src={getAvatarUrl(userId)} />
           </AvatarWrapper>
           <TooltipStyle title={`Logout`}>
             <IconButtonStyled onClick={onLogoutClick}>

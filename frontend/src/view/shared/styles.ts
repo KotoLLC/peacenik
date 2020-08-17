@@ -56,6 +56,10 @@ export const PageWrapper = styled.main`
   display: flex;
   flex-wrap: wrap;
   padding: 15px 20px;
+
+  @media (max-width: 600px) {
+    padding: 0px;
+  }
 `
 
 export const Header = styled.header`
@@ -66,6 +70,12 @@ export const Header = styled.header`
   margin-top: 50px;
   width: 100%;
   padding-bottom: 20px;
+
+  @media (max-width: 600px) {
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-bottom: 15px;
+  }
 `
 
 export const TabsWrapper = styled.div`
@@ -122,10 +132,6 @@ export const NotificationsWrapper = styled(Link)`
   &:hover {
     text-decoration: none;
   }
-`  
-
-export const NotificationsCounter = styled.div`
-  margin-left: 5px;
 `  
 
 export const PreloaderViewport = styled.div`

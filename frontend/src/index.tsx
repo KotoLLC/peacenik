@@ -14,11 +14,36 @@ import moment from 'moment'
 import 'video-react/dist/video-react.css'
 import 'react-awesome-slider/dist/styles.css'
 
-const theme = createMuiTheme({
+const defaultTheme = createMuiTheme({
   typography: {
     fontFamily: 'Raleway, Arial',
   },
 })
+
+const { breakpoints, typography } = defaultTheme
+
+const theme = {
+  ...defaultTheme,
+  overrides: {
+    MuiTypography: {
+      h1: {
+        [breakpoints.down('xs')]: {
+          fontSize: '3rem'
+        }
+      },
+      h2: {
+        [breakpoints.down('xs')]: {
+          fontSize: '2rem'
+        }
+      },
+      h3: {
+        [breakpoints.down('xs')]: {
+          fontSize: '2rem'
+        }
+      },
+    }
+  }
+}
 
 interface Props {
   isLogged: boolean

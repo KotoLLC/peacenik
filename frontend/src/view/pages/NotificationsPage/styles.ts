@@ -20,6 +20,10 @@ export const Header = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  @media (max-width: 600px) {
+    margin-bottom: 20px;
+  }
 ` 
 
 export const Footer = styled.footer`
@@ -45,17 +49,30 @@ export const ListWrapper = styled.div`
 export const ListIten = styled.div`
   margin-bottom: 10px;
   display: flex;
+  flex-wrap: wrap;
+
+  @media (max-width: 600px) {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+  }
 `
 
 export const ListDate = styled.span`
-  width: 20%;
+  width: 180px;
+
+  @media (max-width: 600px) {
+    width: 160px;
+  }
 `
 
 export const ListText = styled.p`
-  width: 80%;
   margin: 0;
   display: flex;
   align-items: center;
+
+  @media (max-width: 600px) {
+    width: auto;
+  }
 `
 
 export const ListLink = styled(Link)`

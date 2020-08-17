@@ -63,7 +63,7 @@ class NotificationsPage extends React.PureComponent<Props> {
     if (type.indexOf('message') !== -1) {
       return (
         <ListText>
-          {(type === 'message/like') ? <FavoriteIcon fontSize="small"/> : <ForumIcon fontSize="small" />}
+          {(type === 'message/like') ? <FavoriteIcon fontSize="small" /> : <ForumIcon fontSize="small" />}
           <ListLink to={`/messages${urlVars}`}>{text}</ListLink>
         </ListText>
       )
@@ -72,7 +72,7 @@ class NotificationsPage extends React.PureComponent<Props> {
     if (type.indexOf('comment') !== -1) {
       return (
         <ListText>
-          {(type === 'comment/like') ? <FavoriteIcon fontSize="small"/> : <AlternateEmailIcon fontSize="small" />}
+          {(type === 'comment/like') ? <FavoriteIcon fontSize="small" /> : <AlternateEmailIcon fontSize="small" />}
           <ListLink to={`/messages${urlVars}`}>{text}</ListLink>
         </ListText>
       )
@@ -88,7 +88,7 @@ class NotificationsPage extends React.PureComponent<Props> {
     }
 
     if (type.indexOf('invite') !== -1) {
-      
+
       let currentUrl = '/friends/all'
 
       if (type === 'invite/add' || type === 'invite/reject') {
@@ -124,22 +124,22 @@ class NotificationsPage extends React.PureComponent<Props> {
       notifications: sortByDate(newProps.notifications)
     }
 
-    return  {
+    return {
       notifications: []
     }
   }
 
   onClean = () => {
-    const { 
+    const {
       lastKnownIdFromMessageHubs,
       lastKnownIdFromUserHub,
       onCleanNotificationsInUserHub,
       onCleanNotificationsInMessageHub,
-     } = this.props
-    
+    } = this.props
+
     if (lastKnownIdFromUserHub) {
       onCleanNotificationsInUserHub(lastKnownIdFromUserHub)
-    } 
+    }
 
     if (lastKnownIdFromMessageHubs.length) {
       lastKnownIdFromMessageHubs.forEach(item => {
@@ -153,7 +153,7 @@ class NotificationsPage extends React.PureComponent<Props> {
 
     return (
       <WithTopBar>
-        <ContainerStyled >
+        <ContainerStyled>
           <NotificationsWrapper>
             <Header>
               <Title>Notifications</Title>
@@ -162,11 +162,11 @@ class NotificationsPage extends React.PureComponent<Props> {
               {this.mapNotifiactions(notifications)}
             </ListWrapper>
             <Footer>
-              <Button 
-                variant="contained" 
+              <Button
+                variant="contained"
                 color="primary"
                 onClick={this.onClean}
-                >clear</Button>
+              >clear</Button>
             </Footer>
           </NotificationsWrapper>
         </ContainerStyled>
@@ -175,7 +175,7 @@ class NotificationsPage extends React.PureComponent<Props> {
   }
 }
 
-type StateProps = Pick<Props, 'notifications' |'lastKnownIdFromUserHub' | 'lastKnownIdFromMessageHubs'>
+type StateProps = Pick<Props, 'notifications' | 'lastKnownIdFromUserHub' | 'lastKnownIdFromMessageHubs'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   notifications: selectors.notifications.notifications(state),
   lastKnownIdFromUserHub: selectors.notifications.lastKnownIdFromUserHub(state),
@@ -186,9 +186,9 @@ type DispatchProps = Pick<Props, 'onGetNotifications' | 'onCleanNotificationsInU
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetNotifications: () => dispatch(Actions.notifications.getNotificationsRequest()),
   onCleanNotificationsInUserHub: (data: CommonTypes.NotificationTypes.LastKnown) =>
-          dispatch(Actions.notifications.cleanNotificationsInUserHubRequest(data)),
+    dispatch(Actions.notifications.cleanNotificationsInUserHubRequest(data)),
   onCleanNotificationsInMessageHub: (data: CommonTypes.NotificationTypes.LastKnown) =>
-          dispatch(Actions.notifications.cleanNotificationsInMessageHubRequest(data)),
+    dispatch(Actions.notifications.cleanNotificationsInMessageHubRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(NotificationsPage)

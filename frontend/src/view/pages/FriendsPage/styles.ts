@@ -14,15 +14,18 @@ export const PageWrapper = styled.div`
   margin: 0 auto;
   max-width: 1000px;
   width: 100%;
+  
+  @media (max-width: 600px) {
+    padding: 15px 15px;
+  }
 `
 
 export const UsersWrapper = styled.div`
   max-width: 500px;
   width: 100%;
-  margin-right: 20px;
 
-  @media (max-width: 1024px) {
-    max-width: 400px;
+  @media (max-width: 600px) {
+    max-width: 100%;
   }
 `
 
@@ -31,8 +34,8 @@ export const ContentWrapper = styled(Paper)`
   width: 100%;
   padding: 10px 15px;
 
-  @media (max-width: 1024px) {
-    max-width: 400px;
+  @media (max-width: 600px) {
+    max-width: 100%;
   }
 `
 

@@ -7,6 +7,8 @@ import { Slide1 } from './Slide1'
 import { Slide2 } from './Slide2'
 import { Slide3 } from './Slide3'
 import { withNavigationHandlers } from 'react-awesome-slider/dist/navigation'
+import { SwipeNote } from './styles'
+
 const NavigationSlider = withNavigationHandlers(AwesomeSlider)
 
 interface Props extends RouteComponentProps {
@@ -24,6 +26,7 @@ export const AboutUs: React.SFC<Props> = (props) => {
   return (
     <NavigationSlider
       className="awesome-slider"
+      organicArrows={true}
       media={[
         {
           children: <Slide1 onGoToMessageHubs={onGoToMessageHubs} />
