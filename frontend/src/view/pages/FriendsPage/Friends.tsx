@@ -15,7 +15,7 @@ import AccessTimeIcon from '@material-ui/icons/AccessTime'
 import PersonAddIcon from '@material-ui/icons/PersonAdd'
 import RemoveFriendDialog from './RemoveFriendDialog'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
-
+import { getAvatarUrl } from '@services/avatarUrl'
 import {
   UsersWrapper,
   FriendsTitleWrapper,
@@ -30,9 +30,6 @@ import {
   AvatarStyled,
   SearchIconStyled,
 } from './styles'
-
-// @ts-ignore
-const userHubUrl: string = window.apiEndpoint
 
 export interface Props {
   friends: ApiTypes.Friends.Friend[]
@@ -111,7 +108,7 @@ class Friends extends React.Component<Props, State> {
         <div key={user.id}>
           <ListItem>
             <ListItemAvatar>
-              <AvatarStyled alt={user.name} src={`${userHubUrl}/image/avatar/${user.id}`} />
+              <AvatarStyled alt={user.name} src={getAvatarUrl(user.id)} />
             </ListItemAvatar>
             <ListItemText primary={<UserName>{user.name}</UserName>} />
             {this.checkCurrentIcon(user, invite_status)}
@@ -142,7 +139,7 @@ class Friends extends React.Component<Props, State> {
       <ListItemWrapper key={item.user.id}>
         <ListItem onClick={() => this.onFriendSelect(item.user.id, item.user.name)}>
           <ListItemAvatar>
-            <AvatarStyled alt={item.user.name} src={`${userHubUrl}/image/avatar/${item.user.id}`} />
+            <AvatarStyled alt={item.user.name} src={getAvatarUrl(item.user.id)}/>
           </ListItemAvatar>
           <ListItemText primary={<UserName>{item.user.name}</UserName>} />
           <RemoveFriendDialog {...item} />

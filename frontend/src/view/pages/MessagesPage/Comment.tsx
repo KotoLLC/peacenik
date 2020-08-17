@@ -8,6 +8,7 @@ import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'
 import SendIcon from '@material-ui/icons/Send'
+import { getAvatarUrl } from '@services/avatarUrl'
 import {
   CommentWrapper,
   UserName,
@@ -23,9 +24,6 @@ import {
   LikeCommentButton,
 } from './styles'
 import { ApiTypes, StoreTypes } from 'src/types'
-
-// @ts-ignore
-const userHubUrl: string = window.apiEndpoint
 
 interface Props extends ApiTypes.Messages.Comment {
   userId: string
@@ -141,7 +139,7 @@ const Comment: React.SFC<Props> = (props) => {
 
   return (
     <CommentWrapper ref={commentRef}>
-      <AvatarStyled src={`${userHubUrl}/image/avatar/${user_id}`} />
+      <AvatarStyled src={getAvatarUrl(user_id)} />
       <CommentTextWrapper>{
          isEditer ?
           <EditMessageField>

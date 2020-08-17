@@ -10,6 +10,7 @@ import Tooltip from '@material-ui/core/Tooltip'
 import { validate } from '@services/validation'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import Actions from '@store/actions'
+import { getAvatarUrl } from '@services/avatarUrl'
 import {
   ContainerStyled,
   ProfileWrapper,
@@ -23,9 +24,6 @@ import {
   FormControlStyled,
   UploadInput,
 } from './styles'
-
-// @ts-ignore
-const userHubUrl: string = window.apiEndpoint
 
 interface Props {
   userName: string
@@ -167,7 +165,7 @@ class UserProfile extends React.PureComponent<Props, State> {
       return <img src={URL.createObjectURL(file)} alt={userName} />
     }
 
-    return <img src={`${userHubUrl}/image/avatar/${userId}`} alt={userName} />
+    return <img src={getAvatarUrl(userId)} alt={userName} />
   }
 
   componentDidMount() {

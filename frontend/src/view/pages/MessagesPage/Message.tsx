@@ -18,6 +18,7 @@ import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
 import Badge from '@material-ui/core/Badge'
 import SendIcon from '@material-ui/icons/Send'
 import LayersClearIcon from '@material-ui/icons/LayersClear'
+import { getAvatarUrl } from '@services/avatarUrl'
 import 'github-markdown-css'
 
 import {
@@ -64,9 +65,6 @@ interface Props extends ApiTypes.Messages.Message {
   onLikeMessage: (data: ApiTypes.Messages.Like) => void
   getLikesForMessage: (data: ApiTypes.Messages.Like) => void
 }
-
-// @ts-ignore
-const userHubUrl: string = window.apiEndpoint
 
 const Message: React.SFC<Props> = (props) => {
   const {
@@ -357,7 +355,7 @@ const Message: React.SFC<Props> = (props) => {
         <MessageHeader>
           <UserInfo>
             <AvatarWrapper>
-              <Avatar src={`${userHubUrl}/image/avatar/${user_id}`} />
+              <Avatar src={getAvatarUrl(user_id)} />
             </AvatarWrapper>
             <UserNameWrapper>
               <UserName>{user_name}</UserName>

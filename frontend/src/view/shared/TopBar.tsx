@@ -11,6 +11,7 @@ import selectors from '@selectors/index'
 import { StoreTypes } from 'src/types'
 import logo from './../../assets/images/logo-white.png'
 import Avatar from '@material-ui/core/Avatar'
+import { getAvatarUrl } from '@services/avatarUrl'
 import { 
   TooltipStyle, 
   IconButtonStyled, 
@@ -21,9 +22,6 @@ import {
   AvatarWrapper,
   Logo,
 } from './styles'
-
-// @ts-ignore
-const userHubUrl: string = window.apiEndpoint
 
 interface Props {
   notificationLength: number
@@ -52,7 +50,7 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
           </NotificationsWrapper>}
           <TopMenu />
           <AvatarWrapper to="/user-profile">
-            <Avatar variant="rounded" src={`${userHubUrl}/image/avatar/${userId}`}  />
+            <Avatar variant="rounded" src={getAvatarUrl(userId)}  />
           </AvatarWrapper>
           <TooltipStyle title={`Logout`}>
             <IconButtonStyled onClick={onLogoutClick}>

@@ -9,6 +9,7 @@ import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import LayersClearIcon from '@material-ui/icons/LayersClear'
 import { Player } from 'video-react'
+import { getAvatarUrl } from '@services/avatarUrl'
 import {
   TextareaAutosizeStyled,
   ButtonSend,
@@ -22,9 +23,6 @@ import {
   ImagePreview,
   AvatarWrapper,
 } from './styles'
-
-// @ts-ignore
-const userHubUrl: string = window.apiEndpoint
 
 interface Props {
   authToken: string
@@ -130,7 +128,7 @@ const Editor: React.SFC<Props> = (props) => {
       <PaperStyled>
         <CreateWrapper>
           <AvatarWrapper>
-            <Avatar variant="rounded" src={`${userHubUrl}/image/avatar/${props.userId}`} />
+            <Avatar variant="rounded" src={getAvatarUrl(props.userId)} />
           </AvatarWrapper>
           <EditorWrapper>
             <TextareaTitle className={value.length ? 'active' : ''}>Post a message to your friend</TextareaTitle>

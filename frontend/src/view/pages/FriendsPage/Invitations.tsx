@@ -1,8 +1,5 @@
 import React, { ChangeEvent } from 'react'
 import ListItem from '@material-ui/core/ListItem'
-import InputAdornment from '@material-ui/core/InputAdornment'
-import FormControl from '@material-ui/core/FormControl'
-import Input from '@material-ui/core/Input'
 import Paper from '@material-ui/core/Paper'
 import Divider from '@material-ui/core/Divider'
 import ListItemText from '@material-ui/core/ListItemText'
@@ -15,6 +12,7 @@ import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import { StoreTypes, ApiTypes } from 'src/types'
 import selectors from '@selectors/index'
+import { getAvatarUrl } from '@services/avatarUrl'
 import {
   UsersWrapper,
   ListStyled,
@@ -40,9 +38,6 @@ interface State {
   searchResult: ApiTypes.Friends.Invitation[]
   searchValue: string
 }
-
-// @ts-ignore
-const userHubUrl: string = window.apiEndpoint
 
 export class Invitations extends React.Component<Props, State> {
 
@@ -85,7 +80,7 @@ export class Invitations extends React.Component<Props, State> {
         <div key={friend_id}>
           <ListItem alignItems="center">
             <ListItemAvatar>
-              <AvatarStyled alt={friend_name} src={`${userHubUrl}/image/avatar/${friend_id}`} />
+              <AvatarStyled alt={friend_name} src={getAvatarUrl(friend_id)} />
             </ListItemAvatar>
             <ListItemText primary={<UserName>{friend_name}</UserName>} />
             <Tooltip title={`Accept the invitation`}>
