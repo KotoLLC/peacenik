@@ -160,7 +160,7 @@ func (s *messageHubService) Remove(ctx context.Context, r *rpc.MessageHubRemoveR
 	return &rpc.Empty{}, nil
 }
 
-func (s *messageHubService) SetPostLimit(ctx context.Context, r *rpc.MessageHubPostLimitRequest) (*rpc.Empty, error) {
+func (s *messageHubService) SetPostLimit(ctx context.Context, r *rpc.MessageHubSetPostLimitRequest) (*rpc.Empty, error) {
 	user := s.getUser(ctx)
 	hub, err := s.repos.MessageHubs.Hub(r.HubId)
 	if err != nil {
