@@ -118,7 +118,7 @@ export const ButtonsWrapper = styled.div`
   margin-left: 10px;
 `
 
-export const MessageContent = styled.pre`
+export const MessageContent = styled.div`
   font-family: Raleway, Arial;
   font-size: 14px;
   margin: 10px 0;
@@ -126,7 +126,7 @@ export const MessageContent = styled.pre`
   white-space: pre-wrap;
 `
 
-export const CommentContent = styled.pre`
+export const CommentContent = styled.div`
   font-family: Raleway, Arial;
   display: inline-block;
   font-size: 14px;

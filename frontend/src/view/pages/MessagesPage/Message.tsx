@@ -1,4 +1,5 @@
 import React, { useState, useEffect, ChangeEvent, useRef } from 'react'
+import ReactMarkdown from 'react-markdown'
 import Avatar from '@material-ui/core/Avatar'
 import EditIcon from '@material-ui/icons/Edit'
 import RemoveMessageDialog from './RemoveMessageDialog'
@@ -17,6 +18,7 @@ import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
 import Badge from '@material-ui/core/Badge'
 import SendIcon from '@material-ui/icons/Send'
 import LayersClearIcon from '@material-ui/icons/LayersClear'
+
 import {
   PaperStyled,
   MessageHeader,
@@ -403,7 +405,9 @@ const Message: React.SFC<Props> = (props) => {
                 >Save</ButtonSend>
               </EditorButtonsWrapper>
             </EditorInMessageWrapper>
-            : <MessageContent>{message}</MessageContent>
+            : <MessageContent>
+              <ReactMarkdown>{message}</ReactMarkdown>
+            </MessageContent>
         }
         {renderAttachment()}
         {renderReactions()}

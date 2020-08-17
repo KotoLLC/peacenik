@@ -8,6 +8,7 @@ import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'
 import SendIcon from '@material-ui/icons/Send'
+import ReactMarkdown from 'react-markdown'
 import {
   CommentWrapper,
   UserName,
@@ -155,7 +156,7 @@ const Comment: React.SFC<Props> = (props) => {
           </EditMessageField> 
           : 
           <CommentContent>
-            <UserName>{user_name}</UserName> {comment}
+            <UserName>{user_name}</UserName> <ReactMarkdown>{comment}</ReactMarkdown>
           </CommentContent>
       }
       <CommentReactionsNavWrapper> 
