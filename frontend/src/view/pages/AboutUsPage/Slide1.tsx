@@ -1,19 +1,21 @@
 import React from 'react'
 import Typography from '@material-ui/core/Typography'
-import Button from '@material-ui/core/Button'
-import { ContainerStyled, SwipeNote } from './styles'
-
-interface Props {
-  onGoToMessageHubs: () => void
-}
-
-export const Slide1: React.FC<Props> = (props) => {
+import milhousePicture from './../../../assets/images/milhouse.gif'
+import { ContainerStyled } from './styles'
+import { ImageDemo } from './styles'
+export const Slide1 = () => {
   return (
-    <ContainerStyled maxWidth="lg">
-      <Typography variant="h3" gutterBottom>Description Koto</Typography>
-      <Typography variant="subtitle1" gutterBottom>Koto is a safe, friendly, distributed social network.</Typography>
-      <Button variant="contained" color="primary" onClick={props.onGoToMessageHubs}>create message hub</Button>
-      <SwipeNote>Swipe to right to see more</SwipeNote>
+    <ContainerStyled maxWidth="md">
+      <Typography variant="h3" gutterBottom>Welcome to Koto</Typography>
+
+      <Typography variant="h5" gutterBottom>
+      Like most social networks, koto starts with friends. And from the look of it, you don't have any.
+      </Typography>
+      <ImageDemo src={milhousePicture} alt="no friends" />
+
+      <Typography variant="h5" gutterBottom>
+      Swipe right to learn more ➡️
+      </Typography>
     </ContainerStyled>
   )
 }

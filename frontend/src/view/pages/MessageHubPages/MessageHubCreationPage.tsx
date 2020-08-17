@@ -124,8 +124,11 @@ class MessageHubCreation extends React.PureComponent<Props, State> {
     return (
       <>
         <TitleWrapper>
-          <Typography variant="h4" gutterBottom>Register new hub</Typography>
-          <Typography variant="subtitle1" gutterBottom>Some description here</Typography>
+          <Typography variant="h4" gutterBottom>Register a message hub</Typography>
+          <Typography variant="subtitle1" gutterBottom>
+            Message hubs store messages, photos, and videos for a group of friends. To learn how
+            message hubs work, visit the help docs at https://docs.koto.at
+          </Typography>
         </TitleWrapper>
         <FormWrapper onSubmit={this.onFormSubmit}>
           <FormControlStyled variant="outlined">
@@ -147,7 +150,7 @@ class MessageHubCreation extends React.PureComponent<Props, State> {
               type={'text'}
               value={description}
               error={noValideField === 'description'}
-              placeholder={'Pleas tell us how you will enforce our code of conduct (100 word maximum)'}
+              placeholder={'Please tell us how you will enforce our code of conduct (100 word maximum)'}
               multiline
               rows={8}
               onChange={this.onDescriptionChange}

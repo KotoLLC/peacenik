@@ -23,15 +23,21 @@ export const AboutUs: React.SFC<Props> = (props) => {
     localStorage.setItem('kotoIsAboutUsViewed', 'true')
   }
 
+  const onGoToInvites = () => {
+    props.history.push('/friends/invitations')
+    props.onSetAboutUsViewed()
+    localStorage.setItem('kotoIsAboutUsViewed', 'true')
+  }
+
   return (
     <NavigationSlider
       className="awesome-slider"
       organicArrows={true}
       media={[
         {
-          children: <Slide1 onGoToMessageHubs={onGoToMessageHubs} />
+          children: <Slide1 />
         }, {
-          children: <Slide2 />
+          children: <Slide2 onGoToInvites={onGoToInvites} />
         }, {
           children: <Slide3 onGoToMessageHubs={onGoToMessageHubs} />
         }

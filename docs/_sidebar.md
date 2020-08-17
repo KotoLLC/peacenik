@@ -2,7 +2,7 @@
 - User's reference
 
   - [Overview](README.md)
-  - [How-to guide](users-guide.md)
+  - [User's guide](users-guide.md)
   - [Run a hub](message-hub-registration.md)
 
 - About the project
