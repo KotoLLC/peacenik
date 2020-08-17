@@ -126,7 +126,7 @@ export const MessageContent = styled.div`
   white-space: pre-wrap;
 `
 
-export const CommentContent = styled.div`
+export const CommentContent = styled.pre`
   font-family: Raleway, Arial;
   display: inline-block;
   font-size: 14px;

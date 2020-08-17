@@ -20,6 +20,7 @@
 		"axios": "^0.19.2",
 		"core-js": "^3.6.5",
 		"dotenv": "^8.2.0",
+		"github-markdown-css": "^4.0.0",
 		"lodash.isequal": "^4.5.0",
 		"lodash.unionwith": "^4.6.0",
 		"lodash.uniq": "^4.5.0",

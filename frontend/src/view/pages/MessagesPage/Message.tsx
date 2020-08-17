@@ -18,6 +18,7 @@ import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
 import Badge from '@material-ui/core/Badge'
 import SendIcon from '@material-ui/icons/Send'
 import LayersClearIcon from '@material-ui/icons/LayersClear'
+import 'github-markdown-css'
 
 import {
   PaperStyled,
@@ -405,8 +406,8 @@ const Message: React.SFC<Props> = (props) => {
                 >Save</ButtonSend>
               </EditorButtonsWrapper>
             </EditorInMessageWrapper>
-            : <MessageContent>
-              <ReactMarkdown>{message}</ReactMarkdown>
+            : <MessageContent className="markdown-body">
+              <ReactMarkdown >{message}</ReactMarkdown>
             </MessageContent>
         }
         {renderAttachment()}
