@@ -88,7 +88,7 @@ export class LoginForm extends React.PureComponent<Props, State> {
 
     if (!validate.isUserNameValid(username)) {
       this.setState({
-        errorMessage: 'User Name / email is incorrect',
+        errorMessage: 'Username is incorrect',
         noValideField: 'username',
       })
       return false
@@ -146,7 +146,7 @@ export class LoginForm extends React.PureComponent<Props, State> {
             <InputLabel 
               htmlFor="username"
               color={(noValideField === 'username') ? 'secondary' : 'primary'}
-              >User Name / Email</InputLabel>
+              >Username</InputLabel>
             <OutlinedInput
               id="username"
               type={'text'}
