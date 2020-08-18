@@ -98,6 +98,7 @@ export declare namespace ApiTypes {
     export interface Create {
       address: string
       details: string
+      post_limit: number
     }
 
     export interface ApproveHub {

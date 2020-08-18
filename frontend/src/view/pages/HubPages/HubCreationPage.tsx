@@ -7,6 +7,8 @@ import FormHelperText from '@material-ui/core/FormHelperText'
 import { connect } from 'react-redux'
 import selectors from '@selectors/index'
 import Actions from '@store/actions'
+import Select from '@material-ui/core/Select'
+import MenuItem from '@material-ui/core/MenuItem'
 import { StoreTypes, ApiTypes } from 'src/types'
 
 import {
@@ -27,6 +29,7 @@ interface State {
   errorMessage: string
   hubName: string
   description: string
+  postLimit: number
 }
 
 interface Props {
@@ -43,6 +46,7 @@ class HubCreation extends React.PureComponent<Props, State> {
     noValideField: '' as FieldsType,
     hubName: '',
     description: '',
+    postLimit: 2,
   }
 
   static getDerivedStateFromProps(newProps: Props) {
@@ -60,6 +64,12 @@ class HubCreation extends React.PureComponent<Props, State> {
   onDescriptionChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     this.setState({
       description: event.currentTarget.value
+    })
+  }
+
+  onPostLimitChange = (event) => {
+    this.setState({
+      postLimit: event.target.value 
     })
   }
 
@@ -87,7 +97,7 @@ class HubCreation extends React.PureComponent<Props, State> {
 
   onFormSubmit = (event: FormEvent) => {
     event.preventDefault()
-    const { hubName, description } = this.state
+    const { hubName, description, postLimit } = this.state
     const { onHubCreate } = this.props
 
     if (!this.onValidate()) return
@@ -101,6 +111,7 @@ class HubCreation extends React.PureComponent<Props, State> {
     onHubCreate({
       address: hubName,
       details: description,
+      post_limit: postLimit,
     })
   }
 
@@ -119,6 +130,7 @@ class HubCreation extends React.PureComponent<Props, State> {
       noValideField,
       hubName,
       description,
+      postLimit,
     } = this.state
 
     return (
@@ -132,8 +144,8 @@ class HubCreation extends React.PureComponent<Props, State> {
         </TitleWrapper>
         <FormWrapper onSubmit={this.onFormSubmit}>
           <FormControlStyled variant="outlined">
-            <InputLabel 
-              htmlFor="name" 
+            <InputLabel
+              htmlFor="name"
               color={(noValideField === 'hub-name') ? 'secondary' : 'primary'}>Domain or IP address</InputLabel>
             <OutlinedInput
               id="hub-name"
@@ -143,6 +155,22 @@ class HubCreation extends React.PureComponent<Props, State> {
               onChange={this.onHubNameChange}
               labelWidth={155}
             />
+          </FormControlStyled>
+          <p>Post limits allow you to control who can post messages, photos, and videos to your message hub.</p>
+          <FormControlStyled variant="outlined">
+            <InputLabel id="post-limit">Set post limit</InputLabel>
+            <Select
+              labelId="post-limit"
+              id="post-limit"
+              value={postLimit}
+              onChange={value => this.onPostLimitChange(value)}
+              labelWidth={90}
+            >
+              <MenuItem value={0}>Unlimited posts</MenuItem>
+              <MenuItem value={1}>Only admin can post</MenuItem>
+              <MenuItem value={2}>Only admin's friends can post</MenuItem>
+              <MenuItem value={3}>Admin's 2nd level of friends can post</MenuItem>
+            </Select>
           </FormControlStyled>
           <FormControlStyled variant="outlined">
             <OutlinedInput

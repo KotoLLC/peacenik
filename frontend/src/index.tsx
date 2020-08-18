@@ -21,7 +21,7 @@ const defaultTheme = createMuiTheme({
   },
 })
 
-const { breakpoints, typography } = defaultTheme
+const { breakpoints } = defaultTheme
 
 const theme = {
   ...defaultTheme,
