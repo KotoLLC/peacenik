@@ -23,6 +23,7 @@ import {
   ApproveButton,
   PendingText,
   PendingTextWrapper,
+  HubListWrapper,
 } from './styles'
 
 interface Props {
@@ -128,7 +129,7 @@ class HubList extends React.Component<Props, State> {
     const { currentPage, rowsPerPage, showList } = this.state
 
     return (
-      <>
+      <HubListWrapper>
         <FormControlLabelStyled
           label="Filter approved"
           control={
@@ -186,7 +187,7 @@ class HubList extends React.Component<Props, State> {
             />
           </TableContainer>
         </TableWrapper>
-      </>
+      </HubListWrapper>
     )
   }
 }

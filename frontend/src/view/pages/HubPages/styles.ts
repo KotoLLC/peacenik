@@ -14,6 +14,15 @@ export const ContainerStyled = styled(Container)`
     align-content: center;
     justify-content: center;
     margin-top: 60px;
+    padding-bottom: 30px;
+  }
+`
+
+export const HubListWrapper = styled.div`
+  width: 100%;
+
+  @media (max-width: 600px) {
+    padding: 0 15px;
   }
 `
 

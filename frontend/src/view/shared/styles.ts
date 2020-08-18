@@ -32,6 +32,10 @@ export const Logo = styled.img`
   max-height: 42px;
   position: relative;
   top: 3px;
+
+  @media (max-width: 600px){
+    max-height: 40px;
+  }
 `
 
 export const ListItemIconStyled = styled(ListItemIcon)`

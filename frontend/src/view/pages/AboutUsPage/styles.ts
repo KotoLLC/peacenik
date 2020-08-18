@@ -6,6 +6,10 @@ export const ContainerStyled = styled(Container)`
     padding-top: 100px;
     padding-bottom: 40px;
   }
+
+  img {
+    max-width: 100%;
+  }
 `
 export const ImageDemo = styled.img`
   max-width: 600px;

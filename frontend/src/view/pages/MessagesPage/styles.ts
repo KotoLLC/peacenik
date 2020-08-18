@@ -11,13 +11,17 @@ export const ContainerStyled = styled(Container)`
   && {
     padding-top: 100px;
     padding-bottom: 40px;
-  }
+  }  
 `
 
 export const PaperStyled = styled(Paper)`
   && {
     padding: 20px 0px;
     margin-bottom: 15px;
+  }
+
+  @media (max-width: 600px) {
+    padding: 15px 0px;
   }
 `
 
@@ -35,6 +39,10 @@ export const CommentWrapper = styled.div`
 export const CreateWrapper = styled.div`
   display: flex;
   padding: 0 20px;
+
+   @media (max-width: 600px) {
+    padding: 0 15px;
+  }
 `
 
 export const EditorWrapper = styled.div`
@@ -52,6 +60,7 @@ export const TextareaAutosizeStyled = styled(TextareaAutosize)`
   border: none;
   width: 100%;
   padding: 10px 10px;
+  border-radius: 0;
   font-family: 'Arial';
   font-size: 14px;
   line-height: 1.5;
@@ -93,6 +102,10 @@ export const MessageHeader = styled.header`
   justify-content: space-between;
   padding-left: 20px;
   padding-right: 10px;
+
+  @media (max-width: 600px) {
+    padding-left: 15px;
+  }
 `
 
 export const UserInfo = styled.div`
@@ -102,10 +115,30 @@ export const UserInfo = styled.div`
 
 export const UserNameWrapper = styled.div`
   margin-left: 20px;
+
+  @media (max-width: 600px) {
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    span {
+      width: 100%;
+      margin: 0;
+    }
+  }
 `
 
 export const UserName = styled.span`
   font-weight: bold;
+  
+  @media (max-width: 600px) {
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 130px;
+  }
 `
 
 export const MessageDate = styled.span`
@@ -204,6 +237,13 @@ export const EmptyMessage = styled.div`
   a {
     text-decoration: none;
   }
+
+  @media (max-width: 600px) {
+    display: block;
+    left: 0;
+    width: 100%;
+    transform: none;
+  }
 `
 
 export const UpButton = styled(IconButton)`
@@ -258,6 +298,7 @@ export const AvatarWrapper = styled.div`
   background: #bdbdbd;
   width: 40px;
   height: 40px;
+  flex-shrink: 0;
 `
 
 export const AvatarStyled = styled(Avatar)`
@@ -283,6 +324,10 @@ export const LikesNamesList = styled.span`
 export const ReactionNavWrapper = styled.div`
   display: flex;
   padding: 10px;
+
+  @media (max-width: 600px) {
+    padding: 0px 10px;
+  }
 `
 
 export const ReactionNavItem = styled.div`
