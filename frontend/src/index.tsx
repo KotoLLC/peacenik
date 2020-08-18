@@ -13,6 +13,7 @@ import Actions from '@store/actions'
 import moment from 'moment'
 import 'video-react/dist/video-react.css'
 import 'react-awesome-slider/dist/styles.css'
+import 'github-markdown-css'
 
 const defaultTheme = createMuiTheme({
   typography: {
