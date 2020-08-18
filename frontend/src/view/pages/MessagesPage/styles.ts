@@ -267,6 +267,10 @@ export const UploadInput = styled.input`
 export const ImagePreview = styled.img`
   max-width: 100%;
   max-height: 500px;
+  box-sizing: initial;
+  height: auto;
+  max-height: none;
+  width: 100%;
 `
 
 export const AttachmentWrapper = styled.div`
