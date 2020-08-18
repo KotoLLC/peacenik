@@ -42,7 +42,7 @@ func (s *messageHubService) Register(ctx context.Context, r *rpc.MessageHubRegis
 	}
 
 	for _, admin := range s.admins {
-		adminUser, err := s.repos.User.FindUserByNameOrEmail(admin)
+		adminUser, err := s.repos.User.FindUserByName(admin)
 		if err != nil && !merry.Is(err, sql.ErrNoRows) {
 			log.Println(err)
 		}

@@ -101,10 +101,7 @@ func TestAuthService_Register_Duplicated(t *testing.T) {
 		Email:    "user1@mail.org",
 		Password: "password1",
 	})
-	assert.NotNil(t, err)
-	twirpErr = err.(twirp.Error)
-	assert.Equal(t, twirp.AlreadyExists, twirpErr.Code())
-	assert.Equal(t, "user already exists", twirpErr.Msg())
+	assert.Nil(t, err)
 }
 
 func TestAuthService_Register(t *testing.T) {
@@ -138,18 +135,28 @@ func TestAuthService_Register(t *testing.T) {
 	assert.NotEmpty(t, user2.CreatedAt)
 	assert.NotEmpty(t, user2.UpdatedAt)
 
-	user2email, err := repos.User.FindUserByEmail("user2@mail.org")
+	users, err := repos.User.FindUsersByEmail("user2@mail.org")
 	assert.Nil(t, err)
-	assert.Equal(t, user2.ID, user2email.ID)
-	assert.Equal(t, user2.Name, user2email.Name)
-	assert.Equal(t, user2.Email, user2email.Email)
-	assert.Equal(t, user2.PasswordHash, user2email.PasswordHash)
-	assert.Equal(t, user2.CreatedAt, user2email.CreatedAt)
-	assert.Equal(t, user2.UpdatedAt, user2email.UpdatedAt)
+	assert.Equal(t, 1, len(users))
 
 	newUserCount, err := repos.User.UserCount()
 	assert.Nil(t, err)
 	assert.Equal(t, userCount+1, newUserCount)
+
+	_, err = s.Register(te.ctx, &rpc.AuthRegisterRequest{
+		Name:     "user2-1",
+		Email:    "user2@mail.org",
+		Password: "password2-1",
+	})
+	assert.Nil(t, err)
+
+	users, err = repos.User.FindUsersByEmail("user2@mail.org")
+	assert.Nil(t, err)
+	assert.Equal(t, 2, len(users))
+
+	newUserCount, err = repos.User.UserCount()
+	assert.Nil(t, err)
+	assert.Equal(t, userCount+2, newUserCount)
 }
 
 func TestAuthService_Login(t *testing.T) {
@@ -196,8 +203,10 @@ func TestAuthService_Login(t *testing.T) {
 		Name:     "user1@mail.org",
 		Password: "password1",
 	})
-	assert.Nil(t, err)
-	assert.Equal(t, "1", session.values["session-user-key"])
+	assert.NotNil(t, err)
+	twirpErr = err.(twirp.Error)
+	assert.Equal(t, twirp.InvalidArgument, twirpErr.Code())
+	assert.Equal(t, "invalid username or password", twirpErr.Msg())
 
 	session = newSession()
 	ctx = context.WithValue(te.ctx, services.ContextSession, session)

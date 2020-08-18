@@ -24,11 +24,10 @@ type User struct {
 }
 
 type UserRepo interface {
-	FindUser(value string) (*User, error)
+	FindUserByIDOrName(value string) (*User, error)
 	FindUserByID(id string) (*User, error)
-	FindUserByEmail(email string) (*User, error)
+	FindUsersByEmail(email string) ([]User, error)
 	FindUserByName(name string) (*User, error)
-	FindUserByNameOrEmail(value string) (*User, error)
 	AddUser(id, name, email, passwordHash string) error
 	UserCount() (int, error)
 	SetAvatar(userID, avatarOriginalID, avatarThumbnailID string) error
@@ -48,12 +47,12 @@ func NewUsers(db *sqlx.DB) UserRepo {
 	}
 }
 
-func (r *userRepo) FindUser(value string) (*User, error) {
+func (r *userRepo) FindUserByIDOrName(value string) (*User, error) {
 	var user User
 	err := r.db.Get(&user, `
 		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at
 		from users
-		where id = $1 or lower(name) = $2 or email = $1`,
+		where id = $1 or lower(name) = $2`,
 		value, strings.ToLower(value))
 	if err != nil {
 		if merry.Is(err, sql.ErrNoRows) {
@@ -79,19 +78,16 @@ func (r *userRepo) FindUserByID(id string) (*User, error) {
 	return &user, nil
 }
 
-func (r *userRepo) FindUserByEmail(email string) (*User, error) {
-	var user User
-	err := r.db.Get(&user, `
+func (r *userRepo) FindUsersByEmail(email string) ([]User, error) {
+	var users []User
+	err := r.db.Select(&users, `
 		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
 		from users
 		where email = $1`, email)
 	if err != nil {
-		if merry.Is(err, sql.ErrNoRows) {
-			return nil, nil
-		}
 		return nil, merry.Wrap(err)
 	}
-	return &user, nil
+	return users, nil
 }
 
 func (r *userRepo) FindUserByName(name string) (*User, error) {
@@ -101,22 +97,6 @@ func (r *userRepo) FindUserByName(name string) (*User, error) {
 		from users
 		where lower(name) = $1`,
 		strings.ToLower(name))
-	if err != nil {
-		if merry.Is(err, sql.ErrNoRows) {
-			return nil, nil
-		}
-		return nil, merry.Wrap(err)
-	}
-	return &user, nil
-}
-
-func (r *userRepo) FindUserByNameOrEmail(value string) (*User, error) {
-	var user User
-	err := r.db.Get(&user, `
-		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
-		from users
-		where lower(name) = $1 or email = $2`,
-		strings.ToLower(value), value)
 	if err != nil {
 		if merry.Is(err, sql.ErrNoRows) {
 			return nil, nil

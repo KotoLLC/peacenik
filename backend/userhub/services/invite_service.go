@@ -31,9 +31,19 @@ func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) 
 		return nil, twirp.NewError(twirp.InvalidArgument, "")
 	}
 
-	friend, err := s.repos.User.FindUser(r.Friend)
+	friend, err := s.repos.User.FindUserByIDOrName(r.Friend)
 	if err != nil {
 		return nil, err
+	}
+
+	if friend == nil {
+		friends, err := s.repos.User.FindUsersByEmail(r.Friend)
+		if err != nil {
+			return nil, err
+		}
+		if len(friends) == 1 {
+			friend = &friends[0]
+		}
 	}
 
 	if friend != nil {

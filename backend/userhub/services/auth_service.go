@@ -64,14 +64,6 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 		return nil, twirp.NewError(twirp.AlreadyExists, "user already exists")
 	}
 
-	u, err = s.repos.User.FindUserByEmail(r.Email)
-	if err != nil {
-		return nil, err
-	}
-	if u != nil {
-		return nil, twirp.NewError(twirp.AlreadyExists, "user already exists")
-	}
-
 	userID, err := uuid.NewV4()
 	if err != nil {
 		return nil, merry.Wrap(err)
@@ -111,7 +103,7 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 }
 
 func (s *authService) Login(ctx context.Context, r *rpc.AuthLoginRequest) (*rpc.Empty, error) {
-	u, err := s.repos.User.FindUserByNameOrEmail(r.Name)
+	u, err := s.repos.User.FindUserByName(r.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -150,7 +142,7 @@ func (s *authService) getAuthSession(ctx context.Context) Session {
 func (s *authService) Confirm(ctx context.Context, r *rpc.AuthConfirmRequest) (*rpc.Empty, error) {
 	if s.testMode {
 		if s.isAdmin(ctx) {
-			u, err := s.repos.User.FindUser(r.Token)
+			u, err := s.repos.User.FindUserByIDOrName(r.Token)
 			if err != nil {
 				return nil, err
 			}
