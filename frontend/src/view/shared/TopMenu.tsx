@@ -59,7 +59,7 @@ export const TopMenu = () => {
           </ListItemIconStyled>
           <ListItemText primary="Profile" />
         </MenuItem>
-        <MenuItem onClick={() => goToPage('/message-hubs/create')}>
+        <MenuItem onClick={() => goToPage('/hubs/create')}>
           <ListItemIconStyled>
             <DnsIcon fontSize="small" />
           </ListItemIconStyled>

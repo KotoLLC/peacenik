@@ -82,7 +82,7 @@ class NotificationsPage extends React.PureComponent<Props> {
       return (
         <ListText>
           <StorageIcon fontSize="small" />
-          <ListLink to={`/message-hubs/list${urlVars}`}>{text}</ListLink>
+          <ListLink to={`/hubs/list${urlVars}`}>{text}</ListLink>
         </ListText>
       )
     }
@@ -188,7 +188,7 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onCleanNotificationsInUserHub: (data: CommonTypes.NotificationTypes.LastKnown) =>
     dispatch(Actions.notifications.cleanNotificationsInUserHubRequest(data)),
   onCleanNotificationsInMessageHub: (data: CommonTypes.NotificationTypes.LastKnown) =>
-    dispatch(Actions.notifications.cleanNotificationsInMessageHubRequest(data)),
+    dispatch(Actions.notifications.cleanNotificationsInHubRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(NotificationsPage)

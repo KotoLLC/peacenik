@@ -2,8 +2,8 @@ import { Types } from './actions'
 import { CommonTypes, ApiTypes } from 'src/types'
 import uniqBy from 'lodash.uniqby'
 export interface State {
-  messageTokens: CommonTypes.MessageHubTypes.CurrentHub[]
-  currentHub: CommonTypes.MessageHubTypes.CurrentHub
+  messageTokens: CommonTypes.HubTypes.CurrentHub[]
+  currentHub: CommonTypes.HubTypes.CurrentHub
   isMessagePostedSuccess: boolean
   messages: ApiTypes.Messages.Message[]
   hubsWithMessages: Map<string, {
@@ -42,7 +42,7 @@ const reducer = (state = initialState, action) => {
         }
       }
     }
-    case Types.GET_CURRENT_MESSAGE_HUB_SUCCESS: {
+    case Types.GET_CURRENT_HUB_SUCCESS: {
       return {
         ...state, ...{ currentHub: action.payload }
       }

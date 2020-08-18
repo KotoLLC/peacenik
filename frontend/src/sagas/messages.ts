@@ -2,8 +2,8 @@ import { put, all, call, select } from 'redux-saga/effects'
 import Actions from '@store/actions'
 import { API } from '@services/api'
 import { ApiTypes } from 'src/types'
-import { currentMessageHubBack2Front } from '@services/dataTransforms/currentMessageHubTransform'
-import { messageHubsForMessagesBack2Front } from '@services/dataTransforms/messageHubsForMessagesTransform'
+import { currentHubBack2Front } from '@services/dataTransforms/currentHubTransform'
+import { hubsForMessagesBack2Front } from '@services/dataTransforms/hubsForMessagesTransform'
 import { Types as MessagesTypes } from '@store/messages/actions'
 import selectors from '@selectors/index'
 
@@ -11,7 +11,7 @@ export function* watchGetMessages() {
   const response = yield API.messages.getMessages()
 
   if (response.status === 200) {
-    const messageTokens = messageHubsForMessagesBack2Front(response.data?.tokens)
+    const messageTokens = hubsForMessagesBack2Front(response.data?.tokens)
     yield put(Actions.messages.getMessagesSuccess(messageTokens))
 
     const state = yield select()
@@ -51,7 +51,7 @@ export function* watchGetMoreMessages() {
   const response = yield API.messages.getMessages()
 
   if (response.status === 200) {
-    const messageTokens = messageHubsForMessagesBack2Front(response.data?.tokens)
+    const messageTokens = hubsForMessagesBack2Front(response.data?.tokens)
     yield put(Actions.messages.getMoreMessagesSucces(messageTokens))
 
     yield all(messageTokens.map(item => call(watchGetMoreMessagesFromHub, {
@@ -72,7 +72,7 @@ export function* watchGetCurrentHub() {
   const response = yield API.messages.getCurrentHub()
 
   if (response.status === 200) {
-    yield put(Actions.messages.getCurrentHubSuccess(currentMessageHubBack2Front(response.data?.tokens)))
+    yield put(Actions.messages.getCurrentHubSuccess(currentHubBack2Front(response.data?.tokens)))
   }
 }
 

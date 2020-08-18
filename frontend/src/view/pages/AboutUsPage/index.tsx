@@ -15,10 +15,10 @@ interface Props extends RouteComponentProps {
   onSetAboutUsViewed: () => void
 }
 
-export const AboutUs: React.SFC<Props> = (props) => {
+export const AboutUsSlider: React.SFC<Props> = (props) => {
 
   const onGoToMessageHubs = () => {
-    props.history.push('/message-hubs/create')
+    props.history.push('/hubs/create')
     props.onSetAboutUsViewed()
     localStorage.setItem('kotoIsAboutUsViewed', 'true')
   }
@@ -51,4 +51,4 @@ const mapDispatchToProps = (dispath): DispatchProps => ({
   onSetAboutUsViewed: () => dispath(Actions.common.setAboutUsViewed())
 })
 
-export default connect(null, mapDispatchToProps)(withRouter(AboutUs))
+export default connect(null, mapDispatchToProps)(withRouter(AboutUsSlider))

@@ -26,7 +26,7 @@ import {
 
 interface Props {
   authToken: string
-  currentHub: CommonTypes.MessageHubTypes.CurrentHub
+  currentHub: CommonTypes.HubTypes.CurrentHub
   isMessagePostedSuccess: boolean
   uploadLink: ApiTypes.UploadLink | null
   userId: string

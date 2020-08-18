@@ -16,11 +16,11 @@ import {
   DialogContentStyled,
 } from '@view/shared/styles'
 
-interface Props extends CommonTypes.MessageHubTypes.Hub {
-  onRemoveHub: (data: ApiTypes.MessageHubs.RemoveHub) => void
+interface Props extends CommonTypes.HubTypes.Hub {
+  onRemoveHub: (data: ApiTypes.Hubs.RemoveHub) => void
 }
 
-const RemoveMessageHubDialog: React.SFC<Props> = (props) => {
+const RemoveHubDialog: React.SFC<Props> = (props) => {
   const [open, setOpen] = React.useState(false)
   const { onRemoveHub, domain, author, created, description, id } = props
 
@@ -74,7 +74,7 @@ const RemoveMessageHubDialog: React.SFC<Props> = (props) => {
 
 type DispatchProps = Pick<Props, 'onRemoveHub'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onRemoveHub: (data: ApiTypes.MessageHubs.RemoveHub) => dispatch(Actions.messageHubs.removeHubRequest(data)),
+  onRemoveHub: (data: ApiTypes.Hubs.RemoveHub) => dispatch(Actions.hubs.removeHubRequest(data)),
 })
 
-export default connect(null, mapDispatchToProps)(RemoveMessageHubDialog)
+export default connect(null, mapDispatchToProps)(RemoveHubDialog)

@@ -94,7 +94,7 @@ export declare namespace ApiTypes {
     }
   }
 
-  export namespace MessageHubs {
+  export namespace Hubs {
     export interface Create {
       address: string
       details: string
@@ -244,7 +244,7 @@ export declare namespace ApiTypes {
  
     export type MessageTypes = 'message/post' | 'message/tag' | 'message/like'
     export type CommentTypes = 'comment/post' | 'comment/tag' | 'comment/like'
-    export type MessageHubTypes = 'message-hub/add' | 'message-hub/approve' | 'message-hub/remove'
+    export type HubTypes = 'message-hub/add' | 'message-hub/approve' | 'message-hub/remove'
     export type InviteTypes = 'invite/add' | 'invite/approve' | 'invite/reject'
 
     export interface Data {
@@ -254,7 +254,7 @@ export declare namespace ApiTypes {
       comment_id?: string
     }
 
-    export type Type = MessageTypes | CommentTypes | MessageHubTypes | InviteTypes
+    export type Type = MessageTypes | CommentTypes | HubTypes | InviteTypes
 
     export interface Notification {
       id: string,

@@ -31,11 +31,11 @@ interface State {
 
 interface Props {
   isHubCreatedSuccessfully: boolean
-  onHubCreate: (data: ApiTypes.MessageHubs.Create) => void
+  onHubCreate: (data: ApiTypes.Hubs.Create) => void
   onHubCreationStatusReset: () => void
 }
 
-class MessageHubCreation extends React.PureComponent<Props, State> {
+class HubCreation extends React.PureComponent<Props, State> {
 
   state = {
     isRequested: false,
@@ -187,13 +187,13 @@ class MessageHubCreation extends React.PureComponent<Props, State> {
 
 type StateProps = Pick<Props, 'isHubCreatedSuccessfully'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  isHubCreatedSuccessfully: selectors.messageHubs.isHubCreatedSuccessfully(state),
+  isHubCreatedSuccessfully: selectors.hubs.isHubCreatedSuccessfully(state),
 })
 
 type DispatchProps = Pick<Props, 'onHubCreate' | 'onHubCreationStatusReset'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onHubCreate: (data: ApiTypes.MessageHubs.Create) => dispatch(Actions.messageHubs.hubCreateRequest(data)),
-  onHubCreationStatusReset: () => dispatch(Actions.messageHubs.hubCreationStatusReset()),
+  onHubCreate: (data: ApiTypes.Hubs.Create) => dispatch(Actions.hubs.hubCreateRequest(data)),
+  onHubCreationStatusReset: () => dispatch(Actions.hubs.hubCreationStatusReset()),
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(MessageHubCreation)
+export default connect(mapStateToProps, mapDispatchToProps)(HubCreation)

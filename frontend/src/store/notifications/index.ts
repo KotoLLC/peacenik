@@ -16,7 +16,7 @@ const initialState: State = {
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case Types.GET_NOTIFICATIONS_FROM_MESSAGE_HUB_SUCCESS: {
+    case Types.GET_NOTIFICATIONS_FROM_HUB_SUCCESS: {
       return {
         ...state, ...{
           notifications: uniqBy([...action.payload, ...state.notifications], 'id'),
@@ -37,7 +37,7 @@ const reducer = (state = initialState, action) => {
         }
       }
     }
-    case Types.SET_LAST_KNOWN_ID_FROM_MESSAGE_HUB: {
+    case Types.SET_LAST_KNOWN_ID_FROM_HUB: {
       return {
         ...state, ...{
           lastKnownIdFromMessageHubs: [
@@ -54,7 +54,7 @@ const reducer = (state = initialState, action) => {
         }
       }
     }
-    case Types.CLEAN_NOTIFICATIONS_IN_MESSAGE_HUB_SUCCESS: {
+    case Types.CLEAN_NOTIFICATIONS_IN_HUB_SUCCESS: {
       return {
         ...state, ...{
           notifications: []

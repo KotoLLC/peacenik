@@ -1,7 +1,7 @@
 import { ApiTypes, CommonTypes } from 'src/types'
 
-export const messageHubsListBack2Front = (data: ApiTypes.MessageHubs.Hub[]): CommonTypes.MessageHubTypes.Hub[] => {
-  let result: CommonTypes.MessageHubTypes.Hub[] = []
+export const hubsListBack2Front = (data: ApiTypes.Hubs.Hub[]): CommonTypes.HubTypes.Hub[] => {
+  let result: CommonTypes.HubTypes.Hub[] = []
 
   if (data && data?.length) {
     result = data.map(item => (

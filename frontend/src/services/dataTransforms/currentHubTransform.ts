@@ -4,8 +4,8 @@ interface DataFromBackend {
   [key: string]: string
 }
 
-export const currentMessageHubBack2Front = (data: DataFromBackend): CommonTypes.MessageHubTypes.CurrentHub => {
-  let result: CommonTypes.MessageHubTypes.CurrentHub = {
+export const currentHubBack2Front = (data: DataFromBackend): CommonTypes.HubTypes.CurrentHub => {
+  let result: CommonTypes.HubTypes.CurrentHub = {
     host: '',
     token: '',
   }

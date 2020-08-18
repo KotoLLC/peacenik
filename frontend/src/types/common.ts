@@ -1,6 +1,6 @@
 export declare namespace CommonTypes {
 
-  export namespace MessageHubTypes {
+  export namespace HubTypes {
 
     export interface Hub {
       domain: string, 

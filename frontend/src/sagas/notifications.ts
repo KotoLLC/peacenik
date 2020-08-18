@@ -1,7 +1,7 @@
 import { put, all, call } from 'redux-saga/effects'
 import Actions from '@store/actions'
 import { API } from '@services/api'
-import { messageHubsForMessagesBack2Front } from '@services/dataTransforms/messageHubsForMessagesTransform'
+import { hubsForMessagesBack2Front } from '@services/dataTransforms/hubsForMessagesTransform'
 import { Types as NotificationsTypes } from '@store/notifications/actions'
 import { CommonTypes } from 'src/types'
 
@@ -9,25 +9,25 @@ export function* watchGetNotifications() {
   const response = yield API.messages.getMessages()
 
   if (response.status === 200) {
-    const messageTokens = messageHubsForMessagesBack2Front(response.data?.tokens)
+    const messageTokens = hubsForMessagesBack2Front(response.data?.tokens)
 
-    yield all(messageTokens.map(item => call(watchGetNotificationsFromMessageHub, {
-      type: NotificationsTypes.GET_NOTIFICATIONS_FROM_MESSAGE_HUB_REQUEST,
+    yield all(messageTokens.map(item => call(watchGetNotificationsFromHub, {
+      type: NotificationsTypes.GET_NOTIFICATIONS_FROM_HUB_REQUEST,
       payload: item.host,
     })))
     yield call(watchGetNotificationsFromUserHub)
   } 
 }
 
-export function* watchGetNotificationsFromMessageHub(action: { type: string, payload: string }) {
-  const response = yield API.notifications.getNotificationsFromMessageHub(action.payload)
+export function* watchGetNotificationsFromHub(action: { type: string, payload: string }) {
+  const response = yield API.notifications.getNotificationsFromHub(action.payload)
 
   if (response.status === 200) {
 
     const notifications = response.data?.notifications || []
 
     if (notifications.length) {
-      yield put(Actions.notifications.getNotificationsFromMessageHubSuccess(notifications))
+      yield put(Actions.notifications.getNotificationsFromHubSuccess(notifications))
       yield put(Actions.notifications.setLastKnownIdFromMessageHub({
         host: action.payload,
         id: notifications[notifications.length - 1].id
@@ -62,11 +62,11 @@ export function* watchCleanNotificationsInUserHub(action: { type: string, payloa
   }
 }
 
-export function* watchCleanNotificationsInMessageHub(action: { type: string, payload: CommonTypes.NotificationTypes.LastKnown }) {
-  const response = yield API.notifications.cleanNotificationsInMessageHub(action.payload)
+export function* watchCleanNotificationsInHub(action: { type: string, payload: CommonTypes.NotificationTypes.LastKnown }) {
+  const response = yield API.notifications.cleanNotificationsInHub(action.payload)
 
   if (response.status === 200) {
-    yield put(Actions.notifications.cleanNotificationsInMessageHubSuccess())
+    yield put(Actions.notifications.cleanNotificationsInHubSuccess())
     yield put(Actions.notifications.getNotificationsRequest())
   }
 }

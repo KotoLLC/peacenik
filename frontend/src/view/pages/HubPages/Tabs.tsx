@@ -27,8 +27,8 @@ const MessageHubTabs: React.SFC<RouteComponentProps> = React.memo((props) => {
             textColor="primary"
             onChange={(event, newTab) => onTabChange(newTab)}
             centered>
-            <TabStyled label="Request Message Hub" onClick={() => history.push('/message-hubs/create')} />
-            <TabStyled label="Message Hub List" onClick={() => history.push('/message-hubs/list')} />
+            <TabStyled label="Request Message Hub" onClick={() => history.push('/hubs/create')} />
+            <TabStyled label="Message Hub List" onClick={() => history.push('/hubs/list')} />
           </TabsStyled>
         </Paper>
       </TabsWrapper>

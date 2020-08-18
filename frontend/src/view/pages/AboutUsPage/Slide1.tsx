@@ -1,8 +1,8 @@
 import React from 'react'
 import Typography from '@material-ui/core/Typography'
 import milhousePicture from './../../../assets/images/milhouse.gif'
-import { ContainerStyled } from './styles'
-import { ImageDemo } from './styles'
+import { ContainerStyled, ImageDemo } from './styles'
+
 export const Slide1 = () => {
   return (
     <ContainerStyled maxWidth="md">

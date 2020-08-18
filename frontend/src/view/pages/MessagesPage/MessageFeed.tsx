@@ -18,8 +18,8 @@ import {
 } from './styles'
 
 interface Props extends RouteComponentProps {
-  messageTokens: CommonTypes.MessageHubTypes.CurrentHub[]
-  currentHub: CommonTypes.MessageHubTypes.CurrentHub
+  messageTokens: CommonTypes.HubTypes.CurrentHub[]
+  currentHub: CommonTypes.HubTypes.CurrentHub
   messages: ApiTypes.Messages.Message[]
   userId: string
   authToken: string
@@ -130,7 +130,7 @@ class MessageFeed extends React.Component<Props, State> {
     if (isAboutUsViewed) {
       return (
         <EmptyMessage>
-          For start the communicating, you should create a <BoldText onClick={() => history.push('/message-hubs/create')}>message hub</BoldText>.
+          For start the communicating, you should create a <BoldText onClick={() => history.push('/hubs/create')}>message hub</BoldText>.
         </EmptyMessage>
       )
     }

@@ -2,7 +2,7 @@ import { axiosInstance } from './index'
 import { CommonTypes } from 'src/types'
 
 export default {
-  getNotificationsFromMessageHub: async (host: string) => {
+  getNotificationsFromHub: async (host: string) => {
     const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
     const config = {
       withCredentials: false,
@@ -29,7 +29,7 @@ export default {
     }).catch(error => ({ error }))
   },
   
-  cleanNotificationsInMessageHub: async (data: CommonTypes.NotificationTypes.LastKnown) => {
+  cleanNotificationsInHub: async (data: CommonTypes.NotificationTypes.LastKnown) => {
     const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
     const config = {
       withCredentials: false,

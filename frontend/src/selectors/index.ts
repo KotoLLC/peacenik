@@ -1,5 +1,5 @@
 import friends from './friends'
-import messageHubs from './message-hubs'
+import hubs from './hubs'
 import profile from './profile'
 import messages from './messages'
 import authorization from './authorization'
@@ -9,7 +9,7 @@ import notifications from './notifications'
 
 export default {
     friends,
-    messageHubs,
+    hubs,
     profile,
     messages,
     authorization,

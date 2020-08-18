@@ -54,7 +54,7 @@ import {
 interface Props extends ApiTypes.Messages.Message {
   isAuthor: boolean
   uploadLink: ApiTypes.UploadLink | null
-  currentHub: CommonTypes.MessageHubTypes.CurrentHub
+  currentHub: CommonTypes.HubTypes.CurrentHub
   currentMessageLikes: ApiTypes.Messages.LikesInfoData | null
 
   onMessageEdit: (data: ApiTypes.Messages.EditMessage) => void

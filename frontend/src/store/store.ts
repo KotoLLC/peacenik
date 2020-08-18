@@ -6,7 +6,7 @@ import registration from './registration'
 import authorization from './authorization'
 import friends from './friends'
 import common from './common'
-import messageHubs from './message-hubs'
+import hubs from './hubs'
 import profile from './profile'
 import messages from './messages'
 import notifications from './notifications'
@@ -16,7 +16,7 @@ const appReducer = combineReducers({
     authorization,
     friends,
     common,
-    messageHubs,
+    hubs,
     profile,
     messages,
     notifications,

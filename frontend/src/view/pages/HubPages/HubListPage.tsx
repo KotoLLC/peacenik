@@ -12,7 +12,7 @@ import TablePagination from '@material-ui/core/TablePagination'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'
 import { StoreTypes, ApiTypes, CommonTypes } from 'src/types'
-import RemoveMessageHubDialog from './RemoveMessageHubDialog'
+import RemoveMessageHubDialog from './RemoveHubDialog'
 import AccessTimeIcon from '@material-ui/icons/AccessTime'
 
 import {
@@ -26,20 +26,20 @@ import {
 } from './styles'
 
 interface Props {
-  hubsList: CommonTypes.MessageHubTypes.Hub[]
+  hubsList: CommonTypes.HubTypes.Hub[]
   isAdmin: boolean | undefined
   onGetHubs: () => void
-  onApproveHub: (data: ApiTypes.MessageHubs.ApproveHub) => void
+  onApproveHub: (data: ApiTypes.Hubs.ApproveHub) => void
 }
 
 interface State {
   currentPage: number,
   rowsPerPage: number,
-  showList: CommonTypes.MessageHubTypes.Hub[],
+  showList: CommonTypes.HubTypes.Hub[],
   isFilterChecked: boolean,
 }
 
-class MessageHubList extends React.Component<Props, State> {
+class HubList extends React.Component<Props, State> {
 
   state = {
     currentPage: 0,
@@ -67,7 +67,7 @@ class MessageHubList extends React.Component<Props, State> {
 
     this.setState({
       isFilterChecked: event.target.checked,
-      showList: (checked) ? hubsList.filter((item: CommonTypes.MessageHubTypes.Hub) => item.aproved === '') : hubsList
+      showList: (checked) ? hubsList.filter((item: CommonTypes.HubTypes.Hub) => item.aproved === '') : hubsList
     })
   }
 
@@ -104,7 +104,7 @@ class MessageHubList extends React.Component<Props, State> {
 
   static getDerivedStateFromProps(newProps: Props, prevState: State) {
 
-    const sortByDate = (data: CommonTypes.MessageHubTypes.Hub[]) => {
+    const sortByDate = (data: CommonTypes.HubTypes.Hub[]) => {
       return data.sort((a, b) => {
         return moment(b.created).diff(a.created)
       })
@@ -155,7 +155,7 @@ class MessageHubList extends React.Component<Props, State> {
                 {(rowsPerPage > 0
                   ? showList.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage)
                   : showList
-                ).map((row: CommonTypes.MessageHubTypes.Hub) => (
+                ).map((row: CommonTypes.HubTypes.Hub) => (
                   <TableRow key={row.domain}>
                     <TableCell component="th" scope="row">
                       {row.domain}
@@ -193,14 +193,14 @@ class MessageHubList extends React.Component<Props, State> {
 
 type StateProps = Pick<Props, 'hubsList' | 'isAdmin'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  hubsList: selectors.messageHubs.hubsList(state),
+  hubsList: selectors.hubs.hubsList(state),
   isAdmin: selectors.profile.isAdmin(state),
 })
 
 type DispatchProps = Pick<Props, 'onGetHubs' | 'onApproveHub'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onGetHubs: () => dispatch(Actions.messageHubs.getHubsRequest()),
-  onApproveHub: (data: ApiTypes.MessageHubs.ApproveHub) => dispatch(Actions.messageHubs.approveHubRequest(data)),
+  onGetHubs: () => dispatch(Actions.hubs.getHubsRequest()),
+  onApproveHub: (data: ApiTypes.Hubs.ApproveHub) => dispatch(Actions.hubs.approveHubRequest(data)),
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(MessageHubList)
+export default connect(mapStateToProps, mapDispatchToProps)(HubList)

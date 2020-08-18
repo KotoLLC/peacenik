@@ -2,7 +2,7 @@ import { all, takeEvery } from 'redux-saga/effects'
 import { Types as RegistrationTypes } from '@store/registration/actions'
 import { Types as AuthorizationTypes } from '@store/authorization/actions'
 import { Types as FriendTypes } from '@store/friends/actions'
-import { Types as MessageHubTypes } from '@store/message-hubs/actions'
+import { Types as HubTypes } from '@store/hubs/actions'
 import { Types as ProfileTypes } from '@store/profile/actions'
 import { Types as MessagesTypes } from '@store/messages/actions'
 import { Types as NotificationsTypes } from '@store/notifications/actions'
@@ -27,11 +27,11 @@ import {
     watchCreateInviteByEmail,
 } from './friends'
 import {
-    watchMessageHubCreate,
+    watchHubCreate,
     watchGetHubs,
     watchApproveHub,
     watchRemoveHub,
-} from './message-hubs'
+} from './hubs'
 import {
     watchGetProfile,
     watchGetUploadLink,
@@ -60,7 +60,7 @@ import {
 import {
     watchGetNotifications,
     watchCleanNotificationsInUserHub,
-    watchCleanNotificationsInMessageHub,
+    watchCleanNotificationsInHub,
 } from './notifications'
 
 export function* rootSaga() {
@@ -81,10 +81,10 @@ export function* rootSaga() {
         takeEvery(FriendTypes.REJECT_INVITATION_REQUEST, watchRejectInvitation),
         takeEvery(FriendTypes.INVITE_BY_EMAIL_REQUEST, watchCreateInviteByEmail),
 
-        takeEvery(MessageHubTypes.MESSAGE_HUB_CREATE_REQUEST, watchMessageHubCreate),
-        takeEvery(MessageHubTypes.GET_MESSAGE_HUBS_REQUEST, watchGetHubs),
-        takeEvery(MessageHubTypes.APPROVE_MESSAGE_HUB_REQUEST, watchApproveHub),
-        takeEvery(MessageHubTypes.REMOVE_MESSAGE_HUB_REQUEST, watchRemoveHub),
+        takeEvery(HubTypes.HUB_CREATE_REQUEST, watchHubCreate),
+        takeEvery(HubTypes.GET_HUBS_REQUEST, watchGetHubs),
+        takeEvery(HubTypes.APPROVE_HUB_REQUEST, watchApproveHub),
+        takeEvery(HubTypes.REMOVE_HUB_REQUEST, watchRemoveHub),
 
         takeEvery(ProfileTypes.GET_PROFILE_REQUEST, watchGetProfile),
         takeEvery(ProfileTypes.GET_UPLOAD_LINK_REQUEST, watchGetUploadLink),
@@ -92,7 +92,7 @@ export function* rootSaga() {
         takeEvery(ProfileTypes.EDIT_PROFILE_REQUEST, watchEditProfile),
 
         takeEvery(MessagesTypes.GET_MESSAGES_REQUEST, watchGetMessages),
-        takeEvery(MessagesTypes.GET_CURRENT_MESSAGE_HUB_REQUEST, watchGetCurrentHub),
+        takeEvery(MessagesTypes.GET_CURRENT_HUB_REQUEST, watchGetCurrentHub),
         takeEvery(MessagesTypes.POST_MESSAGE_REQUEST, watchPostMessage),
         takeEvery(MessagesTypes.GET_MESSAGES_FROM_HUB_REQUEST, watchGetMessagesFromHub),
         takeEvery(MessagesTypes.DELETE_MESSAGE_REQUEST, watchDeleteMessage),
@@ -111,6 +111,6 @@ export function* rootSaga() {
         
         takeEvery(NotificationsTypes.GET_NOTIFICATIONS_REQUEST, watchGetNotifications),
         takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_USER_HUB_REQUEST, watchCleanNotificationsInUserHub),
-        takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_MESSAGE_HUB_REQUEST, watchCleanNotificationsInMessageHub),
+        takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_HUB_REQUEST, watchCleanNotificationsInHub),
     ])
 }

@@ -9,8 +9,8 @@ export enum Types {
   GET_MORE_MESSAGES_SUCCESS = 'GET_MORE_MESSAGES_SUCCESS',
   GET_MORE_MESSAGES_FAILED = 'GET_MORE_MESSAGES_FAILED',
 
-  GET_CURRENT_MESSAGE_HUB_REQUEST = 'GET_CURRENT_MESSAGE_HUB_REQUEST',
-  GET_CURRENT_MESSAGE_HUB_SUCCESS = 'GET_CURRENT_MESSAGE_HUB_SUCCESS',
+  GET_CURRENT_HUB_REQUEST = 'GET_CURRENT_HUB_REQUEST',
+  GET_CURRENT_HUB_SUCCESS = 'GET_CURRENT_HUB_SUCCESS',
 
   GET_MESSAGES_FROM_HUB_REQUEST = 'GET_MESSAGES_FROM_HUB_REQUEST',
   GET_MESSAGES_FROM_HUB_SUCCESS = 'GET_MESSAGES_FROM_HUB_SUCCESS',
@@ -61,17 +61,17 @@ const getMessagesRequest = () => ({
   type: Types.GET_MESSAGES_REQUEST,
 })
 
-const getMessagesSuccess = (payload: CommonTypes.MessageHubTypes.CurrentHub[]) => ({
+const getMessagesSuccess = (payload: CommonTypes.HubTypes.CurrentHub[]) => ({
   type: Types.GET_MESSAGES_SUCCESS,
   payload
 })
 
 const getCurrentHubRequest = () => ({
-  type: Types.GET_CURRENT_MESSAGE_HUB_REQUEST,
+  type: Types.GET_CURRENT_HUB_REQUEST,
 })
 
-const getCurrentHubSuccess = (payload: CommonTypes.MessageHubTypes.CurrentHub) => ({
-  type: Types.GET_CURRENT_MESSAGE_HUB_SUCCESS,
+const getCurrentHubSuccess = (payload: CommonTypes.HubTypes.CurrentHub) => ({
+  type: Types.GET_CURRENT_HUB_SUCCESS,
   payload
 })
 
@@ -209,7 +209,7 @@ const getMoreMessagesRequest = () => ({
   type: Types.GET_MORE_MESSAGES_REQUEST,
 })
 
-const getMoreMessagesSucces = (payload: CommonTypes.MessageHubTypes.CurrentHub[]) => ({
+const getMoreMessagesSucces = (payload: CommonTypes.HubTypes.CurrentHub[]) => ({
   type: Types.GET_MORE_MESSAGES_SUCCESS,
   payload
 })
