@@ -79,6 +79,8 @@ export const Header = styled.header`
     padding-left: 15px;
     padding-right: 15px;
     padding-bottom: 15px;
+
+    align-items: center;
   }
 `
 

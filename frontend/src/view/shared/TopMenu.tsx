@@ -7,6 +7,7 @@ import NotificationsIcon from '@material-ui/icons/Notifications'
 import AccountCircleIcon from '@material-ui/icons/AccountCircle'
 import DnsIcon from '@material-ui/icons/Dns'
 import ForumIcon from '@material-ui/icons/Forum'
+import HelpIcon from '@material-ui/icons/Help'
 import { ListItemIconStyled, MenuButton } from './styles'
 import { history } from '@view/routes'
 
@@ -64,6 +65,16 @@ export const TopMenu = () => {
             <DnsIcon fontSize="small" />
           </ListItemIconStyled>
           <ListItemText primary="Message Hubs" />
+        </MenuItem>
+        <MenuItem
+          component="a"
+          href="https://docs.koto.at/#/"
+          target="_blank"
+        >
+          <ListItemIconStyled>
+            <HelpIcon fontSize="small" />
+          </ListItemIconStyled>
+          <ListItemText primary="help" />
         </MenuItem>
       </Menu>
     </div>

@@ -7,8 +7,7 @@ import { Switch, Route, RouteComponentProps } from 'react-router-dom'
 import { WithTopBar } from '@view/shared/WithTopBar'
 import { Header } from '@view/shared/styles'
 import GroupAddIcon from '@material-ui/icons/GroupAdd'
-import IconButton from '@material-ui/core/IconButton'
-import Tooltip from '@material-ui/core/Tooltip'
+import Button from '@material-ui/core/Button'
 
 export const FriendsPage: React.SFC<RouteComponentProps> = (props) => {
 
@@ -16,11 +15,13 @@ export const FriendsPage: React.SFC<RouteComponentProps> = (props) => {
     <WithTopBar>
       <Header>
         <FriendTabs />
-        <Tooltip title={`Send invitations`}>
-          <IconButton color="primary" onClick={() => props.history.push('/friends/invite')}>
-            <GroupAddIcon />
-          </IconButton>
-        </Tooltip>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => props.history.push('/friends/invite')}
+          startIcon={<GroupAddIcon/>}
+        >Invite friend
+      </Button>
       </Header>
       <Switch>
         <Route path="/friends/all" exact component={Friends} />
