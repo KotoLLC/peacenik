@@ -21,7 +21,7 @@ require (
 	github.com/jinzhu/configor v1.2.0
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/lib/pq v1.8.0
-	github.com/minio/minio-go/v7 v7.0.2
+	github.com/minio/minio-go/v7 v7.0.4
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rakyll/statik v0.1.7
@@ -29,6 +29,5 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/twitchtv/twirp v5.12.1+incompatible
 	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de
-	golang.org/x/net v0.0.0-20200202094626-16171245cfb2 // indirect
 	google.golang.org/protobuf v1.24.0
 )
