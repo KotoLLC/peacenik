@@ -267,15 +267,20 @@ export const UploadInput = styled.input`
 export const ImagePreview = styled.img`
   max-width: 100%;
   max-height: 500px;
-  box-sizing: initial;
-  height: auto;
-  max-height: none;
-  width: 100%;
+  
+  @media (max-width: 600px) {
+    display: inline-block;
+  }
 `
 
 export const AttachmentWrapper = styled.div`
   display: flex;
   justify-content: center;
+
+  @media (max-width: 600px) {
+    display: block;
+    text-align: center;
+  }
 `
 
 export const PreloaderWrapper = styled.div`
