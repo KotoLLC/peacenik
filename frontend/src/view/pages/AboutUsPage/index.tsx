@@ -6,7 +6,7 @@ import { WithTopBar } from '@view/shared/WithTopBar'
 import { ContainerStyled } from './styles'
 import ReactMarkdown from 'react-markdown'
 import Button from '@material-ui/core/Button'
-import nothingPicture from './../../../assets/images/nothing.gif'
+import nothingPicture from './../../../assets/images/nothing.jpg'
 
 interface Props extends RouteComponentProps {
   onSetAboutUsViewed: () => void
