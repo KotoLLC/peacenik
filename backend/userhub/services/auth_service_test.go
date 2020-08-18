@@ -161,6 +161,11 @@ func TestAuthService_Login(t *testing.T) {
 	}
 	err := repos.User.AddUser("1", "user1", "user1@mail.org", "password1-hash")
 	require.Nil(t, err)
+	err = repos.User.AddUser("11", "User1", "User1@mail.org", "password11-hash")
+	require.NotNil(t, err)
+	assert.Contains(t, err.Error(), `duplicate key value violates unique constraint`)
+	err = repos.User.AddUser("2", "User2", "User2@mail.org", "password2-hash")
+	require.Nil(t, err)
 
 	base := services.NewBase(repos, nil)
 	s := services.NewAuth(base, "session-user-key", &passwordHash{}, nil, false)
@@ -193,6 +198,16 @@ func TestAuthService_Login(t *testing.T) {
 	})
 	assert.Nil(t, err)
 	assert.Equal(t, "1", session.values["session-user-key"])
+
+	session = newSession()
+	ctx = context.WithValue(te.ctx, services.ContextSession, session)
+
+	_, err = s.Login(ctx, &rpc.AuthLoginRequest{
+		Name:     "user2",
+		Password: "password2",
+	})
+	assert.Nil(t, err)
+	assert.Equal(t, "2", session.values["session-user-key"])
 }
 
 func TestAuthService_Logout(t *testing.T) {

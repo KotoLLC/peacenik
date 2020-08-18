@@ -2,6 +2,7 @@ package repo
 
 import (
 	"database/sql"
+	"strings"
 	"time"
 
 	"github.com/ansel1/merry"
@@ -51,7 +52,9 @@ func (r *userRepo) FindUser(value string) (*User, error) {
 	var user User
 	err := r.db.Get(&user, `
 		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at
-		from users where id = $1 or name = $1 or email = $1`, value)
+		from users
+		where id = $1 or lower(name) = $2 or email = $1`,
+		value, strings.ToLower(value))
 	if err != nil {
 		if merry.Is(err, sql.ErrNoRows) {
 			return nil, nil
@@ -96,7 +99,8 @@ func (r *userRepo) FindUserByName(name string) (*User, error) {
 	err := r.db.Get(&user, `
 		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
 		from users
-		where name = $1`, name)
+		where lower(name) = $1`,
+		strings.ToLower(name))
 	if err != nil {
 		if merry.Is(err, sql.ErrNoRows) {
 			return nil, nil
@@ -111,7 +115,8 @@ func (r *userRepo) FindUserByNameOrEmail(value string) (*User, error) {
 	err := r.db.Get(&user, `
 		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
 		from users
-		where name = $1 or email = $1`, value)
+		where lower(name) = $1 or email = $2`,
+		strings.ToLower(value), value)
 	if err != nil {
 		if merry.Is(err, sql.ErrNoRows) {
 			return nil, nil
