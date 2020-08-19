@@ -757,7 +757,7 @@ func (s *messageService) LikeComment(ctx context.Context, r *rpc.MessageLikeComm
 	}
 	err = s.repos.Notification.AddNotification(comment.UserID, user.Name+" liked your comment", "comment/like", map[string]interface{}{
 		"user_id":    user.ID,
-		"message_id": comment.ParentID,
+		"message_id": comment.ParentID.String,
 		"comment_id": comment.ID,
 	})
 	if err != nil {
