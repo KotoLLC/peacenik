@@ -41,17 +41,16 @@ Content-Type: application/json
 }
 ```
 
-### Get messages from date/time until date/time (created_at >= date1 and created_at < date2)
+### Get message by ID
 
 ```
-POST http://localhost:12002/rpc.MessageService/Messages
+POST http://localhost:12002/rpc.MessageService/Message
 Authorization: Bearer AUTH-TOKEN
 Content-Type: application/json
 
 {
   "token":  GET-MESSAGES-TOKEN,
-  "from": "2020-07-01",
-  "until": "2020-08-01"
+  "message_id": "MESSAGE_ID"
 }
 ```
 

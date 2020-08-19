@@ -260,6 +260,117 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 	}, nil
 }
 
+func (s *messageService) Message(ctx context.Context, r *rpc.MessageMessageRequest) (*rpc.MessageMessageResponse, error) {
+	user := s.getUser(ctx)
+
+	_, claims, err := s.tokenParser.Parse(r.Token, "get-messages")
+	if err != nil {
+		if merry.Is(err, token.ErrInvalidToken) {
+			return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
+		}
+		return nil, err
+	}
+
+	if user.ID != claims["id"].(string) ||
+		strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
+		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
+	}
+
+	rawUserIDs := claims["users"].([]interface{})
+	userIDs := make(map[string]bool, len(rawUserIDs))
+	for _, rawUserID := range rawUserIDs {
+		userIDs[rawUserID.(string)] = true
+	}
+
+	msg, err := s.repos.Message.Message(user.ID, r.MessageId)
+	if err != nil {
+		if merry.Is(err, repo.ErrMessageNotFound) {
+			return nil, twirp.NotFoundError("message not found")
+		}
+		return nil, err
+	}
+
+	if !userIDs[msg.UserID] {
+		return nil, twirp.NotFoundError("message not found")
+	}
+
+	attachmentLink, err := s.createBlobLink(ctx, msg.AttachmentID)
+	if err != nil {
+		return nil, err
+	}
+	attachmentThumbnailLink, err := s.createBlobLink(ctx, msg.AttachmentThumbnailID)
+	if err != nil {
+		return nil, err
+	}
+
+	rpcMessage := &rpc.Message{
+		Id:                  msg.ID,
+		UserId:              msg.UserID,
+		UserName:            msg.UserName,
+		Text:                msg.Text,
+		Attachment:          attachmentLink,
+		AttachmentType:      msg.AttachmentType,
+		AttachmentThumbnail: attachmentThumbnailLink,
+		CreatedAt:           common.TimeToRPCString(msg.CreatedAt),
+		UpdatedAt:           common.TimeToRPCString(msg.UpdatedAt),
+		Likes:               int32(msg.Likes),
+		LikedByMe:           msg.LikedByMe,
+	}
+
+	allLikes, err := s.repos.Message.MessagesLikes([]string{msg.ID})
+	if err != nil {
+		return nil, err
+	}
+	for _, likes := range allLikes {
+		rpcLikes := make([]*rpc.MessageLike, len(likes))
+		for i, like := range likes {
+			rpcLikes[i] = &rpc.MessageLike{
+				UserId:   like.UserID,
+				UserName: like.UserName,
+				LikedAt:  common.TimeToRPCString(like.CreatedAt),
+			}
+		}
+		rpcMessage.LikedBy = rpcLikes
+	}
+
+	comments, err := s.repos.Message.Comments(user.ID, []string{msg.ID})
+	if err != nil {
+		return nil, err
+	}
+	for _, messageComments := range comments {
+		rpcComments := make([]*rpc.Message, len(messageComments))
+		for i, comment := range messageComments {
+			attachmentLink, err := s.createBlobLink(ctx, comment.AttachmentID)
+			if err != nil {
+				return nil, err
+			}
+			attachmentThumbnailLink, err := s.createBlobLink(ctx, comment.AttachmentThumbnailID)
+			if err != nil {
+				return nil, err
+			}
+
+			rpcComments[i] = &rpc.Message{
+				Id:                  comment.ID,
+				UserId:              comment.UserID,
+				UserName:            comment.UserName,
+				Text:                comment.Text,
+				Attachment:          attachmentLink,
+				AttachmentType:      comment.AttachmentType,
+				AttachmentThumbnail: attachmentThumbnailLink,
+				CreatedAt:           common.TimeToRPCString(comment.CreatedAt),
+				UpdatedAt:           common.TimeToRPCString(comment.UpdatedAt),
+				Likes:               int32(comment.Likes),
+				LikedByMe:           comment.LikedByMe,
+			}
+		}
+		rpcMessage.Comments = rpcComments
+	}
+
+	return &rpc.MessageMessageResponse{
+		Message: rpcMessage,
+	}, nil
+}
+
 func (s *messageService) Edit(ctx context.Context, r *rpc.MessageEditRequest) (*rpc.MessageEditResponse, error) {
 	user := s.getUser(ctx)
 	now := common.CurrentTimestamp()

@@ -135,6 +135,108 @@ func (x *MessageMessagesResponse) GetMessages() []*Message {
 	return nil
 }
 
+type MessageMessageRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Token     string `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	MessageId string `protobuf:"bytes,2,opt,name=message_id,json=messageId,proto3" json:"message_id,omitempty"`
+}
+
+func (x *MessageMessageRequest) Reset() {
+	*x = MessageMessageRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_message_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MessageMessageRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MessageMessageRequest) ProtoMessage() {}
+
+func (x *MessageMessageRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_message_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MessageMessageRequest.ProtoReflect.Descriptor instead.
+func (*MessageMessageRequest) Descriptor() ([]byte, []int) {
+	return file_message_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *MessageMessageRequest) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+func (x *MessageMessageRequest) GetMessageId() string {
+	if x != nil {
+		return x.MessageId
+	}
+	return ""
+}
+
+type MessageMessageResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Message *Message `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+}
+
+func (x *MessageMessageResponse) Reset() {
+	*x = MessageMessageResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_message_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MessageMessageResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MessageMessageResponse) ProtoMessage() {}
+
+func (x *MessageMessageResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_message_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MessageMessageResponse.ProtoReflect.Descriptor instead.
+func (*MessageMessageResponse) Descriptor() ([]byte, []int) {
+	return file_message_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *MessageMessageResponse) GetMessage() *Message {
+	if x != nil {
+		return x.Message
+	}
+	return nil
+}
+
 type MessagePostRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -148,7 +250,7 @@ type MessagePostRequest struct {
 func (x *MessagePostRequest) Reset() {
 	*x = MessagePostRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_proto_msgTypes[2]
+		mi := &file_message_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -161,7 +263,7 @@ func (x *MessagePostRequest) String() string {
 func (*MessagePostRequest) ProtoMessage() {}
 
 func (x *MessagePostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_proto_msgTypes[2]
+	mi := &file_message_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -174,7 +276,7 @@ func (x *MessagePostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessagePostRequest.ProtoReflect.Descriptor instead.
 func (*MessagePostRequest) Descriptor() ([]byte, []int) {
-	return file_message_proto_rawDescGZIP(), []int{2}
+	return file_message_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *MessagePostRequest) GetToken() string {
@@ -209,7 +311,7 @@ type MessagePostResponse struct {
 func (x *MessagePostResponse) Reset() {
 	*x = MessagePostResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_proto_msgTypes[3]
+		mi := &file_message_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -222,7 +324,7 @@ func (x *MessagePostResponse) String() string {
 func (*MessagePostResponse) ProtoMessage() {}
 
 func (x *MessagePostResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_proto_msgTypes[3]
+	mi := &file_message_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -235,7 +337,7 @@ func (x *MessagePostResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessagePostResponse.ProtoReflect.Descriptor instead.
 func (*MessagePostResponse) Descriptor() ([]byte, []int) {
-	return file_message_proto_rawDescGZIP(), []int{3}
+	return file_message_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *MessagePostResponse) GetMessage() *Message {
@@ -260,7 +362,7 @@ type MessageEditRequest struct {
 func (x *MessageEditRequest) Reset() {
 	*x = MessageEditRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_proto_msgTypes[4]
+		mi := &file_message_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -273,7 +375,7 @@ func (x *MessageEditRequest) String() string {
 func (*MessageEditRequest) ProtoMessage() {}
 
 func (x *MessageEditRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_proto_msgTypes[4]
+	mi := &file_message_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -286,7 +388,7 @@ func (x *MessageEditRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessageEditRequest.ProtoReflect.Descriptor instead.
 func (*MessageEditRequest) Descriptor() ([]byte, []int) {
-	return file_message_proto_rawDescGZIP(), []int{4}
+	return file_message_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *MessageEditRequest) GetMessageId() string {
@@ -335,7 +437,7 @@ type MessageEditResponse struct {
 func (x *MessageEditResponse) Reset() {
 	*x = MessageEditResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_proto_msgTypes[5]
+		mi := &file_message_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -348,7 +450,7 @@ func (x *MessageEditResponse) String() string {
 func (*MessageEditResponse) ProtoMessage() {}
 
 func (x *MessageEditResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_proto_msgTypes[5]
+	mi := &file_message_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -361,7 +463,7 @@ func (x *MessageEditResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessageEditResponse.ProtoReflect.Descriptor instead.
 func (*MessageEditResponse) Descriptor() ([]byte, []int) {
-	return file_message_proto_rawDescGZIP(), []int{5}
+	return file_message_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *MessageEditResponse) GetMessage() *Message {
@@ -382,7 +484,7 @@ type MessageDeleteRequest struct {
 func (x *MessageDeleteRequest) Reset() {
 	*x = MessageDeleteRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_proto_msgTypes[6]
+		mi := &file_message_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -395,7 +497,7 @@ func (x *MessageDeleteRequest) String() string {
 func (*MessageDeleteRequest) ProtoMessage() {}
 
 func (x *MessageDeleteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_proto_msgTypes[6]
+	mi := &file_message_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -408,7 +510,7 @@ func (x *MessageDeleteRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessageDeleteRequest.ProtoReflect.Descriptor instead.
 func (*MessageDeleteRequest) Descriptor() ([]byte, []int) {
-	return file_message_proto_rawDescGZIP(), []int{6}
+	return file_message_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *MessageDeleteRequest) GetMessageId() string {
@@ -432,7 +534,7 @@ type MessagePostCommentRequest struct {
 func (x *MessagePostCommentRequest) Reset() {
 	*x = MessagePostCommentRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_proto_msgTypes[7]
+		mi := &file_message_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -445,7 +547,7 @@ func (x *MessagePostCommentRequest) String() string {
 func (*MessagePostCommentRequest) ProtoMessage() {}
 
 func (x *MessagePostCommentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_proto_msgTypes[7]
+	mi := &file_message_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -458,7 +560,7 @@ func (x *MessagePostCommentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessagePostCommentRequest.ProtoReflect.Descriptor instead.
 func (*MessagePostCommentRequest) Descriptor() ([]byte, []int) {
-	return file_message_proto_rawDescGZIP(), []int{7}
+	return file_message_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *MessagePostCommentRequest) GetToken() string {
@@ -500,7 +602,7 @@ type MessagePostCommentResponse struct {
 func (x *MessagePostCommentResponse) Reset() {
 	*x = MessagePostCommentResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_proto_msgTypes[8]
+		mi := &file_message_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -513,7 +615,7 @@ func (x *MessagePostCommentResponse) String() string {
 func (*MessagePostCommentResponse) ProtoMessage() {}
 
 func (x *MessagePostCommentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_proto_msgTypes[8]
+	mi := &file_message_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -526,7 +628,7 @@ func (x *MessagePostCommentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessagePostCommentResponse.ProtoReflect.Descriptor instead.
 func (*MessagePostCommentResponse) Descriptor() ([]byte, []int) {
-	return file_message_proto_rawDescGZIP(), []int{8}
+	return file_message_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *MessagePostCommentResponse) GetComment() *Message {
@@ -551,7 +653,7 @@ type MessageEditCommentRequest struct {
 func (x *MessageEditCommentRequest) Reset() {
 	*x = MessageEditCommentRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_proto_msgTypes[9]
+		mi := &file_message_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -564,7 +666,7 @@ func (x *MessageEditCommentRequest) String() string {
 func (*MessageEditCommentRequest) ProtoMessage() {}
 
 func (x *MessageEditCommentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_proto_msgTypes[9]
+	mi := &file_message_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -577,7 +679,7 @@ func (x *MessageEditCommentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessageEditCommentRequest.ProtoReflect.Descriptor instead.
 func (*MessageEditCommentRequest) Descriptor() ([]byte, []int) {
-	return file_message_proto_rawDescGZIP(), []int{9}
+	return file_message_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *MessageEditCommentRequest) GetCommentId() string {
@@ -626,7 +728,7 @@ type MessageEditCommentResponse struct {
 func (x *MessageEditCommentResponse) Reset() {
 	*x = MessageEditCommentResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_proto_msgTypes[10]
+		mi := &file_message_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -639,7 +741,7 @@ func (x *MessageEditCommentResponse) String() string {
 func (*MessageEditCommentResponse) ProtoMessage() {}
 
 func (x *MessageEditCommentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_proto_msgTypes[10]
+	mi := &file_message_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -652,7 +754,7 @@ func (x *MessageEditCommentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessageEditCommentResponse.ProtoReflect.Descriptor instead.
 func (*MessageEditCommentResponse) Descriptor() ([]byte, []int) {
-	return file_message_proto_rawDescGZIP(), []int{10}
+	return file_message_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *MessageEditCommentResponse) GetComment() *Message {
@@ -673,7 +775,7 @@ type MessageDeleteCommentRequest struct {
 func (x *MessageDeleteCommentRequest) Reset() {
 	*x = MessageDeleteCommentRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_proto_msgTypes[11]
+		mi := &file_message_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -686,7 +788,7 @@ func (x *MessageDeleteCommentRequest) String() string {
 func (*MessageDeleteCommentRequest) ProtoMessage() {}
 
 func (x *MessageDeleteCommentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_proto_msgTypes[11]
+	mi := &file_message_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -699,7 +801,7 @@ func (x *MessageDeleteCommentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessageDeleteCommentRequest.ProtoReflect.Descriptor instead.
 func (*MessageDeleteCommentRequest) Descriptor() ([]byte, []int) {
-	return file_message_proto_rawDescGZIP(), []int{11}
+	return file_message_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *MessageDeleteCommentRequest) GetCommentId() string {
@@ -720,7 +822,7 @@ type MessageLikeMessageRequest struct {
 func (x *MessageLikeMessageRequest) Reset() {
 	*x = MessageLikeMessageRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_proto_msgTypes[12]
+		mi := &file_message_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -733,7 +835,7 @@ func (x *MessageLikeMessageRequest) String() string {
 func (*MessageLikeMessageRequest) ProtoMessage() {}
 
 func (x *MessageLikeMessageRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_proto_msgTypes[12]
+	mi := &file_message_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -746,7 +848,7 @@ func (x *MessageLikeMessageRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessageLikeMessageRequest.ProtoReflect.Descriptor instead.
 func (*MessageLikeMessageRequest) Descriptor() ([]byte, []int) {
-	return file_message_proto_rawDescGZIP(), []int{12}
+	return file_message_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *MessageLikeMessageRequest) GetMessageId() string {
@@ -767,7 +869,7 @@ type MessageLikeMessageResponse struct {
 func (x *MessageLikeMessageResponse) Reset() {
 	*x = MessageLikeMessageResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_proto_msgTypes[13]
+		mi := &file_message_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -780,7 +882,7 @@ func (x *MessageLikeMessageResponse) String() string {
 func (*MessageLikeMessageResponse) ProtoMessage() {}
 
 func (x *MessageLikeMessageResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_proto_msgTypes[13]
+	mi := &file_message_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -793,7 +895,7 @@ func (x *MessageLikeMessageResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessageLikeMessageResponse.ProtoReflect.Descriptor instead.
 func (*MessageLikeMessageResponse) Descriptor() ([]byte, []int) {
-	return file_message_proto_rawDescGZIP(), []int{13}
+	return file_message_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *MessageLikeMessageResponse) GetLikes() int32 {
@@ -814,7 +916,7 @@ type MessageLikeCommentRequest struct {
 func (x *MessageLikeCommentRequest) Reset() {
 	*x = MessageLikeCommentRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_proto_msgTypes[14]
+		mi := &file_message_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -827,7 +929,7 @@ func (x *MessageLikeCommentRequest) String() string {
 func (*MessageLikeCommentRequest) ProtoMessage() {}
 
 func (x *MessageLikeCommentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_proto_msgTypes[14]
+	mi := &file_message_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -840,7 +942,7 @@ func (x *MessageLikeCommentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessageLikeCommentRequest.ProtoReflect.Descriptor instead.
 func (*MessageLikeCommentRequest) Descriptor() ([]byte, []int) {
-	return file_message_proto_rawDescGZIP(), []int{14}
+	return file_message_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *MessageLikeCommentRequest) GetCommentId() string {
@@ -861,7 +963,7 @@ type MessageLikeCommentResponse struct {
 func (x *MessageLikeCommentResponse) Reset() {
 	*x = MessageLikeCommentResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_proto_msgTypes[15]
+		mi := &file_message_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -874,7 +976,7 @@ func (x *MessageLikeCommentResponse) String() string {
 func (*MessageLikeCommentResponse) ProtoMessage() {}
 
 func (x *MessageLikeCommentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_proto_msgTypes[15]
+	mi := &file_message_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -887,7 +989,7 @@ func (x *MessageLikeCommentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessageLikeCommentResponse.ProtoReflect.Descriptor instead.
 func (*MessageLikeCommentResponse) Descriptor() ([]byte, []int) {
-	return file_message_proto_rawDescGZIP(), []int{15}
+	return file_message_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *MessageLikeCommentResponse) GetLikes() int32 {
@@ -908,7 +1010,7 @@ type MessageMessageLikesRequest struct {
 func (x *MessageMessageLikesRequest) Reset() {
 	*x = MessageMessageLikesRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_proto_msgTypes[16]
+		mi := &file_message_proto_msgTypes[18]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -921,7 +1023,7 @@ func (x *MessageMessageLikesRequest) String() string {
 func (*MessageMessageLikesRequest) ProtoMessage() {}
 
 func (x *MessageMessageLikesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_proto_msgTypes[16]
+	mi := &file_message_proto_msgTypes[18]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -934,7 +1036,7 @@ func (x *MessageMessageLikesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessageMessageLikesRequest.ProtoReflect.Descriptor instead.
 func (*MessageMessageLikesRequest) Descriptor() ([]byte, []int) {
-	return file_message_proto_rawDescGZIP(), []int{16}
+	return file_message_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *MessageMessageLikesRequest) GetMessageId() string {
@@ -955,7 +1057,7 @@ type MessageMessageLikesResponse struct {
 func (x *MessageMessageLikesResponse) Reset() {
 	*x = MessageMessageLikesResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_proto_msgTypes[17]
+		mi := &file_message_proto_msgTypes[19]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -968,7 +1070,7 @@ func (x *MessageMessageLikesResponse) String() string {
 func (*MessageMessageLikesResponse) ProtoMessage() {}
 
 func (x *MessageMessageLikesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_proto_msgTypes[17]
+	mi := &file_message_proto_msgTypes[19]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -981,7 +1083,7 @@ func (x *MessageMessageLikesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessageMessageLikesResponse.ProtoReflect.Descriptor instead.
 func (*MessageMessageLikesResponse) Descriptor() ([]byte, []int) {
-	return file_message_proto_rawDescGZIP(), []int{17}
+	return file_message_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *MessageMessageLikesResponse) GetLikes() []*MessageLike {
@@ -1002,7 +1104,7 @@ type MessageCommentLikesRequest struct {
 func (x *MessageCommentLikesRequest) Reset() {
 	*x = MessageCommentLikesRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_proto_msgTypes[18]
+		mi := &file_message_proto_msgTypes[20]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1015,7 +1117,7 @@ func (x *MessageCommentLikesRequest) String() string {
 func (*MessageCommentLikesRequest) ProtoMessage() {}
 
 func (x *MessageCommentLikesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_proto_msgTypes[18]
+	mi := &file_message_proto_msgTypes[20]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1028,7 +1130,7 @@ func (x *MessageCommentLikesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessageCommentLikesRequest.ProtoReflect.Descriptor instead.
 func (*MessageCommentLikesRequest) Descriptor() ([]byte, []int) {
-	return file_message_proto_rawDescGZIP(), []int{18}
+	return file_message_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *MessageCommentLikesRequest) GetCommentId() string {
@@ -1049,7 +1151,7 @@ type MessageCommentLikesResponse struct {
 func (x *MessageCommentLikesResponse) Reset() {
 	*x = MessageCommentLikesResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_proto_msgTypes[19]
+		mi := &file_message_proto_msgTypes[21]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1062,7 +1164,7 @@ func (x *MessageCommentLikesResponse) String() string {
 func (*MessageCommentLikesResponse) ProtoMessage() {}
 
 func (x *MessageCommentLikesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_proto_msgTypes[19]
+	mi := &file_message_proto_msgTypes[21]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1075,7 +1177,7 @@ func (x *MessageCommentLikesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessageCommentLikesResponse.ProtoReflect.Descriptor instead.
 func (*MessageCommentLikesResponse) Descriptor() ([]byte, []int) {
-	return file_message_proto_rawDescGZIP(), []int{19}
+	return file_message_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *MessageCommentLikesResponse) GetLikes() []*MessageLike {
@@ -1100,6 +1202,15 @@ var file_message_proto_rawDesc = []byte{
 	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x28, 0x0a, 0x08, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67,
 	0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0c, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d,
 	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x08, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x73,
+	0x22, 0x4c, 0x0a, 0x15, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x4d, 0x65, 0x73, 0x73, 0x61,
+	0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x6f, 0x6b,
+	0x65, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x12,
+	0x1d, 0x0a, 0x0a, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x09, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x49, 0x64, 0x22, 0x40,
+	0x0a, 0x16, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x26, 0x0a, 0x07, 0x6d, 0x65, 0x73, 0x73,
+	0x61, 0x67, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0c, 0x2e, 0x72, 0x70, 0x63, 0x2e,
+	0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
 	0x22, 0x63, 0x0a, 0x12, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x50, 0x6f, 0x73, 0x74, 0x52,
 	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18,
 	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x12, 0x0a, 0x04,
@@ -1194,58 +1305,62 @@ var file_message_proto_rawDesc = []byte{
 	0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x26, 0x0a, 0x05, 0x6c, 0x69, 0x6b,
 	0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d,
 	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x4c, 0x69, 0x6b, 0x65, 0x52, 0x05, 0x6c, 0x69, 0x6b, 0x65,
-	0x73, 0x32, 0xa3, 0x06, 0x0a, 0x0e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x53, 0x65, 0x72,
+	0x73, 0x32, 0xe7, 0x06, 0x0a, 0x0e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x53, 0x65, 0x72,
 	0x76, 0x69, 0x63, 0x65, 0x12, 0x45, 0x0a, 0x08, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x73,
 	0x12, 0x1b, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x4d, 0x65,
 	0x73, 0x73, 0x61, 0x67, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1c, 0x2e,
 	0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x4d, 0x65, 0x73, 0x73, 0x61,
-	0x67, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x39, 0x0a, 0x04, 0x50,
-	0x6f, 0x73, 0x74, 0x12, 0x17, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67,
-	0x65, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x18, 0x2e, 0x72,
-	0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x39, 0x0a, 0x04, 0x45, 0x64, 0x69, 0x74, 0x12, 0x17,
-	0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x45, 0x64, 0x69, 0x74,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x18, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65,
-	0x73, 0x73, 0x61, 0x67, 0x65, 0x45, 0x64, 0x69, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x2f, 0x0a, 0x06, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x19, 0x2e, 0x72, 0x70,
-	0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x0a, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x45, 0x6d, 0x70,
-	0x74, 0x79, 0x12, 0x4e, 0x0a, 0x0b, 0x50, 0x6f, 0x73, 0x74, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e,
-	0x74, 0x12, 0x1e, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x50,
-	0x6f, 0x73, 0x74, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x1a, 0x1f, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x50,
-	0x6f, 0x73, 0x74, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x4e, 0x0a, 0x0b, 0x45, 0x64, 0x69, 0x74, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e,
-	0x74, 0x12, 0x1e, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x45,
-	0x64, 0x69, 0x74, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x1a, 0x1f, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x45,
-	0x64, 0x69, 0x74, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x3d, 0x0a, 0x0d, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x43, 0x6f, 0x6d, 0x6d,
-	0x65, 0x6e, 0x74, 0x12, 0x20, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67,
-	0x65, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x0a, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x45, 0x6d, 0x70, 0x74,
-	0x79, 0x12, 0x4e, 0x0a, 0x0b, 0x4c, 0x69, 0x6b, 0x65, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
-	0x12, 0x1e, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x4c, 0x69,
-	0x6b, 0x65, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x1f, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x4c, 0x69,
-	0x6b, 0x65, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x4e, 0x0a, 0x0b, 0x4c, 0x69, 0x6b, 0x65, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74,
-	0x12, 0x1e, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x4c, 0x69,
-	0x6b, 0x65, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x1f, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x4c, 0x69,
-	0x6b, 0x65, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x51, 0x0a, 0x0c, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x4c, 0x69, 0x6b, 0x65,
-	0x73, 0x12, 0x1f, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x4d,
-	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x4c, 0x69, 0x6b, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x1a, 0x20, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
-	0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x4c, 0x69, 0x6b, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x51, 0x0a, 0x0c, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x4c,
-	0x69, 0x6b, 0x65, 0x73, 0x12, 0x1f, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61,
-	0x67, 0x65, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x4c, 0x69, 0x6b, 0x65, 0x73, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73,
-	0x61, 0x67, 0x65, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x4c, 0x69, 0x6b, 0x65, 0x73, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x08, 0x5a, 0x06, 0x2e, 0x2e, 0x2f, 0x72, 0x70,
-	0x63, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x67, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x42, 0x0a, 0x07, 0x4d,
+	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x1a, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73,
+	0x73, 0x61, 0x67, 0x65, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x1b, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
+	0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x39, 0x0a, 0x04, 0x50, 0x6f, 0x73, 0x74, 0x12, 0x17, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65,
+	0x73, 0x73, 0x61, 0x67, 0x65, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x18, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x50, 0x6f,
+	0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x39, 0x0a, 0x04, 0x45, 0x64,
+	0x69, 0x74, 0x12, 0x17, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
+	0x45, 0x64, 0x69, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x18, 0x2e, 0x72, 0x70,
+	0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x45, 0x64, 0x69, 0x74, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2f, 0x0a, 0x06, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x12,
+	0x19, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x44, 0x65, 0x6c,
+	0x65, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x0a, 0x2e, 0x72, 0x70, 0x63,
+	0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x12, 0x4e, 0x0a, 0x0b, 0x50, 0x6f, 0x73, 0x74, 0x43, 0x6f,
+	0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x1e, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73,
+	0x61, 0x67, 0x65, 0x50, 0x6f, 0x73, 0x74, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1f, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73,
+	0x61, 0x67, 0x65, 0x50, 0x6f, 0x73, 0x74, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4e, 0x0a, 0x0b, 0x45, 0x64, 0x69, 0x74, 0x43, 0x6f,
+	0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x1e, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73,
+	0x61, 0x67, 0x65, 0x45, 0x64, 0x69, 0x74, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1f, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73,
+	0x61, 0x67, 0x65, 0x45, 0x64, 0x69, 0x74, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3d, 0x0a, 0x0d, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65,
+	0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x20, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65,
+	0x73, 0x73, 0x61, 0x67, 0x65, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x43, 0x6f, 0x6d, 0x6d, 0x65,
+	0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x0a, 0x2e, 0x72, 0x70, 0x63, 0x2e,
+	0x45, 0x6d, 0x70, 0x74, 0x79, 0x12, 0x4e, 0x0a, 0x0b, 0x4c, 0x69, 0x6b, 0x65, 0x4d, 0x65, 0x73,
+	0x73, 0x61, 0x67, 0x65, 0x12, 0x1e, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61,
+	0x67, 0x65, 0x4c, 0x69, 0x6b, 0x65, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x1f, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61,
+	0x67, 0x65, 0x4c, 0x69, 0x6b, 0x65, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4e, 0x0a, 0x0b, 0x4c, 0x69, 0x6b, 0x65, 0x43, 0x6f, 0x6d,
+	0x6d, 0x65, 0x6e, 0x74, 0x12, 0x1e, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61,
+	0x67, 0x65, 0x4c, 0x69, 0x6b, 0x65, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x1f, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61,
+	0x67, 0x65, 0x4c, 0x69, 0x6b, 0x65, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x51, 0x0a, 0x0c, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
+	0x4c, 0x69, 0x6b, 0x65, 0x73, 0x12, 0x1f, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73,
+	0x61, 0x67, 0x65, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x4c, 0x69, 0x6b, 0x65, 0x73, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73,
+	0x73, 0x61, 0x67, 0x65, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x4c, 0x69, 0x6b, 0x65, 0x73,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x51, 0x0a, 0x0c, 0x43, 0x6f, 0x6d, 0x6d,
+	0x65, 0x6e, 0x74, 0x4c, 0x69, 0x6b, 0x65, 0x73, 0x12, 0x1f, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x4d,
+	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x4c, 0x69, 0x6b,
+	0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x72, 0x70, 0x63, 0x2e,
+	0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x4c, 0x69,
+	0x6b, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x08, 0x5a, 0x06, 0x2e,
+	0x2e, 0x2f, 0x72, 0x70, 0x63, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1260,67 +1375,72 @@ func file_message_proto_rawDescGZIP() []byte {
 	return file_message_proto_rawDescData
 }
 
-var file_message_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
+var file_message_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
 var file_message_proto_goTypes = []interface{}{
 	(*MessageMessagesRequest)(nil),      // 0: rpc.MessageMessagesRequest
 	(*MessageMessagesResponse)(nil),     // 1: rpc.MessageMessagesResponse
-	(*MessagePostRequest)(nil),          // 2: rpc.MessagePostRequest
-	(*MessagePostResponse)(nil),         // 3: rpc.MessagePostResponse
-	(*MessageEditRequest)(nil),          // 4: rpc.MessageEditRequest
-	(*MessageEditResponse)(nil),         // 5: rpc.MessageEditResponse
-	(*MessageDeleteRequest)(nil),        // 6: rpc.MessageDeleteRequest
-	(*MessagePostCommentRequest)(nil),   // 7: rpc.MessagePostCommentRequest
-	(*MessagePostCommentResponse)(nil),  // 8: rpc.MessagePostCommentResponse
-	(*MessageEditCommentRequest)(nil),   // 9: rpc.MessageEditCommentRequest
-	(*MessageEditCommentResponse)(nil),  // 10: rpc.MessageEditCommentResponse
-	(*MessageDeleteCommentRequest)(nil), // 11: rpc.MessageDeleteCommentRequest
-	(*MessageLikeMessageRequest)(nil),   // 12: rpc.MessageLikeMessageRequest
-	(*MessageLikeMessageResponse)(nil),  // 13: rpc.MessageLikeMessageResponse
-	(*MessageLikeCommentRequest)(nil),   // 14: rpc.MessageLikeCommentRequest
-	(*MessageLikeCommentResponse)(nil),  // 15: rpc.MessageLikeCommentResponse
-	(*MessageMessageLikesRequest)(nil),  // 16: rpc.MessageMessageLikesRequest
-	(*MessageMessageLikesResponse)(nil), // 17: rpc.MessageMessageLikesResponse
-	(*MessageCommentLikesRequest)(nil),  // 18: rpc.MessageCommentLikesRequest
-	(*MessageCommentLikesResponse)(nil), // 19: rpc.MessageCommentLikesResponse
-	(*Message)(nil),                     // 20: rpc.Message
-	(*MessageLike)(nil),                 // 21: rpc.MessageLike
-	(*Empty)(nil),                       // 22: rpc.Empty
+	(*MessageMessageRequest)(nil),       // 2: rpc.MessageMessageRequest
+	(*MessageMessageResponse)(nil),      // 3: rpc.MessageMessageResponse
+	(*MessagePostRequest)(nil),          // 4: rpc.MessagePostRequest
+	(*MessagePostResponse)(nil),         // 5: rpc.MessagePostResponse
+	(*MessageEditRequest)(nil),          // 6: rpc.MessageEditRequest
+	(*MessageEditResponse)(nil),         // 7: rpc.MessageEditResponse
+	(*MessageDeleteRequest)(nil),        // 8: rpc.MessageDeleteRequest
+	(*MessagePostCommentRequest)(nil),   // 9: rpc.MessagePostCommentRequest
+	(*MessagePostCommentResponse)(nil),  // 10: rpc.MessagePostCommentResponse
+	(*MessageEditCommentRequest)(nil),   // 11: rpc.MessageEditCommentRequest
+	(*MessageEditCommentResponse)(nil),  // 12: rpc.MessageEditCommentResponse
+	(*MessageDeleteCommentRequest)(nil), // 13: rpc.MessageDeleteCommentRequest
+	(*MessageLikeMessageRequest)(nil),   // 14: rpc.MessageLikeMessageRequest
+	(*MessageLikeMessageResponse)(nil),  // 15: rpc.MessageLikeMessageResponse
+	(*MessageLikeCommentRequest)(nil),   // 16: rpc.MessageLikeCommentRequest
+	(*MessageLikeCommentResponse)(nil),  // 17: rpc.MessageLikeCommentResponse
+	(*MessageMessageLikesRequest)(nil),  // 18: rpc.MessageMessageLikesRequest
+	(*MessageMessageLikesResponse)(nil), // 19: rpc.MessageMessageLikesResponse
+	(*MessageCommentLikesRequest)(nil),  // 20: rpc.MessageCommentLikesRequest
+	(*MessageCommentLikesResponse)(nil), // 21: rpc.MessageCommentLikesResponse
+	(*Message)(nil),                     // 22: rpc.Message
+	(*MessageLike)(nil),                 // 23: rpc.MessageLike
+	(*Empty)(nil),                       // 24: rpc.Empty
 }
 var file_message_proto_depIdxs = []int32{
-	20, // 0: rpc.MessageMessagesResponse.messages:type_name -> rpc.Message
-	20, // 1: rpc.MessagePostResponse.message:type_name -> rpc.Message
-	20, // 2: rpc.MessageEditResponse.message:type_name -> rpc.Message
-	20, // 3: rpc.MessagePostCommentResponse.comment:type_name -> rpc.Message
-	20, // 4: rpc.MessageEditCommentResponse.comment:type_name -> rpc.Message
-	21, // 5: rpc.MessageMessageLikesResponse.likes:type_name -> rpc.MessageLike
-	21, // 6: rpc.MessageCommentLikesResponse.likes:type_name -> rpc.MessageLike
-	0,  // 7: rpc.MessageService.Messages:input_type -> rpc.MessageMessagesRequest
-	2,  // 8: rpc.MessageService.Post:input_type -> rpc.MessagePostRequest
-	4,  // 9: rpc.MessageService.Edit:input_type -> rpc.MessageEditRequest
-	6,  // 10: rpc.MessageService.Delete:input_type -> rpc.MessageDeleteRequest
-	7,  // 11: rpc.MessageService.PostComment:input_type -> rpc.MessagePostCommentRequest
-	9,  // 12: rpc.MessageService.EditComment:input_type -> rpc.MessageEditCommentRequest
-	11, // 13: rpc.MessageService.DeleteComment:input_type -> rpc.MessageDeleteCommentRequest
-	12, // 14: rpc.MessageService.LikeMessage:input_type -> rpc.MessageLikeMessageRequest
-	14, // 15: rpc.MessageService.LikeComment:input_type -> rpc.MessageLikeCommentRequest
-	16, // 16: rpc.MessageService.MessageLikes:input_type -> rpc.MessageMessageLikesRequest
-	18, // 17: rpc.MessageService.CommentLikes:input_type -> rpc.MessageCommentLikesRequest
-	1,  // 18: rpc.MessageService.Messages:output_type -> rpc.MessageMessagesResponse
-	3,  // 19: rpc.MessageService.Post:output_type -> rpc.MessagePostResponse
-	5,  // 20: rpc.MessageService.Edit:output_type -> rpc.MessageEditResponse
-	22, // 21: rpc.MessageService.Delete:output_type -> rpc.Empty
-	8,  // 22: rpc.MessageService.PostComment:output_type -> rpc.MessagePostCommentResponse
-	10, // 23: rpc.MessageService.EditComment:output_type -> rpc.MessageEditCommentResponse
-	22, // 24: rpc.MessageService.DeleteComment:output_type -> rpc.Empty
-	13, // 25: rpc.MessageService.LikeMessage:output_type -> rpc.MessageLikeMessageResponse
-	15, // 26: rpc.MessageService.LikeComment:output_type -> rpc.MessageLikeCommentResponse
-	17, // 27: rpc.MessageService.MessageLikes:output_type -> rpc.MessageMessageLikesResponse
-	19, // 28: rpc.MessageService.CommentLikes:output_type -> rpc.MessageCommentLikesResponse
-	18, // [18:29] is the sub-list for method output_type
-	7,  // [7:18] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	22, // 0: rpc.MessageMessagesResponse.messages:type_name -> rpc.Message
+	22, // 1: rpc.MessageMessageResponse.message:type_name -> rpc.Message
+	22, // 2: rpc.MessagePostResponse.message:type_name -> rpc.Message
+	22, // 3: rpc.MessageEditResponse.message:type_name -> rpc.Message
+	22, // 4: rpc.MessagePostCommentResponse.comment:type_name -> rpc.Message
+	22, // 5: rpc.MessageEditCommentResponse.comment:type_name -> rpc.Message
+	23, // 6: rpc.MessageMessageLikesResponse.likes:type_name -> rpc.MessageLike
+	23, // 7: rpc.MessageCommentLikesResponse.likes:type_name -> rpc.MessageLike
+	0,  // 8: rpc.MessageService.Messages:input_type -> rpc.MessageMessagesRequest
+	2,  // 9: rpc.MessageService.Message:input_type -> rpc.MessageMessageRequest
+	4,  // 10: rpc.MessageService.Post:input_type -> rpc.MessagePostRequest
+	6,  // 11: rpc.MessageService.Edit:input_type -> rpc.MessageEditRequest
+	8,  // 12: rpc.MessageService.Delete:input_type -> rpc.MessageDeleteRequest
+	9,  // 13: rpc.MessageService.PostComment:input_type -> rpc.MessagePostCommentRequest
+	11, // 14: rpc.MessageService.EditComment:input_type -> rpc.MessageEditCommentRequest
+	13, // 15: rpc.MessageService.DeleteComment:input_type -> rpc.MessageDeleteCommentRequest
+	14, // 16: rpc.MessageService.LikeMessage:input_type -> rpc.MessageLikeMessageRequest
+	16, // 17: rpc.MessageService.LikeComment:input_type -> rpc.MessageLikeCommentRequest
+	18, // 18: rpc.MessageService.MessageLikes:input_type -> rpc.MessageMessageLikesRequest
+	20, // 19: rpc.MessageService.CommentLikes:input_type -> rpc.MessageCommentLikesRequest
+	1,  // 20: rpc.MessageService.Messages:output_type -> rpc.MessageMessagesResponse
+	3,  // 21: rpc.MessageService.Message:output_type -> rpc.MessageMessageResponse
+	5,  // 22: rpc.MessageService.Post:output_type -> rpc.MessagePostResponse
+	7,  // 23: rpc.MessageService.Edit:output_type -> rpc.MessageEditResponse
+	24, // 24: rpc.MessageService.Delete:output_type -> rpc.Empty
+	10, // 25: rpc.MessageService.PostComment:output_type -> rpc.MessagePostCommentResponse
+	12, // 26: rpc.MessageService.EditComment:output_type -> rpc.MessageEditCommentResponse
+	24, // 27: rpc.MessageService.DeleteComment:output_type -> rpc.Empty
+	15, // 28: rpc.MessageService.LikeMessage:output_type -> rpc.MessageLikeMessageResponse
+	17, // 29: rpc.MessageService.LikeComment:output_type -> rpc.MessageLikeCommentResponse
+	19, // 30: rpc.MessageService.MessageLikes:output_type -> rpc.MessageMessageLikesResponse
+	21, // 31: rpc.MessageService.CommentLikes:output_type -> rpc.MessageCommentLikesResponse
+	20, // [20:32] is the sub-list for method output_type
+	8,  // [8:20] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_message_proto_init() }
@@ -1355,7 +1475,7 @@ func file_message_proto_init() {
 			}
 		}
 		file_message_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MessagePostRequest); i {
+			switch v := v.(*MessageMessageRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1367,7 +1487,7 @@ func file_message_proto_init() {
 			}
 		}
 		file_message_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MessagePostResponse); i {
+			switch v := v.(*MessageMessageResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1379,7 +1499,7 @@ func file_message_proto_init() {
 			}
 		}
 		file_message_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MessageEditRequest); i {
+			switch v := v.(*MessagePostRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1391,7 +1511,7 @@ func file_message_proto_init() {
 			}
 		}
 		file_message_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MessageEditResponse); i {
+			switch v := v.(*MessagePostResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1403,7 +1523,7 @@ func file_message_proto_init() {
 			}
 		}
 		file_message_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MessageDeleteRequest); i {
+			switch v := v.(*MessageEditRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1415,7 +1535,7 @@ func file_message_proto_init() {
 			}
 		}
 		file_message_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MessagePostCommentRequest); i {
+			switch v := v.(*MessageEditResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1427,7 +1547,7 @@ func file_message_proto_init() {
 			}
 		}
 		file_message_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MessagePostCommentResponse); i {
+			switch v := v.(*MessageDeleteRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1439,7 +1559,7 @@ func file_message_proto_init() {
 			}
 		}
 		file_message_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MessageEditCommentRequest); i {
+			switch v := v.(*MessagePostCommentRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1451,7 +1571,7 @@ func file_message_proto_init() {
 			}
 		}
 		file_message_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MessageEditCommentResponse); i {
+			switch v := v.(*MessagePostCommentResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1463,7 +1583,7 @@ func file_message_proto_init() {
 			}
 		}
 		file_message_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MessageDeleteCommentRequest); i {
+			switch v := v.(*MessageEditCommentRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1475,7 +1595,7 @@ func file_message_proto_init() {
 			}
 		}
 		file_message_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MessageLikeMessageRequest); i {
+			switch v := v.(*MessageEditCommentResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1487,7 +1607,7 @@ func file_message_proto_init() {
 			}
 		}
 		file_message_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MessageLikeMessageResponse); i {
+			switch v := v.(*MessageDeleteCommentRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1499,7 +1619,7 @@ func file_message_proto_init() {
 			}
 		}
 		file_message_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MessageLikeCommentRequest); i {
+			switch v := v.(*MessageLikeMessageRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1511,7 +1631,7 @@ func file_message_proto_init() {
 			}
 		}
 		file_message_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MessageLikeCommentResponse); i {
+			switch v := v.(*MessageLikeMessageResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1523,7 +1643,7 @@ func file_message_proto_init() {
 			}
 		}
 		file_message_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MessageMessageLikesRequest); i {
+			switch v := v.(*MessageLikeCommentRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1535,7 +1655,7 @@ func file_message_proto_init() {
 			}
 		}
 		file_message_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MessageMessageLikesResponse); i {
+			switch v := v.(*MessageLikeCommentResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1547,7 +1667,7 @@ func file_message_proto_init() {
 			}
 		}
 		file_message_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MessageCommentLikesRequest); i {
+			switch v := v.(*MessageMessageLikesRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1559,6 +1679,30 @@ func file_message_proto_init() {
 			}
 		}
 		file_message_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MessageMessageLikesResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_message_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MessageCommentLikesRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_message_proto_msgTypes[21].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MessageCommentLikesResponse); i {
 			case 0:
 				return &v.state
@@ -1577,7 +1721,7 @@ func file_message_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_message_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   20,
+			NumMessages:   22,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

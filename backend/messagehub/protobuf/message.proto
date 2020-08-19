@@ -7,6 +7,7 @@ import "model.proto";
 
 service MessageService {
     rpc Messages (MessageMessagesRequest) returns (MessageMessagesResponse);
+    rpc Message (MessageMessageRequest) returns (MessageMessageResponse);
     rpc Post (MessagePostRequest) returns (MessagePostResponse);
     rpc Edit (MessageEditRequest) returns (MessageEditResponse);
     rpc Delete (MessageDeleteRequest) returns (Empty);
@@ -27,6 +28,15 @@ message MessageMessagesRequest {
 
 message MessageMessagesResponse {
     repeated Message messages = 1;
+}
+
+message MessageMessageRequest {
+    string token = 1;
+    string message_id = 2;
+}
+
+message MessageMessageResponse {
+    Message message = 1;
 }
 
 message MessagePostRequest {
