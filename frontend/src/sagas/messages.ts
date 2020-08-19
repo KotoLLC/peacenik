@@ -14,6 +14,11 @@ export function* watchGetMessages() {
     const messageTokens = hubsForMessagesBack2Front(response.data?.tokens)
     yield put(Actions.messages.getMessagesSuccess(messageTokens))
 
+    const kotoMessageTokens = {
+      tokens: messageTokens
+    }
+    localStorage.setItem('kotoMessageTokens', JSON.stringify(kotoMessageTokens))
+
     const state = yield select()
     const hubsWithMessages = selectors.messages.hubsWithMessages(state)
 
@@ -24,7 +29,7 @@ export function* watchGetMessages() {
     yield all(messageTokens.map(item => {
 
       let count
- 
+
       if (hubsWithMessages.get(item.host)) {
         const currentHub = hubsWithMessages.get(item.host)
         if (currentHub?.messages?.length) {
@@ -207,6 +212,37 @@ export function* watchGetMessageUploadLink(action: { type: string, payload: ApiT
     yield put(Actions.messages.getMessageUploadLinkSucces(response.data))
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
+export function* watchGetMessageById(action: { type: string, payload: string }) {
+  const state = yield select()
+  const messageTokens = selectors.messages.messageTokens(state)
+
+  yield all(messageTokens.map(item => {
+    return call(watchGetMessagesByIdFromHub, {
+      type: MessagesTypes.GET_MESSAGE_BY_ID_FROM_HUB_REQUEST,
+      payload: {
+        host: item.host,
+        body: {
+          token: item.token,
+          message_id: action.payload
+        }
+      },
+    })
+  }
+  ))
+}
+
+export function* watchGetMessagesByIdFromHub(action: { type: string, payload: ApiTypes.Messages.MessagesById }) {
+  const response = yield API.messages.getMessageById(action.payload)
+
+  if (response.status === 200) {
+    const message = response.data.message
+    message.sourceHost = action.payload.host
+    message.messageToken = action.payload.body.token
+
+    yield put(Actions.messages.getMessagesByIdFromHubSuccess(message))
   }
 }
 

@@ -20,6 +20,13 @@ export enum Types {
   GET_MORE_MESSAGES_FROM_HUB_SUCCESS = 'GET_MORE_MESSAGES_FROM_HUB_SUCCESS',
   GET_MORE_MESSAGES_FROM_HUB_FAILED = 'GET_MORE_MESSAGES_FROM_HUB_FAILED',
 
+  GET_MESSAGE_BY_ID_REQUEST = 'GET_MESSAGE_BY_ID_REQUEST',
+  
+  GET_MESSAGE_BY_ID_FROM_HUB_REQUEST = 'GET_MESSAGE_BY_ID_FROM_HUB_REQUEST',
+  GET_MESSAGE_BY_ID_FROM_HUB_SUCCESS = 'GET_MESSAGE_BY_ID_FROM_HUB_SUCCESS',
+
+  RESET_MESSAGE_BY_ID = 'RESET_MESSAGE_BY_ID',
+
   POST_MESSAGE_REQUEST = 'POST_MESSAGE_REQUEST',
   POST_MESSAGE_SUCCESS = 'POST_MESSAGE_SUCCESS',
 
@@ -235,6 +242,28 @@ const getMoreMessagesFromHubFailed = () => ({
   type: Types.GET_MORE_MESSAGES_FROM_HUB_FAILED,
 })
 
+const getMessagesByIdRequest = (payload: string) => ({
+  type: Types.GET_MESSAGE_BY_ID_REQUEST,
+  payload,
+})
+
+const getMessagesByIdFromHubRequest = (payload: ApiTypes.Messages.MessagesById) => ({
+  type: Types.GET_MESSAGE_BY_ID_FROM_HUB_REQUEST,
+  payload,
+})
+
+const getMessagesByIdFromHubSuccess = (payload: {
+  hub: string
+  messages: ApiTypes.Messages.Message
+}) => ({
+  type: Types.GET_MESSAGE_BY_ID_FROM_HUB_SUCCESS,
+  payload
+})
+
+const resetMessageById = () => ({
+  type: Types.RESET_MESSAGE_BY_ID,
+})
+
 export default {
   getMessagesRequest,
   getMessagesSuccess,
@@ -273,4 +302,8 @@ export default {
   getMoreMessagesFromHubRequest,
   getMoreMessagesFromHubSuccess,
   getMoreMessagesFromHubFailed,
+  getMessagesByIdRequest,
+  getMessagesByIdFromHubRequest,
+  getMessagesByIdFromHubSuccess,
+  resetMessageById,
 }

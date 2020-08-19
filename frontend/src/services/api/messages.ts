@@ -66,6 +66,19 @@ export default {
     }).catch(error => ({ error }))
   },
 
+  getMessageById: async (data: ApiTypes.Messages.MessagesById) => {
+    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const config = {
+      withCredentials: false,
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      }
+    }
+    return await axiosInstance.post(`${data.host}/rpc.MessageService/Message`, data.body, config).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
+
   postComment: async (data: ApiTypes.Messages.PostComment) => {
     const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
     const config = {

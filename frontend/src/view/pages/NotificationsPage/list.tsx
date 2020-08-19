@@ -58,6 +58,15 @@ class NotificationsList extends React.PureComponent<Props> {
       }
     )
 
+    if (type.indexOf('message-hub') !== -1) {
+      return (
+        <ListText>
+          <StorageIcon fontSize="small" />
+          <ListLink to={`/hubs/list${urlVars}`}>{text}</ListLink>
+        </ListText>
+      )
+    }
+
     if (type.indexOf('message') !== -1) {
       return (
         <ListText>
@@ -72,15 +81,6 @@ class NotificationsList extends React.PureComponent<Props> {
         <ListText>
           {(type === 'comment/like') ? <FavoriteIcon fontSize="small" /> : <AlternateEmailIcon fontSize="small" />}
           <ListLink to={`/notifications/info${urlVars}`}>{text}</ListLink>
-        </ListText>
-      )
-    }
-
-    if (type.indexOf('message-hub') !== -1) {
-      return (
-        <ListText>
-          <StorageIcon fontSize="small" />
-          <ListLink to={`/hubs/list${urlVars}`}>{text}</ListLink>
         </ListText>
       )
     }

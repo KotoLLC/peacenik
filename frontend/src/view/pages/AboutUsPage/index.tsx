@@ -30,18 +30,31 @@ export const AboutUsSlider: React.SFC<Props> = (props) => {
     <WithTopBar>
       <ContainerStyled maxWidth="md">
         <ReactMarkdown>{`
+  # Getting started
   
+  ## You need two things:
+
+  1. Friends
+  2. Message hubs
+
   ![](${nothingPicture})
+
+  ##  Making friends
+
+  Making friends is easy. Just visit the friends page and invite someone.
+
   ## Message hubs
 
-  You, or a friend, must register a message hub to post messages, photos, and videos. 
+  Message hubs store messages, photos, and videos. Without a hub, you can't
+  post a message.
 
-  Every group of friends needs one.
+  Every group of friends needs a hub. One person becomes a hub runner, and everyone
+  else uses that person's hub.
 
-  ## Update: August 2020
+  ## Summer / Fall 2020
 
-  As we're just getting started, you can use my hub by sending an invite
-  to mreider@gmail.com. Or, if you'd like to experiment, feel free to start your own.
+  As we're just getting started, everyone can use my hub, by sending an invite
+  to mreider@gmail.com. Or, if you'd like toexperiment, feel free to start your own.
 
   `}
         </ReactMarkdown>
@@ -49,8 +62,8 @@ export const AboutUsSlider: React.SFC<Props> = (props) => {
           variant="contained"
           color="primary"
           onClick={onGoToInvites}>
-          Invite a friend
-          </Button> or <Button
+          Invite friends
+          </Button> <Button
           variant="contained"
           color="primary"
           onClick={onGoToHubs}>

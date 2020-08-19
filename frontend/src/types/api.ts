@@ -183,6 +183,14 @@ export declare namespace ApiTypes {
       }
     }
 
+    export interface MessagesById {
+      host: string,
+      body: {
+        token: string
+        message_id: string
+      }
+    }
+
     export interface Message {
       sourceHost: string
       messageToken: string

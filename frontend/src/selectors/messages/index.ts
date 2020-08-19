@@ -11,6 +11,7 @@ const messages = deepEqualSelector(state, data => data.messages)
 const hubsWithMessages = deepEqualSelector(state, data => data.hubsWithMessages)
 const currentMessageLikes = deepEqualSelector(state, data => data.currentMessageLikes)
 const currentCommentLikes = deepEqualSelector(state, data => data.currentCommentLikes)
+const messageById = deepEqualSelector(state, data => data.messageById)
 
 export default {
   messageTokens,
@@ -22,4 +23,5 @@ export default {
   hubsWithMessages,
   isMoreMessagesRequested,
   isMessagesRequested,
+  messageById,
 }

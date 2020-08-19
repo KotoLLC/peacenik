@@ -15,10 +15,17 @@ export interface State {
   uploadLink: ApiTypes.UploadLink | null
   currentMessageLikes: ApiTypes.Messages.LikesInfoData | null
   currentCommentLikes: ApiTypes.Messages.LikesInfoData | null
+  messageById: ApiTypes.Messages.Message | null
+}
+
+const kotoMessageTokens = localStorage.getItem('kotoMessageTokens') 
+let messageTokensLocal
+if (kotoMessageTokens !== 'undefined' && kotoMessageTokens !== null) {
+  messageTokensLocal = JSON.parse(kotoMessageTokens)?.tokens
 }
 
 const initialState: State = {
-  messageTokens: [],
+  messageTokens: messageTokensLocal || [],
   currentHub: {
     host: '',
     token: '',
@@ -31,6 +38,7 @@ const initialState: State = {
   uploadLink: null,
   currentMessageLikes: null,
   currentCommentLikes: null,
+  messageById: null,
 }
 
 const reducer = (state = initialState, action) => {
@@ -120,6 +128,16 @@ const reducer = (state = initialState, action) => {
     case Types.GET_LIKES_FOR_COMMENT_SUCCESS: {
       return {
         ...state, ...{ currentCommentLikes: action.payload }
+      }
+    }
+    case Types.GET_MESSAGE_BY_ID_FROM_HUB_SUCCESS: {
+      return {
+        ...state, ...{ messageById: action.payload }
+      }
+    }
+    case Types.RESET_MESSAGE_BY_ID: {
+      return {
+        ...state, ...{ messageById: null }
       }
     }
     default: return state

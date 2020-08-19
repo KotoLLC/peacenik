@@ -56,6 +56,7 @@ interface Props extends ApiTypes.Messages.Message {
   currentHub: CommonTypes.HubTypes.CurrentHub
   currentMessageLikes: ApiTypes.Messages.LikesInfoData | null
   isCommentsOpenByDeafult?: boolean
+  callback?: () => void
 
   onMessageEdit: (data: ApiTypes.Messages.EditMessage) => void
   onCommentPost: (data: ApiTypes.Messages.PostComment) => void
@@ -88,6 +89,7 @@ const Message: React.SFC<Props> = (props) => {
     user_id,
     liked_by,
     isCommentsOpenByDeafult,
+    callback,
   } = props
 
   const [isEditer, setEditor] = useState<boolean>(false)
@@ -188,6 +190,7 @@ const Message: React.SFC<Props> = (props) => {
   const onCommentSave = () => {
     openComments(true)
     onCommentChange('')
+
     props.onCommentPost({
       host: sourceHost,
       body: {
@@ -342,6 +345,9 @@ const Message: React.SFC<Props> = (props) => {
     if (props.currentMessageLikes?.id === id) {
       setLikesInfoRequest(false)
     }
+    
+    callback && callback()
+    
   }, [props, file, isFileUploaded, id])
 
   const renderCommentsButton = () => {
