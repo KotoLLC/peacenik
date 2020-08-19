@@ -301,7 +301,10 @@ Content-Type: application/json
   "email_changed": true,
   "email": "andrey5@mmmail.com",
   "avatar_changed": true,
-  "avatar_id": "BLOB-ID"
+  "avatar_id": "BLOB-ID",
+  "password_changed": true,
+  "current_password": "12345",
+  "new_password": "54321"
 }
 ```
 

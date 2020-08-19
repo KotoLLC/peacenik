@@ -191,16 +191,20 @@ func (s *userService) EditProfile(ctx context.Context, r *rpc.UserEditProfileReq
 	}
 
 	if r.PasswordChanged {
-		if r.Password == "" {
+		if r.NewPassword == "" {
 			return nil, twirp.InvalidArgumentError("password", "is empty")
 		}
 
-		passwordHash, err := s.passwordHash.GenerateHash(r.Password)
+		if !s.passwordHash.CompareHashAndPassword(user.PasswordHash, r.CurrentPassword) {
+			return nil, twirp.NewError(twirp.InvalidArgument, "invalid password")
+		}
+
+		newPasswordHash, err := s.passwordHash.GenerateHash(r.NewPassword)
 		if err != nil {
 			return nil, err
 		}
 
-		err = s.repos.User.SetPassword(user.ID, passwordHash)
+		err = s.repos.User.SetPassword(user.ID, newPasswordHash)
 		if err != nil {
 			return nil, err
 		}

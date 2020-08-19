@@ -45,10 +45,11 @@ message UserMeResponse {
 message UserEditProfileRequest {
     bool email_changed = 1;
     string email = 2;
-    bool password_changed = 3;
-    string password = 4;
-    bool avatar_changed = 5;
-    string avatar_id = 6;
+    bool avatar_changed = 3;
+    string avatar_id = 4;
+    bool password_changed = 5;
+    string current_password = 6;
+    string new_password = 7;
 }
 
 message UserUsersRequest {
