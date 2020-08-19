@@ -55,6 +55,7 @@ interface Props extends ApiTypes.Messages.Message {
   uploadLink: ApiTypes.UploadLink | null
   currentHub: CommonTypes.HubTypes.CurrentHub
   currentMessageLikes: ApiTypes.Messages.LikesInfoData | null
+  isCommentsOpenByDeafult?: boolean
 
   onMessageEdit: (data: ApiTypes.Messages.EditMessage) => void
   onCommentPost: (data: ApiTypes.Messages.PostComment) => void
@@ -86,12 +87,13 @@ const Message: React.SFC<Props> = (props) => {
     liked_by_me,
     user_id,
     liked_by,
+    isCommentsOpenByDeafult,
   } = props
 
   const [isEditer, setEditor] = useState<boolean>(false)
   const [message, onMessageChange] = useState<string>(text)
   const [comment, onCommentChange] = useState<string>('')
-  const [isCommentsOpen, openComments] = useState<boolean>(false)
+  const [isCommentsOpen, openComments] = useState<boolean>(isCommentsOpenByDeafult || false)
   const [isFileUploaded, setUploadedFile] = useState<boolean>(false)
   const [file, setFile] = useState<File | null>(null)
   const [isAttacmentDeleted, onAttachmentDelete] = useState<boolean>(false)

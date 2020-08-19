@@ -61,7 +61,7 @@ export const ListDate = styled.span`
   width: 180px;
 
   @media (max-width: 600px) {
-    width: 160px;
+    width: 100%;
   }
 `
 
@@ -71,7 +71,7 @@ export const ListText = styled.p`
   align-items: center;
 
   @media (max-width: 600px) {
-    width: auto;
+    width: 100%;
   }
 `
 
@@ -84,4 +84,11 @@ export const ListLink = styled(Link)`
   &:hover {
     text-decoration: none;
   }
+`
+
+export const ButtonsWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
 `
