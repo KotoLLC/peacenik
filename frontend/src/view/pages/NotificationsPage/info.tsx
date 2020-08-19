@@ -47,12 +47,13 @@ export const NotificationsInfo: React.SFC<Props> = React.memo((props) => {
     isCommentsOpen = true
   }
 
-  if (false) {
+  if (!false) {
     return (
       <EmptyMessage>
-        <PreloaderWrapper>
+        page in process 
+        {/* <PreloaderWrapper>
           <CircularProgress />
-        </PreloaderWrapper>
+        </PreloaderWrapper> */}
       </EmptyMessage>
     )
   } else {
