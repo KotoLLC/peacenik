@@ -15,7 +15,7 @@ export interface State {
   uploadLink: ApiTypes.UploadLink | null
   currentMessageLikes: ApiTypes.Messages.LikesInfoData | null
   currentCommentLikes: ApiTypes.Messages.LikesInfoData | null
-  messageById: ApiTypes.Messages.Message | null
+  messageById: ApiTypes.Messages.Message | null | undefined
 }
 
 const kotoMessageTokens = localStorage.getItem('kotoMessageTokens') 
@@ -138,6 +138,11 @@ const reducer = (state = initialState, action) => {
     case Types.RESET_MESSAGE_BY_ID: {
       return {
         ...state, ...{ messageById: null }
+      }
+    }
+    case Types.GET_MESSAGE_BY_ID_FROM_HUB_FAILED: {
+      return {
+        ...state, ...{ messageById: undefined }
       }
     }
     default: return state

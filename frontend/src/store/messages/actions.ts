@@ -24,6 +24,7 @@ export enum Types {
   
   GET_MESSAGE_BY_ID_FROM_HUB_REQUEST = 'GET_MESSAGE_BY_ID_FROM_HUB_REQUEST',
   GET_MESSAGE_BY_ID_FROM_HUB_SUCCESS = 'GET_MESSAGE_BY_ID_FROM_HUB_SUCCESS',
+  GET_MESSAGE_BY_ID_FROM_HUB_FAILED = 'GET_MESSAGE_BY_ID_FROM_HUB_FAILED',
 
   RESET_MESSAGE_BY_ID = 'RESET_MESSAGE_BY_ID',
 
@@ -260,6 +261,10 @@ const getMessagesByIdFromHubSuccess = (payload: {
   payload
 })
 
+const getMessagesByIdFromHubFailed = () => ({
+  type: Types.GET_MESSAGE_BY_ID_FROM_HUB_FAILED,
+})
+
 const resetMessageById = () => ({
   type: Types.RESET_MESSAGE_BY_ID,
 })
@@ -306,4 +311,5 @@ export default {
   getMessagesByIdFromHubRequest,
   getMessagesByIdFromHubSuccess,
   resetMessageById,
+  getMessagesByIdFromHubFailed,
 }

@@ -15,7 +15,7 @@ import Actions from '@store/actions'
 import { connect } from 'react-redux'
 
 interface Props extends RouteComponentProps {
-  messageById: ApiTypes.Messages.Message | null
+  messageById: ApiTypes.Messages.Message | null | undefined
   onGetMessageById: (id: string) => void
   onResetMessageById: () => void
 }
@@ -43,7 +43,7 @@ class NotificationsInfo extends React.PureComponent<Props, State> {
     if (parsed?.message_id) {
       onGetMessageById(parsed.message_id as string)
     }
-  }    
+  }
 
   componentDidMount() {
     this.getMessage()
@@ -64,6 +64,30 @@ class NotificationsInfo extends React.PureComponent<Props, State> {
             <CircularProgress />
           </PreloaderWrapper>
         </EmptyMessage>
+      )
+    }
+
+    if (messageById === undefined) {
+      return (
+        <>
+        <EmptyMessage>
+          404 message not found
+        </EmptyMessage>
+        <ButtonsWrapper>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<ArrowBackIcon />}
+              onClick={() => history.goBack()}
+            >back</Button>
+            <Button
+              variant="contained"
+              color="primary"
+              endIcon={<ArrowForwardIcon />}
+              onClick={() => history.push('/messages')}
+            >Messages</Button>
+          </ButtonsWrapper>
+        </>
       )
     } else {
       return (

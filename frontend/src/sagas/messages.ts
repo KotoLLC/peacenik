@@ -243,6 +243,8 @@ export function* watchGetMessagesByIdFromHub(action: { type: string, payload: Ap
     message.messageToken = action.payload.body.token
 
     yield put(Actions.messages.getMessagesByIdFromHubSuccess(message))
+  } else {
+    yield put(Actions.messages.getMessagesByIdFromHubFailed())
   }
 }
 
