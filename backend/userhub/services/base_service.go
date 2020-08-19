@@ -5,18 +5,28 @@ import (
 	"time"
 
 	"github.com/mreider/koto/backend/common"
+	"github.com/mreider/koto/backend/token"
 	"github.com/mreider/koto/backend/userhub/repo"
 )
 
 type BaseService struct {
-	repos     repo.Repos
-	s3Storage *common.S3Storage
+	repos           repo.Repos
+	s3Storage       *common.S3Storage
+	tokenGenerator  token.Generator
+	tokenParser     token.Parser
+	mailSender      *common.MailSender
+	frontendAddress string
 }
 
-func NewBase(repos repo.Repos, s3Storage *common.S3Storage) *BaseService {
+func NewBase(repos repo.Repos, s3Storage *common.S3Storage, tokenGenerator token.Generator, tokenParser token.Parser,
+	mailSender *common.MailSender, frontendAddress string) *BaseService {
 	return &BaseService{
-		repos:     repos,
-		s3Storage: s3Storage,
+		repos:           repos,
+		s3Storage:       s3Storage,
+		tokenGenerator:  tokenGenerator,
+		tokenParser:     tokenParser,
+		mailSender:      mailSender,
+		frontendAddress: frontendAddress,
 	}
 }
 

@@ -98,6 +98,30 @@ Content-Type: application/json
 {}
 ```
 
+### Send email with "reset password" link
+
+```
+POST http://localhost:12001/rpc.AuthService/SendResetPasswordLink
+Content-Type: application/json
+
+{
+  "name": "andrey1",
+  "email": "andrey1@mail.com"
+}
+```
+
+### Reset password
+
+```
+POST http://localhost:12001/rpc.AuthService/ResetPassword
+Content-Type: application/json
+
+{
+  "reset_token": "RESET-TOKEN",
+  "new_password": "54321"
+}
+```
+
 ## Message Hub Management
 
 ### Register a new message hub

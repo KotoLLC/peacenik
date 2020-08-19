@@ -25,7 +25,7 @@ func NewMailSender(cfg SMTPConfig) *MailSender {
 }
 
 func (m *MailSender) Enabled() bool {
-	return m.cfg.Host != ""
+	return m != nil && m.cfg.Host != ""
 }
 
 func (m *MailSender) SendTextEmail(recipients []string, subject string, message string) error {

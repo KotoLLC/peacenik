@@ -21,7 +21,6 @@ import (
 	"github.com/mreider/koto/backend/userhub/routers"
 	"github.com/mreider/koto/backend/userhub/rpc"
 	"github.com/mreider/koto/backend/userhub/services"
-	"github.com/mreider/koto/backend/userhub/services/user"
 )
 
 const (
@@ -83,13 +82,12 @@ func (s *Server) Run() error {
 			return ctx
 		},
 	}
-	baseService := services.NewBase(s.repos, s.s3Storage)
+	mailSender := common.NewMailSender(s.cfg.SMTP)
+	baseService := services.NewBase(s.repos, s.s3Storage, s.tokenGenerator, s.tokenParser, mailSender, s.cfg.FrontendAddress)
 
 	passwordHash := bcrypt.NewPasswordHash()
-	mailSender := common.NewMailSender(s.cfg.SMTP)
-	userConfirmation := user.NewConfirmation(s.cfg.FrontendAddress, mailSender, s.tokenGenerator, s.tokenParser, s.repos.User)
 
-	authService := services.NewAuth(baseService, sessionUserKey, passwordHash, userConfirmation, s.cfg.TestMode)
+	authService := services.NewAuth(baseService, sessionUserKey, passwordHash, s.cfg.TestMode)
 	authServiceHandler := rpc.NewAuthServiceServer(authService, rpcHooks)
 	r.Handle(authServiceHandler.PathPrefix()+"*", s.findSessionUser(s.authSessionProvider(authServiceHandler)))
 
@@ -109,7 +107,7 @@ func (s *Server) Run() error {
 	messageHubServiceHandler := rpc.NewMessageHubServiceServer(messageHubService, rpcHooks)
 	r.Handle(messageHubServiceHandler.PathPrefix()+"*", s.checkAuth(messageHubServiceHandler))
 
-	inviteService := services.NewInvite(baseService, userConfirmation)
+	inviteService := services.NewInvite(baseService)
 	inviteServiceHandler := rpc.NewInviteServiceServer(inviteService, rpcHooks)
 	r.Handle(inviteServiceHandler.PathPrefix()+"*", s.checkAuth(inviteServiceHandler))
 
@@ -150,19 +148,19 @@ func (s *Server) findSessionUser(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
-		u, err := s.repos.User.FindUserByID(userID)
+		user, err := s.repos.User.FindUserByID(userID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		if u == nil {
+		if user == nil {
 			next.ServeHTTP(w, r)
 			return
 		}
 
-		isAdmin := s.cfg.IsAdmin(u.Name) || s.cfg.IsAdmin(u.Email)
+		isAdmin := s.cfg.IsAdmin(user.Name) || s.cfg.IsAdmin(user.Email)
 
-		ctx := context.WithValue(r.Context(), services.ContextUserKey, *u)
+		ctx := context.WithValue(r.Context(), services.ContextUserKey, *user)
 		ctx = context.WithValue(ctx, services.ContextIsAdminKey, isAdmin)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
@@ -170,13 +168,13 @@ func (s *Server) findSessionUser(next http.Handler) http.Handler {
 
 func (s *Server) checkAuth(next http.Handler) http.Handler {
 	return s.findSessionUser(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		u, ok := r.Context().Value(services.ContextUserKey).(repo.User)
+		user, ok := r.Context().Value(services.ContextUserKey).(repo.User)
 		if !ok {
 			http.Error(w, "", http.StatusUnauthorized)
 			return
 		}
-		isAdmin := s.cfg.IsAdmin(u.Name) || s.cfg.IsAdmin(u.Email)
-		if !isAdmin && !u.ConfirmedAt.Valid && r.URL.Path != "/rpc.UserService/Me" {
+		isAdmin := s.cfg.IsAdmin(user.Name) || s.cfg.IsAdmin(user.Email)
+		if !isAdmin && !user.ConfirmedAt.Valid && r.URL.Path != "/rpc.UserService/Me" {
 			http.Error(w, "", http.StatusForbidden)
 			return
 		}

@@ -49,6 +49,10 @@ type AuthService interface {
 
 	SendConfirmLink(context.Context, *Empty) (*Empty, error)
 
+	SendResetPasswordLink(context.Context, *AuthSendResetPasswordLinkRequest) (*Empty, error)
+
+	ResetPassword(context.Context, *AuthResetPasswordRequest) (*Empty, error)
+
 	Logout(context.Context, *Empty) (*Empty, error)
 }
 
@@ -58,7 +62,7 @@ type AuthService interface {
 
 type authServiceProtobufClient struct {
 	client HTTPClient
-	urls   [5]string
+	urls   [7]string
 	opts   twirp.ClientOptions
 }
 
@@ -75,11 +79,13 @@ func NewAuthServiceProtobufClient(addr string, client HTTPClient, opts ...twirp.
 	}
 
 	prefix := urlBase(addr) + AuthServicePathPrefix
-	urls := [5]string{
+	urls := [7]string{
 		prefix + "Register",
 		prefix + "Login",
 		prefix + "Confirm",
 		prefix + "SendConfirmLink",
+		prefix + "SendResetPasswordLink",
+		prefix + "ResetPassword",
 		prefix + "Logout",
 	}
 
@@ -170,12 +176,52 @@ func (c *authServiceProtobufClient) SendConfirmLink(ctx context.Context, in *Emp
 	return out, nil
 }
 
+func (c *authServiceProtobufClient) SendResetPasswordLink(ctx context.Context, in *AuthSendResetPasswordLinkRequest) (*Empty, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "AuthService")
+	ctx = ctxsetters.WithMethodName(ctx, "SendResetPasswordLink")
+	out := new(Empty)
+	err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[4], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *authServiceProtobufClient) ResetPassword(ctx context.Context, in *AuthResetPasswordRequest) (*Empty, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "AuthService")
+	ctx = ctxsetters.WithMethodName(ctx, "ResetPassword")
+	out := new(Empty)
+	err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[5], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
 func (c *authServiceProtobufClient) Logout(ctx context.Context, in *Empty) (*Empty, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "rpc")
 	ctx = ctxsetters.WithServiceName(ctx, "AuthService")
 	ctx = ctxsetters.WithMethodName(ctx, "Logout")
 	out := new(Empty)
-	err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[4], in, out)
+	err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[6], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -196,7 +242,7 @@ func (c *authServiceProtobufClient) Logout(ctx context.Context, in *Empty) (*Emp
 
 type authServiceJSONClient struct {
 	client HTTPClient
-	urls   [5]string
+	urls   [7]string
 	opts   twirp.ClientOptions
 }
 
@@ -213,11 +259,13 @@ func NewAuthServiceJSONClient(addr string, client HTTPClient, opts ...twirp.Clie
 	}
 
 	prefix := urlBase(addr) + AuthServicePathPrefix
-	urls := [5]string{
+	urls := [7]string{
 		prefix + "Register",
 		prefix + "Login",
 		prefix + "Confirm",
 		prefix + "SendConfirmLink",
+		prefix + "SendResetPasswordLink",
+		prefix + "ResetPassword",
 		prefix + "Logout",
 	}
 
@@ -308,12 +356,52 @@ func (c *authServiceJSONClient) SendConfirmLink(ctx context.Context, in *Empty) 
 	return out, nil
 }
 
+func (c *authServiceJSONClient) SendResetPasswordLink(ctx context.Context, in *AuthSendResetPasswordLinkRequest) (*Empty, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "AuthService")
+	ctx = ctxsetters.WithMethodName(ctx, "SendResetPasswordLink")
+	out := new(Empty)
+	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[4], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *authServiceJSONClient) ResetPassword(ctx context.Context, in *AuthResetPasswordRequest) (*Empty, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "AuthService")
+	ctx = ctxsetters.WithMethodName(ctx, "ResetPassword")
+	out := new(Empty)
+	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[5], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
 func (c *authServiceJSONClient) Logout(ctx context.Context, in *Empty) (*Empty, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "rpc")
 	ctx = ctxsetters.WithServiceName(ctx, "AuthService")
 	ctx = ctxsetters.WithMethodName(ctx, "Logout")
 	out := new(Empty)
-	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[4], in, out)
+	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[6], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -387,6 +475,12 @@ func (s *authServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 		return
 	case "/rpc.AuthService/SendConfirmLink":
 		s.serveSendConfirmLink(ctx, resp, req)
+		return
+	case "/rpc.AuthService/SendResetPasswordLink":
+		s.serveSendResetPasswordLink(ctx, resp, req)
+		return
+	case "/rpc.AuthService/ResetPassword":
+		s.serveResetPassword(ctx, resp, req)
 		return
 	case "/rpc.AuthService/Logout":
 		s.serveLogout(ctx, resp, req)
@@ -892,6 +986,264 @@ func (s *authServiceServer) serveSendConfirmLinkProtobuf(ctx context.Context, re
 	}
 	if respContent == nil {
 		s.writeError(ctx, resp, twirp.InternalError("received a nil *Empty and nil error while calling SendConfirmLink. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *authServiceServer) serveSendResetPasswordLink(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveSendResetPasswordLinkJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveSendResetPasswordLinkProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *authServiceServer) serveSendResetPasswordLinkJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "SendResetPasswordLink")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(AuthSendResetPasswordLinkRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *Empty
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.AuthService.SendResetPasswordLink(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *Empty and nil error while calling SendResetPasswordLink. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *authServiceServer) serveSendResetPasswordLinkProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "SendResetPasswordLink")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(AuthSendResetPasswordLinkRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *Empty
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.AuthService.SendResetPasswordLink(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *Empty and nil error while calling SendResetPasswordLink. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *authServiceServer) serveResetPassword(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveResetPasswordJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveResetPasswordProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *authServiceServer) serveResetPasswordJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "ResetPassword")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(AuthResetPasswordRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *Empty
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.AuthService.ResetPassword(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *Empty and nil error while calling ResetPassword. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *authServiceServer) serveResetPasswordProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "ResetPassword")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(AuthResetPasswordRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *Empty
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.AuthService.ResetPassword(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *Empty and nil error while calling ResetPassword. nil responses are not supported"))
 		return
 	}
 
@@ -1572,24 +1924,29 @@ func callClientError(ctx context.Context, h *twirp.ClientHooks, err twirp.Error)
 }
 
 var twirpFileDescriptor0 = []byte{
-	// 290 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x91, 0x3f, 0x4f, 0xc3, 0x30,
-	0x10, 0xc5, 0xd5, 0xbf, 0x94, 0x0b, 0x12, 0xe8, 0x28, 0x22, 0xca, 0x54, 0x32, 0x41, 0x07, 0x83,
-	0xe0, 0x13, 0x50, 0xc4, 0x96, 0x29, 0x65, 0x62, 0x41, 0x21, 0x39, 0x52, 0xab, 0x8d, 0x6d, 0x1c,
-	0xa7, 0x88, 0x85, 0xcf, 0xcb, 0xc7, 0x40, 0xb1, 0xdb, 0x28, 0x91, 0x80, 0xcd, 0xf7, 0xde, 0x4f,
-	0xf7, 0x9e, 0x6d, 0x80, 0xa4, 0x32, 0x2b, 0xa6, 0xb4, 0x34, 0x12, 0x07, 0x5a, 0xa5, 0x81, 0x57,
-	0xc8, 0x8c, 0x36, 0x4e, 0x09, 0xbf, 0xe0, 0xf4, 0xbe, 0x32, 0xab, 0x98, 0x72, 0x5e, 0x1a, 0xd2,
-	0x31, 0xbd, 0x57, 0x54, 0x1a, 0x44, 0x18, 0x8a, 0xa4, 0x20, 0xbf, 0x37, 0xeb, 0x5d, 0x1e, 0xc6,
-	0xf6, 0x8c, 0x53, 0x18, 0x51, 0x91, 0xf0, 0x8d, 0xdf, 0xb7, 0xa2, 0x1b, 0x30, 0x80, 0x89, 0x4a,
-	0xca, 0xf2, 0x43, 0xea, 0xcc, 0x1f, 0x58, 0xa3, 0x99, 0xf1, 0x02, 0x8e, 0xb8, 0xd8, 0x72, 0x43,
-	0x2f, 0x46, 0xae, 0x49, 0xf8, 0x43, 0xeb, 0x7b, 0x4e, 0x7b, 0xaa, 0xa5, 0x70, 0x01, 0x27, 0x75,
-	0x7e, 0x24, 0x73, 0x2e, 0xfe, 0x0b, 0x6f, 0xc7, 0xf4, 0xbb, 0x31, 0xe1, 0x1c, 0xb0, 0xde, 0xf1,
-	0x20, 0xc5, 0x1b, 0xd7, 0xc5, 0x7e, 0xcb, 0x14, 0x46, 0x2e, 0xd5, 0xad, 0x71, 0xc3, 0xed, 0x77,
-	0x0f, 0xbc, 0x1a, 0x5e, 0x92, 0xde, 0xf2, 0x94, 0xf0, 0x06, 0x26, 0xfb, 0xbb, 0xa3, 0xcf, 0xb4,
-	0x4a, 0xd9, 0x2f, 0xcf, 0x11, 0x80, 0x75, 0x1e, 0x0b, 0x65, 0x3e, 0x71, 0x0e, 0x23, 0xdb, 0x16,
-	0xcf, 0x1a, 0xbc, 0xdd, 0xbe, 0xc3, 0x32, 0x38, 0xd8, 0xb5, 0xc2, 0xf3, 0x86, 0xee, 0xf6, 0xec,
-	0xf0, 0x57, 0x70, 0xbc, 0x24, 0x91, 0xed, 0x88, 0x88, 0x8b, 0x35, 0xb6, 0xec, 0x0e, 0x3a, 0x83,
-	0x71, 0x24, 0x73, 0x59, 0x99, 0xbf, 0x88, 0xc5, 0xe4, 0x79, 0xcc, 0xd8, 0xb5, 0x56, 0xe9, 0xeb,
-	0xd8, 0xfe, 0xf5, 0xdd, 0x4f, 0x00, 0x00, 0x00, 0xff, 0xff, 0xd6, 0x3b, 0x14, 0x80, 0x0b, 0x02,
-	0x00, 0x00,
+	// 374 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x53, 0x4d, 0x4b, 0xeb, 0x40,
+	0x14, 0xa5, 0x9f, 0xaf, 0xef, 0xe6, 0x3d, 0xde, 0x63, 0x6c, 0x31, 0x14, 0xc4, 0x1a, 0x10, 0xb4,
+	0x8b, 0x28, 0xba, 0x73, 0x67, 0xc5, 0x8d, 0x64, 0x21, 0xd1, 0x95, 0x0b, 0x4b, 0x4c, 0xaf, 0xed,
+	0xd0, 0x66, 0x26, 0x4e, 0x26, 0x2d, 0x6e, 0xfc, 0xcd, 0xfe, 0x04, 0x99, 0x99, 0x26, 0x64, 0xb4,
+	0x16, 0xdc, 0xe5, 0x9e, 0x7b, 0x72, 0xce, 0xbd, 0xe7, 0x32, 0x00, 0x51, 0x2e, 0x67, 0x7e, 0x2a,
+	0xb8, 0xe4, 0xa4, 0x21, 0xd2, 0xb8, 0xef, 0x24, 0x7c, 0x82, 0x0b, 0x83, 0x78, 0x6f, 0xb0, 0x73,
+	0x99, 0xcb, 0x59, 0x88, 0x53, 0x9a, 0x49, 0x14, 0x21, 0xbe, 0xe4, 0x98, 0x49, 0x42, 0xa0, 0xc9,
+	0xa2, 0x04, 0xdd, 0xda, 0xa0, 0x76, 0xf4, 0x3b, 0xd4, 0xdf, 0xa4, 0x0b, 0x2d, 0x4c, 0x22, 0xba,
+	0x70, 0xeb, 0x1a, 0x34, 0x05, 0xe9, 0x43, 0x27, 0x8d, 0xb2, 0x6c, 0xc5, 0xc5, 0xc4, 0x6d, 0xe8,
+	0x46, 0x59, 0x93, 0x03, 0xf8, 0x43, 0xd9, 0x92, 0x4a, 0x1c, 0x4b, 0x3e, 0x47, 0xe6, 0x36, 0x75,
+	0xdf, 0x31, 0xd8, 0xbd, 0x82, 0xbc, 0x11, 0xfc, 0x57, 0xfe, 0x01, 0x9f, 0x52, 0xb6, 0xcd, 0xbc,
+	0x6a, 0x53, 0xb7, 0x6d, 0xbc, 0x21, 0x10, 0xa5, 0x71, 0xc5, 0xd9, 0x33, 0x15, 0x49, 0xa1, 0xd2,
+	0x85, 0x96, 0x71, 0x35, 0x32, 0xa6, 0xf0, 0x02, 0x18, 0x28, 0xee, 0x1d, 0xb2, 0x49, 0x88, 0x19,
+	0xca, 0xdb, 0xb5, 0x48, 0x40, 0xd9, 0xfc, 0xc7, 0xcb, 0x7b, 0x8f, 0xe0, 0x9a, 0xf4, 0x2a, 0x4a,
+	0x85, 0xca, 0x3e, 0x38, 0x42, 0xe1, 0xe3, 0xea, 0x14, 0xa0, 0x21, 0xbd, 0xba, 0x4a, 0x87, 0xe1,
+	0x6a, 0xfc, 0x69, 0x2d, 0x87, 0xe1, 0xaa, 0x90, 0x3a, 0x7b, 0xaf, 0x83, 0x63, 0xc6, 0x15, 0x4b,
+	0x1a, 0x23, 0x39, 0x85, 0x4e, 0x71, 0x29, 0xe2, 0xfa, 0x22, 0x8d, 0xfd, 0x0d, 0xc7, 0xeb, 0x83,
+	0xee, 0x5c, 0x27, 0xa9, 0x7c, 0x25, 0x43, 0x68, 0xe9, 0x6c, 0x49, 0xaf, 0xa4, 0x57, 0xb3, 0xb6,
+	0xb8, 0x3e, 0xfc, 0x5a, 0x67, 0x48, 0x76, 0x4b, 0xb6, 0x9d, 0xaa, 0xc5, 0x3f, 0x86, 0x7f, 0x2a,
+	0xc7, 0x35, 0x43, 0x25, 0x48, 0x2a, 0x6d, 0x8b, 0x7a, 0x03, 0xbd, 0x8d, 0x91, 0x93, 0xc3, 0xd2,
+	0x68, 0xdb, 0x49, 0x2c, 0xad, 0x0b, 0xf8, 0x6b, 0xf1, 0xc8, 0x5e, 0x25, 0x89, 0xaf, 0x87, 0xb0,
+	0xfe, 0x1d, 0x40, 0x3b, 0xe0, 0x53, 0x9e, 0xcb, 0xef, 0x26, 0x1d, 0x75, 0x1e, 0xda, 0xbe, 0x7f,
+	0x22, 0xd2, 0xf8, 0xa9, 0xad, 0x5f, 0xc8, 0xf9, 0x47, 0x00, 0x00, 0x00, 0xff, 0xff, 0xa0, 0x67,
+	0xf6, 0x2e, 0x41, 0x03, 0x00, 0x00,
 }

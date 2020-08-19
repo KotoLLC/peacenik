@@ -2,16 +2,32 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"net/url"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/ansel1/merry"
 	"github.com/gofrs/uuid"
 	"github.com/twitchtv/twirp"
 
+	"github.com/mreider/koto/backend/token"
+	"github.com/mreider/koto/backend/userhub/repo"
 	"github.com/mreider/koto/backend/userhub/rpc"
-	"github.com/mreider/koto/backend/userhub/services/user"
+)
+
+const (
+	confirmFrontendPath = "/confirm-user?token=%s"
+	confirmEmailSubject = "Please confirm your KOTO account"
+	confirmEmailBody    = `Hi there!<p>Thanks for registering.</p>Please click the link below to confirm your account:</p>
+<p><a href="%s" target="_blank">Click here</a>.</p><p>Thanks!</p>`
+
+	resetPasswordSubject      = "KOTO password reset"
+	resetPasswordFrontendPath = "/reset-password?name=%s&email=%s&token=%s"
+	resetPasswordEmailBody    = `<p>To reset password, click on the link below:</p>
+<p><a href="%s" target="_blank">Click here</a>.</p><p>Thanks!</p>`
 )
 
 var (
@@ -25,19 +41,17 @@ type PasswordHash interface {
 
 type authService struct {
 	*BaseService
-	sessionUserKey   string
-	passwordHash     PasswordHash
-	userConfirmation *user.Confirmation
-	testMode         bool
+	sessionUserKey string
+	passwordHash   PasswordHash
+	testMode       bool
 }
 
-func NewAuth(base *BaseService, sessionUserKey string, passwordHash PasswordHash, userConfirmation *user.Confirmation, testMode bool) rpc.AuthService {
+func NewAuth(base *BaseService, sessionUserKey string, passwordHash PasswordHash, testMode bool) rpc.AuthService {
 	return &authService{
-		BaseService:      base,
-		sessionUserKey:   sessionUserKey,
-		passwordHash:     passwordHash,
-		userConfirmation: userConfirmation,
-		testMode:         testMode,
+		BaseService:    base,
+		sessionUserKey: sessionUserKey,
+		passwordHash:   passwordHash,
+		testMode:       testMode,
 	}
 }
 
@@ -56,11 +70,11 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 		return nil, twirp.InvalidArgumentError("username", "is invalid")
 	}
 
-	u, err := s.repos.User.FindUserByName(r.Name)
+	user, err := s.repos.User.FindUserByName(r.Name)
 	if err != nil {
 		return nil, err
 	}
-	if u != nil {
+	if user != nil {
 		return nil, twirp.NewError(twirp.AlreadyExists, "user already exists")
 	}
 
@@ -79,44 +93,42 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 		return nil, merry.Wrap(err)
 	}
 
-	u, err = s.repos.User.FindUserByID(userID.String())
+	user, err = s.repos.User.FindUserByID(userID.String())
 	if err != nil {
 		return nil, merry.Wrap(err)
 	}
-	if u == nil {
+	if user == nil {
 		return nil, twirp.NotFoundError("user not found")
 	}
-	if s.userConfirmation != nil {
-		if r.InviteToken == "" {
-			err := s.userConfirmation.SendConfirmLink(*u)
-			if err != nil {
-				log.Printf("can't send email to %s: %s\n", u.Email, err)
-			}
-		} else {
-			err := s.userConfirmation.ConfirmInviteToken(*u, r.InviteToken)
-			if err != nil {
-				log.Printf("can't confirm invite token for %s: %s\n", u.Email, err)
-			}
+	if r.InviteToken == "" {
+		err := s.sendConfirmLink(*user)
+		if err != nil {
+			log.Printf("can't send email to %s: %s\n", user.Email, err)
+		}
+	} else {
+		err := s.confirmInviteToken(*user, r.InviteToken)
+		if err != nil {
+			log.Printf("can't confirm invite token for %s: %s\n", user.Email, err)
 		}
 	}
 	return &rpc.Empty{}, nil
 }
 
 func (s *authService) Login(ctx context.Context, r *rpc.AuthLoginRequest) (*rpc.Empty, error) {
-	u, err := s.repos.User.FindUserByName(r.Name)
+	user, err := s.repos.User.FindUserByName(r.Name)
 	if err != nil {
 		return nil, err
 	}
-	if u == nil {
+	if user == nil {
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid username or password")
 	}
 
-	if !s.passwordHash.CompareHashAndPassword(u.PasswordHash, r.Password) {
+	if !s.passwordHash.CompareHashAndPassword(user.PasswordHash, r.Password) {
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid username or password")
 	}
 
 	session := s.getAuthSession(ctx)
-	session.SetValue(s.sessionUserKey, u.ID)
+	session.SetValue(s.sessionUserKey, user.ID)
 	err = session.Save()
 	if err != nil {
 		return nil, err
@@ -142,12 +154,12 @@ func (s *authService) getAuthSession(ctx context.Context) Session {
 func (s *authService) Confirm(ctx context.Context, r *rpc.AuthConfirmRequest) (*rpc.Empty, error) {
 	if s.testMode {
 		if s.isAdmin(ctx) {
-			u, err := s.repos.User.FindUserByIDOrName(r.Token)
+			user, err := s.repos.User.FindUserByIDOrName(r.Token)
 			if err != nil {
 				return nil, err
 			}
-			if u != nil {
-				err = s.repos.User.ConfirmUser(u.ID)
+			if user != nil {
+				err = s.repos.User.ConfirmUser(user.ID)
 				if err != nil {
 					return nil, err
 				}
@@ -156,7 +168,7 @@ func (s *authService) Confirm(ctx context.Context, r *rpc.AuthConfirmRequest) (*
 		}
 	}
 
-	err := s.userConfirmation.Confirm(r.Token)
+	err := s.confirmUser(r.Token)
 	if err != nil {
 		return nil, err
 	}
@@ -167,10 +179,122 @@ func (s *authService) SendConfirmLink(ctx context.Context, _ *rpc.Empty) (*rpc.E
 	if !s.hasUser(ctx) {
 		return nil, twirp.NewError(twirp.Unauthenticated, "")
 	}
-	u := s.getUser(ctx)
-	err := s.userConfirmation.SendConfirmLink(u)
+	user := s.getUser(ctx)
+	err := s.sendConfirmLink(user)
 	if err != nil {
 		return nil, err
 	}
 	return &rpc.Empty{}, nil
+}
+
+func (s *authService) SendResetPasswordLink(_ context.Context, r *rpc.AuthSendResetPasswordLinkRequest) (*rpc.Empty, error) {
+	user, err := s.repos.User.FindUserByName(r.Name)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil || user.Email != r.Email {
+		return nil, twirp.NotFoundError("user not found")
+	}
+
+	resetToken, err := s.tokenGenerator.Generate(r.Name, r.Name, "user-password-reset",
+		time.Now().Add(time.Hour*24),
+		map[string]interface{}{
+			"email": r.Email,
+		})
+	if err != nil {
+		return nil, err
+	}
+
+	link := fmt.Sprintf("%s"+resetPasswordFrontendPath, s.frontendAddress, url.QueryEscape(r.Name), url.QueryEscape(r.Email), resetToken)
+	err = s.mailSender.SendHTMLEmail([]string{r.Email}, resetPasswordSubject, fmt.Sprintf(resetPasswordEmailBody, link))
+	if err != nil {
+		return nil, err
+	}
+	return &rpc.Empty{}, nil
+}
+
+func (s *authService) ResetPassword(_ context.Context, r *rpc.AuthResetPasswordRequest) (*rpc.Empty, error) {
+	if r.NewPassword == "" {
+		return nil, twirp.InvalidArgumentError("new password", "is empty")
+	}
+
+	_, claims, err := s.tokenParser.Parse(r.ResetToken, "user-password-reset")
+	if err != nil {
+		return nil, err
+	}
+	var userName string
+	var ok bool
+	if userName, ok = claims["name"].(string); !ok {
+		return nil, token.ErrInvalidToken.Here()
+	}
+
+	user, err := s.repos.User.FindUserByName(userName)
+	if err != nil {
+		return nil, err
+	}
+
+	if user == nil {
+		return nil, twirp.NotFoundError("user not found")
+	}
+
+	passwordHash, err := s.passwordHash.GenerateHash(r.NewPassword)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.repos.User.SetPassword(user.ID, passwordHash)
+	if err != nil {
+		return nil, err
+	}
+
+	return &rpc.Empty{}, nil
+}
+
+func (s *authService) sendConfirmLink(user repo.User) error {
+	if user.ConfirmedAt.Valid {
+		return nil
+	}
+	if !s.mailSender.Enabled() {
+		return nil
+	}
+
+	confirmToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "user-confirm",
+		time.Now().Add(time.Hour*24*30*12),
+		map[string]interface{}{
+			"email": user.Email,
+		})
+	if err != nil {
+		return merry.Wrap(err)
+	}
+
+	link := fmt.Sprintf("%s"+confirmFrontendPath, s.frontendAddress, confirmToken)
+	return s.mailSender.SendHTMLEmail([]string{user.Email}, confirmEmailSubject, fmt.Sprintf(confirmEmailBody, link))
+}
+
+func (s *authService) confirmUser(confirmToken string) error {
+	_, claims, err := s.tokenParser.Parse(confirmToken, "user-confirm")
+	if err != nil {
+		return merry.Wrap(err)
+	}
+	var userID string
+	var ok bool
+	if userID, ok = claims["id"].(string); !ok {
+		return token.ErrInvalidToken.Here()
+	}
+
+	return s.repos.User.ConfirmUser(userID)
+}
+
+func (s *authService) confirmInviteToken(user repo.User, confirmToken string) error {
+	_, claims, err := s.tokenParser.Parse(confirmToken, "user-invite")
+	if err != nil {
+		return merry.Wrap(err)
+	}
+	var userEmail string
+	var ok bool
+	if userEmail, ok = claims["email"].(string); !ok || user.Email != userEmail {
+		return token.ErrInvalidToken.Here()
+	}
+
+	return s.repos.User.ConfirmUser(user.ID)
 }

@@ -10,6 +10,8 @@ service AuthService {
     rpc Login (AuthLoginRequest) returns (Empty);
     rpc Confirm (AuthConfirmRequest) returns (Empty);
     rpc SendConfirmLink (Empty) returns (Empty);
+    rpc SendResetPasswordLink (AuthSendResetPasswordLinkRequest) returns (Empty);
+    rpc ResetPassword (AuthResetPasswordRequest) returns (Empty);
     rpc Logout (Empty) returns (Empty);
 }
 
@@ -27,4 +29,14 @@ message AuthLoginRequest {
 
 message AuthConfirmRequest {
     string token = 1;
+}
+
+message AuthSendResetPasswordLinkRequest {
+    string name = 1;
+    string email = 2;
+}
+
+message AuthResetPasswordRequest {
+    string reset_token = 1;
+    string new_password = 2;
 }
