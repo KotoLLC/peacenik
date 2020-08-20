@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent } from 'react'
+import React, { FormEvent, useState, useEffect } from 'react'
 import Typography from '@material-ui/core/Typography'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
@@ -11,6 +11,7 @@ import FormHelperText from '@material-ui/core/FormHelperText'
 import { validate } from '@services/validation'
 import { FooterMenu } from '@view/shared/FooterMenu'
 import logo from './../../../assets/images/logo-black.png'
+import { useLastLocation } from 'react-router-last-location'
 import { 
   FormWrapper, 
   FormControlStyled, 
@@ -24,15 +25,6 @@ import { RouteComponentProps } from 'react-router-dom'
 
 type FieldsType = 'username' | 'password' | ''
 
-interface State {
-  username: string
-  password: string
-  isPasswordVisible: boolean
-  isRequest: boolean
-  noValideField: FieldsType
-  errorMessage: string
-}
-
 export interface Props extends RouteComponentProps {
   loginErrorMessage: string
   isLogged: boolean
@@ -40,183 +32,140 @@ export interface Props extends RouteComponentProps {
   resetLoginFailedMessage: () => void
 }
 
-export class LoginForm extends React.PureComponent<Props, State> {
+export const LoginForm = (props) => {
+  const [username, onEmailChange] = useState<string>('')
+  const [password, onPasswordChange] = useState<string>('')
+  const [isPasswordVisible, onPasswordOpen] = useState<boolean>(false)
+  const [errorMessage, setErrorMessage] = useState<string>('')
+  const [noValideField, setNoValideField] = useState<FieldsType>('')
+  const [isRequest, setRequest] = useState<boolean>(false)
+  const {loginErrorMessage, isLogged, onLogin, location, history } = props
 
-  state = {
-    username: '',
-    password: '',
-    isPasswordVisible: false,
-    isRequest: false,
-    noValideField: '' as FieldsType,
-    errorMessage: '',
-  }
-
-  static getDerivedStateFromProps(nextProps: Props) {
-    if (nextProps.loginErrorMessage !== '') {
-      return {
-        errorMessage: nextProps.loginErrorMessage,
-        isRequest: false
-      }
-    } if (nextProps.isLogged === true) {
-      nextProps.history.push('/messages')
-      return { isRequest: false }
-    } else {
-      return {}
-    }
-  }
-
-  onEmailChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    this.setState({
-      username: event.currentTarget.value.trim()
-    })
-  }
-
-  onPasswordChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    this.setState({
-      password: event.currentTarget.value.trim()
-    })
-  }
-
-  onPasswordOpen = () => {
-    this.setState({
-      isPasswordVisible: !this.state.isPasswordVisible
-    })
-  }
-
-  onValidate = (): boolean => {
-    const { password, username } = this.state
-
+  const onValidate = (): boolean => {
     if (!validate.isUserNameValid(username)) {
-      this.setState({
-        errorMessage: 'User Name / email is incorrect',
-        noValideField: 'username',
-      })
+      setErrorMessage('User Name / email is incorrect')
+      setNoValideField('username')
       return false
     }
 
     if (!validate.isPasswordValid(password)) {
-      this.setState({
-        errorMessage: 'Password is incorrect',
-        noValideField: 'password',
-      })
+      setErrorMessage('Password is incorrect')
+      setNoValideField('password')
       return false
     }
 
     return true
   }
 
-  onFormSubmit = (event: FormEvent) => {
+  const onFormSubmit = (event: FormEvent) => {
     event.preventDefault()
-    const { username, password } = this.state
-    const { onLogin } = this.props
+    if (!onValidate()) return
 
-    if (!this.onValidate()) return
-
-    this.setState({
-      isRequest: true,
-      errorMessage: '',
-      noValideField: '',
-    })
+    setRequest(true)
+    setErrorMessage('')
+    setNoValideField('')
 
     onLogin({ name: username, password })
   }
 
-  componentWillUnmount() {
-    this.props.resetLoginFailedMessage()
-  }
+  const lastLocation = useLastLocation()
+  const lastLoactionPathname = lastLocation?.pathname
 
-  render() {
-    const {
-      password,
-      username,
-      isPasswordVisible,
-      isRequest,
-      errorMessage,
-      noValideField,
-    } = this.state
+  useEffect(() => {
+    if (loginErrorMessage !== '') {
+      setErrorMessage(loginErrorMessage)
+      setRequest(false)
+    }
 
-    return (
-      <ContainerStyled maxWidth="sm">
-        <Header>
-          <Logo src={logo}/>
-          <Typography variant="subtitle1" gutterBottom>Koto is a safe, friendly, distributed social  network.</Typography>
-        </Header>
-        <FormWrapper onSubmit={this.onFormSubmit}>
-          <FormControlStyled variant="outlined">
-            <InputLabel 
-              htmlFor="username"
-              color={(noValideField === 'username') ? 'secondary' : 'primary'}
-              >User Name / Email</InputLabel>
-            <OutlinedInput
-              id="username"
-              type={'text'}
-              value={username}
-              error={(noValideField === 'username') ? true : false}
-              onChange={this.onEmailChange}
-              labelWidth={135}
-            />
-          </FormControlStyled>
-          <FormControlStyled variant="outlined">
-            <InputLabel 
-              htmlFor="password"
-              color={(noValideField === 'password') ? 'secondary' : 'primary'}
-              >Password</InputLabel>
-            <OutlinedInput
-              id="password"
-              type={isPasswordVisible ? 'text' : 'password'}
-              value={password}
-              onChange={this.onPasswordChange}
-              error={(noValideField === 'password') ? true : false}
-              labelWidth={70}
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={this.onPasswordOpen}
-                    onMouseDown={this.onPasswordOpen}
-                    edge="end"
-                  >
-                    {isPasswordVisible ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              } />
-          </FormControlStyled>
-          <ButtonStyled
-            variant="contained"
-            size="large"
-            color="primary"
-            type="submit"
-            onClick={this.onFormSubmit}
-          >
-            {isRequest ? <CircularProgress size={25} color={'inherit'} /> : 'Login'}
-          </ButtonStyled>
-          {errorMessage && <FormHelperText error>{errorMessage}</FormHelperText>}
-        </FormWrapper>
-        <FooterMenu menuItems={[
-          {
-            title: 'Forgotten password',
-            to: '/',
-            disabled: true,
-          },
-          {
-            title: 'Register for Koto',
-            to: '/registration',
-          },
-          {
-            title: 'About Koto',
-            to: '/about-us',
-          },
-          {
-            title: 'Code of conduct',
-            to: '/docs/code-of-conduct'
-          },
-          {
-            title: 'Contact us',
-            to: '/',
-            disabled: true
-          },
-        ]} />
-      </ContainerStyled>
-    )
-  }
-}
+    if (isLogged === true) {
+      if (location.pathname !== lastLoactionPathname) {
+        history.push(lastLoactionPathname ? `${lastLoactionPathname}` : '/messages')
+      }
+      setRequest(false)
+    }
+  }, [loginErrorMessage, isLogged, onLogin, location, history, lastLoactionPathname])
+
+  return (
+    <ContainerStyled maxWidth="sm">
+      <Header>
+        <Logo src={logo}/>
+        <Typography variant="subtitle1" gutterBottom>Koto is a safe, friendly, distributed social  network.</Typography>
+      </Header>
+      <FormWrapper onSubmit={onFormSubmit}>
+        <FormControlStyled variant="outlined">
+          <InputLabel 
+            htmlFor="username"
+            color={(noValideField === 'username') ? 'secondary' : 'primary'}
+            >User Name / Email</InputLabel>
+          <OutlinedInput
+            id="username"
+            type={'text'}
+            value={username}
+            error={(noValideField === 'username') ? true : false}
+            onChange={(event) => onEmailChange(event.currentTarget.value.trim())}
+            labelWidth={135}
+          />
+        </FormControlStyled>
+        <FormControlStyled variant="outlined">
+          <InputLabel 
+            htmlFor="password"
+            color={(noValideField === 'password') ? 'secondary' : 'primary'}
+            >Password</InputLabel>
+          <OutlinedInput
+            id="password"
+            type={isPasswordVisible ? 'text' : 'password'}
+            value={password}
+            onChange={(event) => onPasswordChange(event.currentTarget.value.trim())}
+            error={(noValideField === 'password') ? true : false}
+            labelWidth={70}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={() => onPasswordOpen(!isPasswordVisible)}
+                  onMouseDown={() => onPasswordOpen(!isPasswordVisible)}
+                  edge="end"
+                >
+                  {isPasswordVisible ? <Visibility /> : <VisibilityOff />}
+                </IconButton>
+              </InputAdornment>
+            } />
+        </FormControlStyled>
+        <ButtonStyled
+          variant="contained"
+          size="large"
+          color="primary"
+          type="submit"
+          onClick={onFormSubmit}
+        >
+          {isRequest ? <CircularProgress size={25} color={'inherit'} /> : 'Login'}
+        </ButtonStyled>
+        {errorMessage && <FormHelperText error>{errorMessage}</FormHelperText>}
+      </FormWrapper>
+      <FooterMenu menuItems={[
+        {
+          title: 'Forgotten password',
+          to: '/',
+          disabled: true,
+        },
+        {
+          title: 'Register for Koto',
+          to: '/registration',
+        },
+        {
+          title: 'About Koto',
+          to: '/about-us',
+        },
+        {
+          title: 'Code of conduct',
+          to: '/docs/code-of-conduct'
+        },
+        {
+          title: 'Contact us',
+          to: '/',
+          disabled: true
+        },
+      ]} />
+    </ContainerStyled>
+  )
+} 

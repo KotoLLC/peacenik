@@ -7,6 +7,7 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import selectors from '@selectors/index' 
+import { useLastLocation } from 'react-router-last-location'
 import {
   PageWrapper,
   PaperStyled,
@@ -30,16 +31,19 @@ export const ResendConfirmEmail: React.SFC<Props> = React.memo((props) => {
     props.onLogout()
   }
 
+  const lastLocation = useLastLocation()
+  const lastLoactionPathname = lastLocation?.pathname
+
   useEffect(() => {
     if (isLogged === false) {
       history.push('/login')
     }
 
     if (isEmailConfirmed === true) {
-      history.push('/messages')
+      history.push(lastLoactionPathname ? lastLoactionPathname : '/messages')
     }
 
-  }, [isLogged, history, isEmailConfirmed])
+  }, [isLogged, history, isEmailConfirmed, lastLoactionPathname])
 
   return (
     <>

@@ -7,6 +7,7 @@ import { ApiTypes } from 'src/types'
 import queryString from 'query-string'
 import selectors from '@selectors/index' 
 import CircularProgress from '@material-ui/core/CircularProgress'
+import { useLastLocation } from 'react-router-last-location'
 import {
   PageWrapper,
   PaperStyled,
@@ -30,6 +31,9 @@ export const ConfirmUser: React.SFC<Props> = React.memo((props) => {
     isConfirmUserSuccess,
   } = props
 
+  const lastLocation = useLastLocation()
+  const lastLoactionPathname = lastLocation?.pathname
+
   useEffect(() => {
     if (isLogged === false) {
       history.push('/login')
@@ -40,10 +44,10 @@ export const ConfirmUser: React.SFC<Props> = React.memo((props) => {
     }
 
     if (isEmailConfirmed === true) {
-      history.push('/messages')
+      history.push(lastLoactionPathname ? lastLoactionPathname : '/messages')
     }
 
-  }, [isLogged, history, isEmailConfirmed, isConfirmUserSuccess, props])
+  }, [isLogged, history, isEmailConfirmed, isConfirmUserSuccess, props, lastLoactionPathname])
 
   const url = props.location.search
   const params = queryString.parse(url)

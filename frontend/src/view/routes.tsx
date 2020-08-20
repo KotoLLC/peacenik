@@ -15,6 +15,7 @@ import DocsPages from './pages/DocsPages'
 import ConfirmUserPage from '@view/pages/ConfirmUserPage'
 import ResendConfirmEmailPage from '@view/pages/ResendConfirmEmailPage'
 import selectors from '@selectors/index'
+import { LastLocationProvider } from 'react-router-last-location'
 
 const Private = ({ component: Component, ...rest }) => {
   return (
@@ -37,21 +38,23 @@ const PrivateRoute = connect(mapStateToProps)(Private)
 export const Routes = () => {
   return (
     <Router history={history}>
-      <Switch>
-        <Route exact path="/" component={LoginPage} />
-        <Route path="/login" component={LoginPage} />
-        <Route path="/registration" component={RegistrationPage} />
-        <Route path="/docs" component={DocsPages} />
-        <Route path="/confirm-user" component={ConfirmUserPage} />
-        <Route path="/resend-confirm-email" component={ResendConfirmEmailPage} />
-        <Route path="/about-us" component={AboutUsPage} />
-        <PrivateRoute path="/friends" component={FriendsPage} />
-        <PrivateRoute path="/hubs" component={HubPages} />
-        <PrivateRoute path="/messages" component={MessagesPage} />
-        <PrivateRoute path="/notifications" component={NotificationsPage} />
-        <PrivateRoute path="/user-profile" component={UserProfilePage} />
-        <Route component={() => <>404 not found</>} />
-      </Switch>
+      <LastLocationProvider>
+        <Switch>
+          <Route exact path="/" component={LoginPage} />
+          <Route path="/login" component={LoginPage} />
+          <Route path="/registration" component={RegistrationPage} />
+          <Route path="/docs" component={DocsPages} />
+          <Route path="/confirm-user" component={ConfirmUserPage} />
+          <Route path="/resend-confirm-email" component={ResendConfirmEmailPage} />
+          <Route path="/about-us" component={AboutUsPage} />
+          <PrivateRoute path="/friends" component={FriendsPage} />
+          <PrivateRoute path="/hubs" component={HubPages} />
+          <PrivateRoute path="/messages" component={MessagesPage} />
+          <PrivateRoute path="/notifications" component={NotificationsPage} />
+          <PrivateRoute path="/user-profile" component={UserProfilePage} />
+          <Route component={() => <>404 not found</>} />
+        </Switch>
+      </LastLocationProvider>
     </Router>
   )
 }
