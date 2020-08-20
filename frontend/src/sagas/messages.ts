@@ -78,6 +78,8 @@ export function* watchGetCurrentHub() {
 
   if (response.status === 200) {
     yield put(Actions.messages.getCurrentHubSuccess(currentHubBack2Front(response.data?.tokens)))
+  } else {
+    yield put(Actions.messages.getCurrentHubFailed())
   }
 }
 

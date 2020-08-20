@@ -11,6 +11,7 @@ export enum Types {
 
   GET_CURRENT_HUB_REQUEST = 'GET_CURRENT_HUB_REQUEST',
   GET_CURRENT_HUB_SUCCESS = 'GET_CURRENT_HUB_SUCCESS',
+  GET_CURRENT_HUB_FAILED = 'GET_CURRENT_HUB_FAILED',
 
   GET_MESSAGES_FROM_HUB_REQUEST = 'GET_MESSAGES_FROM_HUB_REQUEST',
   GET_MESSAGES_FROM_HUB_SUCCESS = 'GET_MESSAGES_FROM_HUB_SUCCESS',
@@ -81,6 +82,10 @@ const getCurrentHubRequest = () => ({
 const getCurrentHubSuccess = (payload: CommonTypes.HubTypes.CurrentHub) => ({
   type: Types.GET_CURRENT_HUB_SUCCESS,
   payload
+})
+
+const getCurrentHubFailed = () => ({
+  type: Types.GET_CURRENT_HUB_FAILED,
 })
 
 const getMessagesFromHubRequest = (payload: ApiTypes.Messages.MessagesFromHub) => ({
@@ -274,6 +279,7 @@ export default {
   getMessagesSuccess,
   getCurrentHubRequest,
   getCurrentHubSuccess,
+  getCurrentHubFailed,
   postMessageRequest,
   postMessageSucces,
   getMessagesFromHubRequest,

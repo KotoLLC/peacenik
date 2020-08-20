@@ -22,6 +22,7 @@ import {
   UploadInput,
   ImagePreview,
   AvatarWrapper,
+  ErrorMessage,
 } from './styles'
 
 interface Props {
@@ -30,6 +31,7 @@ interface Props {
   isMessagePostedSuccess: boolean
   uploadLink: ApiTypes.UploadLink | null
   userId: string
+
   onMessagePost: (data: ApiTypes.Messages.PostMessage) => void
   onPostMessageSucces: (value: boolean) => void
   onGetMessageUploadLink: (data: ApiTypes.Messages.UploadLinkRequest) => void
@@ -39,10 +41,17 @@ interface Props {
 const Editor: React.SFC<Props> = (props) => {
   const [value, onValueChange] = useState<string>('')
   const [isFileUploaded, setUploadedFile] = useState<boolean>(false)
+  const [isHubsEmptyMessageShowed, showHubsEmptyMessage] = useState<boolean>(false)
   const [file, setFile] = useState<File | null>(null)
   const { isMessagePostedSuccess, onPostMessageSucces, uploadLink } = props
 
   const onMessageSend = () => {
+
+    if (!props.currentHub.host) {
+      showHubsEmptyMessage(true)
+      return false
+    }
+
     if (value || file) {
       const data = {
         host: props.currentHub.host,
@@ -52,10 +61,10 @@ const Editor: React.SFC<Props> = (props) => {
           attachment_id: uploadLink?.blob_id,
         }
       }
-  
       setFile(null)
       props.onMessagePost(data)
     }
+
   }
 
   const onComandEnterDown = (event) => {
@@ -69,7 +78,7 @@ const Editor: React.SFC<Props> = (props) => {
     setUploadedFile(false)
 
     const uploadedFile = event.target.files
-    if (uploadedFile && uploadedFile[0]) {
+    if (uploadedFile && uploadedFile[0] && props.currentHub.host) {
       onGetMessageUploadLink({
         host: props.currentHub.host,
         content_type: uploadedFile[0].type,
@@ -97,7 +106,7 @@ const Editor: React.SFC<Props> = (props) => {
 
   const onFileDelete = () => {
     setFile(null)
-  }    
+  }
 
   useEffect(() => {
     if (isMessagePostedSuccess) {
@@ -162,6 +171,8 @@ const Editor: React.SFC<Props> = (props) => {
                 onClick={onMessageSend}
               >Post</ButtonSend>
             </EditorButtonsWrapper>
+            {isHubsEmptyMessageShowed && <ErrorMessage>You cannot post messages until you are friends with someone
+                who has their own node. Alternatively, you can start a node yourself.</ErrorMessage>}
           </EditorWrapper>
         </CreateWrapper>
       </PaperStyled>

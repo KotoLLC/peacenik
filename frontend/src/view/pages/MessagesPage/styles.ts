@@ -381,3 +381,9 @@ export const BoldText = styled.span`
   display: inline-block;
   margin-left: 4px;
 `
+
+export const ErrorMessage = styled.div`
+  font-size: 14px;
+  color: red;
+  margin-top: 20px;
+`

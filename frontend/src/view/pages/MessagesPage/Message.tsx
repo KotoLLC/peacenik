@@ -348,7 +348,7 @@ const Message: React.SFC<Props> = (props) => {
     
     callback && callback()
     
-  }, [props, file, isFileUploaded, id])
+  }, [props, file, isFileUploaded, id, callback])
 
   const renderCommentsButton = () => {
     if (!comments?.length) return null

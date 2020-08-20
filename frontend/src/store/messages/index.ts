@@ -4,6 +4,7 @@ import uniqBy from 'lodash.uniqby'
 export interface State {
   messageTokens: CommonTypes.HubTypes.CurrentHub[]
   currentHub: CommonTypes.HubTypes.CurrentHub
+  isCurrentHubRequested: boolean
   isMessagePostedSuccess: boolean
   messages: ApiTypes.Messages.Message[]
   hubsWithMessages: Map<string, {
@@ -30,6 +31,7 @@ const initialState: State = {
     host: '',
     token: '',
   },
+  isCurrentHubRequested: false,
   isMessagePostedSuccess: false,
   messages: [],
   isMoreMessagesRequested: false,
@@ -50,9 +52,30 @@ const reducer = (state = initialState, action) => {
         }
       }
     }
+    case Types.GET_CURRENT_HUB_REQUEST: {
+      return {
+        ...state, ...{ 
+          isCurrentHubRequested: true,
+         }
+      }
+    }
     case Types.GET_CURRENT_HUB_SUCCESS: {
       return {
-        ...state, ...{ currentHub: action.payload }
+        ...state, ...{ 
+          currentHub: action.payload,
+          isCurrentHubRequested: false,
+         }
+      }
+    }
+    case Types.GET_CURRENT_HUB_FAILED: {
+      return {
+        ...state, ...{ 
+          currentHub: {
+          host: '',
+          token: '',
+        },
+        isCurrentHubRequested: false,
+      }
       }
     }
     case Types.POST_MESSAGE_SUCCESS: {

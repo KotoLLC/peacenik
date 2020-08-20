@@ -4,6 +4,7 @@ import { selector, deepEqualSelector } from '../common'
 const state = createSelector(selector, data => data.messages)
 const messageTokens = deepEqualSelector(state, data => data.messageTokens)
 const currentHub = createSelector(state, data => data.currentHub)
+const isCurrentHubRequested = createSelector(state, data => data.isCurrentHubRequested)
 const isMoreMessagesRequested = createSelector(state, data => data.isMoreMessagesRequested)
 const isMessagesRequested = createSelector(state, data => data.isMessagesRequested)
 const isMessagePostedSuccess = createSelector(state, data => data.isMessagePostedSuccess)
@@ -16,6 +17,7 @@ const messageById = deepEqualSelector(state, data => data.messageById)
 export default {
   messageTokens,
   currentHub,
+  isCurrentHubRequested,
   isMessagePostedSuccess,
   messages,
   currentMessageLikes,

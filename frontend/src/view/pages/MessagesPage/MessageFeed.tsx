@@ -14,12 +14,12 @@ import {
   EmptyMessage,
   UpButton,
   PreloaderWrapper,
-  BoldText,
 } from './styles'
 
 interface Props extends RouteComponentProps {
   messageTokens: CommonTypes.HubTypes.CurrentHub[]
   currentHub: CommonTypes.HubTypes.CurrentHub
+  isCurrentHubReqyested: boolean
   messages: ApiTypes.Messages.Message[]
   userId: string
   authToken: string
@@ -116,9 +116,18 @@ class MessageFeed extends React.Component<Props, State> {
   }
 
   checkCurrentHub = () => {
-    const { currentHub, messages, isAboutUsViewed, history } = this.props
+    const { messages, isCurrentHubReqyested } = this.props
 
-    if (currentHub.host) {
+    if (isCurrentHubReqyested) {
+      return (
+        <EmptyMessage>
+          <PreloaderWrapper>
+            <CircularProgress/>
+          </PreloaderWrapper>
+        </EmptyMessage>
+      )
+    } else {
+
       return (
         <>
           <div ref={this.editorRef}><Editor /></div>
@@ -126,22 +135,6 @@ class MessageFeed extends React.Component<Props, State> {
         </>
       )
     }
-
-    if (isAboutUsViewed) {
-      return (
-        <EmptyMessage>
-          For start the communicating, you should create a <BoldText onClick={() => history.push('/hubs/create')}>message hub</BoldText>.
-        </EmptyMessage>
-      )
-    }
-
-    return (
-      <EmptyMessage>
-        <PreloaderWrapper>
-          <CircularProgress/>
-        </PreloaderWrapper>
-      </EmptyMessage>
-    )
   }
 
   componentDidUpdate() {
@@ -177,6 +170,7 @@ type StateProps = Pick<Props,
   | 'isMoreMessagesRequested'
   | 'isMessagesRequested'
   | 'isAboutUsViewed'
+  | 'isCurrentHubReqyested'
   >
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   messageTokens: selectors.messages.messageTokens(state),
@@ -187,6 +181,7 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   isMoreMessagesRequested: selectors.messages.isMoreMessagesRequested(state),
   isMessagesRequested: selectors.messages.isMessagesRequested(state),
   isAboutUsViewed: selectors.common.isAboutUsViewed(state),
+  isCurrentHubReqyested: selectors.messages.isCurrentHubRequested(state),
 })
 
 type DispatchProps = Pick<Props, 'onGetMessages' | 'onGetCurrentHub' | 'onGetMoreMessages'>
