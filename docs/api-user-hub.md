@@ -101,7 +101,7 @@ Content-Type: application/json
 ### Send email with "reset password" link
 
 ```
-POST http://localhost:12001/rpc.AuthService/SendResetPasswordLink
+POST http://central.koto.at/rpc.AuthService/SendResetPasswordLink
 Content-Type: application/json
 
 {
@@ -113,7 +113,7 @@ Content-Type: application/json
 ### Reset password
 
 ```
-POST http://localhost:12001/rpc.AuthService/ResetPassword
+POST http://central.koto.at/rpc.AuthService/ResetPassword
 Content-Type: application/json
 
 {
@@ -319,6 +319,17 @@ Content-Type: application/json
 
 {
   "user_ids": ["bec79fab-a8ce-47c8-a826-47f08a06ff6f", "b002054c-2612-4906-b741-67f19e131126", "7b786381-00e6-4765-bc1f-8730c64d432d"]
+}
+```
+
+### Get users info
+
+```
+POST http://central.koto.at/rpc.UserService/User
+Content-Type: application/json
+
+{
+  "user_name": "andrey1"
 }
 ```
 

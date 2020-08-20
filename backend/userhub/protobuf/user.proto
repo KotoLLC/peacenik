@@ -11,6 +11,7 @@ service UserService {
     rpc Me (Empty) returns (UserMeResponse);
     rpc EditProfile (UserEditProfileRequest) returns (Empty);
     rpc Users (UserUsersRequest) returns (UserUsersResponse);
+    rpc User (UserUserRequest) returns (UserUserResponse);
 }
 
 message UserFriendsFriendOfFriend {
@@ -58,4 +59,13 @@ message UserUsersRequest {
 
 message UserUsersResponse {
     repeated User users = 1;
+}
+
+message UserUserRequest {
+    string user_id = 1;
+    string user_name = 2;
+}
+
+message UserUserResponse {
+    User user = 1;
 }

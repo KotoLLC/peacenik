@@ -294,3 +294,44 @@ func (s *userService) Users(ctx context.Context, r *rpc.UserUsersRequest) (*rpc.
 		Users: rpcUsers,
 	}, nil
 }
+
+func (s *userService) User(ctx context.Context, r *rpc.UserUserRequest) (*rpc.UserUserResponse, error) {
+	if r.UserId == "" && r.UserName == "" {
+		return nil, twirp.NewError(twirp.InvalidArgument, "user_id or user_name should be specified")
+	}
+	if r.UserId != "" && r.UserName != "" {
+		return nil, twirp.NewError(twirp.InvalidArgument, "one of user_id and user_name should be specified")
+	}
+	var user *repo.User
+	if r.UserId != "" {
+		var err error
+		user, err = s.repos.User.FindUserByID(r.UserId)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		var err error
+		user, err = s.repos.User.FindUserByName(r.UserName)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if user == nil {
+		return nil, twirp.NotFoundError("user not found")
+	}
+
+	avatarThumbnailLink, err := s.createBlobLink(ctx, user.AvatarThumbnailID)
+	if err != nil {
+		return nil, err
+	}
+
+	rpcUser := &rpc.User{
+		Id:              user.ID,
+		Name:            user.Name,
+		AvatarThumbnail: avatarThumbnailLink,
+		IsConfirmed:     user.ConfirmedAt.Valid,
+	}
+	return &rpc.UserUserResponse{
+		User: rpcUser,
+	}, nil
+}
