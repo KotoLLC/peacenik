@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/ansel1/merry"
@@ -47,12 +48,16 @@ func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) 
 	}
 
 	if friend == nil {
-		friends, err := s.repos.User.FindUsersByEmail(r.Friend)
-		if err != nil {
-			return nil, err
-		}
-		if len(friends) == 1 {
-			friend = &friends[0]
+		if strings.Contains(r.Friend, "@") && strings.Contains(r.Friend, ".") {
+			friends, err := s.repos.User.FindUsersByEmail(r.Friend)
+			if err != nil {
+				return nil, err
+			}
+			if len(friends) == 1 {
+				friend = &friends[0]
+			}
+		} else {
+			return nil, twirp.NotFoundError("user not found")
 		}
 	}
 
