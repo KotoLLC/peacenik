@@ -18,6 +18,7 @@ A quasi-distributed ad-free open-source social network
 [Installation](install-message-hub.md) [Testing](testing-message-hub.md) [API](api-message-hub.md)
 
 - User hubs
+
 [Installation](install-user-hub.md) [Testing](testing-user-hub.md) [API](api-user-hub.md)
 
 ## Introduction
