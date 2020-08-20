@@ -5,7 +5,7 @@ import { ApiTypes, StoreTypes } from 'src/types'
 import { EmptyMessage, PreloaderWrapper } from '@view/pages/MessagesPage/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Button from '@material-ui/core/Button'
-import { ButtonsWrapper } from './styles'
+import { ButtonsWrapper, ContainerStyled } from './styles'
 import { RouteComponentProps } from 'react-router-dom'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
@@ -91,7 +91,7 @@ class NotificationsInfo extends React.PureComponent<Props, State> {
       )
     } else {
       return (
-        <>
+        <ContainerStyled maxWidth="md">
           <Message {...messageById} isAuthor={false} isCommentsOpenByDeafult={isCommentsOpen} callback={this.getMessage} />
           <ButtonsWrapper>
             <Button
@@ -107,7 +107,7 @@ class NotificationsInfo extends React.PureComponent<Props, State> {
               onClick={() => history.push('/messages')}
             >Messages</Button>
           </ButtonsWrapper>
-        </>
+        </ContainerStyled>
       )
     }
   }

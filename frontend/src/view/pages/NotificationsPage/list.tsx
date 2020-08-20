@@ -21,6 +21,7 @@ import {
   ListText,
   ListLink,
   NotificationsWrapper,
+  ContainerStyled,
 } from './styles'
 
 interface Props {
@@ -150,21 +151,23 @@ class NotificationsList extends React.PureComponent<Props> {
     const { notifications } = this.state
 
     return (
-      <NotificationsWrapper>
-        <Header>
-          <Title>Notifications</Title>
-        </Header>
-        <ListWrapper>
-          {this.mapNotifiactions(notifications)}
-        </ListWrapper>
-        <Footer>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={this.onClean}
-          >clear</Button>
-        </Footer>
-      </NotificationsWrapper>
+      <ContainerStyled>
+        <NotificationsWrapper>
+          <Header>
+            <Title>Notifications</Title>
+          </Header>
+          <ListWrapper>
+            {this.mapNotifiactions(notifications)}
+          </ListWrapper>
+          <Footer>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={this.onClean}
+            >clear</Button>
+          </Footer>
+        </NotificationsWrapper>
+      </ContainerStyled>
     )
   }
 }

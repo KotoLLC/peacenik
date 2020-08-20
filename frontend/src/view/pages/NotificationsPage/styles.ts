@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 
 export const ContainerStyled = styled(Container)`
   && {
-    margin-top: 75px;
+    margin-top: 90px;
   }
 `
 
