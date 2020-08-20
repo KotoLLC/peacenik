@@ -4,5 +4,5 @@
 
 A quasi-distributed ad-free open-source social network
 
-[Please refer to our documentation info about using, installing, and supporting koto](https://docs.koto.at).
+[Please refer to our docs for more info](https://docs.koto.at).
 
