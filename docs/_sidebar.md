@@ -13,13 +13,16 @@
   - [Get help](help.md)
   - [Volunteer / donate](helping-out.md)
 
-- Programmer's reference
+- Message hubs
 
-  - [Message Hub Installation](install-message-hub.md)
-  - [Message Hub testing](testing-message-hub.md)
-  - [Message Hub API](api-message-hub.md)
-  - [User Hub Installation](install-user-hub.md)
-  - [User Hub testing](testing-user-hub.md)
-  - [User Hub API](api-user-hub.md)
+  - [Installation](install-message-hub.md)
+  - [Testing](testing-message-hub.md)
+  - [API](api-message-hub.md)
+
+- User hubs
+
+  - [Installation](install-user-hub.md)
+  - [Testing](testing-user-hub.md)
+  - [API](api-user-hub.md)
  
 
