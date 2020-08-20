@@ -10,9 +10,8 @@ message User {
     string id = 1;
     string name = 2;
     string avatar_original = 3;
-    string avatar_thumbnail = 4;
-    string email = 5;
-    bool is_confirmed = 6;
+    string email = 4;
+    bool is_confirmed = 5;
 }
 
 message Notification {

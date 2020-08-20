@@ -75,18 +75,12 @@ func (s *messageHubService) Hubs(ctx context.Context, _ *rpc.Empty) (*rpc.Messag
 
 	rpcHubs := make([]*rpc.MessageHubHubsResponseHub, len(hubs))
 	for i, hub := range hubs {
-		avatarThumbnailLink, err := s.createBlobLink(ctx, hub.AdminAvatarID)
-		if err != nil {
-			return nil, err
-		}
-
 		rpcHubs[i] = &rpc.MessageHubHubsResponseHub{
 			Id:      hub.ID,
 			Address: hub.Address,
 			User: &rpc.User{
-				Id:              hub.AdminID,
-				Name:            hub.AdminName,
-				AvatarThumbnail: avatarThumbnailLink,
+				Id:   hub.AdminID,
+				Name: hub.AdminName,
 			},
 			CreatedAt:  common.TimeToRPCString(hub.CreatedAt),
 			ApprovedAt: common.NullTimeToRPCString(hub.ApprovedAt),
