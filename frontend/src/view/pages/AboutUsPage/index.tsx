@@ -32,11 +32,6 @@ export const AboutUsSlider: React.SFC<Props> = (props) => {
         <ReactMarkdown>{`
   # Getting started
   
-  ## You need two things:
-
-  1. Friends
-  2. Message hubs
-
   ![](${nothingPicture})
 
   ##  Making friends
