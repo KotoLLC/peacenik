@@ -62,7 +62,7 @@ class FriendInvite extends React.PureComponent<Props, State> {
       return false
     }
 
-    if (!validate.isEmailValid(email)) {
+    if (!validate.isUserNameValid(email)) {
       this.setState({
         errorMessage: 'Incorrect email',
       })
