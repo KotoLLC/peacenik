@@ -58,6 +58,7 @@ export const LoginForm = (props) => {
   }
 
   const onFormSubmit = (event: FormEvent) => {
+    props.resetLoginFailedMessage()
     event.preventDefault()
     if (!onValidate()) return
 
@@ -107,7 +108,7 @@ export const LoginForm = (props) => {
             value={username}
             error={(noValideField === 'username') ? true : false}
             onChange={(event) => onEmailChange(event.currentTarget.value.trim())}
-            labelWidth={135}
+            labelWidth={85}
           />
         </FormControlStyled>
         <FormControlStyled variant="outlined">
