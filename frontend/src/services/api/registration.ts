@@ -19,4 +19,10 @@ export default {
       return response
     }).catch(error => ({ error }))
   },
+  
+  checkIsUserRegistered: async (data: ApiTypes.CheckUser) => {
+    return await axiosInstance.post('/rpc.UserService/User', data).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
 }

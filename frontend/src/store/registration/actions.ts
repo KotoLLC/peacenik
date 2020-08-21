@@ -12,6 +12,9 @@ export enum Types {
   REGISTER_USER_FAILED = 'REGISTER_USER_FAILED',
 
   RESET_REGISTRATION_RESULT = 'RESET_REGISTRATION_RESULT',
+  
+  CHECK_IS_USER_REGISTERED_REQUESST = 'CHECK_IS_USER_REGISTERED_REQUESST',
+  CHECK_IS_USER_REGISTERED_RESULT = 'CHECK_IS_USER_REGISTERED_RESULT',
 }
 
 const sendConfirmLinkRequest = () => ({
@@ -49,6 +52,16 @@ const resetRegistrationResult = () => ({
   type: Types.RESET_REGISTRATION_RESULT
 })
 
+const checkIsUserRegisteredRequest = (payload: ApiTypes.CheckUser) => ({
+  type: Types.CHECK_IS_USER_REGISTERED_REQUESST,
+  payload,
+})
+
+const checkIsUserRegisteredResult = (payload: boolean | null) => ({
+  type: Types.CHECK_IS_USER_REGISTERED_RESULT,
+  payload,
+})
+
 export default {
   sendConfirmLinkRequest,
   sendConfirmLinkSucces,
@@ -58,4 +71,6 @@ export default {
   registerUserSucces,
   resetRegistrationResult,
   registerUserFailed,
+  checkIsUserRegisteredRequest,
+  checkIsUserRegisteredResult,
 }

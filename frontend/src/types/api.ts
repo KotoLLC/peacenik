@@ -5,6 +5,11 @@ export declare namespace ApiTypes {
     name: string
     email: string
     password: string
+    invite_token?: string
+  }
+
+  export interface CheckUser {
+    user_name: string
   }
 
   export interface Login {

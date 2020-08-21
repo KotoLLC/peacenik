@@ -4,12 +4,14 @@ export interface State {
   registrationErrorMessage: string
   isRegisterSuccess: boolean
   isConfirmUserSuccess: boolean
+  isUserRegisteredResult: boolean | null
 }
 
 const initialState: State = {
   registrationErrorMessage: '',
   isRegisterSuccess: false,
-  isConfirmUserSuccess: false
+  isConfirmUserSuccess: false,
+  isUserRegisteredResult: null,
 } 
 
 const reducer = (state = initialState, action) => {
@@ -44,6 +46,12 @@ const reducer = (state = initialState, action) => {
     case Types.CONFIRM_USER_SUCCESS: {
       return { ...state, ...{ 
         isConfirmUserSuccess: true
+      } }
+    }
+    
+    case Types.CHECK_IS_USER_REGISTERED_RESULT: {
+      return { ...state, ...{ 
+        isUserRegisteredResult: action.payload
       } }
     }
     

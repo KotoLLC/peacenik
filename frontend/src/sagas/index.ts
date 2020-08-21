@@ -16,6 +16,7 @@ import {
     watchSendConfirmLink,
     watchConfirmUser,
     watchRegisterUser,
+    watchIsUserRegisteredChecking,
 } from './registration'
 import {
     watchGetFriends,
@@ -69,6 +70,7 @@ export function* rootSaga() {
         takeEvery(RegistrationTypes.SEND_CONFIRM_LINK_REQUEST, watchSendConfirmLink),
         takeEvery(RegistrationTypes.CONFIRM_USER_REQUEST, watchConfirmUser),
         takeEvery(RegistrationTypes.REGISTER_USER_REQUEST, watchRegisterUser),
+        takeEvery(RegistrationTypes.CHECK_IS_USER_REGISTERED_REQUESST, watchIsUserRegisteredChecking),
 
         takeEvery(AuthorizationTypes.LOGIN_REQUEST, watchlogin),
         takeEvery(AuthorizationTypes.LOGOUT_REQUEST, watchlogout),
