@@ -226,23 +226,15 @@ export const MessageSticky = styled.div`
   /* z-index: 100; */
 `
 
-export const EmptyMessage = styled.div`
+export const EmptyMessage = styled(Paper)`
   display: flex;
-  position: absolute;
-  text-align: center;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-weight: bold;
+
   a {
     text-decoration: none;
-  }
-
-  @media (max-width: 600px) {
-    display: block;
-    left: 0;
-    width: 100%;
-    transform: none;
   }
 `
 

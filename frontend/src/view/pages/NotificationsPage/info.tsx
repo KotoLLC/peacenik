@@ -69,11 +69,11 @@ class NotificationsInfo extends React.PureComponent<Props, State> {
 
     if (messageById === undefined) {
       return (
-        <>
-        <EmptyMessage>
-          404 message not found
-        </EmptyMessage>
-        <ButtonsWrapper>
+        <ContainerStyled maxWidth="md">
+          <EmptyMessage>
+            Sorry, message not found or has been removed
+          </EmptyMessage>
+          <ButtonsWrapper>
             <Button
               variant="contained"
               color="primary"
@@ -87,7 +87,7 @@ class NotificationsInfo extends React.PureComponent<Props, State> {
               onClick={() => history.push('/messages')}
             >Messages</Button>
           </ButtonsWrapper>
-        </>
+        </ContainerStyled>
       )
     } else {
       return (

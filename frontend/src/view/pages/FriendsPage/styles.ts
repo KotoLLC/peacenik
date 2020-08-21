@@ -98,6 +98,7 @@ export const UserNoteUnderlined = styled.span`
 `
 export const UserName = styled.span`
   text-transform: capitalize;
+  cursor: pointer;
 `
 
 export const IconButtonGreen = styled(IconButton)`
@@ -147,11 +148,11 @@ export const TitleWrapper = styled.div`
 `
 
 export const ListItemWrapper = styled.div`
-  cursor: pointer;
 `
 
 export const AvatarStyled = styled(Avatar)`
   && {
+    cursor: pointer;
     background: #bdbdbd;
   }
 `

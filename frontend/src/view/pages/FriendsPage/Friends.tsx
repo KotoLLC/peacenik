@@ -137,11 +137,16 @@ class Friends extends React.Component<Props, State> {
 
     return friends.map(item => (
       <ListItemWrapper key={item.user.id}>
-        <ListItem onClick={() => this.onFriendSelect(item.user.id, item.user.name)}>
+        <ListItem>
           <ListItemAvatar>
-            <AvatarStyled alt={item.user.name} src={getAvatarUrl(item.user.id)}/>
+            <AvatarStyled 
+              onClick={() => this.onFriendSelect(item.user.id, item.user.name)} 
+              alt={item.user.name} 
+              src={getAvatarUrl(item.user.id)}/>
           </ListItemAvatar>
-          <ListItemText primary={<UserName>{item.user.name}</UserName>} />
+          <ListItemText 
+            onClick={() => this.onFriendSelect(item.user.id, item.user.name)} 
+            primary={<UserName>{item.user.name}</UserName>} />
           <RemoveFriendDialog {...item} />
         </ListItem>
         <Divider variant="inset" component="li" />
