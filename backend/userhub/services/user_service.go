@@ -53,16 +53,10 @@ func (s *userService) Friends(ctx context.Context, _ *rpc.Empty) (*rpc.UserFrien
 				continue
 			}
 
-			avatarThumbnailLink, err := s.createBlobLink(ctx, u.AvatarThumbnailID)
-			if err != nil {
-				return nil, err
-			}
-
 			rpcUsers = append(rpcUsers, &rpc.UserFriendsFriendOfFriend{
 				User: &rpc.User{
-					Id:              u.ID,
-					Name:            u.Name,
-					AvatarThumbnail: avatarThumbnailLink,
+					Id:   u.ID,
+					Name: u.Name,
 				},
 				InviteStatus: inviteStatuses[u.ID],
 			})
@@ -72,16 +66,10 @@ func (s *userService) Friends(ctx context.Context, _ *rpc.Empty) (*rpc.UserFrien
 			return rpcUsers[i].User.Name < rpcUsers[j].User.Name
 		})
 
-		avatarThumbnailLink, err := s.createBlobLink(ctx, friend.AvatarThumbnailID)
-		if err != nil {
-			return nil, err
-		}
-
 		rpcFriends = append(rpcFriends, &rpc.UserFriendsFriend{
 			User: &rpc.User{
-				Id:              friend.ID,
-				Name:            friend.Name,
-				AvatarThumbnail: avatarThumbnailLink,
+				Id:   friend.ID,
+				Name: friend.Name,
 			},
 			Friends: rpcUsers,
 		})
@@ -112,15 +100,9 @@ func (s *userService) FriendsOfFriends(ctx context.Context, _ *rpc.Empty) (*rpc.
 	for other, friends := range friendsOfFriends {
 		rpcFriends := make([]*rpc.User, len(friends))
 		for i, friend := range friends {
-			avatarThumbnailLink, err := s.createBlobLink(ctx, friend.AvatarThumbnailID)
-			if err != nil {
-				return nil, err
-			}
-
 			rpcFriends[i] = &rpc.User{
-				Id:              friend.ID,
-				Name:            friend.Name,
-				AvatarThumbnail: avatarThumbnailLink,
+				Id:   friend.ID,
+				Name: friend.Name,
 			}
 		}
 
@@ -128,17 +110,11 @@ func (s *userService) FriendsOfFriends(ctx context.Context, _ *rpc.Empty) (*rpc.
 			return rpcFriends[i].Name < rpcFriends[j].Name
 		})
 
-		avatarThumbnailLink, err := s.createBlobLink(ctx, other.AvatarThumbnailID)
-		if err != nil {
-			return nil, err
-		}
-
 		inviteStatus := inviteStatuses[other.ID]
 		rpcFriendsOfFriends = append(rpcFriendsOfFriends, &rpc.UserFriendsOfFriendsResponseFriend{
 			User: &rpc.User{
-				Id:              other.ID,
-				Name:            other.Name,
-				AvatarThumbnail: avatarThumbnailLink,
+				Id:   other.ID,
+				Name: other.Name,
 			},
 			InviteStatus: inviteStatus,
 			Friends:      rpcFriends,
@@ -158,18 +134,12 @@ func (s *userService) Me(ctx context.Context, _ *rpc.Empty) (*rpc.UserMeResponse
 	user := s.getUser(ctx)
 	isAdmin := s.isAdmin(ctx)
 
-	avatarThumbnailLink, err := s.createBlobLink(ctx, user.AvatarThumbnailID)
-	if err != nil {
-		return nil, err
-	}
-
 	return &rpc.UserMeResponse{
 		User: &rpc.User{
-			Id:              user.ID,
-			Name:            user.Name,
-			AvatarThumbnail: avatarThumbnailLink,
-			Email:           user.Email,
-			IsConfirmed:     user.ConfirmedAt.Valid,
+			Id:          user.ID,
+			Name:        user.Name,
+			Email:       user.Email,
+			IsConfirmed: user.ConfirmedAt.Valid,
 		},
 		IsAdmin: isAdmin,
 	}, nil
@@ -271,22 +241,16 @@ func (s *userService) setAvatar(ctx context.Context, user repo.User, avatarID st
 	return nil
 }
 
-func (s *userService) Users(ctx context.Context, r *rpc.UserUsersRequest) (*rpc.UserUsersResponse, error) {
+func (s *userService) Users(_ context.Context, r *rpc.UserUsersRequest) (*rpc.UserUsersResponse, error) {
 	users, err := s.repos.User.FindUsers(r.UserIds)
 	if err != nil {
 		return nil, err
 	}
 	rpcUsers := make([]*rpc.User, len(users))
 	for i, user := range users {
-		avatarThumbnailLink, err := s.createBlobLink(ctx, user.AvatarThumbnailID)
-		if err != nil {
-			return nil, err
-		}
-
 		rpcUsers[i] = &rpc.User{
-			Id:              user.ID,
-			Name:            user.Name,
-			AvatarThumbnail: avatarThumbnailLink,
+			Id:   user.ID,
+			Name: user.Name,
 		}
 	}
 
@@ -295,7 +259,7 @@ func (s *userService) Users(ctx context.Context, r *rpc.UserUsersRequest) (*rpc.
 	}, nil
 }
 
-func (s *userService) User(ctx context.Context, r *rpc.UserUserRequest) (*rpc.UserUserResponse, error) {
+func (s *userService) User(_ context.Context, r *rpc.UserUserRequest) (*rpc.UserUserResponse, error) {
 	if r.UserId == "" && r.UserName == "" {
 		return nil, twirp.NewError(twirp.InvalidArgument, "user_id or user_name should be specified")
 	}
@@ -320,16 +284,10 @@ func (s *userService) User(ctx context.Context, r *rpc.UserUserRequest) (*rpc.Us
 		return nil, twirp.NotFoundError("user not found")
 	}
 
-	avatarThumbnailLink, err := s.createBlobLink(ctx, user.AvatarThumbnailID)
-	if err != nil {
-		return nil, err
-	}
-
 	rpcUser := &rpc.User{
-		Id:              user.ID,
-		Name:            user.Name,
-		AvatarThumbnail: avatarThumbnailLink,
-		IsConfirmed:     user.ConfirmedAt.Valid,
+		Id:          user.ID,
+		Name:        user.Name,
+		IsConfirmed: user.ConfirmedAt.Valid,
 	}
 	return &rpc.UserUserResponse{
 		User: rpcUser,
