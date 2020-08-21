@@ -43,7 +43,7 @@ export const LoginForm = (props) => {
 
   const onValidate = (): boolean => {
     if (!validate.isUserNameValid(username)) {
-      setErrorMessage('User Name / email is incorrect')
+      setErrorMessage('User Name is incorrect')
       setNoValideField('username')
       return false
     }
@@ -100,7 +100,7 @@ export const LoginForm = (props) => {
           <InputLabel 
             htmlFor="username"
             color={(noValideField === 'username') ? 'secondary' : 'primary'}
-            >User Name / Email</InputLabel>
+            >User Name</InputLabel>
           <OutlinedInput
             id="username"
             type={'text'}
