@@ -55,6 +55,8 @@ func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) 
 			}
 			if len(friends) == 1 {
 				friend = &friends[0]
+			} else if len(friends) > 1 {
+				return nil, twirp.NewError(twirp.AlreadyExists, "Email belongs to more than one account. Invite by username instead.")
 			}
 		} else {
 			return nil, twirp.NotFoundError("user not found")
