@@ -31,9 +31,6 @@ export function* watchRegisterUser(action: { type: string, payload: ApiTypes.Reg
     yield put(Actions.registration.registerUserSucces())
     yield put(Actions.authorization.loginSucces())
     localStorage.setItem('kotoIsLogged', 'true')
-  }
-  if (response.status === 409) {
-    yield put(Actions.registration.registerUserFailed(response?.error?.response?.data?.msg || 'Server error'))
   } else {
     yield put(Actions.registration.registerUserFailed(response?.error?.response?.data?.msg || 'Server error'))
   }
@@ -47,7 +44,5 @@ export function* watchIsUserRegisteredChecking(action: { type: string, payload: 
   }
   if (response.status === 404) {
     yield put(Actions.registration.checkIsUserRegisteredResult(false))
-  } else {
-    yield put(Actions.registration.registerUserFailed(response?.error?.response?.data?.msg || 'Server error'))
   }
 }

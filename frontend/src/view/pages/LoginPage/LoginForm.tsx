@@ -79,7 +79,11 @@ export const LoginForm = (props) => {
 
     if (isLogged === true) {
       if (location.pathname !== lastLoactionPathname) {
-        history.push(lastLoactionPathname ? `${lastLoactionPathname}` : '/messages')
+        if (lastLoactionPathname === '/registration' || lastLoactionPathname === '/resend-confirm-email') {
+          history.push('/friends/invitations')
+        } else {
+          history.push(lastLoactionPathname ? `${lastLoactionPathname}` : '/messages')
+        }
       }
       setRequest(false)
     }
