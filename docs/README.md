@@ -23,7 +23,7 @@ A quasi-distributed ad-free open-source social network
 
 ## Introduction
 
-Koto is an open-source, ad-free, social network with a mixture of central and distributed control. Central control provides a common login across all hubs, and prevents bad actors from joining a network. Distribution provides individual ownership, and privacy, for messages, images, and pictures.
+Koto is an open-source, ad-free, social network with a mixture of central and distributed control. Central control provides a common login across all hubs, and prevents bad actors from joining a network. Distribution provides individual ownership, and privacy, for messages, images, and videos.
 
 Koto is comparable to Facebook, rather than Twitter, as it is for closed circles of friendships.
 

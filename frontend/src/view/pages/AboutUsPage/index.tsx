@@ -49,7 +49,7 @@ export const AboutUsSlider: React.SFC<Props> = (props) => {
   ## Summer / Fall 2020
 
   As we're just getting started, everyone can use my hub, by sending an invite
-  to mreider@gmail.com. Or, if you'd like toexperiment, feel free to start your own.
+  to 'matt' (my username), if you'd like toexperiment, feel free to start your own.
 
   `}
         </ReactMarkdown>

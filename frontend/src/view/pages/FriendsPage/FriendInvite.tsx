@@ -130,7 +130,7 @@ class FriendInvite extends React.PureComponent<Props, State> {
             <InputLabel
               htmlFor="email"
               color={(errorMessage) ? 'secondary' : 'primary'}
-            >Enter email or user name</InputLabel>
+            >Enter email address or username</InputLabel>
             <OutlinedInput
               id="email"
               type={'text'}

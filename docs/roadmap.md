@@ -20,3 +20,4 @@ We don't have anything planned yet, but there are a number of things we could do
 - **Cost estimator** A hub runner might like to know how much they are spending in storage fees (on Amazon, for example) based on the number of images uploaded every day.[Issue 9](https://github.com/mreider/koto/issues/9)
 - **Rolling deletes**. An admin should be able to set rolling deletes to save storage fees. So maybe you choose to only keep the last 30 days of assets, for example. [Issue 10](https://github.com/mreider/koto/issues/10)
 - **Rolling deletes**. An admin should be able to set rolling deletes to save storage fees. So maybe you choose to only keep the last 30 days of assets, for example.
+~ **Koto on mobile**. With real notifications. [issue 101](https://github.com/mreider/koto/issues/101)
