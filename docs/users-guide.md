@@ -30,7 +30,7 @@ Email your friends and see if they have a message hub. If they do, click the Inv
 
 Creating a hub requires some technical expertise and a cloud account on Digital Ocean, Google, Amazon, or wherever. First, install the hub using [these instructions](install-message-hub.md). Then register the hub [here](message-hub-registration.md).
 
-**Note:** In this alpha phase you can use my hub - so just send me a friend request (mreider at gmail dot com). Or, create your own if you want to experiment.
+**Note:** In this alpha phase you can use my hub - so just send me a friend request (type 'matt' instead of an email) Or, create your own if you want to experiment.
 
 ## Inviting friends
 
