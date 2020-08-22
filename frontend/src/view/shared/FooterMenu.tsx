@@ -5,8 +5,8 @@ import { v4 as uuidv4 } from 'uuid'
 
 interface MenuItem {
   title: string
-  to: string
-  disabled?: boolean
+  to?: string
+  href?: string
 }
 
 interface Props {
@@ -17,11 +17,15 @@ export const FooterMenu: React.SFC<Props> = React.memo((props) => {
   const { menuItems } = props
 
   const renderItem = (item: MenuItem) => {
-    if (item.disabled) {
-      return <DisabledLink key={uuidv4()}>{item.title}</DisabledLink>
-    } else {
+    if (item?.to) {
       return <LinkStyled key={uuidv4()} to={item.to}>{item.title}</LinkStyled>
     }
+
+    if (item?.href) {
+      return <ALinkStyled href={item.href} target="_blank">{item.title}</ALinkStyled>
+    }
+
+    return <DisabledLink key={uuidv4()}>{item.title}</DisabledLink>
   }
 
   if (!menuItems.length) return null
@@ -47,6 +51,19 @@ const LinkStyled = styled(Link)`
   margin-bottom: 5px;
   text-decoration: none;
   display: block;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`
+
+const ALinkStyled = styled.a`
+  color: #1976d2;
+  font-size: 1rem;
+  margin-bottom: 5px;
+  text-decoration: none;
+  display: block;
+
 
   &:hover {
     text-decoration: underline;

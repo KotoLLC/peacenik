@@ -57,14 +57,14 @@ class FriendInvite extends React.PureComponent<Props, State> {
 
     if (!email) {
       this.setState({
-        errorMessage: 'The email can\'t be empty',
+        errorMessage: 'The field can\'t be empty',
       })
       return false
     }
 
     if (!validate.isUserNameValid(email)) {
       this.setState({
-        errorMessage: 'Incorrect email',
+        errorMessage: 'Incorrect email or user name',
       })
       return false
     }
@@ -130,14 +130,14 @@ class FriendInvite extends React.PureComponent<Props, State> {
             <InputLabel
               htmlFor="email"
               color={(errorMessage) ? 'secondary' : 'primary'}
-            >Enter email address</InputLabel>
+            >Enter email or user name</InputLabel>
             <OutlinedInput
               id="email"
               type={'text'}
               value={email}
               error={(errorMessage) ? true : false}
               onChange={this.onEmailChange}
-              labelWidth={145}
+              labelWidth={180}
             />
           </FormControlStyled>
           <ButtonStyled

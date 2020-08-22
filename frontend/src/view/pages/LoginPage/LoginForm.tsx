@@ -150,8 +150,6 @@ export const LoginForm = (props) => {
       <FooterMenu menuItems={[
         {
           title: 'Forgotten password',
-          to: '/',
-          disabled: true,
         },
         {
           title: 'Register for Koto',
@@ -167,8 +165,7 @@ export const LoginForm = (props) => {
         },
         {
           title: 'Contact us',
-          to: '/',
-          disabled: true
+          href: 'https://docs.koto.at/#/help',
         },
       ]} />
     </ContainerStyled>

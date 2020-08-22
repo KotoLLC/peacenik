@@ -209,8 +209,7 @@ export const RegistrationForm: React.SFC<Props> = (props) => {
         },
         {
           title: 'Contact us',
-          to: '/',
-          disabled: true
+          href: 'https://docs.koto.at/#/help',
         },
       ]} />
     </ContainerStyled>
