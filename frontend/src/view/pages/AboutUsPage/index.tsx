@@ -30,26 +30,19 @@ export const AboutUsSlider: React.SFC<Props> = (props) => {
     <WithTopBar>
       <ContainerStyled maxWidth="md">
         <ReactMarkdown>{`
-  # Getting started
-  
+
   ![](${nothingPicture})
-
-  ##  Making friends
-
-  Making friends is easy. Just visit the friends page and invite someone.
 
   ## Message hubs
 
   Message hubs store messages, photos, and videos. Without a hub, you can't
   post a message.
 
-  Every group of friends needs a hub. One person becomes a hub runner, and everyone
-  else uses that person's hub.
-
+  To use Koto - you must be friends with someone who has a hub.
   ## Summer / Fall 2020
 
   As we're just getting started, everyone can use my hub, by sending an invite
-  to 'matt' (my username), if you'd like toexperiment, feel free to start your own.
+  to mreider@gmail.com or 'matt' (my username). If you'd like to experiment, feel free to start your own.
 
   `}
         </ReactMarkdown>
