@@ -9,6 +9,7 @@ type FriendRepo interface {
 	Friends(user User) ([]User, error)
 	FriendsWithSubFriends(user User) (map[User][]User, error)
 	FriendsOfFriends(user User) (map[User][]User, error)
+	AreFriends(user1, user2 User) (bool, error)
 }
 
 type friendRepo struct {
@@ -99,4 +100,15 @@ func (r *friendRepo) FriendsOfFriends(user User) (map[User][]User, error) {
 	}
 
 	return result, nil
+}
+
+func (r *friendRepo) AreFriends(user1, user2 User) (bool, error) {
+	var areFriends bool
+	err := r.db.Get(&areFriends, `
+		select case when exists(select * from friends where user_id = $1 and friend_id = $2) then true else false end
+		`, user1.ID, user2.ID)
+	if err != nil {
+		return false, merry.Wrap(err)
+	}
+	return areFriends, nil
 }

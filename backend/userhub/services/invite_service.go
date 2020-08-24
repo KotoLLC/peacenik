@@ -64,6 +64,14 @@ func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) 
 	}
 
 	if friend != nil {
+		alreadyFriends, err := s.repos.Friend.AreFriends(user, *friend)
+		if err != nil {
+			return nil, err
+		}
+		if alreadyFriends {
+			return nil, twirp.NewError(twirp.AlreadyExists, "already a friend.")
+		}
+
 		err = s.repos.Invite.AddInvite(user.ID, friend.ID)
 		if err != nil {
 			return nil, err
