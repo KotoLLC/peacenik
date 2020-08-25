@@ -17,9 +17,15 @@ export declare namespace ApiTypes {
     password: string
   }
   
-  export interface ResetPassword {
+  export interface ForgotPassword {
     name: string
     email: string
+  }
+  
+  export interface ResetPassword {
+    reset_token: string
+    new_password: string
+    name: string
   }
 
   export interface User {

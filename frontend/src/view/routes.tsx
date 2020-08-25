@@ -15,6 +15,7 @@ import DocsPages from './pages/DocsPages'
 import ConfirmUserPage from '@view/pages/ConfirmUserPage'
 import ResendConfirmEmailPage from '@view/pages/ResendConfirmEmailPage'
 import ForgotPasswordPage from '@view/pages/ForgotPasswordPage'
+import ResetPasswordPage from '@view/pages/ResetPasswordPage'
 import selectors from '@selectors/index'
 import { LastLocationProvider } from 'react-router-last-location'
 
@@ -45,6 +46,7 @@ export const Routes = () => {
           <Route path="/login" component={LoginPage} />
           <Route path="/registration" component={RegistrationPage} />
           <Route path="/forgot-password" component={ForgotPasswordPage} />
+          <Route path="/reset-password" component={ResetPasswordPage} />
           <Route path="/docs" component={DocsPages} />
           <Route path="/confirm-user" component={ConfirmUserPage} />
           <Route path="/resend-confirm-email" component={ResendConfirmEmailPage} />

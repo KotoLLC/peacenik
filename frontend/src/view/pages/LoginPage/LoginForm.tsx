@@ -12,14 +12,14 @@ import { validate } from '@services/validation'
 import { FooterMenu } from '@view/shared/FooterMenu'
 import logo from './../../../assets/images/logo-black.png'
 import { useLastLocation } from 'react-router-last-location'
-import { 
-  FormWrapper, 
-  FormControlStyled, 
-  ButtonStyled, 
-  ContainerStyled, 
+import {
+  FormWrapper,
+  FormControlStyled,
+  ButtonStyled,
+  ContainerStyled,
   Header,
   Logo,
- } from './styles'
+} from './styles'
 import { ApiTypes } from 'src/types'
 import { RouteComponentProps } from 'react-router-dom'
 
@@ -28,7 +28,7 @@ type FieldsType = 'username' | 'password' | ''
 export interface Props extends RouteComponentProps {
   loginErrorMessage: string
   isLogged: boolean
-  
+
   onLogin: (data: ApiTypes.Login) => void
   resetLoginFailedMessage: () => void
 }
@@ -40,7 +40,7 @@ export const LoginForm = (props) => {
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [noValideField, setNoValideField] = useState<FieldsType>('')
   const [isRequest, setRequest] = useState<boolean>(false)
-  const {loginErrorMessage, isLogged, onLogin, location, history } = props
+  const { loginErrorMessage, isLogged, onLogin, location, history } = props
 
   const onValidate = (): boolean => {
     if (!validate.isUserNameValid(username)) {
@@ -83,6 +83,9 @@ export const LoginForm = (props) => {
       if (location.pathname !== lastLoactionPathname) {
         if (lastLoactionPathname === '/registration' || lastLoactionPathname === '/resend-confirm-email') {
           history.push('/friends/invitations')
+        }
+        if (lastLoactionPathname === '/reset-password') {
+          history.push('/messages')
         } else {
           history.push(lastLoactionPathname ? `${lastLoactionPathname}` : '/messages')
         }
@@ -94,15 +97,15 @@ export const LoginForm = (props) => {
   return (
     <ContainerStyled maxWidth="sm">
       <Header>
-        <Logo src={logo}/>
+        <Logo src={logo} />
         <Typography variant="subtitle1" gutterBottom>Koto is a safe, friendly, distributed social  network.</Typography>
       </Header>
       <FormWrapper onSubmit={onFormSubmit}>
         <FormControlStyled variant="outlined">
-          <InputLabel 
+          <InputLabel
             htmlFor="username"
             color={(noValideField === 'username') ? 'secondary' : 'primary'}
-            >User Name</InputLabel>
+          >User Name</InputLabel>
           <OutlinedInput
             id="username"
             type={'text'}
@@ -113,10 +116,10 @@ export const LoginForm = (props) => {
           />
         </FormControlStyled>
         <FormControlStyled variant="outlined">
-          <InputLabel 
+          <InputLabel
             htmlFor="password"
             color={(noValideField === 'password') ? 'secondary' : 'primary'}
-            >Password</InputLabel>
+          >Password</InputLabel>
           <OutlinedInput
             id="password"
             type={isPasswordVisible ? 'text' : 'password'}

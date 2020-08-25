@@ -17,6 +17,10 @@ export enum Types {
   FORGOT_PASSWORD_REQUEST = 'FORGOT_PASSWORD_REQUEST',
   FORGOT_PASSWORD_SUCCESS = 'FORGOT_PASSWORD_SUCCESS',
   FORGOT_PASSWORD_FAILED = 'FORGOT_PASSWORD_FAILED',
+  
+  RESET_PASSWORD_REQUEST = 'RESET_PASSWORD_REQUEST',
+  RESET_PASSWORD_SUCCESS = 'RESET_PASSWORD_SUCCESS',
+  RESET_PASSWORD_FAILED = 'RESET_PASSWORD_FAILED',
 
   CLEAN_PASSWORD_FAILED_MESSAGE = 'CLEAN_PASSWORD_FAILED_MESSAGE',
 }
@@ -56,7 +60,7 @@ const getAuthTokenSucces = (payload: string) => ({
   payload,
 })
 
-const forgotPasswordRequest = (payload: ApiTypes.ResetPassword) => ({
+const forgotPasswordRequest = (payload: ApiTypes.ForgotPassword) => ({
   type: Types.FORGOT_PASSWORD_REQUEST,
   payload
 })
@@ -67,6 +71,20 @@ const forgotPasswordSuccess = () => ({
 
 const forgotPasswordFailed = (payload: string) => ({
   type: Types.FORGOT_PASSWORD_FAILED,
+  payload
+})
+
+const resetPasswordRequest = (payload: ApiTypes.ResetPassword) => ({
+  type: Types.RESET_PASSWORD_REQUEST,
+  payload
+})
+
+const resetPasswordSuccess = () => ({
+  type: Types.RESET_PASSWORD_SUCCESS,
+})
+
+const resetPasswordFailed = (payload: string) => ({
+  type: Types.RESET_PASSWORD_FAILED,
   payload
 })
 
@@ -87,4 +105,7 @@ export default {
   forgotPasswordSuccess,
   forgotPasswordFailed,
   cleanPasswordFailedMessage,
+  resetPasswordRequest,
+  resetPasswordSuccess,
+  resetPasswordFailed,
 }

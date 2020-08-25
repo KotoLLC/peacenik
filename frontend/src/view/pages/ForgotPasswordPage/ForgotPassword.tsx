@@ -21,7 +21,7 @@ type FieldsType = 'username' | 'email' | ''
 export interface Props extends RouteComponentProps {
   passwordErrorMessage: string
   isForgotPasswordSent: boolean
-  onResetPasswordRequest: (data: ApiTypes.ResetPassword) => void
+  onResetPasswordRequest: (data: ApiTypes.ForgotPassword) => void
   onCleanPasswordFailedMessage: () => void
 }
 

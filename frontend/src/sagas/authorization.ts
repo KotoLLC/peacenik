@@ -37,12 +37,27 @@ export function* watchGetAuthToken() {
   }
 }
 
-export function* watchResetPassword(action: { type: string, payload: ApiTypes.ResetPassword }) {
+export function* watchForgotPassword(action: { type: string, payload: ApiTypes.ForgotPassword }) {
   const response = yield API.authorization.forgotPassword(action.payload)
 
   if (response.status === 200) {
     yield put(Actions.authorization.forgotPasswordSuccess())
+    yield put(Actions.common.setSuccessNotify('Sent successfully, check your email'))
   } else {
     yield put(Actions.authorization.forgotPasswordFailed(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
+export function* watchResetPassword(action: { type: string, payload: ApiTypes.ResetPassword }) {
+  const response = yield API.authorization.resetPassword(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.authorization.resetPasswordSuccess())
+    yield put(Actions.authorization.loginRequest({
+      name: action.payload.name,
+      password: action.payload.new_password,
+    }))
+  } else {
+    yield put(Actions.authorization.resetPasswordFailed(response?.error?.response?.data?.msg || 'Server error'))
   }
 }

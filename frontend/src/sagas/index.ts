@@ -11,6 +11,7 @@ import {
     watchlogin,
     watchlogout,
     watchGetAuthToken,
+    watchForgotPassword,
     watchResetPassword,
 } from './authorization'
 import {
@@ -76,7 +77,8 @@ export function* rootSaga() {
         takeEvery(AuthorizationTypes.LOGIN_REQUEST, watchlogin),
         takeEvery(AuthorizationTypes.LOGOUT_REQUEST, watchlogout),
         takeEvery(AuthorizationTypes.GET_AUTH_TOKEN_REQUEST, watchGetAuthToken),
-        takeEvery(AuthorizationTypes.FORGOT_PASSWORD_REQUEST, watchResetPassword),
+        takeEvery(AuthorizationTypes.FORGOT_PASSWORD_REQUEST, watchForgotPassword),
+        takeEvery(AuthorizationTypes.RESET_PASSWORD_REQUEST, watchResetPassword),
 
         takeEvery(FriendTypes.GET_FRIENDS_REQUEST, watchGetFriends),
         takeEvery(FriendTypes.GET_FRIENDS_OF_FRIENDS_REQUEST, watchGetFriendsOfFriends),
