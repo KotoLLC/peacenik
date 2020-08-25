@@ -13,6 +13,12 @@ export enum Types {
   
   GET_AUTH_TOKEN_REQUEST = 'GET_AUTH_TOKEN_REQUEST',
   GET_AUTH_TOKEN_SUCCESS = 'GET_AUTH_TOKEN_SUCCESS',
+
+  FORGOT_PASSWORD_REQUEST = 'FORGOT_PASSWORD_REQUEST',
+  FORGOT_PASSWORD_SUCCESS = 'FORGOT_PASSWORD_SUCCESS',
+  FORGOT_PASSWORD_FAILED = 'FORGOT_PASSWORD_FAILED',
+
+  CLEAN_PASSWORD_FAILED_MESSAGE = 'CLEAN_PASSWORD_FAILED_MESSAGE',
 }
 
 const loginRequest = (payload: ApiTypes.Login) => ({
@@ -50,6 +56,24 @@ const getAuthTokenSucces = (payload: string) => ({
   payload,
 })
 
+const forgotPasswordRequest = (payload: ApiTypes.ResetPassword) => ({
+  type: Types.FORGOT_PASSWORD_REQUEST,
+  payload
+})
+
+const forgotPasswordSuccess = () => ({
+  type: Types.FORGOT_PASSWORD_SUCCESS,
+})
+
+const forgotPasswordFailed = (payload: string) => ({
+  type: Types.FORGOT_PASSWORD_FAILED,
+  payload
+})
+
+const cleanPasswordFailedMessage = () => ({
+  type: Types.CLEAN_PASSWORD_FAILED_MESSAGE,
+})
+
 export default {
   loginRequest,
   loginSucces,
@@ -59,4 +83,8 @@ export default {
   logoutSucces,
   getAuthTokenRequest,
   getAuthTokenSucces,
+  forgotPasswordRequest,
+  forgotPasswordSuccess,
+  forgotPasswordFailed,
+  cleanPasswordFailedMessage,
 }

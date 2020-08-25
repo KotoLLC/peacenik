@@ -19,4 +19,10 @@ export default {
       return response
     }).catch(error => ({ error }))
   },
+  
+  forgotPassword: async (data: ApiTypes.ResetPassword) => {
+    return await axiosInstance.post('/rpc.AuthService/SendResetPasswordLink', data).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
 }

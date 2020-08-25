@@ -5,9 +5,13 @@ const authorization = createSelector(selector, data => data.authorization)
 const isLogged = createSelector(authorization, data => data.isLogged)
 const authToken = createSelector(authorization, data => data.authToken)
 const loginErrorMessage = createSelector(authorization, data => data.loginErrorMessage)
+const passwordErrorMessage = createSelector(authorization, data => data.passwordErrorMessage)
+const isForgotPasswordSent = createSelector(authorization, data => data.isForgotPasswordSent)
 
 export default {
   isLogged,
   authToken,
   loginErrorMessage,
+  passwordErrorMessage,
+  isForgotPasswordSent,
 }

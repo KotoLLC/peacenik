@@ -3,6 +3,8 @@ import { Types } from './actions'
 export interface State {
   isLogged: boolean,
   loginErrorMessage: string
+  passwordErrorMessage: string
+  isForgotPasswordSent: boolean
   authToken: string
 }
 
@@ -12,7 +14,9 @@ const authToken = localStorage.getItem('kotoAuthToken')
 const initialState: State = {
   isLogged: (isLogged === 'true') ? true : false,
   loginErrorMessage: '',
-  authToken: authToken ? JSON.parse(authToken) : ''
+  passwordErrorMessage: '',
+  isForgotPasswordSent: false,
+  authToken: authToken ? JSON.parse(authToken) : '',
 }
 
 const reducer = (state = initialState, action) => {
@@ -47,6 +51,22 @@ const reducer = (state = initialState, action) => {
     case Types.GET_AUTH_TOKEN_SUCCESS: {
       return { ...state, ...{ 
         authToken: action.payload, 
+      } }
+    }
+    case Types.FORGOT_PASSWORD_FAILED: {
+      return { ...state, ...{ 
+        passwordErrorMessage: action.payload, 
+      } }
+    }
+    case Types.CLEAN_PASSWORD_FAILED_MESSAGE: {
+      return { ...state, ...{ 
+        passwordErrorMessage: '', 
+        isForgotPasswordSent: false,
+      } }
+    }
+    case Types.FORGOT_PASSWORD_SUCCESS: {
+      return { ...state, ...{ 
+        isForgotPasswordSent: true, 
       } }
     }
     default: return state

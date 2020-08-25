@@ -22,7 +22,7 @@ export const FooterMenu: React.SFC<Props> = React.memo((props) => {
     }
 
     if (item?.href) {
-      return <ALinkStyled href={item.href} target="_blank">{item.title}</ALinkStyled>
+      return <ALinkStyled key={uuidv4()} href={item.href} target="_blank">{item.title}</ALinkStyled>
     }
 
     return <DisabledLink key={uuidv4()}>{item.title}</DisabledLink>

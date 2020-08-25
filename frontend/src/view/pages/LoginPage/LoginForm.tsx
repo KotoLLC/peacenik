@@ -151,6 +151,7 @@ export const LoginForm = (props) => {
       <FooterMenu menuItems={[
         {
           title: 'Forgotten password',
+          to: '/forgot-password'
         },
         {
           title: 'Register for Koto',

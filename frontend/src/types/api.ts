@@ -16,6 +16,11 @@ export declare namespace ApiTypes {
     name: string
     password: string
   }
+  
+  export interface ResetPassword {
+    name: string
+    email: string
+  }
 
   export interface User {
     id: string

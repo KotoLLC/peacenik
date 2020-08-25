@@ -36,3 +36,13 @@ export function* watchGetAuthToken() {
     }
   }
 }
+
+export function* watchResetPassword(action: { type: string, payload: ApiTypes.ResetPassword }) {
+  const response = yield API.authorization.forgotPassword(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.authorization.forgotPasswordSuccess())
+  } else {
+    yield put(Actions.authorization.forgotPasswordFailed(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
