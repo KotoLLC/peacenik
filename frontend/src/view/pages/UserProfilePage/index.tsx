@@ -10,7 +10,11 @@ import Tooltip from '@material-ui/core/Tooltip'
 import { validate } from '@services/validation'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import Actions from '@store/actions'
+import IconButton from '@material-ui/core/IconButton'
 import { getAvatarUrl } from '@services/avatarUrl'
+import InputAdornment from '@material-ui/core/InputAdornment'
+import Visibility from '@material-ui/icons/Visibility'
+import VisibilityOff from '@material-ui/icons/VisibilityOff'
 import {
   ContainerStyled,
   ProfileWrapper,
@@ -23,6 +27,7 @@ import {
   UserNameWrapper,
   FormControlStyled,
   UploadInput,
+  FieldNote,
 } from './styles'
 
 interface Props {
@@ -30,18 +35,27 @@ interface Props {
   userEmail: string
   userId: string
   uploadLink: ApiTypes.UploadLink | null
+  profileErrorMessage: string
+
   onGetUploadLink: (value: ApiTypes.Profile.UploadLinkRequest) => void
   onSetAvatar: (data: ApiTypes.Profile.Avatar) => void
   onEditProfile: (data: ApiTypes.Profile.EditProfile) => void
   onGetProfile: () => void
 }
 
+type FieldsType = 'newPassword' | 'currentPassword' | 'email' | ''
+
 interface State {
   email: string,
-  isRequestSend: boolean,
-  errorMessage: string,
+  isRequestSend: boolean
+  errorMessage: string
   isFileUploaded: boolean
   file: File | null
+  currentPassword: string
+  newPassword: string
+  noValideField: FieldsType
+  isCurrentPasswordVisible: boolean
+  isNewPasswordVisible: boolean
 }
 
 class UserProfile extends React.PureComponent<Props, State> {
@@ -52,6 +66,11 @@ class UserProfile extends React.PureComponent<Props, State> {
     errorMessage: '',
     isFileUploaded: false,
     file: null,
+    currentPassword: '',
+    newPassword: '',
+    noValideField: '' as FieldsType,
+    isCurrentPasswordVisible: false,
+    isNewPasswordVisible: false,
   }
 
   onEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -60,12 +79,25 @@ class UserProfile extends React.PureComponent<Props, State> {
     })
   }
 
+  onCurrentPaaswordChange = (event: ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      currentPassword: event.currentTarget.value.trim(),
+    })
+  }
+
+  onNewPaaswordChange = (event: ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      newPassword: event.currentTarget.value.trim(),
+    })
+  }
+
   onValidate = (): boolean => {
-    const { email } = this.state
+    const { email, currentPassword, newPassword } = this.state
 
     if (!email) {
       this.setState({
         errorMessage: 'The email can\'t be empty',
+        noValideField: 'email',
       })
       return false
     }
@@ -73,6 +105,23 @@ class UserProfile extends React.PureComponent<Props, State> {
     if (!validate.isEmailValid(email)) {
       this.setState({
         errorMessage: 'Incorrect email',
+        noValideField: 'email',
+      })
+      return false
+    }
+
+    if (newPassword && !currentPassword) {
+      this.setState({
+        errorMessage: 'Enter Your current password',
+        noValideField: 'currentPassword',
+      })
+      return false
+    }
+
+    if (!validate.isPasswordValid(newPassword)) {
+      this.setState({
+        errorMessage: 'New password is incorrect',
+        noValideField: 'newPassword',
       })
       return false
     }
@@ -82,13 +131,14 @@ class UserProfile extends React.PureComponent<Props, State> {
 
   onFormSubmit = (event: FormEvent) => {
     event.preventDefault()
-    const { email } = this.state
+    const { email, currentPassword, newPassword } = this.state
     const { uploadLink, userEmail, onEditProfile } = this.props
 
     if (!this.onValidate()) return
 
     let avatarData = {}
     let emailData = {}
+    let passwordData = {}
 
     if (uploadLink?.blob_id) {
       avatarData = {
@@ -104,12 +154,21 @@ class UserProfile extends React.PureComponent<Props, State> {
       }
     }
 
-    const data = { ...emailData, ...avatarData }
+    if (newPassword) {
+      passwordData = {
+        password_changed: true,
+        current_password: currentPassword,
+        new_password: newPassword,
+      }
+    }
+
+    const data = { ...emailData, ...avatarData, ...passwordData }
     onEditProfile(data)
 
     this.setState({
       isRequestSend: true,
       errorMessage: '',
+      noValideField: '',
     })
   }
 
@@ -130,6 +189,18 @@ class UserProfile extends React.PureComponent<Props, State> {
         file: file[0],
       })
     }
+  }
+
+  onCurrentPasswordOpen = (value: boolean) => {
+    this.setState({
+      isCurrentPasswordVisible: value
+    })
+  }
+  
+  onNewPasswordOpen = (value: boolean) => {
+    this.setState({
+      isNewPasswordVisible: value
+    })
   }
 
   static getDerivedStateFromProps(newProps: Props, prevState: State) {
@@ -154,6 +225,12 @@ class UserProfile extends React.PureComponent<Props, State> {
         isFileUploaded: true
       }
     }
+
+    if (newProps.profileErrorMessage) {
+      return {
+        errorMessage: newProps.profileErrorMessage,
+      }
+    }
     return null
   }
 
@@ -174,7 +251,15 @@ class UserProfile extends React.PureComponent<Props, State> {
 
   render() {
     const { userName } = this.props
-    const { errorMessage, email } = this.state
+    const {
+      errorMessage,
+      email,
+      noValideField,
+      currentPassword,
+      newPassword,
+      isCurrentPasswordVisible,
+      isNewPasswordVisible,
+    } = this.state
 
     return (
       <WithTopBar>
@@ -205,16 +290,67 @@ class UserProfile extends React.PureComponent<Props, State> {
                 <FormControlStyled variant="outlined">
                   <InputLabel
                     htmlFor="email"
-                    color={(errorMessage) ? 'secondary' : 'primary'}
+                    color={(noValideField === 'email') ? 'secondary' : 'primary'}
                   >Email</InputLabel>
                   <OutlinedInput
                     id="email"
                     type={'text'}
                     value={email}
-                    error={(errorMessage) ? true : false}
+                    error={(noValideField === 'email') ? true : false}
                     onChange={this.onEmailChange}
                     labelWidth={40}
                   />
+                </FormControlStyled>
+                <FieldNote>To change your password, fill in the fields below</FieldNote>
+                <FormControlStyled variant="outlined">
+                  <InputLabel
+                    htmlFor="currentPassword"
+                    color={(noValideField === 'currentPassword') ? 'secondary' : 'primary'}
+                  >Current Password</InputLabel>
+                  <OutlinedInput
+                    id="currentPassword"
+                    type={isCurrentPasswordVisible ? 'text' : 'password'}
+                    value={currentPassword}
+                    onChange={this.onCurrentPaaswordChange}
+                    error={(noValideField === 'currentPassword') ? true : false}
+                    labelWidth={130}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() => this.onCurrentPasswordOpen(!isCurrentPasswordVisible)}
+                          onMouseDown={() => this.onCurrentPasswordOpen(!isCurrentPasswordVisible)}
+                          edge="end"
+                        >
+                          {isCurrentPasswordVisible ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    } />
+                </FormControlStyled>
+                <FormControlStyled variant="outlined">
+                  <InputLabel
+                    htmlFor="newPassword"
+                    color={(noValideField === 'newPassword') ? 'secondary' : 'primary'}
+                  >New Password</InputLabel>
+                  <OutlinedInput
+                    id="newPassword"
+                    type={isNewPasswordVisible ? 'text' : 'password'}
+                    value={newPassword}
+                    onChange={this.onNewPaaswordChange}
+                    error={(noValideField === 'newPassword') ? true : false}
+                    labelWidth={110}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() => this.onNewPasswordOpen(!isNewPasswordVisible)}
+                          onMouseDown={() => this.onNewPasswordOpen(!isNewPasswordVisible)}
+                          edge="end"
+                        >
+                          {isNewPasswordVisible ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    } />
                 </FormControlStyled>
                 <Button variant="contained" color="primary" onClick={this.onFormSubmit}>Save</Button>
                 {errorMessage && <FormHelperText error>{errorMessage}</FormHelperText>}
@@ -227,12 +363,13 @@ class UserProfile extends React.PureComponent<Props, State> {
   }
 }
 
-type StateProps = Pick<Props, 'userName' | 'userEmail' | 'uploadLink' | 'userId'>
+type StateProps = Pick<Props, 'userName' | 'userEmail' | 'uploadLink' | 'userId' | 'profileErrorMessage'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   userName: selectors.profile.userName(state),
   userEmail: selectors.profile.userEmail(state),
   uploadLink: state.profile.uploadLink,
   userId: selectors.profile.userId(state),
+  profileErrorMessage: selectors.profile.profileErrorMessage(state),
 })
 
 type DispatchProps = Pick<Props, 'onGetUploadLink' | 'onSetAvatar' | 'onEditProfile' | 'onGetProfile'>

@@ -7,16 +7,18 @@ const user: ApiTypes.Profile.UserProfile = profile ? JSON.parse(profile) : {
     id: '',
     name: '',
     email: '',
-  } 
+  },
 }
 
 export interface State extends ApiTypes.Profile.UserProfile {
   uploadLink: ApiTypes.UploadLink | null
+  profileErrorMessage: string
 }
 
 const initialState: State = {
   ...user,
   uploadLink: null,
+  profileErrorMessage: '',
 }
 
 const reducer = (state = initialState, action) => {
@@ -30,6 +32,20 @@ const reducer = (state = initialState, action) => {
       return {
         ...state, ...{
           uploadLink: action.payload
+        }
+      }
+    }
+    case Types.EDIT_PROFILE_FAILED: {
+      return {
+        ...state, ...{
+          profileErrorMessage: action.payload
+        }
+      }
+    }
+    case Types.RESET_PROFILE_ERROR_MESSAGE: {
+      return {
+        ...state, ...{
+          profileErrorMessage: ''
         }
       }
     }

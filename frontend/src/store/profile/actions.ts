@@ -13,6 +13,9 @@ export enum Types {
 
   EDIT_PROFILE_REQUEST = 'EDIT_PROFILE_REQUEST',
   EDIT_PROFILE_SUCCESS = 'EDIT_PROFILE_SUCCESS',
+  EDIT_PROFILE_FAILED = 'EDIT_PROFILE_FAILED',
+
+  RESET_PROFILE_ERROR_MESSAGE = 'RESET_PROFILE_ERROR_MESSAGE',
 }
 
 const getProfileRequest = () => ({
@@ -48,8 +51,17 @@ const editProfileRequest = (payload: ApiTypes.Profile.EditProfile) => ({
   payload,
 })
 
+const editProfileFailed = (payload: string) => ({
+  type: Types.EDIT_PROFILE_FAILED,
+  payload,
+})
+
 const editProfileSucces = () => ({
   type: Types.GET_PROFILE_SUCCESS,
+})
+
+const resetProfileErrorMessage = () => ({
+  type: Types.RESET_PROFILE_ERROR_MESSAGE,
 })
 
 export default {
@@ -60,5 +72,7 @@ export default {
   setAvatarRequest,
   setAvatarSuccess,
   editProfileRequest,
+  editProfileFailed,
   editProfileSucces,
+  resetProfileErrorMessage,
 }

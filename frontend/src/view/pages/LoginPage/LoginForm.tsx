@@ -28,6 +28,7 @@ type FieldsType = 'username' | 'password' | ''
 export interface Props extends RouteComponentProps {
   loginErrorMessage: string
   isLogged: boolean
+  
   onLogin: (data: ApiTypes.Login) => void
   resetLoginFailedMessage: () => void
 }

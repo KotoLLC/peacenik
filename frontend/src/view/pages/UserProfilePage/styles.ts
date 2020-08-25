@@ -89,3 +89,8 @@ export const UserNameWrapper = styled.p`
 export const UploadInput = styled.input`
   display: none;
 `
+
+export const FieldNote = styled.p`
+  margin: 0 0 15px;
+  color: #999;
+`

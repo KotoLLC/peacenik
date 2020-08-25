@@ -51,6 +51,9 @@ export declare namespace ApiTypes {
       email?: string
       avatar_changed?: boolean
       avatar_id?: string
+      password_changed?: boolean,
+      current_password?: string,
+      new_password?: string,
     }
 
     export interface UploadLinkRequest {

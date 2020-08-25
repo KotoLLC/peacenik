@@ -9,6 +9,7 @@ const isEmailConfirmed = createSelector(user, data => data.is_confirmed)
 const userEmail = createSelector(user, data => data.email)
 const userId = createSelector(user, data => data.id)
 const uploadLink = deepEqualSelector(profile, data => data.uploadLink)
+const profileErrorMessage = deepEqualSelector(profile, data => data.profileErrorMessage)
 
 export default {
     profile,
@@ -18,4 +19,5 @@ export default {
     userName,
     userEmail,
     uploadLink,
+    profileErrorMessage,
 }
