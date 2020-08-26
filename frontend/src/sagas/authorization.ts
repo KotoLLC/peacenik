@@ -16,11 +16,14 @@ export function* watchlogin(action: { type: string, payload: ApiTypes.Login }) {
 }
 
 export function* watchlogout() {
-  sessionStorage.clear()
   const response = yield API.authorization.logout()
+  sessionStorage.clear()
 
   if (response.status === 200) {
     yield put(Actions.authorization.logoutSucces())
+    window.location.reload()
+  } else {
+    sessionStorage.clear()
     window.location.reload()
   }
 }
@@ -34,6 +37,9 @@ export function* watchGetAuthToken() {
       sessionStorage.setItem('kotoAuthTokenDate', JSON.stringify(new Date()))
       yield put(Actions.authorization.getAuthTokenSucces(response.data?.token))
     }
+  } else if (response.error.response.status === 401) {
+    sessionStorage.clear()
+    window.location.reload()
   }
 }
 

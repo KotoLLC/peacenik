@@ -26,32 +26,37 @@ export function* watchGetMessages() {
       yield put(Actions.messages.getMessagesFromHubFailed())
     }
 
-    yield all(messageTokens.map(item => {
+    if (messageTokens.length) {
+      yield all(messageTokens.map(item => {
 
-      let count
+        let count
 
-      if (hubsWithMessages.get(item.host)) {
-        const currentHub = hubsWithMessages.get(item.host)
-        if (currentHub?.messages?.length) {
-          count = currentHub.messages.length
-        }
-      }
-
-      return call(watchGetMessagesFromHub, {
-        type: MessagesTypes.GET_MESSAGES_FROM_HUB_REQUEST,
-        payload: {
-          host: item.host,
-          body: {
-            token: item.token,
-            count,
+        if (hubsWithMessages.get(item.host)) {
+          const currentHub = hubsWithMessages.get(item.host)
+          if (currentHub?.messages?.length) {
+            count = currentHub.messages.length
           }
-        },
-      })
-    }
+        }
 
-    ))
+        return call(watchGetMessagesFromHub, {
+          type: MessagesTypes.GET_MESSAGES_FROM_HUB_REQUEST,
+          payload: {
+            host: item.host,
+            body: {
+              token: item.token,
+              count,
+            }
+          },
+        })
+      }
+      ))
+    }
+  } else if (response.error.response.status === 401) {
+    sessionStorage.clear()
+    window.location.reload()
   }
 }
+
 export function* watchGetMoreMessages() {
   const response = yield API.messages.getMessages()
 
@@ -68,6 +73,9 @@ export function* watchGetMoreMessages() {
         }
       },
     })))
+  } else if (response.error.response.status === 401) {
+    sessionStorage.clear()
+    window.location.reload()
   } else {
     yield put(Actions.messages.getMoreMessagesFailed())
   }
@@ -78,6 +86,9 @@ export function* watchGetCurrentHub() {
 
   if (response.status === 200) {
     yield put(Actions.messages.getCurrentHubSuccess(currentHubBack2Front(response.data?.tokens)))
+  } else if (response.error.response.status === 401) {
+    sessionStorage.clear()
+    window.location.reload()
   } else {
     yield put(Actions.messages.getCurrentHubFailed())
   }
@@ -104,7 +115,6 @@ export function* watchGetMoreMessagesFromHub(action: { type: string, payload: Ap
         return item
       })
     }
-
     yield put(Actions.messages.getMessagesFromHubSuccess({
       hub: action.payload.host,
       messages: resultData
@@ -141,6 +151,7 @@ export function* watchGetMessagesFromHub(action: { type: string, payload: ApiTyp
       yield put(Actions.messages.getMessagesRequest())
     }
   }
+
 }
 
 export function* watchPostMessage(action: { type: string, payload: ApiTypes.Messages.PostMessage }) {

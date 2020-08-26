@@ -7,13 +7,17 @@ export function* watchGetProfile() {
   const response = yield API.profile.getProfile()
 
   if (response.status === 200 && response.data) {
-    sessionStorage.setItem('kotoProfile', JSON.stringify(response.data))
-    
     if (response.data?.user?.is_confirmed) {
       yield put(Actions.authorization.getAuthTokenRequest())
     }
 
     yield put(Actions.profile.getProfileSucces(response.data))
+    const user = Object.assign({}, response.data.user)
+    delete user.email
+    sessionStorage.setItem('kotoProfile', JSON.stringify({user}))
+  } else if (response.error.response.status === 401) {
+    sessionStorage.clear()
+    window.location.reload()
   }
 }
 
@@ -44,6 +48,9 @@ export function* watchEditProfile(action: { type: string, payload: ApiTypes.Prof
     yield put(Actions.profile.getProfileRequest())
     yield put(Actions.profile.resetProfileErrorMessage())
     yield put(Actions.common.setSuccessNotify('Changes have been saved'))
+  } else if (response.error.response.status === 401) {
+    sessionStorage.clear()
+    window.location.reload()
   } else {
     yield put(Actions.profile.editProfileFailed(response?.error?.response?.data?.msg || 'Server error'))
   }

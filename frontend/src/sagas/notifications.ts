@@ -16,14 +16,16 @@ export function* watchGetNotifications() {
       payload: item.host,
     })))
     yield call(watchGetNotificationsFromUserHub)
-  } 
+  } else if (response.error.response.status === 401) {
+    sessionStorage.clear()
+    window.location.reload()
+  }
 }
 
 export function* watchGetNotificationsFromHub(action: { type: string, payload: string }) {
   const response = yield API.notifications.getNotificationsFromHub(action.payload)
 
   if (response.status === 200) {
-
     const notifications = response.data?.notifications || []
 
     if (notifications.length) {
@@ -33,6 +35,10 @@ export function* watchGetNotificationsFromHub(action: { type: string, payload: s
         id: notifications[notifications.length - 1].id
       })
       )
+    }
+  } else {
+    if (response.error.response.status === 400) {
+      yield put(Actions.authorization.getAuthTokenRequest())
     }
   }
 }
@@ -50,7 +56,10 @@ export function* watchGetNotificationsFromUserHub() {
       })
       )
     }
-  } 
+  } else if (response.error.response.status === 401) {
+    sessionStorage.clear()
+    window.location.reload()
+  }
 }
 
 export function* watchCleanNotificationsInUserHub(action: { type: string, payload: CommonTypes.NotificationTypes.LastKnown }) {
@@ -59,6 +68,9 @@ export function* watchCleanNotificationsInUserHub(action: { type: string, payloa
   if (response.status === 200) {
     yield put(Actions.notifications.cleanNotificationsInUserHubSuccess())
     yield put(Actions.notifications.getNotificationsRequest())
+  } else if (response.error.response.status === 401) {
+    sessionStorage.clear()
+    window.location.reload()
   }
 }
 

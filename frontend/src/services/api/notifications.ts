@@ -9,7 +9,7 @@ export default {
       headers: {
         Authorization: `Bearer ${authToken}`,
       }
-    }
+    } 
     return await axiosInstance.post(`${host}/rpc.NotificationService/Notifications`, {}, config).then(response => {
       return response
     }).catch(error => ({ error }))

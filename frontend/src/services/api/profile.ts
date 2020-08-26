@@ -6,7 +6,7 @@ export default {
     return await axiosInstance.post('/rpc.UserService/Me', {}).then(response => {
       return response
     }).catch(error => ({ error }))
-  },
+  }, 
 
   getUploadLink: async (data: ApiTypes.Profile.UploadLinkRequest) => {
     return await axiosInstance.post('/rpc.BlobService/UploadLink', {

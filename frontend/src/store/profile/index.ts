@@ -6,7 +6,7 @@ const user: ApiTypes.Profile.UserProfile = profile ? JSON.parse(profile) : {
   user: {
     id: '',
     name: '',
-    email: '',
+    email: '', 
   },
 }
 

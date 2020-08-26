@@ -231,6 +231,12 @@ class UserProfile extends React.PureComponent<Props, State> {
         errorMessage: newProps.profileErrorMessage,
       }
     }
+
+    if (newProps.userEmail) {
+      return {
+        email: newProps.userEmail
+      }
+    }
     return null
   }
 
