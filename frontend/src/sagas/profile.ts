@@ -7,7 +7,7 @@ export function* watchGetProfile() {
   const response = yield API.profile.getProfile()
 
   if (response.status === 200 && response.data) {
-    localStorage.setItem('kotoProfile', JSON.stringify(response.data))
+    sessionStorage.setItem('kotoProfile', JSON.stringify(response.data))
     
     if (response.data?.user?.is_confirmed) {
       yield put(Actions.authorization.getAuthTokenRequest())

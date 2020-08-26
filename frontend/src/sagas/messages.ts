@@ -17,7 +17,7 @@ export function* watchGetMessages() {
     const kotoMessageTokens = {
       tokens: messageTokens
     }
-    localStorage.setItem('kotoMessageTokens', JSON.stringify(kotoMessageTokens))
+    sessionStorage.setItem('kotoMessageTokens', JSON.stringify(kotoMessageTokens))
 
     const state = yield select()
     const hubsWithMessages = selectors.messages.hubsWithMessages(state)

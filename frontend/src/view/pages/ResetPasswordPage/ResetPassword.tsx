@@ -80,7 +80,7 @@ export const ResetPassword = (props) => {
 
     setRequest(false)
 
-  }, [passwordErrorMessage, onResetPasswordRequest, isResetPasswordSuccess])
+  }, [passwordErrorMessage, onResetPasswordRequest, isResetPasswordSuccess, history])
 
   return (
     <ContainerStyled maxWidth="sm">

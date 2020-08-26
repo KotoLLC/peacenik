@@ -19,7 +19,7 @@ export interface State {
   messageById: ApiTypes.Messages.Message | null | undefined
 }
 
-const kotoMessageTokens = localStorage.getItem('kotoMessageTokens') 
+const kotoMessageTokens = sessionStorage.getItem('kotoMessageTokens') 
 let messageTokensLocal
 if (kotoMessageTokens !== 'undefined' && kotoMessageTokens !== null) {
   messageTokensLocal = JSON.parse(kotoMessageTokens)?.tokens

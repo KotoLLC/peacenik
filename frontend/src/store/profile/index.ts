@@ -1,7 +1,7 @@
 import { Types } from './actions'
 import { ApiTypes } from 'src/types'
 
-const profile = localStorage.getItem('kotoProfile')
+const profile = sessionStorage.getItem('kotoProfile')
 const user: ApiTypes.Profile.UserProfile = profile ? JSON.parse(profile) : {
   user: {
     id: '',

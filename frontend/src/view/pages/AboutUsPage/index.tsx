@@ -17,13 +17,13 @@ export const AboutUsSlider: React.SFC<Props> = (props) => {
   const onGoToHubs = () => {
     props.history.push('/hubs/create')
     props.onSetAboutUsViewed()
-    // localStorage.setItem('kotoIsAboutUsViewed', 'true')
+    // sessionStorage.setItem('kotoIsAboutUsViewed', 'true')
   }
 
   const onGoToInvites = () => {
     props.history.push('/friends/invitations')
     props.onSetAboutUsViewed()
-    // localStorage.setItem('kotoIsAboutUsViewed', 'true')
+    // sessionStorage.setItem('kotoIsAboutUsViewed', 'true')
   }
 
   return (

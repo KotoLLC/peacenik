@@ -9,14 +9,14 @@ export function* watchlogin(action: { type: string, payload: ApiTypes.Login }) {
   if (response.status === 200) {
     yield put(Actions.profile.getProfileRequest())
     yield put(Actions.authorization.loginSucces())
-    localStorage.setItem('kotoIsLogged', 'true')
+    sessionStorage.setItem('kotoIsLogged', 'true')
   } else {
     yield put(Actions.authorization.loginFailed(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
 
 export function* watchlogout() {
-  localStorage.clear()
+  sessionStorage.clear()
   const response = yield API.authorization.logout()
 
   if (response.status === 200) {
@@ -30,8 +30,8 @@ export function* watchGetAuthToken() {
 
   if (response.status === 200) {
     if (response.data?.token) {
-      localStorage.setItem('kotoAuthToken', JSON.stringify(response.data?.token))
-      localStorage.setItem('kotoAuthTokenDate', JSON.stringify(new Date()))
+      sessionStorage.setItem('kotoAuthToken', JSON.stringify(response.data?.token))
+      sessionStorage.setItem('kotoAuthTokenDate', JSON.stringify(new Date()))
       yield put(Actions.authorization.getAuthTokenSucces(response.data?.token))
     }
   }

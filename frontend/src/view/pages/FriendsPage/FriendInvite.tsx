@@ -137,7 +137,7 @@ class FriendInvite extends React.PureComponent<Props, State> {
               value={email}
               error={(errorMessage) ? true : false}
               onChange={this.onEmailChange}
-              labelWidth={180}
+              labelWidth={240}
             />
           </FormControlStyled>
           <ButtonStyled

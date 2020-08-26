@@ -70,6 +70,12 @@ export const LoginForm = (props) => {
     onLogin({ name: username, password })
   }
 
+  const checkExcludedRoutes = (path?: string) => {
+    const excludedRoutes = ['reset-password', 'forgot-password', 'docs', 'about-us', 'registration']
+    if (!path) return false
+    return excludedRoutes.some(item => path.indexOf(item) !== -1)
+  }
+
   const lastLocation = useLastLocation()
   const lastLoactionPathname = lastLocation?.pathname
 
@@ -84,7 +90,7 @@ export const LoginForm = (props) => {
         if (lastLoactionPathname === '/registration' || lastLoactionPathname === '/resend-confirm-email') {
           history.push('/friends/invitations')
         }
-        if (lastLoactionPathname === '/reset-password' || lastLoactionPathname === '/forgot-password') {
+        if (checkExcludedRoutes(lastLoactionPathname)) {
           history.push('/messages')
         } else {
           history.push(lastLoactionPathname ? `${lastLoactionPathname}` : '/messages')

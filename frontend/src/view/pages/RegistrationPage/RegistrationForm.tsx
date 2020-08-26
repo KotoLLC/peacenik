@@ -121,7 +121,7 @@ export const RegistrationForm: React.SFC<Props> = (props) => {
       
       setRequest(false)
     }
-  }, [location, history, registrationErrorMessage, isRegisterSuccess, isUserRegisteredResult, isLogged])
+  }, [location, history, registrationErrorMessage, isRegisterSuccess, isUserRegisteredResult, isLogged, onLogin, params, password, username])
 
   return (
     <ContainerStyled maxWidth="sm">
