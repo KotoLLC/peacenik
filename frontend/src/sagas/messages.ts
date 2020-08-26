@@ -228,25 +228,6 @@ export function* watchGetMessageUploadLink(action: { type: string, payload: ApiT
   }
 }
 
-export function* watchGetMessageById(action: { type: string, payload: string }) {
-  const state = yield select()
-  const messageTokens = selectors.messages.messageTokens(state)
-
-  yield all(messageTokens.map(item => {
-    return call(watchGetMessagesByIdFromHub, {
-      type: MessagesTypes.GET_MESSAGE_BY_ID_FROM_HUB_REQUEST,
-      payload: {
-        host: item.host,
-        body: {
-          token: item.token,
-          message_id: action.payload
-        }
-      },
-    })
-  }
-  ))
-}
-
 export function* watchGetMessagesByIdFromHub(action: { type: string, payload: ApiTypes.Messages.MessagesById }) {
   const response = yield API.messages.getMessageById(action.payload)
 
@@ -254,7 +235,6 @@ export function* watchGetMessagesByIdFromHub(action: { type: string, payload: Ap
     const message = response.data.message
     message.sourceHost = action.payload.host
     message.messageToken = action.payload.body.token
-
     yield put(Actions.messages.getMessagesByIdFromHubSuccess(message))
   } else {
     yield put(Actions.messages.getMessagesByIdFromHubFailed())

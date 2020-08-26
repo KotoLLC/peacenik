@@ -13,7 +13,7 @@ export function* watchGetNotifications() {
 
     yield all(messageTokens.map(item => call(watchGetNotificationsFromHub, {
       type: NotificationsTypes.GET_NOTIFICATIONS_FROM_HUB_REQUEST,
-      payload: item.host,
+      payload: item,
     })))
     yield call(watchGetNotificationsFromUserHub)
   } else if (response.error.response.status === 401) {
@@ -22,16 +22,24 @@ export function* watchGetNotifications() {
   }
 }
 
-export function* watchGetNotificationsFromHub(action: { type: string, payload: string }) {
-  const response = yield API.notifications.getNotificationsFromHub(action.payload)
+export function* watchGetNotificationsFromHub(action: { type: string, payload: CommonTypes.HubTypes.CurrentHub }) {
+  const response = yield API.notifications.getNotificationsFromHub(action.payload.host)
 
   if (response.status === 200) {
     const notifications = response.data?.notifications || []
 
     if (notifications.length) {
-      yield put(Actions.notifications.getNotificationsFromHubSuccess(notifications))
+      let resultData = []
+      if (notifications.length) {
+        resultData = response.data?.notifications.map(item => {
+          item.sourceHost = action.payload.host
+          item.messageToken = action.payload.token
+          return item
+        })
+      }
+      yield put(Actions.notifications.getNotificationsFromHubSuccess(resultData))
       yield put(Actions.notifications.setLastKnownIdFromMessageHub({
-        host: action.payload,
+        host: action.payload.host,
         id: notifications[notifications.length - 1].id
       })
       )

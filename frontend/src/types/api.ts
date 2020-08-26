@@ -290,6 +290,8 @@ export declare namespace ApiTypes {
       type: Type
       data: Data
       created_at: string
+      sourceHost: string
+      messageToken: string
     }
   }
 }

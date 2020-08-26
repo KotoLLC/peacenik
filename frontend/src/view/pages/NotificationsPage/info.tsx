@@ -1,8 +1,8 @@
 
 import React from 'react'
 import Message from '@view/pages/MessagesPage/Message'
-import { ApiTypes, StoreTypes } from 'src/types'
-import { EmptyMessage, PreloaderWrapper } from '@view/pages/MessagesPage/styles'
+import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
+import { EmptyMessage, PreloaderWrapper, EmptyMessageFeed } from '@view/pages/MessagesPage/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Button from '@material-ui/core/Button'
 import { ButtonsWrapper, ContainerStyled } from './styles'
@@ -16,7 +16,9 @@ import { connect } from 'react-redux'
 
 interface Props extends RouteComponentProps {
   messageById: ApiTypes.Messages.Message | null | undefined
-  onGetMessageById: (id: string) => void
+  currentHub: CommonTypes.HubTypes.CurrentHub
+
+  onGetMessagesByIdFromHub: (data: ApiTypes.Messages.MessagesById) => void
   onResetMessageById: () => void
 }
 
@@ -31,7 +33,7 @@ class NotificationsInfo extends React.PureComponent<Props, State> {
   }
 
   getMessage = () => {
-    const { onGetMessageById, history } = this.props
+    const { onGetMessagesByIdFromHub, history } = this.props
     const parsed = queryString.parse(history.location.search)
 
     if (parsed?.type?.indexOf('comment') !== -1) {
@@ -41,7 +43,13 @@ class NotificationsInfo extends React.PureComponent<Props, State> {
     }
 
     if (parsed?.message_id) {
-      onGetMessageById(parsed.message_id as string)
+      onGetMessagesByIdFromHub({
+        host: parsed?.sourceHost as string,
+        body: {
+          token: parsed?.messageToken as string,
+          message_id: parsed?.message_id as string,
+        }
+      })
     }
   }
 
@@ -59,14 +67,13 @@ class NotificationsInfo extends React.PureComponent<Props, State> {
 
     if (messageById === null) {
       return (
-        <EmptyMessage>
+        <EmptyMessageFeed>
           <PreloaderWrapper>
             <CircularProgress />
           </PreloaderWrapper>
-        </EmptyMessage>
+        </EmptyMessageFeed>
       )
     }
-
     if (messageById === undefined) {
       return (
         <ContainerStyled maxWidth="md">
@@ -113,15 +120,16 @@ class NotificationsInfo extends React.PureComponent<Props, State> {
   }
 }
 
-type StateProps = Pick<Props, 'messageById'>
+type StateProps = Pick<Props, 'messageById' | 'currentHub'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   messageById: selectors.messages.messageById(state),
+  currentHub: selectors.messages.currentHub(state),
 })
 
-type DispatchProps = Pick<Props, 'onGetMessageById' | 'onResetMessageById'>
-const mapDispatchToProps = (dispath): DispatchProps => ({
-  onGetMessageById: (id: string) => dispath(Actions.messages.getMessagesByIdRequest(id)),
-  onResetMessageById: () => dispath(Actions.messages.resetMessageById()),
+type DispatchProps = Pick<Props, 'onResetMessageById' | 'onGetMessagesByIdFromHub'>
+const mapDispatchToProps = (dispatch): DispatchProps => ({
+  onGetMessagesByIdFromHub: (data: ApiTypes.Messages.MessagesById) => dispatch(Actions.messages.getMessagesByIdFromHubRequest(data)),
+  onResetMessageById: () => dispatch(Actions.messages.resetMessageById()),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(NotificationsInfo)

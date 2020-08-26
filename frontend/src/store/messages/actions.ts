@@ -20,8 +20,6 @@ export enum Types {
   GET_MORE_MESSAGES_FROM_HUB_REQUEST = 'GET_MORE_MESSAGES_FROM_HUB_REQUEST',
   GET_MORE_MESSAGES_FROM_HUB_SUCCESS = 'GET_MORE_MESSAGES_FROM_HUB_SUCCESS',
   GET_MORE_MESSAGES_FROM_HUB_FAILED = 'GET_MORE_MESSAGES_FROM_HUB_FAILED',
-
-  GET_MESSAGE_BY_ID_REQUEST = 'GET_MESSAGE_BY_ID_REQUEST',
   
   GET_MESSAGE_BY_ID_FROM_HUB_REQUEST = 'GET_MESSAGE_BY_ID_FROM_HUB_REQUEST',
   GET_MESSAGE_BY_ID_FROM_HUB_SUCCESS = 'GET_MESSAGE_BY_ID_FROM_HUB_SUCCESS',
@@ -248,11 +246,6 @@ const getMoreMessagesFromHubFailed = () => ({
   type: Types.GET_MORE_MESSAGES_FROM_HUB_FAILED,
 })
 
-const getMessagesByIdRequest = (payload: string) => ({
-  type: Types.GET_MESSAGE_BY_ID_REQUEST,
-  payload,
-})
-
 const getMessagesByIdFromHubRequest = (payload: ApiTypes.Messages.MessagesById) => ({
   type: Types.GET_MESSAGE_BY_ID_FROM_HUB_REQUEST,
   payload,
@@ -313,7 +306,6 @@ export default {
   getMoreMessagesFromHubRequest,
   getMoreMessagesFromHubSuccess,
   getMoreMessagesFromHubFailed,
-  getMessagesByIdRequest,
   getMessagesByIdFromHubRequest,
   getMessagesByIdFromHubSuccess,
   resetMessageById,

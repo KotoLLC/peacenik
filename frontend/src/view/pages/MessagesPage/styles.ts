@@ -238,6 +238,12 @@ export const EmptyMessage = styled(Paper)`
   }
 `
 
+export const EmptyMessageFeed = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
 export const UpButton = styled(IconButton)`
   position: fixed;
   right: 20px;

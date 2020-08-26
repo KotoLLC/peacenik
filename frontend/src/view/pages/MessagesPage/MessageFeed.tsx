@@ -11,7 +11,7 @@ import { sortByDate } from '@services/sortByDate'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import {
   ContainerStyled,
-  EmptyMessage,
+  EmptyMessageFeed,
   UpButton,
   PreloaderWrapper,
 } from './styles'
@@ -120,11 +120,11 @@ class MessageFeed extends React.Component<Props, State> {
 
     if (isCurrentHubReqyested) {
       return (
-        <EmptyMessage>
+        <EmptyMessageFeed>
           <PreloaderWrapper>
             <CircularProgress/>
           </PreloaderWrapper>
-        </EmptyMessage>
+        </EmptyMessageFeed>
       )
     } else {
 

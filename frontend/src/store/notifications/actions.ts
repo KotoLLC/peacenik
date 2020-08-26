@@ -24,7 +24,7 @@ const getNotificationsRequest = () => ({
   type: Types.GET_NOTIFICATIONS_REQUEST,
 })
 
-const getNotificationsFromHubRequest = (payload: string) => ({
+const getNotificationsFromHubRequest = (payload: CommonTypes.HubTypes.CurrentHub) => ({
   type: Types.GET_NOTIFICATIONS_FROM_HUB_REQUEST,
   payload
 })

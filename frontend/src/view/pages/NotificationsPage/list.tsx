@@ -28,6 +28,7 @@ interface Props {
   notifications: ApiTypes.Notifications.Notification[]
   lastKnownIdFromMessageHubs: CommonTypes.NotificationTypes.LastKnown[]
   lastKnownIdFromUserHub: CommonTypes.NotificationTypes.LastKnown | null
+  
   onGetNotifications: () => void
   onCleanNotificationsInUserHub: (data: CommonTypes.NotificationTypes.LastKnown) => void
   onCleanNotificationsInMessageHub: (data: CommonTypes.NotificationTypes.LastKnown) => void
@@ -37,7 +38,7 @@ interface State {
   notifications: ApiTypes.Notifications.Notification[]
 }
 
-class NotificationsList extends React.PureComponent<Props> {
+class NotificationsList extends React.PureComponent<Props, State> {
 
   state = {
     notifications: this.props.notifications || []
@@ -48,10 +49,14 @@ class NotificationsList extends React.PureComponent<Props> {
   }
 
   checkCurrentIcon = (item: ApiTypes.Notifications.Notification) => {
-    const { text, type, data } = item
+    const { text, type, data, messageToken, sourceHost } = item
 
     let urlVars = `?type=${type}`
+
     const dataObj = JSON.parse(data as any) // tslint:disable-line
+    
+    dataObj.messageToken = messageToken
+    dataObj.sourceHost = sourceHost
 
     Object.entries(dataObj).forEach(
       ([key, value]) => {
@@ -112,7 +117,7 @@ class NotificationsList extends React.PureComponent<Props> {
     ))
   }
 
-  static getDerivedStateFromProps(newProps: Props, prevState: State) {
+  static getDerivedStateFromProps(newProps: Props) {
     const sortByDate = (data: ApiTypes.Notifications.Notification[]) => {
       return data.sort((b, a) => {
         return moment(b.created_at).diff(a.created_at)
