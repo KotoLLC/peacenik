@@ -10,4 +10,5 @@ type Repos struct {
 	Friend       FriendRepo
 	MessageHubs  MessageHubRepo
 	Notification common.NotificationRepo
+	FCMToken     FCMTokenRepo
 }

@@ -74,6 +74,7 @@ func main() {
 		Friend:       repo.NewFriends(db),
 		MessageHubs:  repo.NewMessageHubs(db),
 		Notification: common.NewNotifications(db),
+		FCMToken:     repo.NewFCMToken(db),
 	}
 
 	s3Cleaner := common.NewS3Cleaner(db, s3Storage)

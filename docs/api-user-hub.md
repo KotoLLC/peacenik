@@ -374,3 +374,17 @@ Content-Type: application/json
   "last_known_id": "LAST-KNOWN-NOTIFICATION-ID"
 }
 ```
+
+## FCM tokens
+
+### Register a FCM token for current user
+
+```
+POST http://localhost:12001/rpc.UserService/RegisterFCMToken
+Content-Type: application/json
+
+{
+  "token": "FCM-TOKEN",
+  "device_id": "DEVICE-ID"
+}
+```

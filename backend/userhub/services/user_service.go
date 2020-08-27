@@ -293,3 +293,17 @@ func (s *userService) User(_ context.Context, r *rpc.UserUserRequest) (*rpc.User
 		User: rpcUser,
 	}, nil
 }
+
+func (s *userService) RegisterFCMToken(ctx context.Context, r *rpc.UserRegisterFCMTokenRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+
+	if r.Token == "" {
+		return nil, twirp.InvalidArgumentError("token", "is empty")
+	}
+
+	err := s.repos.FCMToken.AddToken(user.ID, r.Token, r.DeviceId)
+	if err != nil {
+		return nil, err
+	}
+	return &rpc.Empty{}, nil
+}

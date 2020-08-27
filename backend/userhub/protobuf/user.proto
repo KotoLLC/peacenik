@@ -12,6 +12,7 @@ service UserService {
     rpc EditProfile (UserEditProfileRequest) returns (Empty);
     rpc Users (UserUsersRequest) returns (UserUsersResponse);
     rpc User (UserUserRequest) returns (UserUserResponse);
+    rpc RegisterFCMToken (UserRegisterFCMTokenRequest) returns (Empty);
 }
 
 message UserFriendsFriendOfFriend {
@@ -68,4 +69,9 @@ message UserUserRequest {
 
 message UserUserResponse {
     User user = 1;
+}
+
+message UserRegisterFCMTokenRequest {
+    string token = 1;
+    string device_id = 2;
 }
