@@ -385,6 +385,7 @@ Content-Type: application/json
 
 {
   "token": "FCM-TOKEN",
-  "device_id": "DEVICE-ID"
+  "device_id": "DEVICE-ID",
+  "os": "android"
 }
 ```

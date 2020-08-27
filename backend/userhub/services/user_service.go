@@ -300,8 +300,11 @@ func (s *userService) RegisterFCMToken(ctx context.Context, r *rpc.UserRegisterF
 	if r.Token == "" {
 		return nil, twirp.InvalidArgumentError("token", "is empty")
 	}
+	if r.Os == "" {
+		return nil, twirp.InvalidArgumentError("os", "is empty")
+	}
 
-	err := s.repos.FCMToken.AddToken(user.ID, r.Token, r.DeviceId)
+	err := s.repos.FCMToken.AddToken(user.ID, r.Token, r.DeviceId, r.Os)
 	if err != nil {
 		return nil, err
 	}

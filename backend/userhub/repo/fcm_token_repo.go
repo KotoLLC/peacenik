@@ -17,7 +17,7 @@ type FCMToken struct {
 }
 
 type FCMTokenRepo interface {
-	AddToken(userID, token, deviceID string) error
+	AddToken(userID, token, deviceID, os string) error
 }
 
 type fcmTokenRepo struct {
@@ -30,11 +30,11 @@ func NewFCMToken(db *sqlx.DB) FCMTokenRepo {
 	}
 }
 
-func (r *fcmTokenRepo) AddToken(userID, token, deviceID string) error {
+func (r *fcmTokenRepo) AddToken(userID, token, deviceID, os string) error {
 	_, err := r.db.Exec(`
-		insert into fcm_tokens(user_id, token, device_id, created_at)
-		values($1, $2, $3, $4)
-		on conflict (user_id, token) do update set device_id = $3;`,
-		userID, token, deviceID, common.CurrentTimestamp())
+		insert into fcm_tokens(user_id, token, device_id, os, created_at)
+		values($1, $2, $3, $4, $5)
+		on conflict (user_id, token) do update set device_id = $3, os = $4;`,
+		userID, token, deviceID, os, common.CurrentTimestamp())
 	return merry.Wrap(err)
 }

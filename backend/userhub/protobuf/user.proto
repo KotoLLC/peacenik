@@ -74,4 +74,5 @@ message UserUserResponse {
 message UserRegisterFCMTokenRequest {
     string token = 1;
     string device_id = 2;
+    string os = 3;
 }
