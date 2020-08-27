@@ -380,7 +380,7 @@ Content-Type: application/json
 ### Register a FCM token for current user
 
 ```
-POST http://localhost:12001/rpc.UserService/RegisterFCMToken
+POST http://central.koto.at/rpc.UserService/RegisterFCMToken
 Content-Type: application/json
 
 {
