@@ -23,13 +23,13 @@ A quasi-distributed ad-free open-source social network
 
 ## Introduction
 
-Koto is an open-source, ad-free, social network with a mixture of central and distributed control. Central control provides a common login across all hubs, and prevents bad actors from joining a network. Distribution provides individual ownership, and privacy, for messages, images, and videos.
+Koto is an ad-free, hate-free, distributed social network.
 
 Koto is comparable to Facebook, rather than Twitter, as it is for closed circles of friendships.
 
 ## Status
 
-The alpha version should be ready in August 2020. You can check our progress [here](https://github.com/mreider/koto/projects/1)
+The alpha version is available. You can test it [here](https://koto.at)
 
 ## Comparison to other social network projects
 
