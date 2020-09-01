@@ -168,7 +168,7 @@ export const LoginForm = (props) => {
         },
         {
           title: 'About Koto',
-          to: 'https://docs.koto.at',
+          href: 'https://docs.koto.at',
         },
         {
           title: 'Code of conduct',
