@@ -201,7 +201,7 @@ export const RegistrationForm: React.SFC<Props> = (props) => {
         },
         {
           title: 'About Koto',
-          to: '/about-us',
+          href: 'https://docs.koto.at',
         },
         {
           title: 'Code of conduct',
