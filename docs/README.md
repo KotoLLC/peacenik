@@ -23,7 +23,7 @@ A quasi-distributed ad-free open-source social network
 
 ## Introduction
 
-Koto is an ad-free, hate-free, distributed social network.
+Koto is an ad-free distributed social network.
 
 Koto is comparable to Facebook, rather than Twitter, as it is for closed circles of friendships.
 
