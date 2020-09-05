@@ -1,7 +1,7 @@
 
 ![koto-logo-transparent-black](https://user-images.githubusercontent.com/118036/89899037-fa331e00-dbe1-11ea-9e18-5710ee81c79e.png)
 
-A quasi-distributed ad-free open-source social network
+Koto is an ad-free distributed Facebook alternative
 
 ## Table of Contents
 
@@ -22,8 +22,6 @@ A quasi-distributed ad-free open-source social network
 [Installation](install-user-hub.md) | [Testing](testing-user-hub.md) | [API](api-user-hub.md)
 
 ## Introduction
-
-Koto is an ad-free distributed social network.
 
 Koto is comparable to Facebook, rather than Twitter, as it is for closed circles of friendships.
 
