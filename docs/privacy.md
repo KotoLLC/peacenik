@@ -1,9 +1,10 @@
-Privacy Policy for Koto
+# Privacy Policy for Koto
+
 At koto.at, accessible from https://koto.at, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by koto.at and how we use it.
 
 If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us. Our Privacy Policy was generated with the help of GDPR Privacy Policy Generator from GDPRPrivacyPolicy.net
 
-General Data Protection Regulation (GDPR)
+## General Data Protection Regulation (GDPR)
 We are a Data Controller of your information.
 
 Koto legal basis for collecting and using the personal information described in this Privacy Policy depends on the Personal Information we collect and the specific context in which we collect the information:
