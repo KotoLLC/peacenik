@@ -12,6 +12,7 @@
   - [Submit a bug](bugs.md)
   - [Get help](help.md)
   - [Volunteer / donate](helping-out.md)
+  - [Privacy policy](privacy.md)
 
 - Message hubs
 
