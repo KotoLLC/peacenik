@@ -41,17 +41,22 @@ type PasswordHash interface {
 
 type authService struct {
 	*BaseService
-	sessionUserKey string
-	passwordHash   PasswordHash
-	testMode       bool
+	sessionUserKey  string
+	passwordHash    PasswordHash
+	testMode        bool
+	adminList       []string
+	adminFriendship string
 }
 
-func NewAuth(base *BaseService, sessionUserKey string, passwordHash PasswordHash, testMode bool) rpc.AuthService {
+func NewAuth(base *BaseService, sessionUserKey string, passwordHash PasswordHash, testMode bool,
+	adminList []string, adminFriendship string) rpc.AuthService {
 	return &authService{
-		BaseService:    base,
-		sessionUserKey: sessionUserKey,
-		passwordHash:   passwordHash,
-		testMode:       testMode,
+		BaseService:     base,
+		sessionUserKey:  sessionUserKey,
+		passwordHash:    passwordHash,
+		testMode:        testMode,
+		adminList:       adminList,
+		adminFriendship: strings.ToLower(adminFriendship),
 	}
 }
 
@@ -282,7 +287,61 @@ func (s *authService) confirmUser(confirmToken string) error {
 		return token.ErrInvalidToken.Here()
 	}
 
-	return s.repos.User.ConfirmUser(userID)
+	err = s.repos.User.ConfirmUser(userID)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+
+	if s.adminFriendship == "" || len(s.adminList) == 0 {
+		return nil
+	}
+
+	user, err := s.repos.User.FindUserByID(userID)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+
+	admin, err := s.repos.User.FindUserByName(s.adminList[0])
+	if err != nil {
+		return merry.Wrap(err)
+	}
+	if admin == nil {
+		return nil
+	}
+
+	switch s.adminFriendship {
+	case "invite":
+		err = s.repos.Invite.AddInvite(user.ID, admin.ID)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+		err = s.repos.Notification.AddNotification(admin.ID, user.Name+" invited you to be friends", "invite/add", map[string]interface{}{
+			"user_id": user.ID,
+		})
+		if err != nil {
+			log.Println(err)
+		}
+		err = s.sendInviteLinkToRegisteredUser(*user, admin.Email)
+		if err != nil {
+			log.Println("can't invite by email:", err)
+		}
+	case "accept":
+		err = s.repos.Invite.AddInvite(userID, admin.ID)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+		err = s.repos.Invite.AcceptInvite(userID, admin.ID, true)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+		err = s.repos.Notification.AddNotification(admin.ID, user.Name+" is registered and added to your friends!", "invite/accept", map[string]interface{}{
+			"user_id": user.ID,
+		})
+		if err != nil {
+			log.Println(err)
+		}
+	}
+	return nil
 }
 
 func (s *authService) confirmInviteToken(user repo.User, confirmToken string) error {
@@ -297,4 +356,13 @@ func (s *authService) confirmInviteToken(user repo.User, confirmToken string) er
 	}
 
 	return s.repos.User.ConfirmUser(user.ID)
+}
+
+func (s *authService) sendInviteLinkToRegisteredUser(inviter repo.User, userEmail string) error {
+	if !s.mailSender.Enabled() {
+		return nil
+	}
+
+	link := fmt.Sprintf("%s"+invitationsFrontendPath, s.frontendAddress)
+	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviter.Name+" invited you to be friends on KOTO", fmt.Sprintf(inviteRegisteredUserEmailBody, link))
 }

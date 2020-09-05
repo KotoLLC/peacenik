@@ -32,7 +32,7 @@ type Invite struct {
 type InviteRepo interface {
 	AddInvite(userID, friendID string) error
 	AddInviteByEmail(userID, friendEmail string) error
-	AcceptInvite(inviterID, friendID string) error
+	AcceptInvite(inviterID, friendID string, autoAccepted bool) error
 	RejectInvite(inviterID, friendID string) error
 	InvitesFromMe(user User) ([]Invite, error)
 	InvitesForMe(user User) ([]Invite, error)
@@ -67,13 +67,13 @@ func (r *inviteRepo) AddInviteByEmail(inviterID, friendEmail string) error {
 	return merry.Wrap(err)
 }
 
-func (r *inviteRepo) AcceptInvite(inviterID, friendID string) error {
+func (r *inviteRepo) AcceptInvite(inviterID, friendID string, autoAccepted bool) error {
 	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
 		res, err := tx.Exec(`
 		update invites
-		set accepted_at = $1
-		where user_id = $2 and friend_id = $3 and rejected_at is null`,
-			common.CurrentTimestamp(), inviterID, friendID)
+		set accepted_at = $1, auto_accepted = $2
+		where user_id = $3 and friend_id = $4 and rejected_at is null`,
+			common.CurrentTimestamp(), autoAccepted, inviterID, friendID)
 		if err != nil {
 			return merry.Wrap(err)
 		}

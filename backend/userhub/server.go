@@ -87,7 +87,7 @@ func (s *Server) Run() error {
 
 	passwordHash := bcrypt.NewPasswordHash()
 
-	authService := services.NewAuth(baseService, sessionUserKey, passwordHash, s.cfg.TestMode)
+	authService := services.NewAuth(baseService, sessionUserKey, passwordHash, s.cfg.TestMode, s.cfg.AdminList(), s.cfg.AdminFriendship)
 	authServiceHandler := rpc.NewAuthServiceServer(authService, rpcHooks)
 	r.Handle(authServiceHandler.PathPrefix()+"*", s.findSessionUser(s.authSessionProvider(authServiceHandler)))
 
@@ -158,7 +158,7 @@ func (s *Server) findSessionUser(next http.Handler) http.Handler {
 			return
 		}
 
-		isAdmin := s.cfg.IsAdmin(user.Name) || s.cfg.IsAdmin(user.Email)
+		isAdmin := s.cfg.IsAdmin(user.Name)
 
 		ctx := context.WithValue(r.Context(), services.ContextUserKey, *user)
 		ctx = context.WithValue(ctx, services.ContextIsAdminKey, isAdmin)

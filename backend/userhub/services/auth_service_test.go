@@ -18,7 +18,7 @@ func TestAuthService_Register_EmptyValues(t *testing.T) {
 		User: nil,
 	}
 	base := services.NewBase(repos, nil, nil, nil, nil, "")
-	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false)
+	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false, nil, "")
 
 	ctx := context.Background()
 
@@ -58,7 +58,7 @@ func TestAuthService_Register_NameWithSpaces(t *testing.T) {
 		User: nil,
 	}
 	base := services.NewBase(repos, nil, nil, nil, nil, "")
-	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false)
+	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false, nil, "")
 
 	ctx := context.Background()
 
@@ -84,7 +84,7 @@ func TestAuthService_Register_Duplicated(t *testing.T) {
 	require.Nil(t, err)
 
 	base := services.NewBase(repos, nil, nil, nil, nil, "")
-	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false)
+	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false, nil, "")
 
 	_, err = s.Register(te.ctx, &rpc.AuthRegisterRequest{
 		Name:     "user1",
@@ -117,7 +117,7 @@ func TestAuthService_Register(t *testing.T) {
 	require.Nil(t, err)
 
 	base := services.NewBase(repos, nil, nil, nil, nil, "")
-	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false)
+	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false, nil, "")
 
 	_, err = s.Register(te.ctx, &rpc.AuthRegisterRequest{
 		Name:     "user2",
@@ -175,7 +175,7 @@ func TestAuthService_Login(t *testing.T) {
 	require.Nil(t, err)
 
 	base := services.NewBase(repos, nil, nil, nil, nil, "")
-	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false)
+	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false, nil, "")
 
 	_, err = s.Login(te.ctx, &rpc.AuthLoginRequest{
 		Name:     "user1",
@@ -230,7 +230,7 @@ func TestAuthService_Logout(t *testing.T) {
 	ctx := context.WithValue(te.ctx, services.ContextSession, session)
 
 	base := services.NewBase(repos, nil, nil, nil, nil, "")
-	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false)
+	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false, nil, "")
 
 	_, err := s.Logout(ctx, &rpc.Empty{})
 	assert.Nil(t, err)

@@ -103,7 +103,7 @@ func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) 
 
 func (s *inviteService) Accept(ctx context.Context, r *rpc.InviteAcceptRequest) (*rpc.Empty, error) {
 	user := s.getUser(ctx)
-	err := s.repos.Invite.AcceptInvite(r.InviterId, user.ID)
+	err := s.repos.Invite.AcceptInvite(r.InviterId, user.ID, false)
 	if err != nil {
 		if merry.Is(err, repo.ErrInviteNotFound) {
 			return nil, twirp.NotFoundError(err.Error())

@@ -17,6 +17,7 @@ type Config struct {
 	TokenDurationSeconds int    `yaml:"token_duration" default:"3600" env:"KOTO_TOKEN_DURATION"`
 	FrontendAddress      string `yaml:"frontend" default:"http://localhost:3000" env:"KOTO_FRONTEND_ADDRESS"`
 	TestMode             bool   `yaml:"test_mode" default:"false" env:"KOTO_TEST_MODE"`
+	AdminFriendship      string `yaml:"admin_friendship" default:"" env:"KOTO_ADMIN_FRIENDSHIP"`
 
 	DB   common.DatabaseConfig `yaml:"db"`
 	S3   common.S3Config       `yaml:"s3"`
@@ -50,9 +51,9 @@ func (cfg Config) TokenDuration() time.Duration {
 	return time.Duration(cfg.TokenDurationSeconds) * time.Second
 }
 
-func (cfg Config) IsAdmin(user string) bool {
+func (cfg Config) IsAdmin(userName string) bool {
 	for _, admin := range cfg.adminList {
-		if admin == user {
+		if admin == userName {
 			return true
 		}
 	}
