@@ -46,7 +46,7 @@ interface Props {
 type FieldsType = 'newPassword' | 'currentPassword' | 'email' | ''
 
 interface State {
-  email: string,
+  email: string | null
   isRequestSend: boolean
   errorMessage: string
   isFileUploaded: boolean
@@ -61,7 +61,7 @@ interface State {
 class UserProfile extends React.PureComponent<Props, State> {
 
   state = {
-    email: this.props.userEmail || '',
+    email: null,
     isRequestSend: false,
     errorMessage: '',
     isFileUploaded: false,
@@ -102,7 +102,7 @@ class UserProfile extends React.PureComponent<Props, State> {
       return false
     }
 
-    if (!validate.isEmailValid(email)) {
+    if (email && !validate.isEmailValid(email!)) {
       this.setState({
         errorMessage: 'Incorrect email',
         noValideField: 'email',
@@ -110,20 +110,22 @@ class UserProfile extends React.PureComponent<Props, State> {
       return false
     }
 
-    if (newPassword && !currentPassword) {
-      this.setState({
-        errorMessage: 'Enter Your current password',
-        noValideField: 'currentPassword',
-      })
-      return false
-    }
-
-    if (!validate.isPasswordValid(newPassword)) {
-      this.setState({
-        errorMessage: 'New password is incorrect',
-        noValideField: 'newPassword',
-      })
-      return false
+    if (currentPassword || newPassword) {
+      if (newPassword && !currentPassword) {
+        this.setState({
+          errorMessage: 'Enter Your current password',
+          noValideField: 'currentPassword',
+        })
+        return false
+      }
+  
+      if (!validate.isPasswordValid(newPassword)) {
+        this.setState({
+          errorMessage: 'New password is incorrect',
+          noValideField: 'newPassword',
+        })
+        return false
+      }
     }
 
     return true
@@ -232,11 +234,18 @@ class UserProfile extends React.PureComponent<Props, State> {
       }
     }
 
-    if (newProps.userEmail) {
+    if (prevState.email) {
+      return {
+        email: prevState.email
+      }
+    }
+
+    if (prevState.email === null && newProps.userEmail) {
       return {
         email: newProps.userEmail
       }
     }
+    
     return null
   }
 
@@ -301,7 +310,7 @@ class UserProfile extends React.PureComponent<Props, State> {
                   <OutlinedInput
                     id="email"
                     type={'text'}
-                    value={email}
+                    value={email || ''}
                     error={(noValideField === 'email') ? true : false}
                     onChange={this.onEmailChange}
                     labelWidth={40}
