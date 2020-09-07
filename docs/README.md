@@ -23,11 +23,11 @@ Koto is an ad-free distributed Facebook alternative
 
 ## Introduction
 
-Koto is comparable to Facebook, rather than Twitter, as it is for closed circles of friendships.
+I created Koto because I love using Facebook to keep in touch with friends, but hate what it's doing to us. The volume of disinformation on Facebook is staggering. Much of it is Russian state sponsored - designed to divide us and create chaos. It's working.
 
-## Status
+While Facebook has given this issue plenty of lip service - they refuse to make meaningful changes. It's simply too profitable to sell advertising against content that evokes anger and hatred.
 
-The alpha version is available. You can test it [here](https://koto.at)
+As of early September Koto is functional, but there are plenty of little problems and quirks. We'll iron it all out over time.
 
 ## Comparison to other social network projects
 
@@ -45,10 +45,6 @@ Koto blends these last two categories, offering both a distributed OSS approach,
 ## How the social graph works
 
 You can read about Koto's [social graph here](social-graph.md). It's almost identical to Facebook. Friends can post / see your timeline, but nobody else can.
-
-## Our motivation
-
-We want a functional alternative to Facebook that does not sell advertising or tolerate the distribution of lies to tilt elections, create chaos, encourage ignorance, and ruin civil discourse.
 
 ## Who are you?
 
