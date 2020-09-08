@@ -46,7 +46,7 @@ export const AvatarWrapper = styled.div`
   width: 200px;
 `
 
-export const Avatart = styled.label`
+export const AvatarLabel = styled.label`
   overflow: hidden;
   background: #ccc;  
   border-radius: 5px;

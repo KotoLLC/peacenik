@@ -1,5 +1,4 @@
 import React, { useState, useEffect, ChangeEvent } from 'react'
-import Avatar from '@material-ui/core/Avatar'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
@@ -24,6 +23,7 @@ import {
   AvatarWrapper,
   ErrorMessage,
 } from './styles'
+import { Avatar } from '@view/shared/styles'
 
 interface Props {
   authToken: string
@@ -137,7 +137,7 @@ const Editor: React.SFC<Props> = (props) => {
       <PaperStyled>
         <CreateWrapper>
           <AvatarWrapper>
-            <Avatar variant="rounded" src={getAvatarUrl(props.userId)} />
+            <Avatar src={getAvatarUrl(props.userId)} />
           </AvatarWrapper>
           <EditorWrapper>
             <TextareaTitle className={value.length ? 'active' : ''}>Post a message to your friend</TextareaTitle>

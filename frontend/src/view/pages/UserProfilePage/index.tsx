@@ -15,6 +15,7 @@ import { getAvatarUrl } from '@services/avatarUrl'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
+import ExifOrientationImg from 'react-exif-orientation-img'
 import {
   ContainerStyled,
   ProfileWrapper,
@@ -23,7 +24,7 @@ import {
   UserContentWrapper,
   AvatarWrapper,
   FormWrapper,
-  Avatart,
+  AvatarLabel,
   UserNameWrapper,
   FormControlStyled,
   UploadInput,
@@ -253,11 +254,11 @@ class UserProfile extends React.PureComponent<Props, State> {
     const { file } = this.state
     const { userName, userId } = this.props
 
-    if (file) {
-      return <img src={URL.createObjectURL(file)} alt={userName} />
+    if (file) { 
+      return <ExifOrientationImg src={URL.createObjectURL(file)} alt={userName} />
     }
 
-    return <img src={getAvatarUrl(userId)} alt={userName} />
+    return <ExifOrientationImg src={getAvatarUrl(userId)} alt={userName} />
   }
 
   componentDidMount() {
@@ -286,7 +287,7 @@ class UserProfile extends React.PureComponent<Props, State> {
             <UserContentWrapper>
               <AvatarWrapper>
                 <Tooltip title={`Upload your avatar`}>
-                  <Avatart htmlFor="file">
+                  <AvatarLabel htmlFor="file">
                     <UploadInput
                       type="file"
                       id="file"
@@ -295,7 +296,7 @@ class UserProfile extends React.PureComponent<Props, State> {
                       accept="image/x-png,image/gif,image/jpeg"
                     />
                     {this.renderAvatar()}
-                  </Avatart>
+                  </AvatarLabel>
                 </Tooltip>
               </AvatarWrapper>
               <FormWrapper onSubmit={this.onFormSubmit}>

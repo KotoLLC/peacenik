@@ -5,7 +5,8 @@ import TextareaAutosize from 'react-autosize-textarea'
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import Avatar from '@material-ui/core/Avatar'
+import ExifOrientationImg from 'react-exif-orientation-img'
+import { Avatar } from '@view/shared/styles'
 
 export const ContainerStyled = styled(Container)`
   && {
@@ -262,7 +263,7 @@ export const UploadInput = styled.input`
   display: none;
 `
 
-export const ImagePreview = styled.img`
+export const ImagePreview = styled(ExifOrientationImg)`
   max-width: 100%;
   max-height: 500px;
   
@@ -310,9 +311,7 @@ export const AvatarWrapper = styled.div`
 
 export const AvatarStyled = styled(Avatar)`
   margin-right: 10px;
-  && {
-    background: #bdbdbd;
-  }
+  background: #bdbdbd;
 `
 
 export const LikesWrapper = styled.p`

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, ChangeEvent, useRef } from 'react'
 import ReactMarkdown from 'react-markdown'
-import Avatar from '@material-ui/core/Avatar'
 import EditIcon from '@material-ui/icons/Edit'
 import RemoveMessageDialog from './RemoveMessageDialog'
 import moment from 'moment'
@@ -49,6 +48,7 @@ import {
   EditMessageWrapper,
   EditorInMessageWrapper,
 } from './styles'
+import { Avatar } from '@view/shared/styles'
 
 interface Props extends ApiTypes.Messages.Message {
   isAuthor: boolean

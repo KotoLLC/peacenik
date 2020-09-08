@@ -10,7 +10,6 @@ import { history } from '@view/routes'
 import selectors from '@selectors/index'
 import { StoreTypes } from 'src/types'
 import logo from './../../assets/images/logo-white.png'
-import Avatar from '@material-ui/core/Avatar'
 import { getAvatarUrl } from '@services/avatarUrl'
 import Badge from '@material-ui/core/Badge'
 import {
@@ -20,6 +19,7 @@ import {
   TopBarRightSide,
   NotificationsWrapper,
   AvatarWrapper,
+  Avatar,
   Logo,
 } from './styles'
 
@@ -51,7 +51,7 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
           </NotificationsWrapper>}
           <TopMenu />
           <AvatarWrapper to="/user-profile">
-            <Avatar variant="rounded" src={getAvatarUrl(userId)} />
+            <Avatar src={getAvatarUrl(userId)} />
           </AvatarWrapper>
           <TooltipStyle title={`Logout`}>
             <IconButtonStyled onClick={onLogoutClick}>
