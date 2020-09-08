@@ -15,7 +15,6 @@ import { getAvatarUrl } from '@services/avatarUrl'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
-import ExifOrientationImg from 'react-exif-orientation-img'
 import {
   ContainerStyled,
   ProfileWrapper,
@@ -255,10 +254,10 @@ class UserProfile extends React.PureComponent<Props, State> {
     const { userName, userId } = this.props
 
     if (file) { 
-      return <ExifOrientationImg src={URL.createObjectURL(file)} alt={userName} />
+      return <img src={URL.createObjectURL(file)} alt={userName} />
     }
 
-    return <ExifOrientationImg src={getAvatarUrl(userId)} alt={userName} />
+    return <img src={getAvatarUrl(userId)} alt={userName} />
   }
 
   componentDidMount() {

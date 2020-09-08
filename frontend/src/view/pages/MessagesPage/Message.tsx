@@ -18,7 +18,7 @@ import Badge from '@material-ui/core/Badge'
 import SendIcon from '@material-ui/icons/Send'
 import LayersClearIcon from '@material-ui/icons/LayersClear'
 import { getAvatarUrl } from '@services/avatarUrl'
-
+import Avatar from '@material-ui/core/Avatar'
 import {
   PaperStyled,
   MessageHeader,
@@ -48,7 +48,6 @@ import {
   EditMessageWrapper,
   EditorInMessageWrapper,
 } from './styles'
-import { Avatar } from '@view/shared/styles'
 
 interface Props extends ApiTypes.Messages.Message {
   isAuthor: boolean

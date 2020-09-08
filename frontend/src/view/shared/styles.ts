@@ -8,7 +8,6 @@ import Tabs from '@material-ui/core/Tabs'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
 import { Link } from 'react-router-dom'
-import ExifOrientationImg from 'react-exif-orientation-img'
 
 export const TooltipStyle = styled(Tooltip)`
   && {
@@ -161,17 +160,4 @@ export const AvatarWrapper = styled(Link)`
   width: 40px;
   height: 40px;
   margin: 0 10px;
-`
-
-export const Avatar = styled(ExifOrientationImg)`
-  width: 40px;
-  height: 40px;
-  display: flex;
-  overflow: hidden;
-  position: relative;
-  align-items: center;
-  flex-shrink: 0;
-  line-height: 1;
-  border-radius: 50%;
-  justify-content: center;
 `

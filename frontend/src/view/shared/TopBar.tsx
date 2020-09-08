@@ -12,6 +12,7 @@ import { StoreTypes } from 'src/types'
 import logo from './../../assets/images/logo-white.png'
 import { getAvatarUrl } from '@services/avatarUrl'
 import Badge from '@material-ui/core/Badge'
+import Avatar from '@material-ui/core/Avatar'
 import {
   TooltipStyle,
   IconButtonStyled,
@@ -19,7 +20,6 @@ import {
   TopBarRightSide,
   NotificationsWrapper,
   AvatarWrapper,
-  Avatar,
   Logo,
 } from './styles'
 

@@ -9,6 +9,7 @@ import Tooltip from '@material-ui/core/Tooltip'
 import LayersClearIcon from '@material-ui/icons/LayersClear'
 import { Player } from 'video-react'
 import { getAvatarUrl } from '@services/avatarUrl'
+import Avatar from '@material-ui/core/Avatar'
 import {
   TextareaAutosizeStyled,
   ButtonSend,
@@ -23,7 +24,6 @@ import {
   AvatarWrapper,
   ErrorMessage,
 } from './styles'
-import { Avatar } from '@view/shared/styles'
 
 interface Props {
   authToken: string
