@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/ansel1/merry"
 	"github.com/go-chi/chi"
@@ -44,7 +45,7 @@ func NewServer(cfg config.Config, pubKeyPEM string, repos repo.Repos, tokenGener
 	staticFS http.FileSystem) *Server {
 	sessionStore := sessions.NewCookieStore([]byte(cookieAuthenticationKey))
 	sessionStore.Options.HttpOnly = true
-	sessionStore.Options.MaxAge = 0
+	sessionStore.Options.MaxAge = int((time.Hour * 24 * 30).Seconds())
 
 	return &Server{
 		cfg:            cfg,
