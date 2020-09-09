@@ -3,8 +3,10 @@ package userhub
 import (
 	"context"
 	"errors"
+	fmt "fmt"
 	"log"
 	"net/http"
+	"net/http/httputil"
 	"time"
 
 	"github.com/ansel1/merry"
@@ -169,6 +171,15 @@ func (s *Server) findSessionUser(next http.Handler) http.Handler {
 
 func (s *Server) checkAuth(next http.Handler) http.Handler {
 	return s.findSessionUser(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// TODO: remove
+		if r.URL.Path == "/rpc.UserService/RegisterFCMToken" {
+			requestDump, err := httputil.DumpRequest(r, true)
+			if err != nil {
+				fmt.Println(err)
+			}
+			fmt.Println(string(requestDump))
+		}
+
 		user, ok := r.Context().Value(services.ContextUserKey).(repo.User)
 		if !ok {
 			http.Error(w, "", http.StatusUnauthorized)
