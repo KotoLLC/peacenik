@@ -17,7 +17,7 @@ export function* watchGetMessages() {
     const kotoMessageTokens = {
       tokens: messageTokens
     }
-    sessionStorage.setItem('kotoMessageTokens', JSON.stringify(kotoMessageTokens))
+    localStorage.setItem('kotoMessageTokens', JSON.stringify(kotoMessageTokens))
 
     const state = yield select()
     const hubsWithMessages = selectors.messages.hubsWithMessages(state)
@@ -52,7 +52,7 @@ export function* watchGetMessages() {
       ))
     }
   } else if (response.error.response.status === 401) {
-    sessionStorage.clear()
+    localStorage.clear()
     window.location.reload()
   }
 }
@@ -74,7 +74,7 @@ export function* watchGetMoreMessages() {
       },
     })))
   } else if (response.error.response.status === 401) {
-    sessionStorage.clear()
+    localStorage.clear()
     window.location.reload()
   } else {
     yield put(Actions.messages.getMoreMessagesFailed())
@@ -87,7 +87,7 @@ export function* watchGetCurrentHub() {
   if (response.status === 200) {
     yield put(Actions.messages.getCurrentHubSuccess(currentHubBack2Front(response.data?.tokens)))
   } else if (response.error.response.status === 401) {
-    sessionStorage.clear()
+    localStorage.clear()
     window.location.reload()
   } else {
     yield put(Actions.messages.getCurrentHubFailed())

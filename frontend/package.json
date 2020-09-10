@@ -18,6 +18,7 @@
 		"@types/node": "14.0.14",
 		"@types/react-router-dom": "^5.1.5",
 		"axios": "^0.19.2",
+		"blueimp-load-image": "^5.14.0",
 		"core-js": "^3.6.5",
 		"dotenv": "^8.2.0",
 		"github-markdown-css": "^4.0.0",

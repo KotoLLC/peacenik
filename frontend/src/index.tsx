@@ -59,7 +59,7 @@ class AppComponent extends React.Component<Props> {
   state = {}
 
   checkTokenTime = () => {
-    const authTokenDate = sessionStorage.getItem('kotoAuthTokenDate')
+    const authTokenDate = localStorage.getItem('kotoAuthTokenDate')
     const { isEmailConfirmed } = this.props
 
     if (authTokenDate && isEmailConfirmed) {

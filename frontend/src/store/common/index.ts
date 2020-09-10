@@ -6,7 +6,7 @@ export interface State {
   isAboutUsViewed: boolean
 }
 
-const kotoIsAboutUsViewed = sessionStorage.getItem('kotoIsAboutUsViewed')
+const kotoIsAboutUsViewed = localStorage.getItem('kotoIsAboutUsViewed')
 
 const initialState: State = {
   errorMessage: '',
