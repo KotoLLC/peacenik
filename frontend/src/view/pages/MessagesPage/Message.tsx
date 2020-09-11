@@ -19,6 +19,7 @@ import SendIcon from '@material-ui/icons/Send'
 import LayersClearIcon from '@material-ui/icons/LayersClear'
 import { getAvatarUrl } from '@services/avatarUrl'
 import Avatar from '@material-ui/core/Avatar'
+import loadImage from 'blueimp-load-image'
 import {
   PaperStyled,
   MessageHeader,
@@ -104,8 +105,8 @@ const Message: React.SFC<Props> = (props) => {
 
   const onMessageSave = () => {
 
-    let attachment_changed = (file?.name) ? true : false
-    let attachment_id = (file?.name) && uploadLink?.blob_id
+    let attachment_changed = (file?.size) ? true : false
+    let attachment_id = file?.size ? uploadLink?.blob_id : ''
     
     if (isAttacmentDeleted) {
       attachment_changed = true
@@ -222,7 +223,7 @@ const Message: React.SFC<Props> = (props) => {
       return null
     }
 
-    if (file?.name && file?.type.indexOf('image') !== -1) {
+    if (file?.size && file?.type.indexOf('image') !== -1) {
       return (
         <AttachmentWrapper>
           <ImagePreview src={URL.createObjectURL(file)} />
@@ -315,7 +316,25 @@ const Message: React.SFC<Props> = (props) => {
         content_type: uploadedFile[0].type,
         file_name: uploadedFile[0].name,
       })
-      setFile(uploadedFile[0])
+
+      /* tslint:disable */
+      loadImage(
+        uploadedFile[0],
+        function (img, data) {
+          if (data.imageHead && data.exif) {
+            // Reset Exif Orientation data:
+            loadImage.writeExifData(data.imageHead, data, 'Orientation', 1)
+            img.toBlob(function (blob) {
+              loadImage.replaceHead(blob, data.imageHead, function (newBlob) {
+                setFile(newBlob)
+              })
+            }, 'image/jpeg')
+          }
+        },
+        { meta: true, orientation: true, canvas: true }
+      )
+      /* tslint:enable */
+
     }
   }
 

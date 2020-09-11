@@ -15,6 +15,8 @@ import { getAvatarUrl } from '@services/avatarUrl'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
+import loadImage from 'blueimp-load-image'
+
 import {
   ContainerStyled,
   ProfileWrapper,
@@ -118,7 +120,7 @@ class UserProfile extends React.PureComponent<Props, State> {
         })
         return false
       }
-  
+
       if (!validate.isPasswordValid(newPassword)) {
         this.setState({
           errorMessage: 'New password is incorrect',
@@ -182,14 +184,35 @@ class UserProfile extends React.PureComponent<Props, State> {
     })
 
     const file = event.target.files
+
     if (file && file[0]) {
       onGetUploadLink({
         content_type: file[0].type,
         file_name: file[0].name,
       })
-      this.setState({
-        file: file[0],
-      })
+
+      const self = this
+
+      /* tslint:disable */
+      loadImage(
+        file[0],
+        function (img, data) {
+          if (data.imageHead && data.exif) {
+            // Reset Exif Orientation data:
+            loadImage.writeExifData(data.imageHead, data, 'Orientation', 1)
+            img.toBlob(function (blob) {
+              loadImage.replaceHead(blob, data.imageHead, function (newBlob) {
+                self.setState({
+                  file: newBlob,
+                })
+              })
+            }, 'image/jpeg')
+          }
+        },
+        { meta: true, orientation: true, canvas: true }
+      )
+      /* tslint:enable */
+
     }
   }
 
@@ -198,7 +221,7 @@ class UserProfile extends React.PureComponent<Props, State> {
       isCurrentPasswordVisible: value
     })
   }
-  
+
   onNewPasswordOpen = (value: boolean) => {
     this.setState({
       isNewPasswordVisible: value
@@ -245,7 +268,7 @@ class UserProfile extends React.PureComponent<Props, State> {
         email: newProps.userEmail
       }
     }
-    
+
     return null
   }
 
@@ -253,7 +276,7 @@ class UserProfile extends React.PureComponent<Props, State> {
     const { file } = this.state
     const { userName, userId } = this.props
 
-    if (file) { 
+    if (file) {
       return <img src={URL.createObjectURL(file)} alt={userName} />
     }
 
