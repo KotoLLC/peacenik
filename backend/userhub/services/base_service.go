@@ -10,23 +10,25 @@ import (
 )
 
 type BaseService struct {
-	repos           repo.Repos
-	s3Storage       *common.S3Storage
-	tokenGenerator  token.Generator
-	tokenParser     token.Parser
-	mailSender      *common.MailSender
-	frontendAddress string
+	repos              repo.Repos
+	s3Storage          *common.S3Storage
+	tokenGenerator     token.Generator
+	tokenParser        token.Parser
+	mailSender         *common.MailSender
+	frontendAddress    string
+	notificationSender NotificationSender
 }
 
 func NewBase(repos repo.Repos, s3Storage *common.S3Storage, tokenGenerator token.Generator, tokenParser token.Parser,
-	mailSender *common.MailSender, frontendAddress string) *BaseService {
+	mailSender *common.MailSender, frontendAddress string, notificationSender NotificationSender) *BaseService {
 	return &BaseService{
-		repos:           repos,
-		s3Storage:       s3Storage,
-		tokenGenerator:  tokenGenerator,
-		tokenParser:     tokenParser,
-		mailSender:      mailSender,
-		frontendAddress: frontendAddress,
+		repos:              repos,
+		s3Storage:          s3Storage,
+		tokenGenerator:     tokenGenerator,
+		tokenParser:        tokenParser,
+		mailSender:         mailSender,
+		frontendAddress:    frontendAddress,
+		notificationSender: notificationSender,
 	}
 }
 

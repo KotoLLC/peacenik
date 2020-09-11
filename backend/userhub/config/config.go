@@ -18,6 +18,7 @@ type Config struct {
 	FrontendAddress      string `yaml:"frontend" default:"http://localhost:3000" env:"KOTO_FRONTEND_ADDRESS"`
 	TestMode             bool   `yaml:"test_mode" default:"false" env:"KOTO_TEST_MODE"`
 	AdminFriendship      string `yaml:"admin_friendship" default:"" env:"KOTO_ADMIN_FRIENDSHIP"`
+	FirebaseToken        string `yaml:"firebase_token" default:"" env:"KOTO_FIREBASE_TOKEN"`
 
 	DB   common.DatabaseConfig `yaml:"db"`
 	S3   common.S3Config       `yaml:"s3"`

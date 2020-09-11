@@ -47,13 +47,10 @@ func (s *messageHubService) Register(ctx context.Context, r *rpc.MessageHubRegis
 			log.Println(err)
 		}
 		if adminUser != nil {
-			err = s.repos.Notification.AddNotification(adminUser.ID, user.Name+" added a new message hub", "message-hub/add", map[string]interface{}{
+			s.notificationSender.SendNotification(adminUser.ID, user.Name+" added a new message hub", "message-hub/add", map[string]interface{}{
 				"user_id": user.ID,
 				"hub_id":  hubID,
 			})
-			if err != nil {
-				log.Println(err)
-			}
 		}
 	}
 	return &rpc.Empty{}, nil
@@ -111,14 +108,10 @@ func (s *messageHubService) Approve(ctx context.Context, r *rpc.MessageHubApprov
 		return nil, err
 	}
 
-	err = s.repos.Notification.AddNotification(hub.AdminID, user.Name+" approved your message hub", "message-hub/approve", map[string]interface{}{
+	s.notificationSender.SendNotification(hub.AdminID, user.Name+" approved your message hub", "message-hub/approve", map[string]interface{}{
 		"user_id": user.ID,
 		"hub_id":  r.HubId,
 	})
-	if err != nil {
-		log.Println(err)
-	}
-
 	return &rpc.Empty{}, nil
 }
 
@@ -142,13 +135,10 @@ func (s *messageHubService) Remove(ctx context.Context, r *rpc.MessageHubRemoveR
 	}
 
 	if hub.AdminID != user.ID {
-		err = s.repos.Notification.AddNotification(hub.AdminID, user.Name+" removed your message hub", "message-hub/remove", map[string]interface{}{
+		s.notificationSender.SendNotification(hub.AdminID, user.Name+" removed your message hub", "message-hub/remove", map[string]interface{}{
 			"user_id": user.ID,
 			"hub_id":  r.HubId,
 		})
-		if err != nil {
-			log.Println(err)
-		}
 	}
 
 	return &rpc.Empty{}, nil
