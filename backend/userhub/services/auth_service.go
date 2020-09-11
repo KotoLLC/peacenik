@@ -315,12 +315,9 @@ func (s *authService) confirmUser(confirmToken string) error {
 		if err != nil {
 			return merry.Wrap(err)
 		}
-		err = s.repos.Notification.AddNotification(admin.ID, user.Name+" invited you to be friends", "invite/add", map[string]interface{}{
+		s.notificationSender.SendNotification(admin.ID, user.Name+" invited you to be friends", "invite/add", map[string]interface{}{
 			"user_id": user.ID,
 		})
-		if err != nil {
-			log.Println(err)
-		}
 		err = s.sendInviteLinkToRegisteredUser(*user, admin.Email)
 		if err != nil {
 			log.Println("can't invite by email:", err)
@@ -334,12 +331,9 @@ func (s *authService) confirmUser(confirmToken string) error {
 		if err != nil {
 			return merry.Wrap(err)
 		}
-		err = s.repos.Notification.AddNotification(admin.ID, user.Name+" is registered and added to your friends!", "invite/accept", map[string]interface{}{
+		s.notificationSender.SendNotification(admin.ID, user.Name+" is registered and added to your friends!", "invite/accept", map[string]interface{}{
 			"user_id": user.ID,
 		})
-		if err != nil {
-			log.Println(err)
-		}
 	}
 	return nil
 }

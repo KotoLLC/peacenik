@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/ansel1/merry"
+	"github.com/appleboy/go-fcm"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
@@ -86,7 +87,18 @@ func (s *Server) Run() error {
 		},
 	}
 	mailSender := common.NewMailSender(s.cfg.SMTP)
-	baseService := services.NewBase(s.repos, s.s3Storage, s.tokenGenerator, s.tokenParser, mailSender, s.cfg.FrontendAddress)
+	var firebaseClient *fcm.Client
+	if s.cfg.FirebaseToken != "" {
+		var err error
+		firebaseClient, err = fcm.NewClient(s.cfg.FirebaseToken)
+		if err != nil {
+			return merry.Prepend(err, "can't create Firebase client")
+		}
+	}
+	notificationSender := services.NewNotificationSender(s.repos.Notification, firebaseClient)
+	notificationSender.Start()
+	baseService := services.NewBase(s.repos, s.s3Storage, s.tokenGenerator, s.tokenParser, mailSender,
+		s.cfg.FrontendAddress, notificationSender)
 
 	passwordHash := bcrypt.NewPasswordHash()
 

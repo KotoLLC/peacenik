@@ -76,12 +76,9 @@ func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) 
 		if err != nil {
 			return nil, err
 		}
-		err = s.repos.Notification.AddNotification(friend.ID, user.Name+" invited you to be friends", "invite/add", map[string]interface{}{
+		s.notificationSender.SendNotification(friend.ID, user.Name+" invited you to be friends", "invite/add", map[string]interface{}{
 			"user_id": user.ID,
 		})
-		if err != nil {
-			log.Println(err)
-		}
 		err = s.sendInviteLinkToRegisteredUser(user, friend.Email)
 		if err != nil {
 			log.Println("can't invite by email:", err)
@@ -110,12 +107,9 @@ func (s *inviteService) Accept(ctx context.Context, r *rpc.InviteAcceptRequest) 
 		}
 		return nil, err
 	}
-	err = s.repos.Notification.AddNotification(r.InviterId, user.Name+" accepted your invite!", "invite/accept", map[string]interface{}{
+	s.notificationSender.SendNotification(r.InviterId, user.Name+" accepted your invite!", "invite/accept", map[string]interface{}{
 		"user_id": user.ID,
 	})
-	if err != nil {
-		log.Println(err)
-	}
 	return &rpc.Empty{}, nil
 }
 
@@ -128,12 +122,9 @@ func (s *inviteService) Reject(ctx context.Context, r *rpc.InviteRejectRequest) 
 		}
 		return nil, err
 	}
-	err = s.repos.Notification.AddNotification(r.InviterId, user.Name+" rejected your invite", "invite/reject", map[string]interface{}{
+	s.notificationSender.SendNotification(r.InviterId, user.Name+" rejected your invite", "invite/reject", map[string]interface{}{
 		"user_id": user.ID,
 	})
-	if err != nil {
-		log.Println(err)
-	}
 	return &rpc.Empty{}, nil
 }
 
