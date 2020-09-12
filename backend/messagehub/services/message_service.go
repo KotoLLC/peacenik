@@ -89,32 +89,26 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		return nil, err
 	}
 
-	for _, friendID := range friends {
-		err = s.repos.Notification.AddNotification(friendID, msg.UserName+" posted a new message", "message/post", map[string]interface{}{
-			"user_id":    msg.UserID,
-			"message_id": msg.ID,
-		})
-		if err != nil {
-			log.Println(err)
-		}
-	}
+	s.notificationSender.SendNotification(friends, msg.UserName+" posted a new message", "message/post", map[string]interface{}{
+		"user_id":    msg.UserID,
+		"message_id": msg.ID,
+	})
 
 	userTags := message.FindUserTags(msg.Text)
 	users, err := s.repos.User.FindUsersByName(userTags)
 	if err != nil {
 		return nil, err
 	}
+	notifyUsers := make([]string, 0, len(users))
 	for _, u := range users {
 		if u.ID != msg.UserID {
-			err = s.repos.Notification.AddNotification(u.ID, msg.UserName+" tagged you in a message", "message/tag", map[string]interface{}{
-				"user_id":    msg.UserID,
-				"message_id": msg.ID,
-			})
-			if err != nil {
-				log.Println(err)
-			}
+			notifyUsers = append(notifyUsers, u.ID)
 		}
 	}
+	s.notificationSender.SendNotification(notifyUsers, msg.UserName+" tagged you in a message", "message/tag", map[string]interface{}{
+		"user_id":    msg.UserID,
+		"message_id": msg.ID,
+	})
 
 	attachmentLink, err := s.createBlobLink(ctx, msg.AttachmentID)
 	if err != nil {
@@ -513,14 +507,11 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 	}
 
 	if user.ID != msg.UserID {
-		err = s.repos.Notification.AddNotification(msg.UserID, user.Name+" posted a new comment", "comment/post", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{msg.UserID}, user.Name+" posted a new comment", "comment/post", map[string]interface{}{
 			"user_id":    user.ID,
 			"message_id": msg.ID,
 			"comment_id": comment.ID,
 		})
-		if err != nil {
-			log.Println(err)
-		}
 	}
 
 	userTags := message.FindUserTags(comment.Text)
@@ -528,18 +519,18 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 	if err != nil {
 		return nil, err
 	}
+
+	notifyUsers := make([]string, 0, len(users))
 	for _, u := range users {
 		if u.ID != comment.UserID {
-			err = s.repos.Notification.AddNotification(u.ID, comment.UserName+" tagged you in a comment", "comment/tag", map[string]interface{}{
-				"user_id":    comment.UserID,
-				"message_id": msg.ID,
-				"comment_id": comment.ID,
-			})
-			if err != nil {
-				log.Println(err)
-			}
+			notifyUsers = append(notifyUsers, u.ID)
 		}
 	}
+	s.notificationSender.SendNotification(notifyUsers, comment.UserName+" tagged you in a comment", "comment/tag", map[string]interface{}{
+		"user_id":    comment.UserID,
+		"message_id": msg.ID,
+		"comment_id": comment.ID,
+	})
 
 	attachmentLink, err := s.createBlobLink(ctx, comment.AttachmentID)
 	if err != nil {
@@ -709,13 +700,10 @@ func (s *messageService) LikeMessage(ctx context.Context, r *rpc.MessageLikeMess
 	if err != nil {
 		return nil, err
 	}
-	err = s.repos.Notification.AddNotification(msg.UserID, user.Name+" liked your post", "message/like", map[string]interface{}{
+	s.notificationSender.SendNotification([]string{msg.UserID}, user.Name+" liked your post", "message/like", map[string]interface{}{
 		"user_id":    user.ID,
 		"message_id": msg.ID,
 	})
-	if err != nil {
-		log.Println(err)
-	}
 	return &rpc.MessageLikeMessageResponse{
 		Likes: int32(newLikeCount),
 	}, nil
@@ -742,14 +730,11 @@ func (s *messageService) LikeComment(ctx context.Context, r *rpc.MessageLikeComm
 	if err != nil {
 		return nil, err
 	}
-	err = s.repos.Notification.AddNotification(comment.UserID, user.Name+" liked your comment", "comment/like", map[string]interface{}{
+	s.notificationSender.SendNotification([]string{comment.UserID}, user.Name+" liked your comment", "comment/like", map[string]interface{}{
 		"user_id":    user.ID,
 		"message_id": comment.ParentID.String,
 		"comment_id": comment.ID,
 	})
-	if err != nil {
-		log.Println(err)
-	}
 	return &rpc.MessageLikeCommentResponse{
 		Likes: int32(newLikeCount),
 	}, nil

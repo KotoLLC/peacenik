@@ -1,14 +1,52 @@
-package token
+package common
 
 import (
+	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
 	"io/ioutil"
+	"os"
 
 	"github.com/ansel1/merry"
 	"github.com/dgrijalva/jwt-go"
 )
+
+func GenerateRSAKey(keyPath string) error {
+	_, err := os.Stat(keyPath)
+	if err == nil {
+		return nil
+	}
+	if !os.IsNotExist(err) {
+		return merry.Wrap(err)
+	}
+
+	const bitSize = 1024
+	reader := rand.Reader
+	key, err := rsa.GenerateKey(reader, bitSize)
+	if err != nil {
+		return err
+	}
+
+	outFile, err := os.Create(keyPath)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		_ = outFile.Close()
+	}()
+
+	var privateKey = &pem.Block{
+		Type:  "PRIVATE KEY",
+		Bytes: x509.MarshalPKCS1PrivateKey(key),
+	}
+
+	err = pem.Encode(outFile, privateKey)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 func RSAKeysFromPrivateKeyFile(privateKeyPath string) (privateKey *rsa.PrivateKey, publicKey *rsa.PublicKey, publicKeyPEM []byte, err error) {
 	privateKeyBytes, err := ioutil.ReadFile(privateKeyPath)

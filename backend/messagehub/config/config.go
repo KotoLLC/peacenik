@@ -12,6 +12,7 @@ type Config struct {
 	ExternalAddress      string `yaml:"external_address" default:"http://localhost:12002" env:"KOTO_EXTERNAL_ADDRESS"`
 	CentralServerAddress string `yaml:"central_address" env:"KOTO_CENTRAL_ADDRESS"`
 	UserHubAddress       string `yaml:"user_hub_address" env:"KOTO_USER_HUB_ADDRESS"`
+	PrivateKeyPath       string `yaml:"private_key_path" default:"message_hub.rsa" env:"KOTO_PRIVATE_KEY"`
 
 	DB common.DatabaseConfig `yaml:"db"`
 	S3 common.S3Config       `yaml:"s3"`

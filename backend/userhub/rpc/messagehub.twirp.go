@@ -1025,7 +1025,7 @@ func (s *messageHubServiceServer) serveSetPostLimitProtobuf(ctx context.Context,
 }
 
 func (s *messageHubServiceServer) ServiceDescriptor() ([]byte, int) {
-	return twirpFileDescriptor4, 0
+	return twirpFileDescriptor5, 0
 }
 
 func (s *messageHubServiceServer) ProtocGenTwirpVersion() string {
@@ -1036,7 +1036,7 @@ func (s *messageHubServiceServer) PathPrefix() string {
 	return MessageHubServicePathPrefix
 }
 
-var twirpFileDescriptor4 = []byte{
+var twirpFileDescriptor5 = []byte{
 	// 425 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x93, 0x5f, 0x8b, 0xd3, 0x40,
 	0x14, 0xc5, 0x69, 0xda, 0xa6, 0xed, 0xad, 0x88, 0x0e, 0xa8, 0xb1, 0x1a, 0x5d, 0xf2, 0xd4, 0xa7,

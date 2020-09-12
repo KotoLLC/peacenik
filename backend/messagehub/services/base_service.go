@@ -21,18 +21,20 @@ type User struct {
 }
 
 type BaseService struct {
-	repos           repo.Repos
-	tokenParser     token.Parser
-	externalAddress string
-	s3Storage       *common.S3Storage
+	repos              repo.Repos
+	tokenParser        token.Parser
+	externalAddress    string
+	s3Storage          *common.S3Storage
+	notificationSender NotificationSender
 }
 
-func NewBase(repos repo.Repos, tokenParser token.Parser, externalAddress string, s3Storage *common.S3Storage) *BaseService {
+func NewBase(repos repo.Repos, tokenParser token.Parser, externalAddress string, s3Storage *common.S3Storage, notificationSender NotificationSender) *BaseService {
 	return &BaseService{
-		repos:           repos,
-		tokenParser:     tokenParser,
-		externalAddress: externalAddress,
-		s3Storage:       s3Storage,
+		repos:              repos,
+		tokenParser:        tokenParser,
+		externalAddress:    externalAddress,
+		s3Storage:          s3Storage,
+		notificationSender: notificationSender,
 	}
 }
 

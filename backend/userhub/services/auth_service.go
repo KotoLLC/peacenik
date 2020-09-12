@@ -315,7 +315,7 @@ func (s *authService) confirmUser(confirmToken string) error {
 		if err != nil {
 			return merry.Wrap(err)
 		}
-		s.notificationSender.SendNotification(admin.ID, user.Name+" invited you to be friends", "invite/add", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{admin.ID}, user.Name+" invited you to be friends", "invite/add", map[string]interface{}{
 			"user_id": user.ID,
 		})
 		err = s.sendInviteLinkToRegisteredUser(*user, admin.Email)
@@ -331,7 +331,7 @@ func (s *authService) confirmUser(confirmToken string) error {
 		if err != nil {
 			return merry.Wrap(err)
 		}
-		s.notificationSender.SendNotification(admin.ID, user.Name+" is registered and added to your friends!", "invite/accept", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{admin.ID}, user.Name+" is registered and added to your friends!", "invite/accept", map[string]interface{}{
 			"user_id": user.ID,
 		})
 	}

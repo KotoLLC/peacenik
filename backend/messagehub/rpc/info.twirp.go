@@ -21,6 +21,8 @@ import ctxsetters "github.com/twitchtv/twirp/ctxsetters"
 // =====================
 
 type InfoService interface {
+	PublicKey(context.Context, *Empty) (*InfoPublicKeyResponse, error)
+
 	Version(context.Context, *Empty) (*InfoVersionResponse, error)
 }
 
@@ -30,7 +32,7 @@ type InfoService interface {
 
 type infoServiceProtobufClient struct {
 	client HTTPClient
-	urls   [1]string
+	urls   [2]string
 	opts   twirp.ClientOptions
 }
 
@@ -47,7 +49,8 @@ func NewInfoServiceProtobufClient(addr string, client HTTPClient, opts ...twirp.
 	}
 
 	prefix := urlBase(addr) + InfoServicePathPrefix
-	urls := [1]string{
+	urls := [2]string{
+		prefix + "PublicKey",
 		prefix + "Version",
 	}
 
@@ -58,12 +61,32 @@ func NewInfoServiceProtobufClient(addr string, client HTTPClient, opts ...twirp.
 	}
 }
 
+func (c *infoServiceProtobufClient) PublicKey(ctx context.Context, in *Empty) (*InfoPublicKeyResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "InfoService")
+	ctx = ctxsetters.WithMethodName(ctx, "PublicKey")
+	out := new(InfoPublicKeyResponse)
+	err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[0], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
 func (c *infoServiceProtobufClient) Version(ctx context.Context, in *Empty) (*InfoVersionResponse, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "rpc")
 	ctx = ctxsetters.WithServiceName(ctx, "InfoService")
 	ctx = ctxsetters.WithMethodName(ctx, "Version")
 	out := new(InfoVersionResponse)
-	err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[0], in, out)
+	err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[1], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -84,7 +107,7 @@ func (c *infoServiceProtobufClient) Version(ctx context.Context, in *Empty) (*In
 
 type infoServiceJSONClient struct {
 	client HTTPClient
-	urls   [1]string
+	urls   [2]string
 	opts   twirp.ClientOptions
 }
 
@@ -101,7 +124,8 @@ func NewInfoServiceJSONClient(addr string, client HTTPClient, opts ...twirp.Clie
 	}
 
 	prefix := urlBase(addr) + InfoServicePathPrefix
-	urls := [1]string{
+	urls := [2]string{
+		prefix + "PublicKey",
 		prefix + "Version",
 	}
 
@@ -112,12 +136,32 @@ func NewInfoServiceJSONClient(addr string, client HTTPClient, opts ...twirp.Clie
 	}
 }
 
+func (c *infoServiceJSONClient) PublicKey(ctx context.Context, in *Empty) (*InfoPublicKeyResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "InfoService")
+	ctx = ctxsetters.WithMethodName(ctx, "PublicKey")
+	out := new(InfoPublicKeyResponse)
+	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[0], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
 func (c *infoServiceJSONClient) Version(ctx context.Context, in *Empty) (*InfoVersionResponse, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "rpc")
 	ctx = ctxsetters.WithServiceName(ctx, "InfoService")
 	ctx = ctxsetters.WithMethodName(ctx, "Version")
 	out := new(InfoVersionResponse)
-	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[0], in, out)
+	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[1], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -180,6 +224,9 @@ func (s *infoServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 	}
 
 	switch req.URL.Path {
+	case "/rpc.InfoService/PublicKey":
+		s.servePublicKey(ctx, resp, req)
+		return
 	case "/rpc.InfoService/Version":
 		s.serveVersion(ctx, resp, req)
 		return
@@ -189,6 +236,135 @@ func (s *infoServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 		s.writeError(ctx, resp, err)
 		return
 	}
+}
+
+func (s *infoServiceServer) servePublicKey(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.servePublicKeyJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.servePublicKeyProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *infoServiceServer) servePublicKeyJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "PublicKey")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(Empty)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *InfoPublicKeyResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.InfoService.PublicKey(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *InfoPublicKeyResponse and nil error while calling PublicKey. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *infoServiceServer) servePublicKeyProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "PublicKey")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(Empty)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *InfoPublicKeyResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.InfoService.PublicKey(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *InfoPublicKeyResponse and nil error while calling PublicKey. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
 }
 
 func (s *infoServiceServer) serveVersion(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
@@ -333,15 +509,18 @@ func (s *infoServiceServer) PathPrefix() string {
 }
 
 var twirpFileDescriptor1 = []byte{
-	// 156 bytes of a gzipped FileDescriptorProto
+	// 202 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0xca, 0xcc, 0x4b, 0xcb,
 	0xd7, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x2e, 0x2a, 0x48, 0x96, 0xe2, 0xce, 0xcd, 0x4f,
-	0x49, 0xcd, 0x81, 0x88, 0x28, 0xd9, 0x70, 0x09, 0x7b, 0xe6, 0xa5, 0xe5, 0x87, 0xa5, 0x16, 0x15,
-	0x67, 0xe6, 0xe7, 0x05, 0xa5, 0x16, 0x17, 0xe4, 0xe7, 0x15, 0xa7, 0x0a, 0xa9, 0x72, 0xf1, 0xa5,
-	0xe4, 0x27, 0x67, 0xa7, 0x16, 0xc5, 0x97, 0x16, 0xa4, 0x24, 0x96, 0xa4, 0xa6, 0x48, 0x30, 0x2a,
-	0x30, 0x6a, 0x70, 0x06, 0xf1, 0x42, 0x44, 0x43, 0x21, 0x82, 0x46, 0x76, 0x5c, 0xdc, 0x20, 0xdd,
-	0xc1, 0xa9, 0x45, 0x65, 0x99, 0xc9, 0xa9, 0x42, 0xfa, 0x5c, 0xec, 0x50, 0x83, 0x84, 0xb8, 0xf4,
-	0x8a, 0x0a, 0x92, 0xf5, 0x5c, 0x73, 0x0b, 0x4a, 0x2a, 0xa5, 0x24, 0xc0, 0x6c, 0x2c, 0xd6, 0x38,
-	0x71, 0x44, 0xb1, 0xe9, 0xe9, 0xe9, 0x17, 0x15, 0x24, 0x27, 0xb1, 0x81, 0x9d, 0x63, 0x0c, 0x08,
-	0x00, 0x00, 0xff, 0xff, 0xf4, 0xa2, 0x64, 0xd7, 0xae, 0x00, 0x00, 0x00,
+	0x49, 0xcd, 0x81, 0x88, 0x28, 0x99, 0x71, 0x89, 0x7a, 0xe6, 0xa5, 0xe5, 0x07, 0x94, 0x26, 0xe5,
+	0x64, 0x26, 0x7b, 0xa7, 0x56, 0x06, 0xa5, 0x16, 0x17, 0xe4, 0xe7, 0x15, 0xa7, 0x0a, 0xc9, 0x72,
+	0x71, 0x15, 0x80, 0x05, 0xe3, 0xb3, 0x53, 0x2b, 0x25, 0x18, 0x15, 0x18, 0x35, 0x38, 0x83, 0x38,
+	0x0b, 0x60, 0xca, 0x94, 0x6c, 0xb8, 0x84, 0x41, 0xfa, 0xc2, 0x52, 0x8b, 0x8a, 0x33, 0xf3, 0xf3,
+	0xe0, 0xba, 0x54, 0xb9, 0xf8, 0x52, 0xf2, 0x93, 0xb3, 0x53, 0x8b, 0xe2, 0x4b, 0x0b, 0x52, 0x12,
+	0x4b, 0x52, 0x53, 0xa0, 0x3a, 0x79, 0x21, 0xa2, 0xa1, 0x10, 0x41, 0xa3, 0x62, 0x2e, 0x6e, 0x90,
+	0xee, 0xe0, 0xd4, 0xa2, 0xb2, 0xcc, 0xe4, 0x54, 0x21, 0x63, 0x2e, 0x4e, 0xb8, 0x03, 0x84, 0xb8,
+	0xf4, 0x8a, 0x0a, 0x92, 0xf5, 0x5c, 0x73, 0x0b, 0x4a, 0x2a, 0xa5, 0xa4, 0xc0, 0x6c, 0xec, 0x0e,
+	0xd4, 0xe7, 0x62, 0x87, 0xda, 0x8e, 0xa2, 0x45, 0x02, 0xae, 0x05, 0xcd, 0x6d, 0x4e, 0x1c, 0x51,
+	0x6c, 0x7a, 0x7a, 0xfa, 0x45, 0x05, 0xc9, 0x49, 0x6c, 0x60, 0xbf, 0x1b, 0x03, 0x02, 0x00, 0x00,
+	0xff, 0xff, 0x88, 0x9d, 0x05, 0x9e, 0x1b, 0x01, 0x00, 0x00,
 }

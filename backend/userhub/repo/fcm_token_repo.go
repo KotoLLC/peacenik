@@ -18,7 +18,7 @@ type FCMToken struct {
 
 type FCMTokenRepo interface {
 	AddToken(userID, token, deviceID, os string) error
-	UserTokens(userID string) ([]string, error)
+	UsersTokens(userIDs []string) ([]string, error)
 }
 
 type fcmTokenRepo struct {
@@ -40,13 +40,18 @@ func (r *fcmTokenRepo) AddToken(userID, token, deviceID, os string) error {
 	return merry.Wrap(err)
 }
 
-func (r *fcmTokenRepo) UserTokens(userID string) ([]string, error) {
-	var tokens []string
-	err := r.db.Select(&tokens, `
-		select token
+func (r *fcmTokenRepo) UsersTokens(userIDs []string) ([]string, error) {
+	query, args, err := sqlx.In(`
+		select distinct token
 		from fcm_tokens
-		where user_id = $1 and deleted_at is null;`,
-		userID)
+		where user_id in (?) and deleted_at is null;`, userIDs)
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+	query = r.db.Rebind(query)
+
+	var tokens []string
+	err = r.db.Select(&tokens, query, args...)
 	if err != nil {
 		return nil, merry.Wrap(err)
 	}

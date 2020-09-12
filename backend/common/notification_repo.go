@@ -22,7 +22,7 @@ type Notification struct {
 }
 
 type NotificationRepo interface {
-	AddNotification(userID, text, notificationType string, data map[string]interface{}) error
+	AddNotifications(userIDs []string, text, notificationType string, data map[string]interface{}) error
 	Counts(userID string) (total int, unread int, err error)
 	Notifications(userID string) ([]Notification, error)
 	Clean(userID string, lastKnownID string) error
@@ -39,13 +39,9 @@ func NewNotifications(db *sqlx.DB) NotificationRepo {
 	}
 }
 
-func (r *notificationRepo) AddNotification(userID, text, notificationType string, data map[string]interface{}) error {
-	notificationID, err := uuid.NewV4()
-	if err != nil {
-		return merry.Wrap(err)
-	}
-
+func (r *notificationRepo) AddNotifications(userIDs []string, text, notificationType string, data map[string]interface{}) error {
 	var jsonData []byte
+	var err error
 	if data != nil {
 		jsonData, err = json.Marshal(data)
 		if err != nil {
@@ -55,11 +51,21 @@ func (r *notificationRepo) AddNotification(userID, text, notificationType string
 		jsonData = []byte("{}")
 	}
 
-	_, err = r.db.Exec(`
+	now := CurrentTimestamp()
+	for _, userID := range userIDs {
+		notificationID, err := uuid.NewV4()
+		if err != nil {
+			return merry.Wrap(err)
+		}
+		_, err = r.db.Exec(`
 		insert into notifications(id, user_id, text, type, data, created_at) 
 		values ($1, $2, $3, $4, $5, $6)`,
-		notificationID, userID, text, notificationType, types.JSONText(jsonData), CurrentTimestamp())
-	return merry.Wrap(err)
+			notificationID, userID, text, notificationType, types.JSONText(jsonData), now)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+	}
+	return nil
 }
 
 func (r *notificationRepo) Counts(userID string) (total int, unread int, err error) {

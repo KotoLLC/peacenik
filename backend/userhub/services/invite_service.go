@@ -76,7 +76,7 @@ func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) 
 		if err != nil {
 			return nil, err
 		}
-		s.notificationSender.SendNotification(friend.ID, user.Name+" invited you to be friends", "invite/add", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{friend.ID}, user.Name+" invited you to be friends", "invite/add", map[string]interface{}{
 			"user_id": user.ID,
 		})
 		err = s.sendInviteLinkToRegisteredUser(user, friend.Email)
@@ -107,7 +107,7 @@ func (s *inviteService) Accept(ctx context.Context, r *rpc.InviteAcceptRequest) 
 		}
 		return nil, err
 	}
-	s.notificationSender.SendNotification(r.InviterId, user.Name+" accepted your invite!", "invite/accept", map[string]interface{}{
+	s.notificationSender.SendNotification([]string{r.InviterId}, user.Name+" accepted your invite!", "invite/accept", map[string]interface{}{
 		"user_id": user.ID,
 	})
 	return &rpc.Empty{}, nil
@@ -122,7 +122,7 @@ func (s *inviteService) Reject(ctx context.Context, r *rpc.InviteRejectRequest) 
 		}
 		return nil, err
 	}
-	s.notificationSender.SendNotification(r.InviterId, user.Name+" rejected your invite", "invite/reject", map[string]interface{}{
+	s.notificationSender.SendNotification([]string{r.InviterId}, user.Name+" rejected your invite", "invite/reject", map[string]interface{}{
 		"user_id": user.ID,
 	})
 	return &rpc.Empty{}, nil

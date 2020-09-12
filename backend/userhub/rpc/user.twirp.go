@@ -1377,7 +1377,7 @@ func (s *userServiceServer) serveRegisterFCMTokenProtobuf(ctx context.Context, r
 }
 
 func (s *userServiceServer) ServiceDescriptor() ([]byte, int) {
-	return twirpFileDescriptor7, 0
+	return twirpFileDescriptor8, 0
 }
 
 func (s *userServiceServer) ProtocGenTwirpVersion() string {
@@ -1388,7 +1388,7 @@ func (s *userServiceServer) PathPrefix() string {
 	return UserServicePathPrefix
 }
 
-var twirpFileDescriptor7 = []byte{
+var twirpFileDescriptor8 = []byte{
 	// 650 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x55, 0x5b, 0x4f, 0xd4, 0x40,
 	0x14, 0xce, 0xee, 0xb2, 0x97, 0x9e, 0x72, 0x59, 0x87, 0x8b, 0x65, 0xf1, 0xb2, 0x94, 0x10, 0xe1,

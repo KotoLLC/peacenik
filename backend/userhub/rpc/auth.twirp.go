@@ -10,6 +10,7 @@ It is generated from these files:
 	blob.proto
 	info.proto
 	invite.proto
+	messagehub_notification.proto
 	messagehub.proto
 	model.proto
 	notification.proto

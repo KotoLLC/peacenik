@@ -48,6 +48,17 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	err = common.GenerateRSAKey(cfg.PrivateKeyPath)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	privateKey, _, publicKeyPEM, err := common.RSAKeysFromPrivateKeyFile(cfg.PrivateKeyPath)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	tokenGenerator := token.NewGenerator(privateKey)
+
 	var keyMu sync.Mutex
 	var userHubPublicKey *rsa.PublicKey
 	tokenParser := token.NewParser(func() *rsa.PublicKey {
@@ -75,7 +86,7 @@ func main() {
 	s3Cleaner := common.NewS3Cleaner(db, s3Storage)
 	go s3Cleaner.Clean(context.Background())
 
-	server := messagehub.NewServer(cfg, repos, tokenParser, s3Storage)
+	server := messagehub.NewServer(cfg, repos, tokenParser, s3Storage, tokenGenerator, string(publicKeyPEM))
 	err = server.Run()
 	if err != nil {
 		log.Fatalln(err)
