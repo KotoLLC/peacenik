@@ -5,7 +5,6 @@ import (
 
 	"github.com/appleboy/go-fcm"
 
-	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/userhub/repo"
 )
 
@@ -16,10 +15,9 @@ type NotificationSender interface {
 }
 
 type notificationSender struct {
-	notificationRepo common.NotificationRepo
-	fcmTokenRepo     repo.FCMTokenRepo
-	firebaseClient   *fcm.Client
-	notifications    chan []Notification
+	repos          repo.Repos
+	firebaseClient *fcm.Client
+	notifications  chan []Notification
 }
 
 type Notification struct {
@@ -30,11 +28,11 @@ type Notification struct {
 	IsExternal  bool
 }
 
-func NewNotificationSender(notificationRepo common.NotificationRepo, firebaseClient *fcm.Client) NotificationSender {
+func NewNotificationSender(repos repo.Repos, firebaseClient *fcm.Client) NotificationSender {
 	return &notificationSender{
-		notificationRepo: notificationRepo,
-		firebaseClient:   firebaseClient,
-		notifications:    make(chan []Notification, 10000),
+		repos:          repos,
+		firebaseClient: firebaseClient,
+		notifications:  make(chan []Notification, 10000),
 	}
 }
 
@@ -60,7 +58,7 @@ func (n *notificationSender) Start() {
 		for ntfs := range n.notifications {
 			for _, ntf := range ntfs {
 				if !ntf.IsExternal {
-					err := n.notificationRepo.AddNotifications(ntf.UserIDs, ntf.Text, ntf.MessageType, ntf.Data)
+					err := n.repos.Notification.AddNotifications(ntf.UserIDs, ntf.Text, ntf.MessageType, ntf.Data)
 					if err != nil {
 						log.Println("can't add notification to database:", err)
 					}
@@ -70,7 +68,7 @@ func (n *notificationSender) Start() {
 					continue
 				}
 
-				fcmTokens, err := n.fcmTokenRepo.UsersTokens(ntf.UserIDs)
+				fcmTokens, err := n.repos.FCMToken.UsersTokens(ntf.UserIDs)
 				if err != nil {
 					log.Println("can't load user fcm tokens:", err)
 				}

@@ -17,7 +17,7 @@ func TestAuthService_Register_EmptyValues(t *testing.T) {
 	repos := repo.Repos{
 		User: nil,
 	}
-	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos.Notification, nil))
+	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos, nil))
 	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false, nil, "")
 
 	ctx := context.Background()
@@ -57,7 +57,7 @@ func TestAuthService_Register_NameWithSpaces(t *testing.T) {
 	repos := repo.Repos{
 		User: nil,
 	}
-	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos.Notification, nil))
+	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos, nil))
 	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false, nil, "")
 
 	ctx := context.Background()
@@ -83,7 +83,7 @@ func TestAuthService_Register_Duplicated(t *testing.T) {
 	err := repos.User.AddUser("1", "user1", "user1@mail.org", "password1")
 	require.Nil(t, err)
 
-	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos.Notification, nil))
+	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos, nil))
 	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false, nil, "")
 
 	_, err = s.Register(te.ctx, &rpc.AuthRegisterRequest{
@@ -116,7 +116,7 @@ func TestAuthService_Register(t *testing.T) {
 	userCount, err := repos.User.UserCount()
 	require.Nil(t, err)
 
-	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos.Notification, nil))
+	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos, nil))
 	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false, nil, "")
 
 	_, err = s.Register(te.ctx, &rpc.AuthRegisterRequest{
@@ -174,7 +174,7 @@ func TestAuthService_Login(t *testing.T) {
 	err = repos.User.AddUser("2", "User2", "User2@mail.org", "password2-hash")
 	require.Nil(t, err)
 
-	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos.Notification, nil))
+	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos, nil))
 	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false, nil, "")
 
 	_, err = s.Login(te.ctx, &rpc.AuthLoginRequest{
@@ -229,7 +229,7 @@ func TestAuthService_Logout(t *testing.T) {
 	session.values["session-user-key"] = "123"
 	ctx := context.WithValue(te.ctx, services.ContextSession, session)
 
-	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos.Notification, nil))
+	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos, nil))
 	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false, nil, "")
 
 	_, err := s.Logout(ctx, &rpc.Empty{})
