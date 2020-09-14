@@ -176,7 +176,7 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 	rpcMessages := make([]*rpc.Message, len(messages))
 	rpcMessageMap := make(map[string]*rpc.Message, len(messages))
 	for i, msg := range messages {
-		messageIDs = append(messageIDs, msg.ID)
+		messageIDs[i] = msg.ID
 		attachmentLink, err := s.createBlobLink(ctx, msg.AttachmentID)
 		if err != nil {
 			return nil, err

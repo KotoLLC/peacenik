@@ -41,6 +41,10 @@ func (r *fcmTokenRepo) AddToken(userID, token, deviceID, os string) error {
 }
 
 func (r *fcmTokenRepo) UsersTokens(userIDs []string) ([]string, error) {
+	if len(userIDs) == 0 {
+		return nil, nil
+	}
+
 	query, args, err := sqlx.In(`
 		select distinct token
 		from fcm_tokens

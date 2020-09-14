@@ -63,6 +63,10 @@ func NewMessages(db *sqlx.DB) MessageRepo {
 }
 
 func (r *messageRepo) Messages(currentUserID string, userIDs []string, from time.Time, count int) ([]Message, error) {
+	if len(userIDs) == 0 {
+		return nil, nil
+	}
+
 	if from.IsZero() {
 		from = maxTimestamp
 	}
@@ -316,6 +320,10 @@ func (r *messageRepo) LikeMessage(userID, messageID string) (likes int, err erro
 }
 
 func (r *messageRepo) MessagesLikes(messageIDs []string) (likes map[string][]MessageLike, err error) {
+	if len(messageIDs) == 0 {
+		return nil, nil
+	}
+
 	var plainLikes []MessageLike
 	query, args, err := sqlx.In(`
 		select ml.message_id, ml.user_id, u.name user_name, ml.created_at
