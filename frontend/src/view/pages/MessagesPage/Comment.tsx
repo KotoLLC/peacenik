@@ -44,6 +44,7 @@ const Comment: React.SFC<Props> = (props) => {
     user_id,
     sourceHost,
     userId,
+    liked_by_me,
     likes,
     onLikeComment,
     currentCommentLikes,
@@ -113,7 +114,10 @@ const Comment: React.SFC<Props> = (props) => {
 
     return (
       <Tooltip 
-        onClick={() => onLikeComment({ host: sourceHost, id: id })}
+        onClick={() => {
+          if (liked_by_me) return false
+          onLikeComment({ host: sourceHost, id: id })
+        }}
         title={(isLikesInfoRequested) ? <CircularProgressStyled size={30}/> : <>{usersLikes || likesInfo}</>} 
         interactive onOpen={() => getLikesInfo()}>
         <LikeCommentButton>{likes} like</LikeCommentButton>
