@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/appleboy/go-fcm"
@@ -72,6 +73,9 @@ func (n *notificationSender) Start() {
 				if err != nil {
 					log.Println("can't load user fcm tokens:", err)
 				}
+				// TODO remove debug messages
+				fmt.Println("Users:", ntf.UserIDs)
+				fmt.Println("FCM Tokens:", fcmTokens)
 				for _, fcmToken := range fcmTokens {
 					resp, err := n.firebaseClient.SendWithRetry(&fcm.Message{
 						To: fcmToken,
