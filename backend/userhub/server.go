@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"net/http/httputil"
-	"time"
 
 	"github.com/ansel1/merry"
 	"github.com/appleboy/go-fcm"
@@ -48,7 +47,7 @@ func NewServer(cfg config.Config, pubKeyPEM string, repos repo.Repos, tokenGener
 	staticFS http.FileSystem) *Server {
 	sessionStore := sessions.NewCookieStore([]byte(cookieAuthenticationKey))
 	sessionStore.Options.HttpOnly = true
-	sessionStore.Options.MaxAge = int((time.Hour * 24 * 30).Seconds())
+	sessionStore.Options.MaxAge = int(services.SessionDefaultMaxAge.Seconds())
 
 	return &Server{
 		cfg:            cfg,
@@ -238,6 +237,7 @@ func (s *sessionWrapper) Clear() {
 	s.session.Values = nil
 }
 
-func (s *sessionWrapper) Save() error {
+func (s *sessionWrapper) Save(options services.SessionSaveOptions) error {
+	s.session.Options.MaxAge = int(options.MaxAge.Seconds())
 	return s.session.Save(s.r, s.w)
 }

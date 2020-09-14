@@ -28,6 +28,8 @@ const (
 	resetPasswordFrontendPath = "/reset-password?name=%s&email=%s&token=%s"
 	resetPasswordEmailBody    = `<p>To reset password, click on the link below:</p>
 <p><a href="%s" target="_blank">Click here</a>.</p><p>Thanks!</p>`
+
+	SessionDefaultMaxAge = time.Hour * 24 * 365 * 10
 )
 
 var (
@@ -132,9 +134,13 @@ func (s *authService) Login(ctx context.Context, r *rpc.AuthLoginRequest) (*rpc.
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid username or password")
 	}
 
+	sessionSaveOptions := SessionSaveOptions{}
+	if r.RememberMe {
+		sessionSaveOptions.MaxAge = SessionDefaultMaxAge
+	}
 	session := s.getAuthSession(ctx)
 	session.SetValue(s.sessionUserKey, user.ID)
-	err = session.Save()
+	err = session.Save(sessionSaveOptions)
 	if err != nil {
 		return nil, err
 	}
@@ -144,7 +150,7 @@ func (s *authService) Login(ctx context.Context, r *rpc.AuthLoginRequest) (*rpc.
 func (s *authService) Logout(ctx context.Context, _ *rpc.Empty) (*rpc.Empty, error) {
 	session := s.getAuthSession(ctx)
 	session.Clear()
-	err := session.Save()
+	err := session.Save(SessionSaveOptions{MaxAge: -1})
 	if err != nil {
 		return nil, err
 	}

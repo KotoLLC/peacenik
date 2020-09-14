@@ -264,6 +264,6 @@ func (s *session) Clear() {
 	s.values = nil
 }
 
-func (s *session) Save() error {
+func (s *session) Save(services.SessionSaveOptions) error {
 	return nil
 }

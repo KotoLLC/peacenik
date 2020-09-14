@@ -68,7 +68,11 @@ Content-Type: application/json
 POST https://central.koto.at/rpc.AuthService/Login
 Content-Type: application/json
 
-{"name": "andrey", "password":  "12345"}
+{
+  "name": "andrey",
+  "password": "12345",
+  "remember_me": true
+}
 ```
 
 ### Get current user info

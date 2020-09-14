@@ -1,5 +1,9 @@
 package services
 
+import (
+	"time"
+)
+
 type ContextKey string
 
 const (
@@ -8,8 +12,12 @@ const (
 	ContextSession    ContextKey = "session"
 )
 
+type SessionSaveOptions struct {
+	MaxAge time.Duration
+}
+
 type Session interface {
 	SetValue(key, value interface{})
 	Clear()
-	Save() error
+	Save(options SessionSaveOptions) error
 }
