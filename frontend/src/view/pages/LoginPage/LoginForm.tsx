@@ -12,6 +12,10 @@ import { validate } from '@services/validation'
 import { FooterMenu } from '@view/shared/FooterMenu'
 import logo from './../../../assets/images/logo-black.png'
 import { useLastLocation } from 'react-router-last-location'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Checkbox from '@material-ui/core/Checkbox'
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
+import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import {
   FormWrapper,
   FormControlStyled,
@@ -19,6 +23,7 @@ import {
   ContainerStyled,
   Header,
   Logo,
+  CheckBoxWrapper
 } from './styles'
 import { ApiTypes } from 'src/types'
 import { RouteComponentProps } from 'react-router-dom'
@@ -36,6 +41,7 @@ export interface Props extends RouteComponentProps {
 export const LoginForm = (props) => {
   const [username, onEmailChange] = useState<string>('')
   const [password, onPasswordChange] = useState<string>('')
+  const [isRememberedMe, onRememberMeChange] = useState<boolean>(false)
   const [isPasswordVisible, onPasswordOpen] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [noValideField, setNoValideField] = useState<FieldsType>('')
@@ -67,7 +73,11 @@ export const LoginForm = (props) => {
     setErrorMessage('')
     setNoValideField('')
 
-    onLogin({ name: username, password })
+    onLogin({ 
+      name: username, 
+      password,
+      remember_me: isRememberedMe,
+    })
   }
 
   const checkExcludedRoutes = (path?: string) => {
@@ -146,6 +156,21 @@ export const LoginForm = (props) => {
               </InputAdornment>
             } />
         </FormControlStyled>
+        <CheckBoxWrapper>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={isRememberedMe}
+                onChange={(event) => onRememberMeChange(event.target.checked)}
+                icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
+                checkedIcon={<CheckBoxIcon fontSize="small" />}
+                name="rememberMe"
+                color="primary"
+              />
+            }
+            label="Remember me"
+          />
+        </CheckBoxWrapper>
         <ButtonStyled
           variant="contained"
           size="large"

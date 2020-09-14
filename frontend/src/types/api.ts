@@ -15,6 +15,7 @@ export declare namespace ApiTypes {
   export interface Login {
     name: string
     password: string
+    remember_me?: boolean
   }
   
   export interface ForgotPassword {
