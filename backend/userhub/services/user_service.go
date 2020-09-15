@@ -12,6 +12,7 @@ import (
 	"github.com/h2non/filetype"
 	"github.com/twitchtv/twirp"
 
+	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/userhub/repo"
 	"github.com/mreider/koto/backend/userhub/rpc"
 )
@@ -216,7 +217,8 @@ func (s *userService) setAvatar(ctx context.Context, user repo.User, avatarID st
 		return twirp.NewError(twirp.InvalidArgument, "not image")
 	}
 
-	original, err := imaging.Decode(&buf)
+	orientation := common.GetImageOrientation(bytes.NewReader(buf.Bytes()))
+	original, err := common.DecodeImageAndFixOrientation(bytes.NewReader(buf.Bytes()), orientation)
 	if err != nil {
 		return merry.Wrap(err)
 	}

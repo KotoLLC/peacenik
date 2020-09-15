@@ -3,20 +3,15 @@ package services
 import (
 	"bytes"
 	"context"
-	"fmt"
-	"image"
 	"image/jpeg"
-	"io"
 	"log"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/ansel1/merry"
-	"github.com/disintegration/imaging"
 	"github.com/gofrs/uuid"
 	"github.com/h2non/filetype"
-	"github.com/rwcarlsen/goexif/exif"
 	"github.com/twitchtv/twirp"
 
 	"github.com/mreider/koto/backend/common"
@@ -798,57 +793,15 @@ func (s *messageService) processAttachment(ctx context.Context, attachmentID str
 		return attachmentThumbnailID, attachmentType, nil
 	}
 
-	r := bytes.NewReader(buf.Bytes())
-	orientation := s.getImageOrientation(r)
+	orientation := common.GetImageOrientation(bytes.NewReader(buf.Bytes()))
 	if orientation == "1" {
 		return attachmentThumbnailID, attachmentType, nil
 	}
-	if img, err := s.decodeImage(r, orientation); err == nil {
+	if img, err := common.DecodeImageAndFixOrientation(bytes.NewReader(buf.Bytes()), orientation); err == nil {
 		buf.Reset()
 		if err := jpeg.Encode(&buf, img, nil); err == nil {
-			fmt.Println(attachmentType, orientation)
 			_ = s.s3Storage.PutObject(ctx, attachmentID, buf.Bytes(), attachmentType)
 		}
 	}
 	return attachmentThumbnailID, attachmentType, nil
-}
-
-func (s *messageService) decodeImage(reader io.ReadSeeker, orientation string) (image.Image, error) {
-	_, err := reader.Seek(0, io.SeekStart)
-	if err != nil {
-		return nil, err
-	}
-	img, _, err := image.Decode(reader)
-	if err != nil {
-		return nil, err
-	}
-	switch orientation {
-	case "2":
-		img = imaging.FlipH(img)
-	case "3":
-		img = imaging.Rotate180(img)
-	case "4":
-		img = imaging.Rotate180(imaging.FlipH(img))
-	case "5":
-		img = imaging.Rotate270(imaging.FlipV(img))
-	case "6":
-		img = imaging.Rotate270(img)
-	case "7":
-		img = imaging.Rotate90(imaging.FlipV(img))
-	case "8":
-		img = imaging.Rotate90(img)
-	}
-	return img, nil
-}
-
-func (s *messageService) getImageOrientation(reader io.Reader) string {
-	exifData, err := exif.Decode(reader)
-	if err != nil || exifData == nil {
-		return "1"
-	}
-	orientation, err := exifData.Get(exif.Orientation)
-	if err != nil || orientation == nil {
-		return "1"
-	}
-	return orientation.String()
 }
