@@ -27,9 +27,10 @@ import (
 )
 
 const (
-	cookieAuthenticationKey = "oSKDA9fDNa6jIHArw8MHGBPe0XZm4hnY"
-	sessionName             = "auth-session"
-	sessionUserKey          = "user-id"
+	cookieAuthenticationKey    = "oSKDA9fDNa6jIHArw8MHGBPe0XZm4hnY"
+	sessionName                = "auth-session"
+	sessionUserKey             = "user-id"
+	sessionUserPasswordHashKey = "user-password"
 )
 
 type Server struct {
@@ -101,7 +102,7 @@ func (s *Server) Run() error {
 
 	passwordHash := bcrypt.NewPasswordHash()
 
-	authService := services.NewAuth(baseService, sessionUserKey, passwordHash, s.cfg.TestMode, s.cfg.AdminList(), s.cfg.AdminFriendship)
+	authService := services.NewAuth(baseService, sessionUserKey, sessionUserPasswordHashKey, passwordHash, s.cfg.TestMode, s.cfg.AdminList(), s.cfg.AdminFriendship)
 	authServiceHandler := rpc.NewAuthServiceServer(authService, rpcHooks)
 	r.Handle(authServiceHandler.PathPrefix()+"*", s.findSessionUser(s.authSessionProvider(authServiceHandler)))
 
@@ -166,12 +167,22 @@ func (s *Server) findSessionUser(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
+		userPasswordHash, ok := session.Values[sessionUserPasswordHashKey].(string)
+		if !ok || userPasswordHash == "" {
+			next.ServeHTTP(w, r)
+			return
+		}
 		user, err := s.repos.User.FindUserByID(userID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		if user == nil {
+			next.ServeHTTP(w, r)
+			return
+		}
+		if len(user.PasswordHash) < len(userPasswordHash) ||
+			user.PasswordHash[len(user.PasswordHash)-len(userPasswordHash):] != userPasswordHash {
 			next.ServeHTTP(w, r)
 			return
 		}

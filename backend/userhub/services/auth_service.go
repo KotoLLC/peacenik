@@ -43,22 +43,24 @@ type PasswordHash interface {
 
 type authService struct {
 	*BaseService
-	sessionUserKey  string
-	passwordHash    PasswordHash
-	testMode        bool
-	adminList       []string
-	adminFriendship string
+	sessionUserKey             string
+	sessionUserPasswordHashKey string
+	passwordHash               PasswordHash
+	testMode                   bool
+	adminList                  []string
+	adminFriendship            string
 }
 
-func NewAuth(base *BaseService, sessionUserKey string, passwordHash PasswordHash, testMode bool,
-	adminList []string, adminFriendship string) rpc.AuthService {
+func NewAuth(base *BaseService, sessionUserKey, sessionUserPasswordHashKey string, passwordHash PasswordHash,
+	testMode bool, adminList []string, adminFriendship string) rpc.AuthService {
 	return &authService{
-		BaseService:     base,
-		sessionUserKey:  sessionUserKey,
-		passwordHash:    passwordHash,
-		testMode:        testMode,
-		adminList:       adminList,
-		adminFriendship: strings.ToLower(adminFriendship),
+		BaseService:                base,
+		sessionUserKey:             sessionUserKey,
+		sessionUserPasswordHashKey: sessionUserPasswordHashKey,
+		passwordHash:               passwordHash,
+		testMode:                   testMode,
+		adminList:                  adminList,
+		adminFriendship:            strings.ToLower(adminFriendship),
 	}
 }
 
@@ -140,6 +142,7 @@ func (s *authService) Login(ctx context.Context, r *rpc.AuthLoginRequest) (*rpc.
 	}
 	session := s.getAuthSession(ctx)
 	session.SetValue(s.sessionUserKey, user.ID)
+	session.SetValue(s.sessionUserPasswordHashKey, user.PasswordHash[len(user.PasswordHash)-len(user.PasswordHash)/3:])
 	err = session.Save(sessionSaveOptions)
 	if err != nil {
 		return nil, err

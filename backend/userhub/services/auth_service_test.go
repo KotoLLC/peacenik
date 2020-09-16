@@ -18,7 +18,7 @@ func TestAuthService_Register_EmptyValues(t *testing.T) {
 		User: nil,
 	}
 	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos, nil))
-	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false, nil, "")
+	s := services.NewAuth(base, "session-user-key", "session-user-password-hash-key", &passwordHash{}, false, nil, "")
 
 	ctx := context.Background()
 
@@ -58,7 +58,7 @@ func TestAuthService_Register_NameWithSpaces(t *testing.T) {
 		User: nil,
 	}
 	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos, nil))
-	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false, nil, "")
+	s := services.NewAuth(base, "session-user-key", "session-user-password-hash-key", &passwordHash{}, false, nil, "")
 
 	ctx := context.Background()
 
@@ -84,7 +84,7 @@ func TestAuthService_Register_Duplicated(t *testing.T) {
 	require.Nil(t, err)
 
 	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos, nil))
-	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false, nil, "")
+	s := services.NewAuth(base, "session-user-key", "session-user-password-hash-key", &passwordHash{}, false, nil, "")
 
 	_, err = s.Register(te.ctx, &rpc.AuthRegisterRequest{
 		Name:     "user1",
@@ -117,7 +117,7 @@ func TestAuthService_Register(t *testing.T) {
 	require.Nil(t, err)
 
 	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos, nil))
-	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false, nil, "")
+	s := services.NewAuth(base, "session-user-key", "session-user-password-hash-key", &passwordHash{}, false, nil, "")
 
 	_, err = s.Register(te.ctx, &rpc.AuthRegisterRequest{
 		Name:     "user2",
@@ -171,11 +171,11 @@ func TestAuthService_Login(t *testing.T) {
 	err = repos.User.AddUser("11", "User1", "User1@mail.org", "password11-hash")
 	require.NotNil(t, err)
 	assert.Contains(t, err.Error(), `duplicate key value violates unique constraint`)
-	err = repos.User.AddUser("2", "User2", "User2@mail.org", "password2-hash")
+	err = repos.User.AddUser("2", "User2", "User2@mail.org", "pass2-hash")
 	require.Nil(t, err)
 
 	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos, nil))
-	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false, nil, "")
+	s := services.NewAuth(base, "session-user-key", "session-user-password-hash-key", &passwordHash{}, false, nil, "")
 
 	_, err = s.Login(te.ctx, &rpc.AuthLoginRequest{
 		Name:     "user1",
@@ -195,6 +195,7 @@ func TestAuthService_Login(t *testing.T) {
 	})
 	assert.Nil(t, err)
 	assert.Equal(t, "1", session.values["session-user-key"])
+	assert.Equal(t, "hash", session.values["session-user-password-hash-key"])
 
 	session = newSession()
 	ctx = context.WithValue(te.ctx, services.ContextSession, session)
@@ -213,10 +214,11 @@ func TestAuthService_Login(t *testing.T) {
 
 	_, err = s.Login(ctx, &rpc.AuthLoginRequest{
 		Name:     "user2",
-		Password: "password2",
+		Password: "pass2",
 	})
 	assert.Nil(t, err)
 	assert.Equal(t, "2", session.values["session-user-key"])
+	assert.Equal(t, "ash", session.values["session-user-password-hash-key"])
 }
 
 func TestAuthService_Logout(t *testing.T) {
@@ -227,10 +229,11 @@ func TestAuthService_Logout(t *testing.T) {
 
 	session := newSession()
 	session.values["session-user-key"] = "123"
+	session.values["session-user-password-hash-key"] = "hash"
 	ctx := context.WithValue(te.ctx, services.ContextSession, session)
 
 	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos, nil))
-	s := services.NewAuth(base, "session-user-key", &passwordHash{}, false, nil, "")
+	s := services.NewAuth(base, "session-user-key", "session-user-password-hash-key", &passwordHash{}, false, nil, "")
 
 	_, err := s.Logout(ctx, &rpc.Empty{})
 	assert.Nil(t, err)
