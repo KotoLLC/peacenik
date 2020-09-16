@@ -173,7 +173,7 @@ func (s *authService) Confirm(ctx context.Context, r *rpc.AuthConfirmRequest) (*
 				return nil, err
 			}
 			if user != nil {
-				err = s.repos.User.ConfirmUser(user.ID)
+				_, err = s.repos.User.ConfirmUser(user.ID)
 				if err != nil {
 					return nil, err
 				}
@@ -296,9 +296,12 @@ func (s *authService) confirmUser(confirmToken string) error {
 		return token.ErrInvalidToken.Here()
 	}
 
-	err = s.repos.User.ConfirmUser(userID)
+	ok, err = s.repos.User.ConfirmUser(userID)
 	if err != nil {
 		return merry.Wrap(err)
+	}
+	if !ok {
+		return nil
 	}
 
 	if s.adminFriendship == "" || len(s.adminList) == 0 {
@@ -358,7 +361,8 @@ func (s *authService) confirmInviteToken(user repo.User, confirmToken string) er
 		return token.ErrInvalidToken.Here()
 	}
 
-	return s.repos.User.ConfirmUser(user.ID)
+	_, err = s.repos.User.ConfirmUser(user.ID)
+	return err
 }
 
 func (s *authService) sendInviteLinkToRegisteredUser(inviter repo.User, userEmail string) error {
