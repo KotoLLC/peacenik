@@ -211,7 +211,7 @@ func (s *authService) SendResetPasswordLink(_ context.Context, r *rpc.AuthSendRe
 	}
 
 	resetToken, err := s.tokenGenerator.Generate(r.Name, r.Name, "user-password-reset",
-		time.Now().Add(time.Hour*24),
+		time.Now().Add(time.Minute*10),
 		map[string]interface{}{
 			"email": r.Email,
 		})
