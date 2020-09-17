@@ -75,7 +75,7 @@ func (s *messageHubNotificationService) getTokenParser(ctx context.Context, node
 	if parser, ok := s.tokenParsers[nodeAddress]; ok {
 		return parser, nil
 	}
-	nodePublicKey, err := s.loadNodePublicKey(ctx, nodeAddress)
+	nodePublicKey, err := loadNodePublicKey(ctx, nodeAddress)
 	if err != nil {
 		return nil, merry.Prepend(err, "can't load message hub public key")
 	}
@@ -86,7 +86,7 @@ func (s *messageHubNotificationService) getTokenParser(ctx context.Context, node
 	return parser, nil
 }
 
-func (s *messageHubNotificationService) loadNodePublicKey(ctx context.Context, nodeAddress string) (*rsa.PublicKey, error) {
+func loadNodePublicKey(ctx context.Context, nodeAddress string) (*rsa.PublicKey, error) {
 	client := &http.Client{
 		Timeout: time.Second * 30,
 	}

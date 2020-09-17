@@ -151,6 +151,15 @@ Content-Type: application/json
 {}
 ```
 
+### Verify a hub
+
+```
+POST https://central.koto.at/rpc.MessageHubService/Verify
+Content-Type: application/json
+
+{"hub_id":  "e60b3ff4-9ac0-4ba4-a45c-626c4eb29f75"}
+```
+
 ### Approve a hub (admin access)
 
 ```

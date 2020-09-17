@@ -92,13 +92,37 @@ func (s *messageHubService) Hubs(ctx context.Context, _ *rpc.Empty) (*rpc.Messag
 	}, nil
 }
 
-func (s *messageHubService) Approve(ctx context.Context, r *rpc.MessageHubApproveRequest) (*rpc.Empty, error) {
+func (s *messageHubService) Verify(ctx context.Context, r *rpc.MessageHubVerifyRequest) (*rpc.MessageHubVerifyResponse, error) {
+	hub, err := s.repos.MessageHubs.Hub(r.HubId)
+	if err != nil {
+		return nil, err
+	}
+	_, err = loadNodePublicKey(ctx, hub.Address)
+	if err != nil {
+		return &rpc.MessageHubVerifyResponse{
+			Error: err.Error(),
+		}, nil
+	}
+	return &rpc.MessageHubVerifyResponse{}, nil
+}
+
+func (s *messageHubService) Approve(ctx context.Context, r *rpc.MessageHubApproveRequest) (*rpc.MessageHubApproveResponse, error) {
 	if !s.isAdmin(ctx) {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 	user := s.getUser(ctx)
 
-	err := s.repos.MessageHubs.ApproveHub(r.HubId)
+	resp, err := s.Verify(ctx, &rpc.MessageHubVerifyRequest{HubId: r.HubId})
+	if err != nil {
+		return nil, err
+	}
+	if resp.Error != "" {
+		return &rpc.MessageHubApproveResponse{
+			Error: resp.Error,
+		}, nil
+	}
+
+	err = s.repos.MessageHubs.ApproveHub(r.HubId)
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +136,7 @@ func (s *messageHubService) Approve(ctx context.Context, r *rpc.MessageHubApprov
 		"user_id": user.ID,
 		"hub_id":  r.HubId,
 	})
-	return &rpc.Empty{}, nil
+	return &rpc.MessageHubApproveResponse{}, nil
 }
 
 func (s *messageHubService) Remove(ctx context.Context, r *rpc.MessageHubRemoveRequest) (*rpc.Empty, error) {
