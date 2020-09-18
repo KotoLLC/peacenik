@@ -100,6 +100,8 @@ const Editor: React.SFC<Props> = (props) => {
                 setFile(newBlob)
               })
             }, 'image/jpeg')
+          } else {
+            setFile(uploadedFile[0])
           }
         },
         { meta: true, orientation: true, canvas: true }

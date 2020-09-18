@@ -3,6 +3,7 @@ import { selector, deepEqualSelector } from '../common'
 
 const profile = createSelector(selector, data => data.profile)
 const isAdmin = createSelector(profile, data => data.is_admin)
+const isProfileSaved = createSelector(profile, data => data.isProfileSaved)
 const user = createSelector(profile, data => data.user)
 const userName = createSelector(user, data => data.name)
 const isEmailConfirmed = createSelector(user, data => data.is_confirmed)
@@ -14,6 +15,7 @@ const profileErrorMessage = deepEqualSelector(profile, data => data.profileError
 export default {
     profile,
     isAdmin,
+    isProfileSaved,
     isEmailConfirmed,
     userId,
     userName,

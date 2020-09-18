@@ -38,6 +38,7 @@ interface Props {
   userId: string
   uploadLink: ApiTypes.UploadLink | null
   profileErrorMessage: string
+  isProfileSaved: boolean
 
   onGetUploadLink: (value: ApiTypes.Profile.UploadLinkRequest) => void
   onSetAvatar: (data: ApiTypes.Profile.Avatar) => void
@@ -207,6 +208,10 @@ class UserProfile extends React.PureComponent<Props, State> {
                 })
               })
             }, 'image/jpeg')
+          } else {
+            self.setState({
+              file: file[0],
+            })
           }
         },
         { meta: true, orientation: true, canvas: true }
@@ -401,13 +406,14 @@ class UserProfile extends React.PureComponent<Props, State> {
   }
 }
 
-type StateProps = Pick<Props, 'userName' | 'userEmail' | 'uploadLink' | 'userId' | 'profileErrorMessage'>
+type StateProps = Pick<Props, 'userName' | 'userEmail' | 'uploadLink' | 'userId' | 'profileErrorMessage' | 'isProfileSaved'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   userName: selectors.profile.userName(state),
   userEmail: selectors.profile.userEmail(state),
   uploadLink: state.profile.uploadLink,
   userId: selectors.profile.userId(state),
   profileErrorMessage: selectors.profile.profileErrorMessage(state),
+  isProfileSaved: selectors.profile.isProfileSaved(state),
 })
 
 type DispatchProps = Pick<Props, 'onGetUploadLink' | 'onSetAvatar' | 'onEditProfile' | 'onGetProfile'>
