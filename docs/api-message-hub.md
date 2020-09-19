@@ -125,6 +125,32 @@ Content-Type: application/json
 }
 ```
 
+### Set message visibility
+
+```
+POST http://localhost:12012/rpc.MessageService/SetMessageVisibility
+Authorization: Bearer AUTH-TOKEN
+Content-Type: application/json
+
+{
+  "message_id": "MESSAGE-ID",
+  "visibility": false
+}
+```
+
+### Set comment visibility
+
+```
+POST http://localhost:12012/rpc.MessageService/SetCommentVisibility
+Authorization: Bearer AUTH-TOKEN
+Content-Type: application/json
+
+{
+  "comment_id": "COMMENT-ID",
+  "visibility": false
+}
+```
+
 ## Likes
 
 ### Like a message

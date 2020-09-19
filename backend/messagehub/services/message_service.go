@@ -805,3 +805,21 @@ func (s *messageService) processAttachment(ctx context.Context, attachmentID str
 	}
 	return attachmentThumbnailID, attachmentType, nil
 }
+
+func (s *messageService) SetMessageVisibility(ctx context.Context, r *rpc.MessageSetMessageVisibilityRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+	err := s.repos.Message.SetMessageVisibility(user.ID, r.MessageId, r.Visibility)
+	if err != nil {
+		return nil, err
+	}
+	return &rpc.Empty{}, nil
+}
+
+func (s *messageService) SetCommentVisibility(ctx context.Context, r *rpc.MessageSetCommentVisibilityRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+	err := s.repos.Message.SetMessageVisibility(user.ID, r.CommentId, r.Visibility)
+	if err != nil {
+		return nil, err
+	}
+	return &rpc.Empty{}, nil
+}
