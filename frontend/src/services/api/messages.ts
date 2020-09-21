@@ -175,6 +175,38 @@ export default {
       return response
     }).catch(error => ({ error }))
   },
+
+  hideMessage: async (data: ApiTypes.Messages.Hide) => {
+    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const config = {
+      withCredentials: false,
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      }
+    }
+    return await axiosInstance.post(`${data.host}/rpc.MessageService/SetMessageVisibility`, {
+      'message_id': data.id,
+      'visibility': false,
+    }, config).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
+  
+  hideComment: async (data: ApiTypes.Messages.Hide) => {
+    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const config = {
+      withCredentials: false,
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      }
+    }
+    return await axiosInstance.post(`${data.host}/rpc.MessageService/SetCommentVisibility`, {
+      'comment_id': data.id,
+      'visibility': false,
+    }, config).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
   
   getlikesForMessage: async (data: ApiTypes.Messages.Like) => {
     const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)

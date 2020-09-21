@@ -88,6 +88,11 @@ const reducer = (state = initialState, action) => {
         ...state, ...{ messages: state.messages.filter(item => item.id !== action.payload.body.message_id) }
       }
     }
+    case Types.HIDE_MESSAGE_REQUEST: {
+      return {
+        ...state, ...{ messages: state.messages.filter(item => item.id !== action.payload.id) }
+      }
+    }
     case Types.GET_MORE_MESSAGES_REQUEST: {
       return {
         ...state, ...{ isMoreMessagesRequested: true }

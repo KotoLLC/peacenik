@@ -274,6 +274,28 @@ export function* watchLikeComment(action: { type: string, payload: ApiTypes.Mess
   }
 }
 
+export function* watchHideMessage(action: { type: string, payload: ApiTypes.Messages.Hide }) {
+  const response = yield API.messages.hideMessage(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.messages.hideMessageSuccess())
+    yield put(Actions.messages.getMessagesRequest())
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
+export function* watchHideComment(action: { type: string, payload: ApiTypes.Messages.Hide }) {
+  const response = yield API.messages.hideComment(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.messages.hideCommentSuccess())
+    yield put(Actions.messages.getMessagesRequest())
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
 export function* watchGetLikesForMessage(action: { type: string, payload: ApiTypes.Messages.Like }) {
   const response = yield API.messages.getlikesForMessage(action.payload)
 

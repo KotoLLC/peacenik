@@ -257,6 +257,11 @@ export declare namespace ApiTypes {
       id: string
     }
 
+    export interface Hide {
+      host: string
+      id: string
+    }
+
     export interface LikeInfo {
       user_id: string
       user_name: string

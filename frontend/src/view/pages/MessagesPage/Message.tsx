@@ -20,6 +20,7 @@ import LayersClearIcon from '@material-ui/icons/LayersClear'
 import { getAvatarUrl } from '@services/avatarUrl'
 import Avatar from '@material-ui/core/Avatar'
 import loadImage from 'blueimp-load-image'
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 import {
   PaperStyled,
   MessageHeader,
@@ -56,7 +57,6 @@ interface Props extends ApiTypes.Messages.Message {
   currentHub: CommonTypes.HubTypes.CurrentHub
   currentMessageLikes: ApiTypes.Messages.LikesInfoData | null
   isCommentsOpenByDeafult?: boolean
-  callback?: () => void
 
   onMessageEdit: (data: ApiTypes.Messages.EditMessage) => void
   onCommentPost: (data: ApiTypes.Messages.PostComment) => void
@@ -65,6 +65,8 @@ interface Props extends ApiTypes.Messages.Message {
   onResetMessageUploadLink: () => void
   onLikeMessage: (data: ApiTypes.Messages.Like) => void
   getLikesForMessage: (data: ApiTypes.Messages.Like) => void
+  onHideMessage: (data: ApiTypes.Messages.Hide) => void
+  callback?: () => void
 }
 
 const Message: React.SFC<Props> = (props) => {
@@ -82,6 +84,7 @@ const Message: React.SFC<Props> = (props) => {
     uploadLink,
     onResetMessageUploadLink,
     onLikeMessage,
+    onHideMessage,
     getLikesForMessage,
     likes,
     currentMessageLikes,
@@ -107,7 +110,7 @@ const Message: React.SFC<Props> = (props) => {
 
     let attachment_changed = (file?.size) ? true : false
     let attachment_id = file?.size ? uploadLink?.blob_id : ''
-    
+
     if (isAttacmentDeleted) {
       attachment_changed = true
       attachment_id = ''
@@ -278,7 +281,7 @@ const Message: React.SFC<Props> = (props) => {
                 })
               }
             </LikesNamesList>
-          </LikesWrapper> : <span/>
+          </LikesWrapper> : <span />
         }
         {(comments?.length) && <span onClick={() => openComments(!isCommentsOpen)}>{comments.length} comments</span>}
       </ReactionsWrapper>
@@ -371,9 +374,9 @@ const Message: React.SFC<Props> = (props) => {
     if (props.currentMessageLikes?.id === id) {
       setLikesInfoRequest(false)
     }
-    
+
     callback && callback()
-    
+
   }, [props, file, isFileUploaded, id, callback])
 
   const renderCommentsButton = () => {
@@ -397,14 +400,24 @@ const Message: React.SFC<Props> = (props) => {
               <MessageDate>{moment(created_at).fromNow()}</MessageDate>
             </UserNameWrapper>
           </UserInfo>
-          {isAuthor && <ButtonsWrapper>
+          {isAuthor ? <ButtonsWrapper>
             <Tooltip title={`Edit`}>
               <IconButton onClick={() => setEditor(!isEditer)}>
                 <EditIcon />
               </IconButton>
             </Tooltip>
             <RemoveMessageDialog {...{ message, id, sourceHost }} />
-          </ButtonsWrapper>}
+          </ButtonsWrapper> :
+            <ButtonsWrapper>
+              <Tooltip title={`Hide`} onClick={() => {
+                onHideMessage({ host: sourceHost, id: id })
+              }}>
+                <IconButton>
+                  <VisibilityOffIcon />
+                </IconButton>
+              </Tooltip>
+            </ButtonsWrapper>
+          }
         </MessageHeader>
         {
           isEditer ?
@@ -428,9 +441,9 @@ const Message: React.SFC<Props> = (props) => {
                   </IconButton>
                 </Tooltip>
                 {(file || attachment_type) && <Tooltip title={`Delete attachment`}>
-                <IconButton component="label" onClick={onFileDelete}>
-                  <LayersClearIcon fontSize="small" color="primary" />
-                </IconButton>
+                  <IconButton component="label" onClick={onFileDelete}>
+                    <LayersClearIcon fontSize="small" color="primary" />
+                  </IconButton>
                 </Tooltip>}
                 <ButtonSend
                   variant="contained"
@@ -480,6 +493,7 @@ type DispatchProps = Pick<Props,
   | 'onResetMessageUploadLink'
   | 'onLikeMessage'
   | 'getLikesForMessage'
+  | 'onHideMessage'
 >
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onMessageEdit: (data: ApiTypes.Messages.EditMessage) => dispatch(Actions.messages.editMessageRequest(data)),
@@ -489,6 +503,7 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onResetMessageUploadLink: () => dispatch(Actions.messages.getMessageUploadLinkSucces(null)),
   onLikeMessage: (data: ApiTypes.Messages.Like) => dispatch(Actions.messages.linkMessageRequest(data)),
   getLikesForMessage: (data: ApiTypes.Messages.Like) => dispatch(Actions.messages.getLikesForMessageRequest(data)),
+  onHideMessage: (data: ApiTypes.Messages.Hide) => dispatch(Actions.messages.hideMessageRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Message)
