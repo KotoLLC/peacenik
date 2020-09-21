@@ -50,10 +50,8 @@ You can read about Koto's [social graph here](social-graph.md). It's almost iden
 
 [I am a product manager with 30 years of experience](https://www.linkedin.com/in/mreider/) in the industry. I have been part of large software companies, and a few startups, one of which worked to measure Facebook video analytics. I am from Boston, lived in San Francisco for 20 years, and now live in Austria with my 2 kids and lovely wife. I work for Dynatrace and manage Koto in my spare time.
 
-## How you can help
+## How you can hrlp
 
 There are a few ways you can help.
 
 If you have some free time, I have all sorts of things you can do. Just get in touch via email at mreider at gmail dot com.
-
-And of course, you can donate money. I am paying for a couple of engineers to help me, plus server costs, etc. You can donate [here](https://www.gofundme.com/f/byezuck).
