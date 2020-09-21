@@ -18,6 +18,8 @@ service MessageService {
     rpc LikeComment (MessageLikeCommentRequest) returns (MessageLikeCommentResponse);
     rpc MessageLikes (MessageMessageLikesRequest) returns (MessageMessageLikesResponse);
     rpc CommentLikes (MessageCommentLikesRequest) returns (MessageCommentLikesResponse);
+    rpc SetMessageVisibility (MessageSetMessageVisibilityRequest) returns (Empty);
+    rpc SetCommentVisibility (MessageSetCommentVisibilityRequest) returns (Empty);
 }
 
 message MessageMessagesRequest {
@@ -122,4 +124,14 @@ message MessageCommentLikesRequest {
 
 message MessageCommentLikesResponse {
     repeated MessageLike likes = 1;
+}
+
+message MessageSetMessageVisibilityRequest {
+    string message_id = 1;
+    bool visibility = 2;
+}
+
+message MessageSetCommentVisibilityRequest {
+    string comment_id = 1;
+    bool visibility = 2;
 }
