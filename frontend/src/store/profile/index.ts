@@ -13,14 +13,12 @@ const user: ApiTypes.Profile.UserProfile = profile ? JSON.parse(profile) : {
 export interface State extends ApiTypes.Profile.UserProfile {
   uploadLink: ApiTypes.UploadLink | null
   profileErrorMessage: string
-  isProfileSaved: boolean
 }
 
 const initialState: State = {
   ...user,
   uploadLink: null,
   profileErrorMessage: '',
-  isProfileSaved: false,
 }
 
 const reducer = (state = initialState, action) => {
@@ -41,13 +39,6 @@ const reducer = (state = initialState, action) => {
       return {
         ...state, ...{
           profileErrorMessage: action.payload
-        }
-      }
-    }
-    case Types.EDIT_PROFILE_SUCCESS: {
-      return {
-        ...state, ...{
-          isProfileSaved: action.payload
         }
       }
     }

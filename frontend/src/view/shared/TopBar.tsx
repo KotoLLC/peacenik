@@ -26,7 +26,6 @@ import {
 interface Props {
   notificationLength: number
   userId: string
-  isProfileSaved: boolean
 
   onLogout: () => void
 }
@@ -66,11 +65,10 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
   )
 })
 
-type StateProps = Pick<Props, 'notificationLength' | 'userId' | 'isProfileSaved'>
+type StateProps = Pick<Props, 'notificationLength' | 'userId'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   notificationLength: selectors.notifications.notificationLength(state),
   userId: selectors.profile.userId(state),
-  isProfileSaved: selectors.profile.isProfileSaved(state),
 })
 
 type DispatchProps = Pick<Props, 'onLogout'>
