@@ -32,6 +32,9 @@ export function* watchApproveHub(action: { type: string, payload: ApiTypes.Hubs.
   const response = yield API.hubs.approveHub(action.payload)
 
   if (response.status === 200) {
+    if (response.data.error) {
+      yield put(Actions.common.setErrorNotify(response.data.error))  
+    }
     yield put(Actions.hubs.getHubsRequest())
   } else if (response.error.response.status === 401) {
     localStorage.clear()

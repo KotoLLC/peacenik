@@ -26,7 +26,7 @@ export default {
     }).catch(error => ({ error }))
   },
   
-  verifyHub: async (data: ApiTypes.Hubs.Create) => {
+  verifyHub: async (data: ApiTypes.Hubs.ApproveHub) => {
     return await axiosInstance.post('/rpc.MessageHubService/Verify', data).then(response => {
       return response
     }).catch(error => ({ error }))
