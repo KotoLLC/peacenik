@@ -6,6 +6,7 @@ import { hubsListBack2Front } from '@services/dataTransforms/hubsListTransform'
 
 export function* watchHubCreate(action: { type: string, payload: ApiTypes.Hubs.Create }) {
   const response = yield API.hubs.createHub(action.payload)
+  // const response = yield API.hubs.verifyHub(action.payload)
 
   if (response.status === 200) {
     yield put(Actions.hubs.hubCreateSuccess())

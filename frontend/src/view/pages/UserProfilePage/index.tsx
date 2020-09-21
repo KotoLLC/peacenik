@@ -235,7 +235,7 @@ class UserProfile extends React.PureComponent<Props, State> {
 
   static getDerivedStateFromProps(newProps: Props, prevState: State) {
 
-    if (newProps?.uploadLink && prevState?.file && !prevState.isFileUploaded) {
+    if (newProps?.uploadLink && prevState?.file) {
 
       const { form_data } = newProps?.uploadLink
       const data = new FormData()

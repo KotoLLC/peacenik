@@ -49,6 +49,7 @@ export function* watchEditProfile(action: { type: string, payload: ApiTypes.Prof
     yield put(Actions.profile.resetProfileErrorMessage())
     yield put(Actions.profile.editProfileSuccess(true))
     yield put(Actions.common.setSuccessNotify('Changes have been saved'))
+    setTimeout(() => window.location.reload(), 1500)
   } else if (response.error.response.status === 401) {
     localStorage.clear()
     window.location.reload()
