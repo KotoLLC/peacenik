@@ -50,6 +50,7 @@ type MessageRepo interface {
 	LikeMessage(userID, messageID string) (likes int, err error)
 	MessagesLikes(messageIDs []string) (likes map[string][]MessageLike, err error)
 	MessageLikes(messageID string) (likes []MessageLike, err error)
+	SetMessageVisibility(userID, messageID string, visibility bool) error
 }
 
 type messageRepo struct {
@@ -63,6 +64,10 @@ func NewMessages(db *sqlx.DB) MessageRepo {
 }
 
 func (r *messageRepo) Messages(currentUserID string, userIDs []string, from time.Time, count int) ([]Message, error) {
+	if len(userIDs) == 0 {
+		return nil, nil
+	}
+
 	if from.IsZero() {
 		from = maxTimestamp
 	}
@@ -72,15 +77,16 @@ func (r *messageRepo) Messages(currentUserID string, userIDs []string, from time
 
 	var messages []Message
 	query, args, err := sqlx.In(`
-		select id, parent_id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at,
-		       (select count(*) from message_likes where message_id = messages.id) likes,
-		       case when exists(select * from message_likes where message_id = messages.id and user_id = ?) then true else false end liked_by_me
-		from messages
-		where user_id in (?) and parent_id is null
-			and created_at < ?
-		order by created_at desc, "id"
-		limit ?`,
-		currentUserID, userIDs, from, count)
+			select id, parent_id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at,
+				   (select count(*) from message_likes where message_id = m.id) likes,
+				   case when exists(select * from message_likes where message_id = m.id and user_id = ?) then true else false end liked_by_me
+			from messages m
+			where user_id in (?) and parent_id is null
+				and created_at < ?
+				and not exists(select * from message_visibility mv where mv.user_id = ? and mv.message_id = m.id and mv.visibility = false)
+			order by created_at desc, "id"
+			limit ?`,
+		currentUserID, userIDs, from, currentUserID, count)
 	if err != nil {
 		return nil, merry.Wrap(err)
 	}
@@ -277,12 +283,14 @@ func (r *messageRepo) Comments(currentUserID string, messageIDs []string) (map[s
 
 	var comments []Message
 	query, args, err := sqlx.In(`
-		select id, parent_id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at,
-		       (select count(*) from message_likes where message_id = messages.id) likes,
-		       case when exists(select * from message_likes where message_id = messages.id and user_id = ?) then true else false end liked_by_me
-		from messages
-		where parent_id in (?)
-		order by created_at, id`, currentUserID, messageIDs)
+			select id, parent_id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at,
+				   (select count(*) from message_likes where message_id = m.id) likes,
+				   case when exists(select * from message_likes where message_id = m.id and user_id = ?) then true else false end liked_by_me
+			from messages m
+			where parent_id in (?)
+				and not exists(select * from message_visibility mv where mv.user_id = ? and mv.message_id = m.id and mv.visibility = false)
+			order by created_at, id`,
+		currentUserID, messageIDs, currentUserID)
 	if err != nil {
 		return nil, merry.Wrap(err)
 	}
@@ -316,6 +324,10 @@ func (r *messageRepo) LikeMessage(userID, messageID string) (likes int, err erro
 }
 
 func (r *messageRepo) MessagesLikes(messageIDs []string) (likes map[string][]MessageLike, err error) {
+	if len(messageIDs) == 0 {
+		return nil, nil
+	}
+
 	var plainLikes []MessageLike
 	query, args, err := sqlx.In(`
 		select ml.message_id, ml.user_id, u.name user_name, ml.created_at
@@ -356,4 +368,26 @@ func (r *messageRepo) MessageLikes(messageID string) (likes []MessageLike, err e
 	}
 
 	return likes, nil
+}
+
+func (r *messageRepo) SetMessageVisibility(userID, messageID string, visibility bool) error {
+	if visibility {
+		_, err := r.db.Exec(`
+			delete from message_visibility
+			where user_id = $1 and message_id = $2;`,
+			userID, messageID)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+	} else {
+		_, err := r.db.Exec(`
+			insert into message_visibility(user_id, message_id, visibility, created_at)
+			select $1, $2, false, $3
+			where not exists(select * from message_visibility where user_id = $1 and message_id = $2)`,
+			userID, messageID, common.CurrentTimestamp())
+		if err != nil {
+			return merry.Wrap(err)
+		}
+	}
+	return nil
 }

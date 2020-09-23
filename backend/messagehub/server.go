@@ -3,6 +3,7 @@ package messagehub
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -22,18 +23,23 @@ import (
 )
 
 type Server struct {
-	cfg         config.Config
-	repos       repo.Repos
-	tokenParser token.Parser
-	s3Storage   *common.S3Storage
+	cfg            config.Config
+	repos          repo.Repos
+	tokenParser    token.Parser
+	s3Storage      *common.S3Storage
+	tokenGenerator token.Generator
+	pubKeyPEM      string
 }
 
-func NewServer(cfg config.Config, repos repo.Repos, tokenParser token.Parser, s3Storage *common.S3Storage) *Server {
+func NewServer(cfg config.Config, repos repo.Repos, tokenParser token.Parser, s3Storage *common.S3Storage,
+	tokenGenerator token.Generator, pubKeyPEM string) *Server {
 	return &Server{
-		cfg:         cfg,
-		repos:       repos,
-		tokenParser: tokenParser,
-		s3Storage:   s3Storage,
+		cfg:            cfg,
+		repos:          repos,
+		tokenParser:    tokenParser,
+		s3Storage:      s3Storage,
+		tokenGenerator: tokenGenerator,
+		pubKeyPEM:      pubKeyPEM,
 	}
 }
 
@@ -59,7 +65,12 @@ func (s *Server) Run() error {
 			return ctx
 		},
 	}
-	baseService := services.NewBase(s.repos, s.tokenParser, s.cfg.ExternalAddress, s.s3Storage)
+
+	notificationSender := services.NewNotificationSender(s.repos.Notification, s.cfg.ExternalAddress,
+		fmt.Sprintf("%s/rpc.MessageHubNotificationService/PostNotifications", s.cfg.UserHubAddress),
+		s.tokenGenerator)
+	notificationSender.Start()
+	baseService := services.NewBase(s.repos, s.tokenParser, s.cfg.ExternalAddress, s.s3Storage, notificationSender)
 
 	messageService := services.NewMessage(baseService)
 	messageServiceHandler := rpc.NewMessageServiceServer(messageService, rpcHooks)
@@ -73,7 +84,7 @@ func (s *Server) Run() error {
 	notificationServiceHandler := rpc.NewNotificationServiceServer(notificationService, rpcHooks)
 	r.Handle(notificationServiceHandler.PathPrefix()+"*", s.checkAuth(notificationServiceHandler))
 
-	infoService := services.NewInfo(baseService)
+	infoService := services.NewInfo(baseService, s.pubKeyPEM)
 	infoServiceHandler := rpc.NewInfoServiceServer(infoService, rpcHooks)
 	r.Handle(infoServiceHandler.PathPrefix()+"*", infoServiceHandler)
 

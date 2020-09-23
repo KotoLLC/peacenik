@@ -18,7 +18,9 @@ import Badge from '@material-ui/core/Badge'
 import SendIcon from '@material-ui/icons/Send'
 import LayersClearIcon from '@material-ui/icons/LayersClear'
 import { getAvatarUrl } from '@services/avatarUrl'
-
+import Avatar from '@material-ui/core/Avatar'
+import loadImage from 'blueimp-load-image'
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 import {
   PaperStyled,
   MessageHeader,
@@ -48,7 +50,6 @@ import {
   EditMessageWrapper,
   EditorInMessageWrapper,
 } from './styles'
-import { Avatar } from '@view/shared/styles'
 
 interface Props extends ApiTypes.Messages.Message {
   isAuthor: boolean
@@ -56,7 +57,6 @@ interface Props extends ApiTypes.Messages.Message {
   currentHub: CommonTypes.HubTypes.CurrentHub
   currentMessageLikes: ApiTypes.Messages.LikesInfoData | null
   isCommentsOpenByDeafult?: boolean
-  callback?: () => void
 
   onMessageEdit: (data: ApiTypes.Messages.EditMessage) => void
   onCommentPost: (data: ApiTypes.Messages.PostComment) => void
@@ -65,6 +65,8 @@ interface Props extends ApiTypes.Messages.Message {
   onResetMessageUploadLink: () => void
   onLikeMessage: (data: ApiTypes.Messages.Like) => void
   getLikesForMessage: (data: ApiTypes.Messages.Like) => void
+  onHideMessage: (data: ApiTypes.Messages.Hide) => void
+  callback?: () => void
 }
 
 const Message: React.SFC<Props> = (props) => {
@@ -82,6 +84,7 @@ const Message: React.SFC<Props> = (props) => {
     uploadLink,
     onResetMessageUploadLink,
     onLikeMessage,
+    onHideMessage,
     getLikesForMessage,
     likes,
     currentMessageLikes,
@@ -105,9 +108,9 @@ const Message: React.SFC<Props> = (props) => {
 
   const onMessageSave = () => {
 
-    let attachment_changed = (file?.name) ? true : false
-    let attachment_id = (file?.name) && uploadLink?.blob_id
-    
+    let attachment_changed = (file?.size) ? true : false
+    let attachment_id = file?.size ? uploadLink?.blob_id : ''
+
     if (isAttacmentDeleted) {
       attachment_changed = true
       attachment_id = ''
@@ -174,7 +177,10 @@ const Message: React.SFC<Props> = (props) => {
 
     return (
       <Tooltip
-        onClick={() => onLikeMessage({ host: sourceHost, id: id })}
+        onClick={() => {
+          if (liked_by_me) return false
+          onLikeMessage({ host: sourceHost, id: id })
+        }}
         title={(isLikesInfoRequested) ? <CircularProgressStyled size={30} /> : <>{usersLikes || likesInfo}</>}
         interactive onOpen={() => getLikesInfo()}>
         <IconButton>
@@ -223,7 +229,7 @@ const Message: React.SFC<Props> = (props) => {
       return null
     }
 
-    if (file?.name && file?.type.indexOf('image') !== -1) {
+    if (file?.size && file?.type.indexOf('image') !== -1) {
       return (
         <AttachmentWrapper>
           <ImagePreview src={URL.createObjectURL(file)} />
@@ -275,7 +281,7 @@ const Message: React.SFC<Props> = (props) => {
                 })
               }
             </LikesNamesList>
-          </LikesWrapper> : <span/>
+          </LikesWrapper> : <span />
         }
         {(comments?.length) && <span onClick={() => openComments(!isCommentsOpen)}>{comments.length} comments</span>}
       </ReactionsWrapper>
@@ -285,7 +291,10 @@ const Message: React.SFC<Props> = (props) => {
   const renderReactionNav = () => {
     return (
       <ReactionNavWrapper>
-        <ReactionNavItem onClick={() => onLikeMessage({ host: sourceHost, id: id })}>
+        <ReactionNavItem onClick={() => {
+          if (liked_by_me) return false
+          onLikeMessage({ host: sourceHost, id: id })
+        }}>
           {liked_by_me ? <FavoriteIcon color="inherit" /> : <FavoriteBorderIcon color="inherit" />}
           <ReactionNavText>Like</ReactionNavText>
         </ReactionNavItem>
@@ -316,7 +325,27 @@ const Message: React.SFC<Props> = (props) => {
         content_type: uploadedFile[0].type,
         file_name: uploadedFile[0].name,
       })
-      setFile(uploadedFile[0])
+
+      /* tslint:disable */
+      loadImage(
+        uploadedFile[0],
+        function (img, data) {
+          if (data.imageHead && data.exif) {
+            // Reset Exif Orientation data:
+            loadImage.writeExifData(data.imageHead, data, 'Orientation', 1)
+            img.toBlob(function (blob) {
+              loadImage.replaceHead(blob, data.imageHead, function (newBlob) {
+                setFile(newBlob)
+              })
+            }, 'image/jpeg')
+          } else {
+            setFile(uploadedFile[0])
+          }
+        },
+        { meta: true, orientation: true, canvas: true }
+      )
+      /* tslint:enable */
+
     }
   }
 
@@ -345,9 +374,9 @@ const Message: React.SFC<Props> = (props) => {
     if (props.currentMessageLikes?.id === id) {
       setLikesInfoRequest(false)
     }
-    
+
     callback && callback()
-    
+
   }, [props, file, isFileUploaded, id, callback])
 
   const renderCommentsButton = () => {
@@ -371,14 +400,24 @@ const Message: React.SFC<Props> = (props) => {
               <MessageDate>{moment(created_at).fromNow()}</MessageDate>
             </UserNameWrapper>
           </UserInfo>
-          {isAuthor && <ButtonsWrapper>
+          {isAuthor ? <ButtonsWrapper>
             <Tooltip title={`Edit`}>
               <IconButton onClick={() => setEditor(!isEditer)}>
                 <EditIcon />
               </IconButton>
             </Tooltip>
             <RemoveMessageDialog {...{ message, id, sourceHost }} />
-          </ButtonsWrapper>}
+          </ButtonsWrapper> :
+            <ButtonsWrapper>
+              <Tooltip title={`Hide`} onClick={() => {
+                onHideMessage({ host: sourceHost, id: id })
+              }}>
+                <IconButton>
+                  <VisibilityOffIcon />
+                </IconButton>
+              </Tooltip>
+            </ButtonsWrapper>
+          }
         </MessageHeader>
         {
           isEditer ?
@@ -402,9 +441,9 @@ const Message: React.SFC<Props> = (props) => {
                   </IconButton>
                 </Tooltip>
                 {(file || attachment_type) && <Tooltip title={`Delete attachment`}>
-                <IconButton component="label" onClick={onFileDelete}>
-                  <LayersClearIcon fontSize="small" color="primary" />
-                </IconButton>
+                  <IconButton component="label" onClick={onFileDelete}>
+                    <LayersClearIcon fontSize="small" color="primary" />
+                  </IconButton>
                 </Tooltip>}
                 <ButtonSend
                   variant="contained"
@@ -454,6 +493,7 @@ type DispatchProps = Pick<Props,
   | 'onResetMessageUploadLink'
   | 'onLikeMessage'
   | 'getLikesForMessage'
+  | 'onHideMessage'
 >
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onMessageEdit: (data: ApiTypes.Messages.EditMessage) => dispatch(Actions.messages.editMessageRequest(data)),
@@ -463,6 +503,7 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onResetMessageUploadLink: () => dispatch(Actions.messages.getMessageUploadLinkSucces(null)),
   onLikeMessage: (data: ApiTypes.Messages.Like) => dispatch(Actions.messages.linkMessageRequest(data)),
   getLikesForMessage: (data: ApiTypes.Messages.Like) => dispatch(Actions.messages.getLikesForMessageRequest(data)),
+  onHideMessage: (data: ApiTypes.Messages.Hide) => dispatch(Actions.messages.hideMessageRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Message)

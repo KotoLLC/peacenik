@@ -17,7 +17,7 @@ export function* watchGetNotifications() {
     })))
     yield call(watchGetNotificationsFromUserHub)
   } else if (response.error.response.status === 401) {
-    sessionStorage.clear()
+    localStorage.clear()
     window.location.reload()
   }
 }
@@ -65,7 +65,7 @@ export function* watchGetNotificationsFromUserHub() {
       )
     }
   } else if (response.error.response.status === 401) {
-    sessionStorage.clear()
+    localStorage.clear()
     window.location.reload()
   }
 }
@@ -77,7 +77,7 @@ export function* watchCleanNotificationsInUserHub(action: { type: string, payloa
     yield put(Actions.notifications.cleanNotificationsInUserHubSuccess())
     yield put(Actions.notifications.getNotificationsRequest())
   } else if (response.error.response.status === 401) {
-    sessionStorage.clear()
+    localStorage.clear()
     window.location.reload()
   }
 }

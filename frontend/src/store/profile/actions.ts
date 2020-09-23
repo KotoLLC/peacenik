@@ -51,13 +51,14 @@ const editProfileRequest = (payload: ApiTypes.Profile.EditProfile) => ({
   payload,
 })
 
+const editProfileSuccess = (payload: boolean) => ({
+  type: Types.EDIT_PROFILE_SUCCESS,
+  payload
+})
+
 const editProfileFailed = (payload: string) => ({
   type: Types.EDIT_PROFILE_FAILED,
   payload,
-})
-
-const editProfileSucces = () => ({
-  type: Types.GET_PROFILE_SUCCESS,
 })
 
 const resetProfileErrorMessage = () => ({
@@ -73,6 +74,6 @@ export default {
   setAvatarSuccess,
   editProfileRequest,
   editProfileFailed,
-  editProfileSucces,
+  editProfileSuccess,
   resetProfileErrorMessage,
 }

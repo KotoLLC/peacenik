@@ -34,7 +34,7 @@ type UserRepo interface {
 	SetEmail(userID, email string) error
 	SetPassword(userID, passwordHash string) error
 	FindUsers(ids []string) ([]User, error)
-	ConfirmUser(userID string) error
+	ConfirmUser(userID string) (bool, error)
 }
 
 type userRepo struct {
@@ -207,11 +207,18 @@ func (r *userRepo) FindUsers(ids []string) ([]User, error) {
 	return users, nil
 }
 
-func (r *userRepo) ConfirmUser(userID string) error {
-	_, err := r.db.Exec(`
+func (r *userRepo) ConfirmUser(userID string) (ok bool, err error) {
+	res, err := r.db.Exec(`
 		update users
 		set confirmed_at = $1
 		where id = $2 and confirmed_at is null`,
 		common.CurrentTimestamp(), userID)
-	return merry.Wrap(err)
+	if err != nil {
+		return false, merry.Wrap(err)
+	}
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return false, merry.Wrap(err)
+	}
+	return rowsAffected == 1, nil
 }

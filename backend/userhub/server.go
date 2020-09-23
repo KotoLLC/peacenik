@@ -3,13 +3,13 @@ package userhub
 import (
 	"context"
 	"errors"
-	fmt "fmt"
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httputil"
-	"time"
 
 	"github.com/ansel1/merry"
+	"github.com/appleboy/go-fcm"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
@@ -27,9 +27,10 @@ import (
 )
 
 const (
-	cookieAuthenticationKey = "oSKDA9fDNa6jIHArw8MHGBPe0XZm4hnY"
-	sessionName             = "auth-session"
-	sessionUserKey          = "user-id"
+	cookieAuthenticationKey    = "oSKDA9fDNa6jIHArw8MHGBPe0XZm4hnY"
+	sessionName                = "auth-session"
+	sessionUserKey             = "user-id"
+	sessionUserPasswordHashKey = "user-password"
 )
 
 type Server struct {
@@ -47,7 +48,7 @@ func NewServer(cfg config.Config, pubKeyPEM string, repos repo.Repos, tokenGener
 	staticFS http.FileSystem) *Server {
 	sessionStore := sessions.NewCookieStore([]byte(cookieAuthenticationKey))
 	sessionStore.Options.HttpOnly = true
-	sessionStore.Options.MaxAge = int((time.Hour * 24 * 30).Seconds())
+	sessionStore.Options.MaxAge = int(services.SessionDefaultMaxAge.Seconds())
 
 	return &Server{
 		cfg:            cfg,
@@ -86,11 +87,22 @@ func (s *Server) Run() error {
 		},
 	}
 	mailSender := common.NewMailSender(s.cfg.SMTP)
-	baseService := services.NewBase(s.repos, s.s3Storage, s.tokenGenerator, s.tokenParser, mailSender, s.cfg.FrontendAddress)
+	var firebaseClient *fcm.Client
+	if s.cfg.FirebaseToken != "" {
+		var err error
+		firebaseClient, err = fcm.NewClient(s.cfg.FirebaseToken)
+		if err != nil {
+			return merry.Prepend(err, "can't create Firebase client")
+		}
+	}
+	notificationSender := services.NewNotificationSender(s.repos, firebaseClient)
+	notificationSender.Start()
+	baseService := services.NewBase(s.repos, s.s3Storage, s.tokenGenerator, s.tokenParser, mailSender,
+		s.cfg.FrontendAddress, notificationSender)
 
 	passwordHash := bcrypt.NewPasswordHash()
 
-	authService := services.NewAuth(baseService, sessionUserKey, passwordHash, s.cfg.TestMode, s.cfg.AdminList(), s.cfg.AdminFriendship)
+	authService := services.NewAuth(baseService, sessionUserKey, sessionUserPasswordHashKey, passwordHash, s.cfg.TestMode, s.cfg.AdminList(), s.cfg.AdminFriendship)
 	authServiceHandler := rpc.NewAuthServiceServer(authService, rpcHooks)
 	r.Handle(authServiceHandler.PathPrefix()+"*", s.findSessionUser(s.authSessionProvider(authServiceHandler)))
 
@@ -122,6 +134,10 @@ func (s *Server) Run() error {
 	notificationServiceHandler := rpc.NewNotificationServiceServer(notificationService, rpcHooks)
 	r.Handle(notificationServiceHandler.PathPrefix()+"*", s.checkAuth(notificationServiceHandler))
 
+	messageHubNotificationService := services.NewMessageHubNotification(baseService)
+	messageHubNotificationServiceHandler := rpc.NewMessageHubNotificationServiceServer(messageHubNotificationService, rpcHooks)
+	r.Handle(messageHubNotificationServiceHandler.PathPrefix()+"*", messageHubNotificationServiceHandler)
+
 	log.Println("started on " + s.cfg.ListenAddress)
 	return http.ListenAndServe(s.cfg.ListenAddress, r)
 }
@@ -151,12 +167,22 @@ func (s *Server) findSessionUser(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
+		userPasswordHash, ok := session.Values[sessionUserPasswordHashKey].(string)
+		if !ok || userPasswordHash == "" {
+			next.ServeHTTP(w, r)
+			return
+		}
 		user, err := s.repos.User.FindUserByID(userID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		if user == nil {
+			next.ServeHTTP(w, r)
+			return
+		}
+		if len(user.PasswordHash) < len(userPasswordHash) ||
+			user.PasswordHash[len(user.PasswordHash)-len(userPasswordHash):] != userPasswordHash {
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -222,6 +248,7 @@ func (s *sessionWrapper) Clear() {
 	s.session.Values = nil
 }
 
-func (s *sessionWrapper) Save() error {
+func (s *sessionWrapper) Save(options services.SessionSaveOptions) error {
+	s.session.Options.MaxAge = int(options.MaxAge.Seconds())
 	return s.session.Save(s.r, s.w)
 }

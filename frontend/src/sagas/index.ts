@@ -60,6 +60,8 @@ import {
     watchGetMoreMessages,
     watchGetMoreMessagesFromHub,
     watchGetMessagesByIdFromHub,
+    watchHideMessage,
+    watchHideComment,
 } from './messages'
 import {
     watchGetNotifications,
@@ -116,6 +118,8 @@ export function* rootSaga() {
         takeEvery(MessagesTypes.GET_MORE_MESSAGES_REQUEST, watchGetMoreMessages),
         takeEvery(MessagesTypes.GET_MORE_MESSAGES_FROM_HUB_REQUEST, watchGetMoreMessagesFromHub),
         takeEvery(MessagesTypes.GET_MESSAGE_BY_ID_FROM_HUB_REQUEST, watchGetMessagesByIdFromHub),
+        takeEvery(MessagesTypes.HIDE_MESSAGE_REQUEST, watchHideMessage),
+        takeEvery(MessagesTypes.HIDE_COMMENT_REQUEST, watchHideComment),
         
         takeEvery(NotificationsTypes.GET_NOTIFICATIONS_REQUEST, watchGetNotifications),
         takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_USER_HUB_REQUEST, watchCleanNotificationsInUserHub),

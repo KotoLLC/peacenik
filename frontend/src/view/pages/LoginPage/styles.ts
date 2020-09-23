@@ -42,3 +42,7 @@ export const Logo = styled.img`
   position: relative;
   margin-bottom: 20px;
 `
+
+export const CheckBoxWrapper = styled.div`
+  margin: -5px 0 10px;
+`

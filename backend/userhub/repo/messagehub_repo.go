@@ -263,6 +263,10 @@ func (r *messageHubRepo) AssignUserToHub(userID, hubID string) error {
 }
 
 func (r *messageHubRepo) UserHubs(userIDs []string) (map[string][]string, error) {
+	if len(userIDs) == 0 {
+		return nil, nil
+	}
+
 	query, args, err := sqlx.In(`
 		select umh.user_id, h.address hub_address
 		from user_message_hubs umh

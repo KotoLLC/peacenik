@@ -1,7 +1,9 @@
 package services
 
 import (
+	"bytes"
 	"context"
+	"image/jpeg"
 	"log"
 	"path/filepath"
 	"strings"
@@ -60,12 +62,7 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		return nil, err
 	}
 
-	attachmentType, err := s.getAttachmentType(ctx, r.AttachmentId)
-	if err != nil {
-		return nil, err
-	}
-
-	attachmentThumbnailID, err := s.getAttachmentThumbnailID(ctx, r.AttachmentId, attachmentType)
+	attachmentThumbnailID, attachmentType, err := s.processAttachment(ctx, r.AttachmentId)
 	if err != nil {
 		return nil, err
 	}
@@ -87,32 +84,26 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		return nil, err
 	}
 
-	for _, friendID := range friends {
-		err = s.repos.Notification.AddNotification(friendID, msg.UserName+" posted a new message", "message/post", map[string]interface{}{
-			"user_id":    msg.UserID,
-			"message_id": msg.ID,
-		})
-		if err != nil {
-			log.Println(err)
-		}
-	}
+	s.notificationSender.SendNotification(friends, msg.UserName+" posted a new message", "message/post", map[string]interface{}{
+		"user_id":    msg.UserID,
+		"message_id": msg.ID,
+	})
 
 	userTags := message.FindUserTags(msg.Text)
 	users, err := s.repos.User.FindUsersByName(userTags)
 	if err != nil {
 		return nil, err
 	}
+	notifyUsers := make([]string, 0, len(users))
 	for _, u := range users {
 		if u.ID != msg.UserID {
-			err = s.repos.Notification.AddNotification(u.ID, msg.UserName+" tagged you in a message", "message/tag", map[string]interface{}{
-				"user_id":    msg.UserID,
-				"message_id": msg.ID,
-			})
-			if err != nil {
-				log.Println(err)
-			}
+			notifyUsers = append(notifyUsers, u.ID)
 		}
 	}
+	s.notificationSender.SendNotification(notifyUsers, msg.UserName+" tagged you in a message", "message/tag", map[string]interface{}{
+		"user_id":    msg.UserID,
+		"message_id": msg.ID,
+	})
 
 	attachmentLink, err := s.createBlobLink(ctx, msg.AttachmentID)
 	if err != nil {
@@ -180,7 +171,7 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 	rpcMessages := make([]*rpc.Message, len(messages))
 	rpcMessageMap := make(map[string]*rpc.Message, len(messages))
 	for i, msg := range messages {
-		messageIDs = append(messageIDs, msg.ID)
+		messageIDs[i] = msg.ID
 		attachmentLink, err := s.createBlobLink(ctx, msg.AttachmentID)
 		if err != nil {
 			return nil, err
@@ -384,11 +375,7 @@ func (s *messageService) Edit(ctx context.Context, r *rpc.MessageEditRequest) (*
 		}
 	}
 	if r.AttachmentChanged {
-		attachmentType, err := s.getAttachmentType(ctx, r.AttachmentId)
-		if err != nil {
-			return nil, err
-		}
-		attachmentThumbnailID, err := s.getAttachmentThumbnailID(ctx, r.AttachmentId, attachmentType)
+		attachmentThumbnailID, attachmentType, err := s.processAttachment(ctx, r.AttachmentId)
 		if err != nil {
 			return nil, err
 		}
@@ -492,18 +479,12 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 		return nil, err
 	}
 
-	attachmentType, err := s.getAttachmentType(ctx, r.AttachmentId)
-	if err != nil {
-		return nil, err
-	}
-
-	attachmentThumbnailID, err := s.getAttachmentThumbnailID(ctx, r.AttachmentId, attachmentType)
+	attachmentThumbnailID, attachmentType, err := s.processAttachment(ctx, r.AttachmentId)
 	if err != nil {
 		return nil, err
 	}
 
 	now := common.CurrentTimestamp()
-
 	comment := repo.Message{
 		ID:                    commentID.String(),
 		UserID:                claims["id"].(string),
@@ -521,14 +502,11 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 	}
 
 	if user.ID != msg.UserID {
-		err = s.repos.Notification.AddNotification(msg.UserID, user.Name+" posted a new comment", "comment/post", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{msg.UserID}, user.Name+" posted a new comment", "comment/post", map[string]interface{}{
 			"user_id":    user.ID,
 			"message_id": msg.ID,
 			"comment_id": comment.ID,
 		})
-		if err != nil {
-			log.Println(err)
-		}
 	}
 
 	userTags := message.FindUserTags(comment.Text)
@@ -536,18 +514,18 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 	if err != nil {
 		return nil, err
 	}
+
+	notifyUsers := make([]string, 0, len(users))
 	for _, u := range users {
 		if u.ID != comment.UserID {
-			err = s.repos.Notification.AddNotification(u.ID, comment.UserName+" tagged you in a comment", "comment/tag", map[string]interface{}{
-				"user_id":    comment.UserID,
-				"message_id": msg.ID,
-				"comment_id": comment.ID,
-			})
-			if err != nil {
-				log.Println(err)
-			}
+			notifyUsers = append(notifyUsers, u.ID)
 		}
 	}
+	s.notificationSender.SendNotification(notifyUsers, comment.UserName+" tagged you in a comment", "comment/tag", map[string]interface{}{
+		"user_id":    comment.UserID,
+		"message_id": msg.ID,
+		"comment_id": comment.ID,
+	})
 
 	attachmentLink, err := s.createBlobLink(ctx, comment.AttachmentID)
 	if err != nil {
@@ -589,12 +567,7 @@ func (s *messageService) EditComment(ctx context.Context, r *rpc.MessageEditComm
 		}
 	}
 	if r.AttachmentChanged {
-		attachmentType, err := s.getAttachmentType(ctx, r.AttachmentId)
-		if err != nil {
-			return nil, err
-		}
-
-		attachmentThumbnailID, err := s.getAttachmentThumbnailID(ctx, r.AttachmentId, attachmentType)
+		attachmentThumbnailID, attachmentType, err := s.processAttachment(ctx, r.AttachmentId)
 		if err != nil {
 			return nil, err
 		}
@@ -722,13 +695,10 @@ func (s *messageService) LikeMessage(ctx context.Context, r *rpc.MessageLikeMess
 	if err != nil {
 		return nil, err
 	}
-	err = s.repos.Notification.AddNotification(msg.UserID, user.Name+" liked your post", "message/like", map[string]interface{}{
+	s.notificationSender.SendNotification([]string{msg.UserID}, user.Name+" liked your post", "message/like", map[string]interface{}{
 		"user_id":    user.ID,
 		"message_id": msg.ID,
 	})
-	if err != nil {
-		log.Println(err)
-	}
 	return &rpc.MessageLikeMessageResponse{
 		Likes: int32(newLikeCount),
 	}, nil
@@ -755,14 +725,11 @@ func (s *messageService) LikeComment(ctx context.Context, r *rpc.MessageLikeComm
 	if err != nil {
 		return nil, err
 	}
-	err = s.repos.Notification.AddNotification(comment.UserID, user.Name+" liked your comment", "comment/like", map[string]interface{}{
+	s.notificationSender.SendNotification([]string{comment.UserID}, user.Name+" liked your comment", "comment/like", map[string]interface{}{
 		"user_id":    user.ID,
 		"message_id": comment.ParentID.String,
 		"comment_id": comment.ID,
 	})
-	if err != nil {
-		log.Println(err)
-	}
 	return &rpc.MessageLikeCommentResponse{
 		Likes: int32(newLikeCount),
 	}, nil
@@ -802,4 +769,57 @@ func (s *messageService) CommentLikes(_ context.Context, r *rpc.MessageCommentLi
 	return &rpc.MessageCommentLikesResponse{
 		Likes: rpcLikes,
 	}, nil
+}
+
+func (s *messageService) processAttachment(ctx context.Context, attachmentID string) (attachmentThumbnailID, attachmentType string, err error) {
+	attachmentType, err = s.getAttachmentType(ctx, attachmentID)
+	if err != nil {
+		return "", "", err
+	}
+
+	attachmentThumbnailID, err = s.getAttachmentThumbnailID(ctx, attachmentID, attachmentType)
+	if err != nil {
+		return "", "", err
+	}
+
+	if attachmentType != "image/jpeg" {
+		return attachmentThumbnailID, attachmentType, nil
+	}
+
+	var buf bytes.Buffer
+	err = s.s3Storage.Read(ctx, attachmentID, &buf)
+	if err != nil {
+		log.Println("can't read attachment:", err)
+		return attachmentThumbnailID, attachmentType, nil
+	}
+
+	orientation := common.GetImageOrientation(bytes.NewReader(buf.Bytes()))
+	if orientation == "1" {
+		return attachmentThumbnailID, attachmentType, nil
+	}
+	if img, err := common.DecodeImageAndFixOrientation(bytes.NewReader(buf.Bytes()), orientation); err == nil {
+		buf.Reset()
+		if err := jpeg.Encode(&buf, img, nil); err == nil {
+			_ = s.s3Storage.PutObject(ctx, attachmentID, buf.Bytes(), attachmentType)
+		}
+	}
+	return attachmentThumbnailID, attachmentType, nil
+}
+
+func (s *messageService) SetMessageVisibility(ctx context.Context, r *rpc.MessageSetMessageVisibilityRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+	err := s.repos.Message.SetMessageVisibility(user.ID, r.MessageId, r.Visibility)
+	if err != nil {
+		return nil, err
+	}
+	return &rpc.Empty{}, nil
+}
+
+func (s *messageService) SetCommentVisibility(ctx context.Context, r *rpc.MessageSetCommentVisibilityRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+	err := s.repos.Message.SetMessageVisibility(user.ID, r.CommentId, r.Visibility)
+	if err != nil {
+		return nil, err
+	}
+	return &rpc.Empty{}, nil
 }

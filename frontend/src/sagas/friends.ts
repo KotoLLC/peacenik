@@ -9,7 +9,7 @@ export function* watchGetFriends() {
   if (response.status === 200) {
     yield put(Actions.friends.getFriendsSucces(response.data.friends || []))
   } else if (response.error.response.status === 401) {
-    sessionStorage.clear()
+    localStorage.clear()
     window.location.reload()
   }
 }
@@ -20,7 +20,7 @@ export function* watchGetFriendsOfFriends() {
   if (response.status === 200) {
     yield put(Actions.friends.getFriendsOfFriendsSucces(response.data.friends || []))
   } else if (response.error.response.status === 401) {
-    sessionStorage.clear()
+    localStorage.clear()
     window.location.reload()
   }
 }
@@ -32,7 +32,7 @@ export function* watchAddFriend(action: { type: string, payload: ApiTypes.Friend
     yield put(Actions.friends.addFriendSuccess())
     yield put(Actions.friends.getFriendsRequest())
   } else if (response.error.response.status === 401) {
-    sessionStorage.clear()
+    localStorage.clear()
     window.location.reload()
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
@@ -45,7 +45,7 @@ export function* watchGetInvitations() {
   if (response.status === 200) {
     yield put(Actions.friends.getInvitationsSuccess(response.data.invites))
   } else if (response.error.response.status === 401) {
-    sessionStorage.clear()
+    localStorage.clear()
     window.location.reload()
   }
 }
@@ -56,7 +56,7 @@ export function* watchAcceptInvitation(action: { type: string, payload: ApiTypes
   if (response.status === 200) {
     yield put(Actions.friends.getInvitationsRequest())
   } else if (response.error.response.status === 401) {
-    sessionStorage.clear()
+    localStorage.clear()
     window.location.reload()
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
@@ -70,7 +70,7 @@ export function* watchRejectInvitation(action: { type: string, payload: ApiTypes
     yield put(Actions.friends.getInvitationsRequest())
     yield put(Actions.friends.getFriendsRequest())
   } else if (response.error.response.status === 401) {
-    sessionStorage.clear()
+    localStorage.clear()
     window.location.reload()
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
@@ -83,7 +83,7 @@ export function* watchCreateInviteByEmail(action: { type: string, payload: ApiTy
   if (response.status === 200) {
     yield put(Actions.friends.inviteByEmailSuccess(true))
   } else if (response.error.response.status === 401) {
-    sessionStorage.clear()
+    localStorage.clear()
     window.location.reload()
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))

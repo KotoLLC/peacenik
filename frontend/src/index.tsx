@@ -50,19 +50,28 @@ interface Props {
   isLogged: boolean
   isEmailConfirmed: boolean
   authToken: string
+  
   onGetAuthToken: () => void
   onGetNotifications: () => void
+  onGetProfile: () => void
 }
 
-class AppComponent extends React.Component<Props> {
+interface State {
+  isDataGot: boolean
+}
 
-  state = {}
+class AppComponent extends React.Component<Props, State> {
+
+  state = {
+    isDataGot: false,
+  }
 
   checkTokenTime = () => {
-    const authTokenDate = sessionStorage.getItem('kotoAuthTokenDate')
+    const authTokenDate = localStorage.getItem('kotoAuthTokenDate')
     const { isEmailConfirmed } = this.props
 
     if (authTokenDate && isEmailConfirmed) {
+      
       const lastTokenDate = moment(JSON.parse(authTokenDate))
       const dateNow = new Date()
       const diffTime = moment(dateNow).diff(lastTokenDate) / 1000 // in seconds
@@ -77,9 +86,14 @@ class AppComponent extends React.Component<Props> {
     // }
   }
 
-  static getDerivedStateFromProps(newProps: Props) {
-    if (newProps.isLogged && newProps.authToken) {
+  static getDerivedStateFromProps(newProps: Props, prevState: State) {
+    if (newProps.isLogged && newProps.authToken && !prevState.isDataGot) {
+      newProps.onGetProfile()
       newProps.onGetNotifications()
+
+      return {
+        isDataGot: true
+      }
     }
 
     return null
@@ -118,10 +132,11 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   isEmailConfirmed: selectors.profile.isEmailConfirmed(state) || false,
 })
 
-type DispatchProps = Pick<Props, 'onGetAuthToken' | 'onGetNotifications'>
+type DispatchProps = Pick<Props, 'onGetAuthToken' | 'onGetNotifications' | 'onGetProfile'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetAuthToken: () => dispatch(Actions.authorization.getAuthTokenRequest()),
   onGetNotifications: () => dispatch(Actions.notifications.getNotificationsRequest()),
+  onGetProfile: () => dispatch(Actions.profile.getProfileRequest()),
 })
 
 const App = connect(mapStateToProps, mapDispatchToProps)(AppComponent)

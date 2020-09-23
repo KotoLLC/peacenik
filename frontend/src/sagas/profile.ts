@@ -14,9 +14,9 @@ export function* watchGetProfile() {
     yield put(Actions.profile.getProfileSucces(response.data))
     const user = Object.assign({}, response.data.user)
     delete user.email
-    sessionStorage.setItem('kotoProfile', JSON.stringify({user}))
+    localStorage.setItem('kotoProfile', JSON.stringify({user}))
   } else if (response.error.response.status === 401) {
-    sessionStorage.clear()
+    localStorage.clear()
     window.location.reload()
   }
 }
@@ -47,9 +47,11 @@ export function* watchEditProfile(action: { type: string, payload: ApiTypes.Prof
   if (response.status === 200) {
     yield put(Actions.profile.getProfileRequest())
     yield put(Actions.profile.resetProfileErrorMessage())
+    yield put(Actions.profile.editProfileSuccess(true))
     yield put(Actions.common.setSuccessNotify('Changes have been saved'))
+    setTimeout(() => window.location.reload(), 1500)
   } else if (response.error.response.status === 401) {
-    sessionStorage.clear()
+    localStorage.clear()
     window.location.reload()
   } else {
     yield put(Actions.profile.editProfileFailed(response?.error?.response?.data?.msg || 'Server error'))

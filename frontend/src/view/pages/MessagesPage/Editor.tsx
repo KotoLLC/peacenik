@@ -9,6 +9,9 @@ import Tooltip from '@material-ui/core/Tooltip'
 import LayersClearIcon from '@material-ui/icons/LayersClear'
 import { Player } from 'video-react'
 import { getAvatarUrl } from '@services/avatarUrl'
+import Avatar from '@material-ui/core/Avatar'
+import loadImage from 'blueimp-load-image'
+
 import {
   TextareaAutosizeStyled,
   ButtonSend,
@@ -23,7 +26,6 @@ import {
   AvatarWrapper,
   ErrorMessage,
 } from './styles'
-import { Avatar } from '@view/shared/styles'
 
 interface Props {
   authToken: string
@@ -79,12 +81,33 @@ const Editor: React.SFC<Props> = (props) => {
 
     const uploadedFile = event.target.files
     if (uploadedFile && uploadedFile[0] && props.currentHub.host) {
+
       onGetMessageUploadLink({
         host: props.currentHub.host,
         content_type: uploadedFile[0].type,
         file_name: uploadedFile[0].name,
       })
-      setFile(uploadedFile[0])
+
+      /* tslint:disable */
+      loadImage(
+        uploadedFile[0],
+        function (img, data) {
+          if (data.imageHead && data.exif) {
+            // Reset Exif Orientation data:
+            loadImage.writeExifData(data.imageHead, data, 'Orientation', 1)
+            img.toBlob(function (blob) {
+              loadImage.replaceHead(blob, data.imageHead, function (newBlob) {
+                setFile(newBlob)
+              })
+            }, 'image/jpeg')
+          } else {
+            setFile(uploadedFile[0])
+          }
+        },
+        { meta: true, orientation: true, canvas: true }
+      )
+      /* tslint:enable */
+      
     }
   }
 

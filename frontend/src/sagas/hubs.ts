@@ -10,7 +10,7 @@ export function* watchHubCreate(action: { type: string, payload: ApiTypes.Hubs.C
   if (response.status === 200) {
     yield put(Actions.hubs.hubCreateSuccess())
   } else if (response.error.response.status === 401) {
-    sessionStorage.clear()
+    localStorage.clear()
     window.location.reload()
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
@@ -23,7 +23,7 @@ export function* watchGetHubs() {
   if (response.status === 200) {
     yield put(Actions.hubs.getHubsSuccess(hubsListBack2Front(response?.data?.hubs)))
   } else if (response.error.response.status === 401) {
-    sessionStorage.clear()
+    localStorage.clear()
     window.location.reload()
   }
 }
@@ -32,9 +32,12 @@ export function* watchApproveHub(action: { type: string, payload: ApiTypes.Hubs.
   const response = yield API.hubs.approveHub(action.payload)
 
   if (response.status === 200) {
+    if (response.data.error) {
+      yield put(Actions.common.setErrorNotify(response.data.error))  
+    }
     yield put(Actions.hubs.getHubsRequest())
   } else if (response.error.response.status === 401) {
-    sessionStorage.clear()
+    localStorage.clear()
     window.location.reload()
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
@@ -47,7 +50,7 @@ export function* watchRemoveHub(action: { type: string, payload: ApiTypes.Hubs.R
   if (response.status === 200) {
     yield put(Actions.hubs.getHubsRequest())
   } else if (response.error.response.status === 401) {
-    sessionStorage.clear()
+    localStorage.clear()
     window.location.reload()
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))

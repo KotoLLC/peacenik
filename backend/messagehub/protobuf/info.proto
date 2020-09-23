@@ -6,7 +6,12 @@ option go_package = "../rpc";
 import "model.proto";
 
 service InfoService {
+    rpc PublicKey (Empty) returns (InfoPublicKeyResponse);
     rpc Version (Empty) returns (InfoVersionResponse);
+}
+
+message InfoPublicKeyResponse {
+    string public_key = 1;
 }
 
 message InfoVersionResponse {

@@ -68,7 +68,11 @@ Content-Type: application/json
 POST https://central.koto.at/rpc.AuthService/Login
 Content-Type: application/json
 
-{"name": "andrey", "password":  "12345"}
+{
+  "name": "andrey",
+  "password": "12345",
+  "remember_me": true
+}
 ```
 
 ### Get current user info
@@ -145,6 +149,15 @@ POST https://central.koto.at/rpc.MessageHubService/Hubs
 Content-Type: application/json
 
 {}
+```
+
+### Verify a hub
+
+```
+POST https://central.koto.at/rpc.MessageHubService/Verify
+Content-Type: application/json
+
+{"hub_id":  "e60b3ff4-9ac0-4ba4-a45c-626c4eb29f75"}
 ```
 
 ### Approve a hub (admin access)

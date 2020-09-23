@@ -19,7 +19,7 @@ export interface State {
   messageById: ApiTypes.Messages.Message | null | undefined
 }
 
-const kotoMessageTokens = sessionStorage.getItem('kotoMessageTokens') 
+const kotoMessageTokens = localStorage.getItem('kotoMessageTokens') 
 let messageTokensLocal
 if (kotoMessageTokens !== 'undefined' && kotoMessageTokens !== null) {
   messageTokensLocal = JSON.parse(kotoMessageTokens)?.tokens
@@ -86,6 +86,11 @@ const reducer = (state = initialState, action) => {
     case Types.DELETE_MESSAGE_REQUEST: {
       return {
         ...state, ...{ messages: state.messages.filter(item => item.id !== action.payload.body.message_id) }
+      }
+    }
+    case Types.HIDE_MESSAGE_REQUEST: {
+      return {
+        ...state, ...{ messages: state.messages.filter(item => item.id !== action.payload.id) }
       }
     }
     case Types.GET_MORE_MESSAGES_REQUEST: {

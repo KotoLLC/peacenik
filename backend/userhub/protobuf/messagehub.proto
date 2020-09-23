@@ -8,7 +8,8 @@ import "model.proto";
 service MessageHubService {
     rpc Register (MessageHubRegisterRequest) returns (Empty);
     rpc Hubs (Empty) returns (MessageHubHubsResponse);
-    rpc Approve (MessageHubApproveRequest) returns (Empty);
+    rpc Verify (MessageHubVerifyRequest) returns (MessageHubVerifyResponse);
+    rpc Approve (MessageHubApproveRequest) returns (MessageHubApproveResponse);
     rpc Remove (MessageHubRemoveRequest) returns (Empty);
     rpc SetPostLimit (MessageHubSetPostLimitRequest) returns (Empty);
 }
@@ -34,8 +35,20 @@ message MessageHubHubsResponse {
     repeated MessageHubHubsResponseHub hubs = 1;
 }
 
+message MessageHubVerifyRequest {
+    string hub_id = 1;
+}
+
+message MessageHubVerifyResponse {
+    string error = 1;
+}
+
 message MessageHubApproveRequest {
     string hub_id = 1;
+}
+
+message MessageHubApproveResponse {
+    string error = 1;
 }
 
 message MessageHubRemoveRequest {

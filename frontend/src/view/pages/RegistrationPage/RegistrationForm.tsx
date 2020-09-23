@@ -14,6 +14,9 @@ import { FooterMenu } from '@view/shared/FooterMenu'
 import { ApiTypes } from 'src/types'
 import logo from './../../../assets/images/logo-black.png'
 import queryString from 'query-string'
+import Checkbox from '@material-ui/core/Checkbox'
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
+import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import {
   FormWrapper,
   FormControlStyled,
@@ -21,6 +24,8 @@ import {
   ContainerStyled,
   Header,
   Logo,
+  CheckBoxWrapper,
+  CheckBoxLabel,
 } from './styles'
 
 type FieldsType = 'username' | 'password' | 'email' | ''
@@ -44,13 +49,14 @@ export const RegistrationForm: React.SFC<Props> = (props) => {
   const [username, onNameChange] = useState<string>('')
   const [email, onEmailChange] = useState<string>(params?.email as string || '')
   const [password, onPasswordChange] = useState<string>('')
+  const [isLicenseChecked, onLicenseCheck] = useState<boolean>(false)
   const [isPasswordVisible, onPasswordOpen] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [noValideField, setNoValideField] = useState<FieldsType>('')
   const [isRequest, setRequest] = useState<boolean>(false)
-  const { 
-    onRegisterUser, 
-    location, 
+  const {
+    onRegisterUser,
+    location,
     history,
     registrationErrorMessage,
     isRegisterSuccess,
@@ -58,7 +64,7 @@ export const RegistrationForm: React.SFC<Props> = (props) => {
     isUserRegisteredResult,
     onLogin,
     isLogged,
-   } = props
+  } = props
 
   const onValidate = (): boolean => {
 
@@ -86,16 +92,16 @@ export const RegistrationForm: React.SFC<Props> = (props) => {
   const onFormSubmit = (event: FormEvent) => {
     event.preventDefault()
     onResetRegistrationResult()
-    
+
     if (!onValidate()) return
     setRequest(true)
     setErrorMessage('')
     setNoValideField('')
 
-    onRegisterUser({ 
-      name: username, 
-      password, 
-      email, 
+    onRegisterUser({
+      name: username,
+      password,
+      email,
       invite_token: params?.invite as string,
     })
   }
@@ -118,7 +124,7 @@ export const RegistrationForm: React.SFC<Props> = (props) => {
       } else {
         history.push('/resend-confirm-email')
       }
-      
+
       setRequest(false)
     }
   }, [location, history, registrationErrorMessage, isRegisterSuccess, isUserRegisteredResult, isLogged, onLogin, params, password, username])
@@ -183,7 +189,19 @@ export const RegistrationForm: React.SFC<Props> = (props) => {
               </InputAdornment>
             } />
         </FormControlStyled>
+        <CheckBoxWrapper>
+          <Checkbox
+            checked={isLicenseChecked}
+            onChange={(event) => onLicenseCheck(event.target.checked)}
+            icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
+            checkedIcon={<CheckBoxIcon fontSize="small" />}
+            name="rememberMe"
+            color="primary"
+          />
+          <CheckBoxLabel to={'/docs/code-of-conduct'}>I agree to koto's license agreement</CheckBoxLabel>
+        </CheckBoxWrapper>
         <ButtonStyled
+          disabled={isLicenseChecked ? false : true}
           variant="contained"
           size="large"
           color="primary"

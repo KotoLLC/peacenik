@@ -47,13 +47,10 @@ func (s *messageHubService) Register(ctx context.Context, r *rpc.MessageHubRegis
 			log.Println(err)
 		}
 		if adminUser != nil {
-			err = s.repos.Notification.AddNotification(adminUser.ID, user.Name+" added a new message hub", "message-hub/add", map[string]interface{}{
+			s.notificationSender.SendNotification([]string{adminUser.ID}, user.Name+" added a new message hub", "message-hub/add", map[string]interface{}{
 				"user_id": user.ID,
 				"hub_id":  hubID,
 			})
-			if err != nil {
-				log.Println(err)
-			}
 		}
 	}
 	return &rpc.Empty{}, nil
@@ -95,13 +92,37 @@ func (s *messageHubService) Hubs(ctx context.Context, _ *rpc.Empty) (*rpc.Messag
 	}, nil
 }
 
-func (s *messageHubService) Approve(ctx context.Context, r *rpc.MessageHubApproveRequest) (*rpc.Empty, error) {
+func (s *messageHubService) Verify(ctx context.Context, r *rpc.MessageHubVerifyRequest) (*rpc.MessageHubVerifyResponse, error) {
+	hub, err := s.repos.MessageHubs.Hub(r.HubId)
+	if err != nil {
+		return nil, err
+	}
+	_, err = loadNodePublicKey(ctx, hub.Address)
+	if err != nil {
+		return &rpc.MessageHubVerifyResponse{
+			Error: err.Error(),
+		}, nil
+	}
+	return &rpc.MessageHubVerifyResponse{}, nil
+}
+
+func (s *messageHubService) Approve(ctx context.Context, r *rpc.MessageHubApproveRequest) (*rpc.MessageHubApproveResponse, error) {
 	if !s.isAdmin(ctx) {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 	user := s.getUser(ctx)
 
-	err := s.repos.MessageHubs.ApproveHub(r.HubId)
+	resp, err := s.Verify(ctx, &rpc.MessageHubVerifyRequest{HubId: r.HubId})
+	if err != nil {
+		return nil, err
+	}
+	if resp.Error != "" {
+		return &rpc.MessageHubApproveResponse{
+			Error: resp.Error,
+		}, nil
+	}
+
+	err = s.repos.MessageHubs.ApproveHub(r.HubId)
 	if err != nil {
 		return nil, err
 	}
@@ -111,15 +132,11 @@ func (s *messageHubService) Approve(ctx context.Context, r *rpc.MessageHubApprov
 		return nil, err
 	}
 
-	err = s.repos.Notification.AddNotification(hub.AdminID, user.Name+" approved your message hub", "message-hub/approve", map[string]interface{}{
+	s.notificationSender.SendNotification([]string{hub.AdminID}, user.Name+" approved your message hub", "message-hub/approve", map[string]interface{}{
 		"user_id": user.ID,
 		"hub_id":  r.HubId,
 	})
-	if err != nil {
-		log.Println(err)
-	}
-
-	return &rpc.Empty{}, nil
+	return &rpc.MessageHubApproveResponse{}, nil
 }
 
 func (s *messageHubService) Remove(ctx context.Context, r *rpc.MessageHubRemoveRequest) (*rpc.Empty, error) {
@@ -142,13 +159,10 @@ func (s *messageHubService) Remove(ctx context.Context, r *rpc.MessageHubRemoveR
 	}
 
 	if hub.AdminID != user.ID {
-		err = s.repos.Notification.AddNotification(hub.AdminID, user.Name+" removed your message hub", "message-hub/remove", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{hub.AdminID}, user.Name+" removed your message hub", "message-hub/remove", map[string]interface{}{
 			"user_id": user.ID,
 			"hub_id":  r.HubId,
 		})
-		if err != nil {
-			log.Println(err)
-		}
 	}
 
 	return &rpc.Empty{}, nil

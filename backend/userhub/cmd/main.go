@@ -2,10 +2,7 @@ package main
 
 import (
 	"context"
-	"crypto/rand"
 	"crypto/rsa"
-	"crypto/x509"
-	"encoding/pem"
 	"flag"
 	"log"
 	"os"
@@ -47,18 +44,12 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	_, err = os.Stat(cfg.PrivateKeyPath)
+	err = common.GenerateRSAKey(cfg.PrivateKeyPath)
 	if err != nil {
-		if !os.IsNotExist(err) {
-			log.Fatalln(err)
-		}
-		err := generateRSAKey(cfg.PrivateKeyPath)
-		if err != nil {
-			log.Fatalln(err)
-		}
+		log.Fatalln(err)
 	}
 
-	privateKey, publicKey, publicKeyPEM, err := token.RSAKeysFromPrivateKeyFile(cfg.PrivateKeyPath)
+	privateKey, publicKey, publicKeyPEM, err := common.RSAKeysFromPrivateKeyFile(cfg.PrivateKeyPath)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -110,32 +101,4 @@ func loadConfig(execDir string) (config.Config, error) {
 	}
 
 	return cfg, nil
-}
-
-func generateRSAKey(keyPath string) error {
-	const bitSize = 1024
-	reader := rand.Reader
-	key, err := rsa.GenerateKey(reader, bitSize)
-	if err != nil {
-		return err
-	}
-
-	outFile, err := os.Create(keyPath)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		_ = outFile.Close()
-	}()
-
-	var privateKey = &pem.Block{
-		Type:  "PRIVATE KEY",
-		Bytes: x509.MarshalPKCS1PrivateKey(key),
-	}
-
-	err = pem.Encode(outFile, privateKey)
-	if err != nil {
-		return err
-	}
-	return nil
 }

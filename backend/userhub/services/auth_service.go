@@ -28,6 +28,8 @@ const (
 	resetPasswordFrontendPath = "/reset-password?name=%s&email=%s&token=%s"
 	resetPasswordEmailBody    = `<p>To reset password, click on the link below:</p>
 <p><a href="%s" target="_blank">Click here</a>.</p><p>Thanks!</p>`
+
+	SessionDefaultMaxAge = time.Hour * 24 * 365 * 10
 )
 
 var (
@@ -41,22 +43,24 @@ type PasswordHash interface {
 
 type authService struct {
 	*BaseService
-	sessionUserKey  string
-	passwordHash    PasswordHash
-	testMode        bool
-	adminList       []string
-	adminFriendship string
+	sessionUserKey             string
+	sessionUserPasswordHashKey string
+	passwordHash               PasswordHash
+	testMode                   bool
+	adminList                  []string
+	adminFriendship            string
 }
 
-func NewAuth(base *BaseService, sessionUserKey string, passwordHash PasswordHash, testMode bool,
-	adminList []string, adminFriendship string) rpc.AuthService {
+func NewAuth(base *BaseService, sessionUserKey, sessionUserPasswordHashKey string, passwordHash PasswordHash,
+	testMode bool, adminList []string, adminFriendship string) rpc.AuthService {
 	return &authService{
-		BaseService:     base,
-		sessionUserKey:  sessionUserKey,
-		passwordHash:    passwordHash,
-		testMode:        testMode,
-		adminList:       adminList,
-		adminFriendship: strings.ToLower(adminFriendship),
+		BaseService:                base,
+		sessionUserKey:             sessionUserKey,
+		sessionUserPasswordHashKey: sessionUserPasswordHashKey,
+		passwordHash:               passwordHash,
+		testMode:                   testMode,
+		adminList:                  adminList,
+		adminFriendship:            strings.ToLower(adminFriendship),
 	}
 }
 
@@ -132,9 +136,14 @@ func (s *authService) Login(ctx context.Context, r *rpc.AuthLoginRequest) (*rpc.
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid username or password")
 	}
 
+	sessionSaveOptions := SessionSaveOptions{}
+	if r.RememberMe {
+		sessionSaveOptions.MaxAge = SessionDefaultMaxAge
+	}
 	session := s.getAuthSession(ctx)
 	session.SetValue(s.sessionUserKey, user.ID)
-	err = session.Save()
+	session.SetValue(s.sessionUserPasswordHashKey, user.PasswordHash[len(user.PasswordHash)-len(user.PasswordHash)/3:])
+	err = session.Save(sessionSaveOptions)
 	if err != nil {
 		return nil, err
 	}
@@ -144,7 +153,7 @@ func (s *authService) Login(ctx context.Context, r *rpc.AuthLoginRequest) (*rpc.
 func (s *authService) Logout(ctx context.Context, _ *rpc.Empty) (*rpc.Empty, error) {
 	session := s.getAuthSession(ctx)
 	session.Clear()
-	err := session.Save()
+	err := session.Save(SessionSaveOptions{MaxAge: -1})
 	if err != nil {
 		return nil, err
 	}
@@ -164,7 +173,7 @@ func (s *authService) Confirm(ctx context.Context, r *rpc.AuthConfirmRequest) (*
 				return nil, err
 			}
 			if user != nil {
-				err = s.repos.User.ConfirmUser(user.ID)
+				_, err = s.repos.User.ConfirmUser(user.ID)
 				if err != nil {
 					return nil, err
 				}
@@ -202,7 +211,7 @@ func (s *authService) SendResetPasswordLink(_ context.Context, r *rpc.AuthSendRe
 	}
 
 	resetToken, err := s.tokenGenerator.Generate(r.Name, r.Name, "user-password-reset",
-		time.Now().Add(time.Hour*24),
+		time.Now().Add(time.Minute*10),
 		map[string]interface{}{
 			"email": r.Email,
 		})
@@ -287,9 +296,12 @@ func (s *authService) confirmUser(confirmToken string) error {
 		return token.ErrInvalidToken.Here()
 	}
 
-	err = s.repos.User.ConfirmUser(userID)
+	ok, err = s.repos.User.ConfirmUser(userID)
 	if err != nil {
 		return merry.Wrap(err)
+	}
+	if !ok {
+		return nil
 	}
 
 	if s.adminFriendship == "" || len(s.adminList) == 0 {
@@ -315,12 +327,9 @@ func (s *authService) confirmUser(confirmToken string) error {
 		if err != nil {
 			return merry.Wrap(err)
 		}
-		err = s.repos.Notification.AddNotification(admin.ID, user.Name+" invited you to be friends", "invite/add", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{admin.ID}, user.Name+" invited you to be friends", "invite/add", map[string]interface{}{
 			"user_id": user.ID,
 		})
-		if err != nil {
-			log.Println(err)
-		}
 		err = s.sendInviteLinkToRegisteredUser(*user, admin.Email)
 		if err != nil {
 			log.Println("can't invite by email:", err)
@@ -334,12 +343,9 @@ func (s *authService) confirmUser(confirmToken string) error {
 		if err != nil {
 			return merry.Wrap(err)
 		}
-		err = s.repos.Notification.AddNotification(admin.ID, user.Name+" is registered and added to your friends!", "invite/accept", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{admin.ID}, user.Name+" is registered and added to your friends!", "invite/accept", map[string]interface{}{
 			"user_id": user.ID,
 		})
-		if err != nil {
-			log.Println(err)
-		}
 	}
 	return nil
 }
@@ -355,7 +361,8 @@ func (s *authService) confirmInviteToken(user repo.User, confirmToken string) er
 		return token.ErrInvalidToken.Here()
 	}
 
-	return s.repos.User.ConfirmUser(user.ID)
+	_, err = s.repos.User.ConfirmUser(user.ID)
+	return err
 }
 
 func (s *authService) sendInviteLinkToRegisteredUser(inviter repo.User, userEmail string) error {

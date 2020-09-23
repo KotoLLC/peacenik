@@ -62,6 +62,12 @@ export enum Types {
   
   GET_LIKES_FOR_COMMENT_REQUEST = 'GET_LIKES_FOR_COMMENT_REQUEST',
   GET_LIKES_FOR_COMMENT_SUCCESS = 'GET_LIKES_FOR_COMMENT_SUCCESS',
+
+  HIDE_MESSAGE_REQUEST = 'HIDE_MESSAGE_REQUEST',
+  HIDE_MESSAGE_SUCCESS = 'HIDE_MESSAGE_SUCCESS',
+
+  HIDE_COMMENT_REQUEST = 'HIDE_COMMENT_REQUEST',
+  HIDE_COMMENT_SUCCESS = 'HIDE_COMMENT_SUCCESS',
 }
 
 const getMessagesRequest = () => ({
@@ -187,6 +193,24 @@ const linkMessageSuccess = () => ({
   type: Types.LIKE_MESSAGE_SUCCESS,
 })
 
+const hideMessageRequest = (payload: ApiTypes.Messages.Hide) => ({
+  type: Types.HIDE_MESSAGE_REQUEST,
+  payload,
+})
+
+const hideMessageSuccess = () => ({
+  type: Types.HIDE_MESSAGE_SUCCESS,
+})
+
+const hideCommentRequest = (payload: ApiTypes.Messages.Hide) => ({
+  type: Types.HIDE_COMMENT_REQUEST,
+  payload,
+})
+
+const hideCommentSuccess = () => ({
+  type: Types.HIDE_COMMENT_SUCCESS,
+})
+
 const linkCommnetRequest = (payload: ApiTypes.Messages.Like) => ({
   type: Types.LIKE_COMMENT_REQUEST,
   payload,
@@ -310,4 +334,8 @@ export default {
   getMessagesByIdFromHubSuccess,
   resetMessageById,
   getMessagesByIdFromHubFailed,
+  hideMessageRequest,
+  hideMessageSuccess,
+  hideCommentRequest,
+  hideCommentSuccess,
 }
