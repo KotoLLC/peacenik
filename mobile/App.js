@@ -7,7 +7,7 @@
  */
 
 import React, {useEffect, useRef} from 'react';
-import {StyleSheet, SafeAreaView, Platform} from 'react-native';
+import {StyleSheet, SafeAreaView, Platform, Linking} from 'react-native';
 import WebView from 'react-native-webview';
 import messaging from '@react-native-firebase/messaging';
 import DeviceInfo from 'react-native-device-info';
@@ -45,7 +45,6 @@ const App = () => {
   });
 
   const onNavigationStateChange = async (navState) => {
-    console.log(navState);
     if (navState.url.includes('messages')) {
       const cookies = await CookieManager.getAll(true);
       console.log('CookieManager.get =>', cookies);
@@ -93,6 +92,14 @@ const App = () => {
     }
   };
 
+  const onShouldLoad = (event) => {
+    if (!event.url.startsWith(url)) {
+      Linking.openURL(event.url);
+      return false;
+    }
+    return true;
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <WebView
@@ -100,6 +107,7 @@ const App = () => {
         source={{uri: url}}
         onMessage={onMessage}
         onNavigationStateChange={onNavigationStateChange}
+        onShouldStartLoadWithRequest={onShouldLoad}
       />
     </SafeAreaView>
   );
