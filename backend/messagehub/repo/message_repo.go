@@ -11,7 +11,8 @@ import (
 )
 
 var (
-	ErrMessageNotFound = common.ErrNotFound.WithMessage("message not found")
+	ErrMessageNotFound       = common.ErrNotFound.WithMessage("message not found")
+	ErrMessageReportNotFound = common.ErrNotFound.WithMessage("message report not found")
 
 	maxTimestamp        = time.Date(9999, 12, 31, 23, 59, 59, 999999999, time.Local)
 	defaultMessageCount = 10
@@ -39,6 +40,13 @@ type MessageLike struct {
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
+type MessageReport struct {
+	ReportedBy string `json:"reported_by" db:"reported_by"`
+	Report     string `json:"report" db:"report"`
+	MessageID  string `json:"message_id" db:"message_id"`
+	AuthorID   string `json:"author_id" db:"author_id"`
+}
+
 type MessageRepo interface {
 	Messages(currentUserID string, userIDs []string, from time.Time, count int) ([]Message, error)
 	Message(currentUserID string, messageID string) (Message, error)
@@ -51,6 +59,8 @@ type MessageRepo interface {
 	MessagesLikes(messageIDs []string) (likes map[string][]MessageLike, err error)
 	MessageLikes(messageID string) (likes []MessageLike, err error)
 	SetMessageVisibility(userID, messageID string, visibility bool) error
+	ReportMessage(userID, messageID, report string) (string, error)
+	MessageReport(reportID string) (MessageReport, error)
 }
 
 type messageRepo struct {
@@ -83,6 +93,7 @@ func (r *messageRepo) Messages(currentUserID string, userIDs []string, from time
 			from messages m
 			where user_id in (?) and parent_id is null
 				and created_at < ?
+			    and deleted_at is null
 				and not exists(select * from message_visibility mv where mv.user_id = ? and mv.message_id = m.id and mv.visibility = false)
 			order by created_at desc, "id"
 			limit ?`,
@@ -238,10 +249,15 @@ func (r *messageRepo) DeleteMessage(userID, messageID string) error {
 		}
 
 		_, err = tx.Exec(`
-		delete from messages
-		where parent_id = $1
-		  and (select user_id from messages where messages.id = $1) = $2`,
-			messageID, userID)
+		update messages
+		set text = '(deleted)',
+		    attachment_type = '',
+		    attachment_id = '',
+		    attachment_thumbnail_id = '',
+		    deleted_at = $1
+		where parent_id = $2
+		  and (select user_id from messages where messages.id = $2) = $3`,
+			common.CurrentTimestamp(), messageID, userID)
 		if err != nil {
 			return merry.Wrap(err)
 		}
@@ -258,9 +274,14 @@ func (r *messageRepo) DeleteMessage(userID, messageID string) error {
 		}
 
 		res, err := tx.Exec(`
-		delete from messages
-		where id = $1 and user_id = $2`,
-			messageID, userID)
+		update messages
+		set text = '(deleted)',
+		    attachment_type = '',
+		    attachment_id = '',
+		    attachment_thumbnail_id = '',
+		    deleted_at = $1
+		where id = $2 and user_id = $3`,
+			common.CurrentTimestamp(), messageID, userID)
 		if err != nil {
 			return merry.Wrap(err)
 		}
@@ -289,6 +310,7 @@ func (r *messageRepo) Comments(currentUserID string, messageIDs []string) (map[s
 			from messages m
 			where parent_id in (?)
 				and not exists(select * from message_visibility mv where mv.user_id = ? and mv.message_id = m.id and mv.visibility = false)
+			    and deleted_at is null
 			order by created_at, id`,
 		currentUserID, messageIDs, currentUserID)
 	if err != nil {
@@ -390,4 +412,33 @@ func (r *messageRepo) SetMessageVisibility(userID, messageID string, visibility 
 		}
 	}
 	return nil
+}
+
+func (r *messageRepo) ReportMessage(userID, messageID, report string) (string, error) {
+	reportID := common.GenerateUUID()
+	_, err := r.db.Exec(`
+		insert into message_reports(id, user_id, message_id, report, created_at)
+		values ($1, $2, $3, $4, $5)`,
+		reportID, userID, messageID, report, common.CurrentTimestamp())
+	if err != nil {
+		return "", merry.Wrap(err)
+	}
+	return reportID, nil
+}
+
+func (r *messageRepo) MessageReport(reportID string) (MessageReport, error) {
+	var report MessageReport
+	err := r.db.Get(&report, `
+		select mr.user_id reported_by, mr.report, m.id message_id, m.user_id author_id 
+		from message_reports mr
+			inner join messages m on m.id = mr.message_id
+		where mr.id = $1`,
+		reportID)
+	if err != nil {
+		if merry.Is(err, sql.ErrNoRows) {
+			return MessageReport{}, ErrMessageReportNotFound
+		}
+		return MessageReport{}, merry.Wrap(err)
+	}
+	return report, nil
 }

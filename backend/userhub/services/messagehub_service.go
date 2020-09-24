@@ -3,7 +3,12 @@ package services
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
+	"fmt"
 	"log"
+	"net/http"
+	"strings"
+	"time"
 
 	"github.com/ansel1/merry"
 	"github.com/twitchtv/twirp"
@@ -187,5 +192,94 @@ func (s *messageHubService) SetPostLimit(ctx context.Context, r *rpc.MessageHubS
 		return nil, err
 	}
 
+	return &rpc.Empty{}, nil
+}
+
+func (s *messageHubService) ReportMessage(ctx context.Context, r *rpc.MessageHubReportMessageRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+
+	hub, err := s.repos.MessageHubs.Hub(r.HubId)
+	if err != nil {
+		if merry.Is(err, repo.ErrHubNotFound) {
+			return nil, twirp.NotFoundError(err.Error())
+		}
+		return nil, err
+	}
+
+	hubAdmin, err := s.repos.User.FindUserByID(hub.AdminID)
+	if err != nil {
+		return nil, err
+	}
+	if hubAdmin == nil {
+		return nil, twirp.NotFoundError("hub admin not found")
+	}
+
+	claims := map[string]interface{}{
+		"hub":          hub.Address,
+		"is_hub_admin": true,
+	}
+	authToken, err := s.tokenGenerator.Generate(hubAdmin.ID, hubAdmin.Name, "auth", time.Now().Add(time.Second*30), claims)
+	if err != nil {
+		return nil, err
+	}
+
+	messageReportEndpoint := strings.TrimSuffix(hub.Address, "/") + "/rpc.MessageService/MessageReport"
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, messageReportEndpoint,
+		strings.NewReader(fmt.Sprintf(`{"report_id": "%s"}`, r.ReportId)))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", "Bearer "+authToken)
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{
+		Timeout: time.Second * 30,
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = resp.Body.Close() }()
+	if resp.StatusCode != http.StatusOK {
+		return nil, merry.New("unexpected status code: " + resp.Status)
+	}
+	var body struct {
+		ReportedBy     string `json:"reported_by"`
+		AuthorID       string `json:"author_id"`
+		Report         string `json:"report"`
+		Text           string `json:"text"`
+		AttachmentLink string `json:"attachment_link"`
+	}
+	err = json.NewDecoder(resp.Body).Decode(&body)
+	if err != nil {
+		return nil, err
+	}
+
+	reportedBy, err := s.repos.User.FindUserByID(body.ReportedBy)
+	if err != nil {
+		return nil, err
+	}
+	if reportedBy == nil {
+		return nil, twirp.NotFoundError("reported user not found")
+	}
+
+	if user.ID != reportedBy.ID {
+		return nil, twirp.InvalidArgumentError("user", "not valid")
+	}
+
+	author, err := s.repos.User.FindUserByID(body.AuthorID)
+	if err != nil {
+		return nil, err
+	}
+	if author == nil {
+		return nil, twirp.NotFoundError("message author not found")
+	}
+
+	err = s.mailSender.SendTextEmail([]string{hubAdmin.Email}, "Objectional Content Reported",
+		fmt.Sprintf(`User %s just reported objectionable content for user %s: %s.
+Please visit the audit dashboard to review the content.`, reportedBy.Name, author.Name, body.Report))
+	if err != nil {
+		return nil, err
+	}
 	return &rpc.Empty{}, nil
 }

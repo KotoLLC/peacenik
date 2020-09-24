@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/ansel1/merry"
-	"github.com/gofrs/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/types"
 )
@@ -53,10 +52,7 @@ func (r *notificationRepo) AddNotifications(userIDs []string, text, notification
 
 	now := CurrentTimestamp()
 	for _, userID := range userIDs {
-		notificationID, err := uuid.NewV4()
-		if err != nil {
-			return merry.Wrap(err)
-		}
+		notificationID := GenerateUUID()
 		_, err = r.db.Exec(`
 		insert into notifications(id, user_id, text, type, data, created_at) 
 		values ($1, $2, $3, $4, $5, $6)`,

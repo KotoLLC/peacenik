@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/ansel1/merry"
-	"github.com/gofrs/uuid"
 	"github.com/h2non/filetype"
 	"github.com/twitchtv/twirp"
 
@@ -57,11 +56,7 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		friends[i] = rawID.(string)
 	}
 
-	messageID, err := uuid.NewV4()
-	if err != nil {
-		return nil, err
-	}
-
+	messageID := common.GenerateUUID()
 	attachmentThumbnailID, attachmentType, err := s.processAttachment(ctx, r.AttachmentId)
 	if err != nil {
 		return nil, err
@@ -69,7 +64,7 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 
 	now := common.CurrentTimestamp()
 	msg := repo.Message{
-		ID:                    messageID.String(),
+		ID:                    messageID,
 		UserID:                claims["id"].(string),
 		UserName:              claims["name"].(string),
 		Text:                  r.Text,
@@ -474,11 +469,7 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 		return nil, twirp.NotFoundError(repo.ErrMessageNotFound.Error())
 	}
 
-	commentID, err := uuid.NewV4()
-	if err != nil {
-		return nil, err
-	}
-
+	commentID := common.GenerateUUID()
 	attachmentThumbnailID, attachmentType, err := s.processAttachment(ctx, r.AttachmentId)
 	if err != nil {
 		return nil, err
@@ -486,7 +477,7 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 
 	now := common.CurrentTimestamp()
 	comment := repo.Message{
-		ID:                    commentID.String(),
+		ID:                    commentID,
 		UserID:                claims["id"].(string),
 		UserName:              claims["name"].(string),
 		Text:                  r.Text,
@@ -822,4 +813,36 @@ func (s *messageService) SetCommentVisibility(ctx context.Context, r *rpc.Messag
 		return nil, err
 	}
 	return &rpc.Empty{}, nil
+}
+
+func (s *messageService) ReportMessage(ctx context.Context, r *rpc.MessageReportMessageRequest) (*rpc.MessageReportMessageResponse, error) {
+	user := s.getUser(ctx)
+	reportID, err := s.repos.Message.ReportMessage(user.ID, r.MessageId, r.Report)
+	if err != nil {
+		return nil, err
+	}
+	return &rpc.MessageReportMessageResponse{
+		ReportId: reportID,
+	}, nil
+}
+
+func (s *messageService) MessageReport(ctx context.Context, r *rpc.MessageMessageReportRequest) (*rpc.MessageMessageReportResponse, error) {
+	user := s.getUser(ctx)
+	if !user.IsHubAdmin {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
+	}
+
+	msg, err := s.repos.Message.MessageReport(r.ReportId)
+	if err != nil {
+		if merry.Is(err, repo.ErrMessageReportNotFound) {
+			return nil, twirp.NotFoundError(err.Error())
+		}
+		return nil, err
+	}
+
+	return &rpc.MessageMessageReportResponse{
+		ReportedBy: msg.ReportedBy,
+		Report:     msg.Report,
+		AuthorId:   msg.AuthorID,
+	}, nil
 }

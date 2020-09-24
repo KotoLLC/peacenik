@@ -3,6 +3,8 @@ package repo
 import (
 	"github.com/ansel1/merry"
 	"github.com/jmoiron/sqlx"
+
+	"github.com/mreider/koto/backend/common"
 )
 
 type User struct {
@@ -27,10 +29,10 @@ func NewUsers(db *sqlx.DB) UserRepo {
 
 func (r *userRepo) AddUser(id, name string) error {
 	_, err := r.db.Exec(`
-			insert into users(id, name)
-			values($1, $2)
+			insert into users(id, name, added_at)
+			values($1, $2, $3)
 			on conflict (id) do update set name = excluded.name where users.name <> excluded.name;`,
-		id, name)
+		id, name, common.CurrentTimestamp())
 	if err != nil {
 		return merry.Wrap(err)
 	}

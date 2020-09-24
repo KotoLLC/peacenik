@@ -20,6 +20,8 @@ service MessageService {
     rpc CommentLikes (MessageCommentLikesRequest) returns (MessageCommentLikesResponse);
     rpc SetMessageVisibility (MessageSetMessageVisibilityRequest) returns (Empty);
     rpc SetCommentVisibility (MessageSetCommentVisibilityRequest) returns (Empty);
+    rpc ReportMessage (MessageReportMessageRequest) returns (MessageReportMessageResponse);
+    rpc MessageReport (MessageMessageReportRequest) returns (MessageMessageReportResponse);
 }
 
 message MessageMessagesRequest {
@@ -134,4 +136,23 @@ message MessageSetMessageVisibilityRequest {
 message MessageSetCommentVisibilityRequest {
     string comment_id = 1;
     bool visibility = 2;
+}
+
+message MessageReportMessageRequest {
+    string message_id = 1;
+    string report = 2;
+}
+
+message MessageReportMessageResponse {
+    string report_id= 1;
+}
+
+message MessageMessageReportRequest {
+    string report_id = 1;
+}
+
+message MessageMessageReportResponse {
+    string reported_by = 1;
+    string report = 2;
+    string author_id = 3;
 }

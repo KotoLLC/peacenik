@@ -31,6 +31,7 @@ require (
 	github.com/sirupsen/logrus v1.6.0 // indirect
 	github.com/stretchr/testify v1.6.1
 	github.com/twitchtv/twirp v5.12.1+incompatible
+	github.com/xhit/go-simple-mail/v2 v2.5.1
 	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
 	google.golang.org/protobuf v1.24.0
 )

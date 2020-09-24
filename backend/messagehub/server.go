@@ -126,13 +126,25 @@ func (s *Server) checkAuth(next http.Handler) http.Handler {
 
 		userID := claims["id"].(string)
 		userName, _ := claims["name"].(string)
+		var isHubAdmin, ok bool
+		if isHubAdmin, ok = claims["is_hub_admin"].(bool); ok {
+			hubAddress := claims["hub"].(string)
+			if s.cfg.ExternalAddress != hubAddress {
+				http.Error(w, "invalid token", http.StatusBadRequest)
+				return
+			}
+		}
 
 		err = s.repos.User.AddUser(userID, userName)
 		if err != nil {
 			log.Println(err)
 		}
 
-		ctx := context.WithValue(r.Context(), services.ContextUserKey, services.User{ID: userID, Name: userName})
+		ctx := context.WithValue(r.Context(), services.ContextUserKey, services.User{
+			ID:         userID,
+			Name:       userName,
+			IsHubAdmin: isHubAdmin,
+		})
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

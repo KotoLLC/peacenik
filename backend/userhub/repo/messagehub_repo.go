@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/ansel1/merry"
-	"github.com/gofrs/uuid"
 	"github.com/jmoiron/sqlx"
 
 	"github.com/mreider/koto/backend/common"
@@ -73,23 +72,19 @@ func (r *messageHubRepo) HubExists(address string) (bool, error) {
 }
 
 func (r *messageHubRepo) AddHub(address, details string, hubAdmin User, postLimit int) (string, error) {
-	hubID, err := uuid.NewV4()
-	if err != nil {
-		return "", merry.Wrap(err)
-	}
-
+	hubID := common.GenerateUUID()
 	if postLimit < 0 {
 		postLimit = 0
 	}
 
-	_, err = r.db.Exec(`
+	_, err := r.db.Exec(`
 		insert into message_hubs(id, address, admin_id, created_at, details, post_limit) 
 		VALUES ($1, $2, $3, $4, $5, $6)`,
-		hubID.String(), address, hubAdmin.ID, common.CurrentTimestamp(), details, postLimit)
+		hubID, address, hubAdmin.ID, common.CurrentTimestamp(), details, postLimit)
 	if err != nil {
 		return "", merry.Wrap(err)
 	}
-	return hubID.String(), nil
+	return hubID, nil
 }
 
 func (r *messageHubRepo) AllHubs() ([]MessageHub, error) {

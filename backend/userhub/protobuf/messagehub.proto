@@ -12,6 +12,7 @@ service MessageHubService {
     rpc Approve (MessageHubApproveRequest) returns (MessageHubApproveResponse);
     rpc Remove (MessageHubRemoveRequest) returns (Empty);
     rpc SetPostLimit (MessageHubSetPostLimitRequest) returns (Empty);
+    rpc ReportMessage (MessageHubReportMessageRequest) returns (Empty);
 }
 
 message MessageHubRegisterRequest {
@@ -58,4 +59,9 @@ message MessageHubRemoveRequest {
 message MessageHubSetPostLimitRequest {
     string hub_id = 1;
     int32 post_limit = 2;
+}
+
+message MessageHubReportMessageRequest {
+    string hub_id = 1;
+    string report_id = 2;
 }

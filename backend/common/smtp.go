@@ -1,9 +1,10 @@
 package common
 
 import (
-	"net/smtp"
-	"strconv"
-	"strings"
+	"time"
+
+	"github.com/ansel1/merry"
+	"github.com/xhit/go-simple-mail/v2"
 )
 
 type SMTPConfig struct {
@@ -24,6 +25,27 @@ func NewMailSender(cfg SMTPConfig) *MailSender {
 	}
 }
 
+func (m *MailSender) connect() (*mail.SMTPClient, error) {
+	server := mail.NewSMTPClient()
+
+	server.Host = m.cfg.Host
+	server.Port = m.cfg.Port
+	server.Username = m.cfg.User
+	server.Password = m.cfg.Password
+	server.Encryption = mail.EncryptionTLS
+	server.Authentication = mail.AuthPlain
+
+	server.KeepAlive = false
+	server.ConnectTimeout = 30 * time.Second
+	server.SendTimeout = 30 * time.Second
+
+	smtpClient, err := server.Connect()
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+	return smtpClient, nil
+}
+
 func (m *MailSender) Enabled() bool {
 	return m != nil && m.cfg.Host != ""
 }
@@ -42,27 +64,23 @@ func (m *MailSender) sendEmail(recipients []string, subject string, isHTML bool,
 		from = m.cfg.User
 	}
 
-	var msg strings.Builder
-	msg.WriteString("From: ")
-	msg.WriteString(from)
-	msg.WriteRune('\n')
-	msg.WriteString("To: ")
-	msg.WriteString(strings.Join(recipients, ","))
-	msg.WriteRune('\n')
-	msg.WriteString("Subject: ")
-	msg.WriteString(subject)
-	msg.WriteRune('\n')
+	msg := mail.NewMSG()
+	msg.SetFrom(from).AddTo(recipients...).SetSubject(subject)
 
 	if isHTML {
-		msg.WriteString("MIME-version: 1.0;")
-		msg.WriteRune('\n')
-		msg.WriteString(`Content-Type: text/html; charset="UTF-8";`)
-		msg.WriteRune('\n')
+		msg.SetBody(mail.TextHTML, message)
+	} else {
+		msg.SetBody(mail.TextPlain, message)
 	}
 
-	msg.WriteRune('\n')
-	msg.WriteString(message)
+	client, err := m.connect()
+	if err != nil {
+		return merry.Wrap(err)
+	}
 
-	return smtp.SendMail(m.cfg.Host+":"+strconv.Itoa(m.cfg.Port),
-		smtp.PlainAuth("", m.cfg.User, m.cfg.Password, m.cfg.Host), m.cfg.User, recipients, []byte(msg.String()))
+	err = msg.Send(client)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+	return nil
 }

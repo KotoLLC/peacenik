@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/ansel1/merry"
-	"github.com/gofrs/uuid"
 	"github.com/twitchtv/twirp"
 
+	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/token"
 	"github.com/mreider/koto/backend/userhub/repo"
 	"github.com/mreider/koto/backend/userhub/rpc"
@@ -87,22 +87,18 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 		return nil, twirp.NewError(twirp.AlreadyExists, "user already exists")
 	}
 
-	userID, err := uuid.NewV4()
-	if err != nil {
-		return nil, merry.Wrap(err)
-	}
-
+	userID := common.GenerateUUID()
 	passwordHash, err := s.passwordHash.GenerateHash(r.Password)
 	if err != nil {
 		return nil, merry.Wrap(err)
 	}
 
-	err = s.repos.User.AddUser(userID.String(), r.Name, r.Email, passwordHash)
+	err = s.repos.User.AddUser(userID, r.Name, r.Email, passwordHash)
 	if err != nil {
 		return nil, merry.Wrap(err)
 	}
 
-	user, err = s.repos.User.FindUserByID(userID.String())
+	user, err = s.repos.User.FindUserByID(userID)
 	if err != nil {
 		return nil, merry.Wrap(err)
 	}

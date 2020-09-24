@@ -16,8 +16,9 @@ const (
 )
 
 type User struct {
-	ID   string
-	Name string
+	ID         string
+	Name       string
+	IsHubAdmin bool
 }
 
 type BaseService struct {
@@ -43,8 +44,12 @@ func (s *BaseService) getUser(ctx context.Context) User {
 }
 
 func (s *BaseService) createBlobLink(ctx context.Context, blobID string) (string, error) {
+	return s.createBlobLinkWithExpiration(ctx, blobID, time.Hour*24)
+}
+
+func (s *BaseService) createBlobLinkWithExpiration(ctx context.Context, blobID string, expiration time.Duration) (string, error) {
 	if blobID == "" {
 		return "", nil
 	}
-	return s.s3Storage.CreateLink(ctx, blobID, time.Hour*24)
+	return s.s3Storage.CreateLink(ctx, blobID, expiration)
 }
