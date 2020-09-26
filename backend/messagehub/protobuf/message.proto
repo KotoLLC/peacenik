@@ -23,6 +23,8 @@ service MessageService {
     rpc ReportMessage (MessageReportMessageRequest) returns (MessageReportMessageResponse);
     rpc MessageReport (MessageMessageReportRequest) returns (MessageMessageReportResponse);
     rpc MessageReports (Empty) returns (MessageMessageReportsResponse);
+    rpc DeleteReportedMessage (MessageDeleteReportedMessageRequest) returns (Empty);
+    rpc ResolveMessageReport (MessageResolveMessageReportRequest) returns (Empty);
 }
 
 message MessageMessagesRequest {
@@ -160,4 +162,12 @@ message MessageMessageReportResponse {
 
 message MessageMessageReportsResponse {
     repeated MessageReport reports = 1;
+}
+
+message MessageDeleteReportedMessageRequest {
+    string report_id = 1;
+}
+
+message MessageResolveMessageReportRequest {
+    string report_id = 1;
 }

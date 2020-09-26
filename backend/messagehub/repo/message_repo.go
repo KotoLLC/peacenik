@@ -69,6 +69,8 @@ type MessageRepo interface {
 	ReportMessage(userID, messageID, report string) (string, error)
 	MessageReport(reportID string) (MessageReport, error)
 	MessageReports() ([]MessageReport, error)
+	DeleteReportedMessage(reportID string) error
+	ResolveMessageReport(reportID string) error
 }
 
 type messageRepo struct {
@@ -216,47 +218,52 @@ func (r *messageRepo) EditMessageAttachment(userID, messageID, attachmentID, att
 
 func (r *messageRepo) DeleteMessage(userID, messageID string) error {
 	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
-		var messages []Message
-		err := tx.Select(&messages, "select attachment_id, attachment_thumbnail_id from messages where (id = $1 and user_id = $2) or parent_id = $1",
-			messageID, userID)
-		if err != nil {
-			return merry.Wrap(err)
-		}
-		now := common.CurrentTimestamp()
-		for _, msg := range messages {
-			if msg.AttachmentID != "" {
-				_, err = tx.Exec(`
-				insert into blob_pending_deletes(blob_id, deleted_at)
-				values ($1, $2)`,
-					msg.AttachmentID, now)
-				if err != nil {
-					return merry.Wrap(err)
-				}
-			}
-			if msg.AttachmentThumbnailID != "" && msg.AttachmentThumbnailID != msg.AttachmentID {
-				_, err = tx.Exec(`
-				insert into blob_pending_deletes(blob_id, deleted_at)
-				values ($1, $2)`,
-					msg.AttachmentThumbnailID, now)
-				if err != nil {
-					return merry.Wrap(err)
-				}
-			}
-		}
+		return r.deleteMessage(tx, userID, messageID)
+	})
+}
 
-		_, err = tx.Exec(`
+func (r *messageRepo) deleteMessage(tx *sqlx.Tx, userID, messageID string) error {
+	var messages []Message
+	err := tx.Select(&messages, "select attachment_id, attachment_thumbnail_id from messages where (id = $1 and user_id = $2) or parent_id = $1",
+		messageID, userID)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+	now := common.CurrentTimestamp()
+	for _, msg := range messages {
+		if msg.AttachmentID != "" {
+			_, err = tx.Exec(`
+				insert into blob_pending_deletes(blob_id, deleted_at)
+				values ($1, $2)`,
+				msg.AttachmentID, now)
+			if err != nil {
+				return merry.Wrap(err)
+			}
+		}
+		if msg.AttachmentThumbnailID != "" && msg.AttachmentThumbnailID != msg.AttachmentID {
+			_, err = tx.Exec(`
+				insert into blob_pending_deletes(blob_id, deleted_at)
+				values ($1, $2)`,
+				msg.AttachmentThumbnailID, now)
+			if err != nil {
+				return merry.Wrap(err)
+			}
+		}
+	}
+
+	_, err = tx.Exec(`
 		delete from message_likes
 		where message_id in (
 		    select id     
 		    from messages
 			where parent_id = $1
 		  		and (select user_id from messages where messages.id = $1) = $2)`,
-			messageID, userID)
-		if err != nil {
-			return merry.Wrap(err)
-		}
+		messageID, userID)
+	if err != nil {
+		return merry.Wrap(err)
+	}
 
-		_, err = tx.Exec(`
+	_, err = tx.Exec(`
 		update messages
 		set text = '(deleted)',
 		    attachment_type = '',
@@ -265,23 +272,23 @@ func (r *messageRepo) DeleteMessage(userID, messageID string) error {
 		    deleted_at = $1
 		where parent_id = $2
 		  and (select user_id from messages where messages.id = $2) = $3`,
-			common.CurrentTimestamp(), messageID, userID)
-		if err != nil {
-			return merry.Wrap(err)
-		}
+		common.CurrentTimestamp(), messageID, userID)
+	if err != nil {
+		return merry.Wrap(err)
+	}
 
-		_, err = tx.Exec(`
+	_, err = tx.Exec(`
 		delete from message_likes
 		where message_id in (
 		    select id
 		    from messages
 			where id = $1 and user_id = $2)`,
-			messageID, userID)
-		if err != nil {
-			return merry.Wrap(err)
-		}
+		messageID, userID)
+	if err != nil {
+		return merry.Wrap(err)
+	}
 
-		res, err := tx.Exec(`
+	res, err := tx.Exec(`
 		update messages
 		set text = '(deleted)',
 		    attachment_type = '',
@@ -289,20 +296,18 @@ func (r *messageRepo) DeleteMessage(userID, messageID string) error {
 		    attachment_thumbnail_id = '',
 		    deleted_at = $1
 		where id = $2 and user_id = $3`,
-			common.CurrentTimestamp(), messageID, userID)
-		if err != nil {
-			return merry.Wrap(err)
-		}
-		rowsAffected, err := res.RowsAffected()
-		if err != nil {
-			return merry.Wrap(err)
-		}
-		if rowsAffected < 1 {
-			return ErrMessageNotFound.Here()
-		}
-
-		return nil
-	})
+		common.CurrentTimestamp(), messageID, userID)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return merry.Wrap(err)
+	}
+	if rowsAffected < 1 {
+		return ErrMessageNotFound.Here()
+	}
+	return nil
 }
 
 func (r *messageRepo) Comments(currentUserID string, messageIDs []string) (map[string][]Message, error) {
@@ -463,4 +468,54 @@ func (r *messageRepo) MessageReports() ([]MessageReport, error) {
 		return nil, merry.Wrap(err)
 	}
 	return reports, nil
+}
+
+func (r *messageRepo) DeleteReportedMessage(reportID string) error {
+	var message Message
+	err := r.db.Get(&message, `
+		select id, user_id
+		from messages
+		where id = (select message_id from message_reports where id = $1)`,
+		reportID)
+	if err != nil {
+		if merry.Is(err, sql.ErrNoRows) {
+			return ErrMessageReportNotFound
+		}
+		return merry.Wrap(err)
+	}
+
+	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+		err := r.deleteMessage(tx, message.UserID, message.ID)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+		_, err = tx.Exec(`
+		update message_reports
+		set message_deleted_at = $1
+		where id = $2`,
+			common.CurrentTimestamp(), reportID)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+		return nil
+	})
+}
+
+func (r *messageRepo) ResolveMessageReport(reportID string) error {
+	res, err := r.db.Exec(`
+		update message_reports
+		set resolved_at = $1
+		where id = $2`,
+		common.CurrentTimestamp(), reportID)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return merry.Wrap(err)
+	}
+	if rowsAffected == 0 {
+		return ErrMessageReportNotFound
+	}
+	return nil
 }

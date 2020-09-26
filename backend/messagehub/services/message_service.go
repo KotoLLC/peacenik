@@ -887,3 +887,33 @@ func (s *messageService) MessageReports(ctx context.Context, _ *rpc.Empty) (*rpc
 		Reports: rpcReports,
 	}, nil
 }
+
+func (s *messageService) DeleteReportedMessage(ctx context.Context, r *rpc.MessageDeleteReportedMessageRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+	if !user.IsHubAdmin {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
+	}
+	err := s.repos.Message.DeleteReportedMessage(r.ReportId)
+	if err != nil {
+		if merry.Is(err, repo.ErrMessageReportNotFound) {
+			return nil, twirp.NotFoundError(err.Error())
+		}
+		return nil, err
+	}
+	return &rpc.Empty{}, nil
+}
+
+func (s *messageService) ResolveMessageReport(ctx context.Context, r *rpc.MessageResolveMessageReportRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+	if !user.IsHubAdmin {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
+	}
+	err := s.repos.Message.ResolveMessageReport(r.ReportId)
+	if err != nil {
+		if merry.Is(err, repo.ErrMessageReportNotFound) {
+			return nil, twirp.NotFoundError(err.Error())
+		}
+		return nil, err
+	}
+	return &rpc.Empty{}, nil
+}
