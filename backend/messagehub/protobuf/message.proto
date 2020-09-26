@@ -22,6 +22,7 @@ service MessageService {
     rpc SetCommentVisibility (MessageSetCommentVisibilityRequest) returns (Empty);
     rpc ReportMessage (MessageReportMessageRequest) returns (MessageReportMessageResponse);
     rpc MessageReport (MessageMessageReportRequest) returns (MessageMessageReportResponse);
+    rpc MessageReports (Empty) returns (MessageMessageReportsResponse);
 }
 
 message MessageMessagesRequest {
@@ -155,4 +156,8 @@ message MessageMessageReportResponse {
     string reported_by = 1;
     string report = 2;
     string author_id = 3;
+}
+
+message MessageMessageReportsResponse {
+    repeated MessageReport reports = 1;
 }

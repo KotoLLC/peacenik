@@ -41,10 +41,17 @@ type MessageLike struct {
 }
 
 type MessageReport struct {
-	ReportedBy string `json:"reported_by" db:"reported_by"`
-	Report     string `json:"report" db:"report"`
-	MessageID  string `json:"message_id" db:"message_id"`
-	AuthorID   string `json:"author_id" db:"author_id"`
+	ID                    string       `json:"id" db:"id"`
+	ReportedBy            string       `json:"reported_by" db:"reported_by"`
+	Report                string       `json:"report" db:"report"`
+	CreatedAt             time.Time    `json:"created_at" db:"created_at"`
+	ResolvedAt            sql.NullTime `json:"resolved_at" db:"resolved_at"`
+	MessageID             string       `json:"message_id" db:"message_id"`
+	AuthorID              string       `json:"author_id" db:"author_id"`
+	Text                  string       `json:"text" db:"text"`
+	AttachmentType        string       `json:"attachment_type" db:"attachment_type"`
+	AttachmentID          string       `json:"attachment_id" db:"attachment_id"`
+	AttachmentThumbnailID string       `json:"attachment_thumbnail_id" db:"attachment_thumbnail_id"`
 }
 
 type MessageRepo interface {
@@ -61,6 +68,7 @@ type MessageRepo interface {
 	SetMessageVisibility(userID, messageID string, visibility bool) error
 	ReportMessage(userID, messageID, report string) (string, error)
 	MessageReport(reportID string) (MessageReport, error)
+	MessageReports() ([]MessageReport, error)
 }
 
 type messageRepo struct {
@@ -429,7 +437,8 @@ func (r *messageRepo) ReportMessage(userID, messageID, report string) (string, e
 func (r *messageRepo) MessageReport(reportID string) (MessageReport, error) {
 	var report MessageReport
 	err := r.db.Get(&report, `
-		select mr.user_id reported_by, mr.report, m.id message_id, m.user_id author_id 
+		select mr.id, mr.user_id reported_by, mr.report, mr.created_at, mr.resolved_at,
+		       m.id message_id, m.user_id author_id, m.text, m.attachment_type, m.attachment_id, m.attachment_thumbnail_id 
 		from message_reports mr
 			inner join messages m on m.id = mr.message_id
 		where mr.id = $1`,
@@ -441,4 +450,17 @@ func (r *messageRepo) MessageReport(reportID string) (MessageReport, error) {
 		return MessageReport{}, merry.Wrap(err)
 	}
 	return report, nil
+}
+
+func (r *messageRepo) MessageReports() ([]MessageReport, error) {
+	var reports []MessageReport
+	err := r.db.Select(&reports, `
+		select mr.id, mr.user_id reported_by, mr.report, mr.created_at, mr.resolved_at,
+		       m.id message_id, m.user_id author_id, m.text, m.attachment_type, m.attachment_id, m.attachment_thumbnail_id 
+		from message_reports mr
+			inner join messages m on m.id = mr.message_id`)
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+	return reports, nil
 }

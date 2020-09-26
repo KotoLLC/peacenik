@@ -135,6 +135,16 @@ func (s *userService) Me(ctx context.Context, _ *rpc.Empty) (*rpc.UserMeResponse
 	user := s.getUser(ctx)
 	isAdmin := s.isAdmin(ctx)
 
+	ownedHubs, err := s.repos.MessageHubs.Hubs(user)
+	if err != nil {
+		return nil, err
+	}
+
+	ownedHubAddresses := make([]string, len(ownedHubs))
+	for i, hub := range ownedHubs {
+		ownedHubAddresses[i] = hub.Address
+	}
+
 	return &rpc.UserMeResponse{
 		User: &rpc.User{
 			Id:          user.ID,
@@ -142,7 +152,8 @@ func (s *userService) Me(ctx context.Context, _ *rpc.Empty) (*rpc.UserMeResponse
 			Email:       user.Email,
 			IsConfirmed: user.ConfirmedAt.Valid,
 		},
-		IsAdmin: isAdmin,
+		IsAdmin:   isAdmin,
+		OwnedHubs: ownedHubAddresses,
 	}, nil
 }
 

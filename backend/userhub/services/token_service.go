@@ -28,7 +28,21 @@ func NewToken(base *BaseService, tokenGenerator token.Generator, tokenDuration t
 func (s *tokenService) Auth(ctx context.Context, _ *rpc.Empty) (*rpc.TokenAuthResponse, error) {
 	user := s.getUser(ctx)
 
-	authToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "auth", time.Now().Add(s.tokenDuration), nil)
+	ownedHubs, err := s.repos.MessageHubs.Hubs(user)
+	if err != nil {
+		return nil, err
+	}
+
+	ownedHubAddresses := make([]string, len(ownedHubs))
+	for i, hub := range ownedHubs {
+		ownedHubAddresses[i] = hub.Address
+	}
+
+	claims := map[string]interface{}{
+		"owned_hubs": ownedHubAddresses,
+	}
+
+	authToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "auth", time.Now().Add(s.tokenDuration), claims)
 	if err != nil {
 		return nil, err
 	}

@@ -42,6 +42,7 @@ message UserFriendsOfFriendsResponse {
 message UserMeResponse {
     User user = 1;
     bool is_admin = 2;
+    repeated string owned_hubs = 3;
 }
 
 message UserEditProfileRequest {

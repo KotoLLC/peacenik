@@ -43,3 +43,17 @@ message Notification {
     string created_at = 5;
     string read_at = 6;
 }
+
+message MessageReport {
+    string id = 1;
+    string reported_by = 2;
+    string report = 3;
+    string created_at = 4;
+    string resolved_at = 5;
+    string message_id = 6;
+    string author_id = 7;
+    string text = 8;
+    string attachment_type = 9;
+    string attachment = 10;
+    string attachment_thumbnail = 11;
+}

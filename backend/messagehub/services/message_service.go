@@ -832,7 +832,7 @@ func (s *messageService) MessageReport(ctx context.Context, r *rpc.MessageMessag
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 
-	msg, err := s.repos.Message.MessageReport(r.ReportId)
+	report, err := s.repos.Message.MessageReport(r.ReportId)
 	if err != nil {
 		if merry.Is(err, repo.ErrMessageReportNotFound) {
 			return nil, twirp.NotFoundError(err.Error())
@@ -841,8 +841,49 @@ func (s *messageService) MessageReport(ctx context.Context, r *rpc.MessageMessag
 	}
 
 	return &rpc.MessageMessageReportResponse{
-		ReportedBy: msg.ReportedBy,
-		Report:     msg.Report,
-		AuthorId:   msg.AuthorID,
+		ReportedBy: report.ReportedBy,
+		Report:     report.Report,
+		AuthorId:   report.AuthorID,
+	}, nil
+}
+
+func (s *messageService) MessageReports(ctx context.Context, _ *rpc.Empty) (*rpc.MessageMessageReportsResponse, error) {
+	user := s.getUser(ctx)
+	if !user.IsHubAdmin {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
+	}
+	reports, err := s.repos.Message.MessageReports()
+	if err != nil {
+		return nil, err
+	}
+
+	rpcReports := make([]*rpc.MessageReport, len(reports))
+	for i, report := range reports {
+		attachmentLink, err := s.createBlobLink(ctx, report.AttachmentID)
+		if err != nil {
+			return nil, err
+		}
+		attachmentThumbnailLink, err := s.createBlobLink(ctx, report.AttachmentThumbnailID)
+		if err != nil {
+			return nil, err
+		}
+
+		rpcReports[i] = &rpc.MessageReport{
+			Id:                  report.ID,
+			ReportedBy:          report.ReportedBy,
+			Report:              report.Report,
+			CreatedAt:           common.TimeToRPCString(report.CreatedAt),
+			ResolvedAt:          common.NullTimeToRPCString(report.ResolvedAt),
+			MessageId:           report.MessageID,
+			AuthorId:            report.AuthorID,
+			Text:                report.Text,
+			AttachmentType:      report.AttachmentType,
+			Attachment:          attachmentLink,
+			AttachmentThumbnail: attachmentThumbnailLink,
+		}
+	}
+
+	return &rpc.MessageMessageReportsResponse{
+		Reports: rpcReports,
 	}, nil
 }

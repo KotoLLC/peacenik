@@ -215,8 +215,7 @@ func (s *messageHubService) ReportMessage(ctx context.Context, r *rpc.MessageHub
 	}
 
 	claims := map[string]interface{}{
-		"hub":          hub.Address,
-		"is_hub_admin": true,
+		"owned_hubs": []string{hub.Address},
 	}
 	authToken, err := s.tokenGenerator.Generate(hubAdmin.ID, hubAdmin.Name, "auth", time.Now().Add(time.Second*30), claims)
 	if err != nil {

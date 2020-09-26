@@ -126,12 +126,13 @@ func (s *Server) checkAuth(next http.Handler) http.Handler {
 
 		userID := claims["id"].(string)
 		userName, _ := claims["name"].(string)
-		var isHubAdmin, ok bool
-		if isHubAdmin, ok = claims["is_hub_admin"].(bool); ok {
-			hubAddress := claims["hub"].(string)
-			if s.cfg.ExternalAddress != hubAddress {
-				http.Error(w, "invalid token", http.StatusBadRequest)
-				return
+		var isHubAdmin bool
+		if ownedHubs, ok := claims["owned_hubs"].([]interface{}); ok {
+			for _, hub := range ownedHubs {
+				if hub.(string) == s.cfg.ExternalAddress {
+					isHubAdmin = true
+					break
+				}
 			}
 		}
 
