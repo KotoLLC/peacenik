@@ -42,6 +42,7 @@ type MessageHubRepo interface {
 	SetHubPostLimit(hubAdminID, hubID string, postLimit int) error
 	AssignUserToHub(userID, hubID string) error
 	UserHubs(userIDs []string) (map[string][]string, error)
+	BlockUser(userID, hubID string) error
 }
 
 type messageHubRepo struct {
@@ -210,8 +211,10 @@ func (r *messageHubRepo) ConnectedHubs(user User) (connectedHubs []ConnectedMess
 	var hubs []MessageHub
 	err = r.db.Select(&hubs, `
 		select id, address, admin_id, created_at, approved_at, disabled_at, details, post_limit
-		from message_hubs
-		where approved_at is not null and disabled_at is null`)
+		from message_hubs mh
+		where approved_at is not null and disabled_at is null
+		  and not exists(select * from user_message_hubs where hub_id = mh.id and user_id = $1 and blocked_at is not null);`,
+		user.ID)
 	if err != nil {
 		return nil, merry.Wrap(err)
 	}
@@ -290,4 +293,34 @@ func (r *messageHubRepo) UserHubs(userIDs []string) (map[string][]string, error)
 		})
 	}
 	return result, nil
+}
+
+func (r *messageHubRepo) BlockUser(userID, hubID string) error {
+	now := common.CurrentTimestamp()
+	var blockedAt sql.NullString
+	err := r.db.Get(&blockedAt, `select blocked_at from user_message_hubs where hub_id = $1 and user_id = $2`,
+		hubID, userID)
+	if err != nil && !merry.Is(err, sql.ErrNoRows) {
+		return merry.Wrap(err)
+	}
+	if merry.Is(err, sql.ErrNoRows) {
+		_, err := r.db.Exec(`
+			insert into user_message_hubs(user_id, hub_id, created_at, updated_at, blocked_at)
+			values($1, $2, $3, $3, $3)
+			on conflict (user_id, hub_id) do update set blocked_at = $3;`,
+			userID, hubID, now)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+	} else if !blockedAt.Valid {
+		_, err := r.db.Exec(`
+			update user_message_hubs
+			set blocked_at = $1
+			where hub_id = $2 and user_id = $3;`,
+			now, hubID, userID)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+	}
+	return nil
 }

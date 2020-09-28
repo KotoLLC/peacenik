@@ -13,6 +13,7 @@ service MessageHubService {
     rpc Remove (MessageHubRemoveRequest) returns (Empty);
     rpc SetPostLimit (MessageHubSetPostLimitRequest) returns (Empty);
     rpc ReportMessage (MessageHubReportMessageRequest) returns (Empty);
+    rpc BlockUser (MessageHubBlockUserRequest) returns (Empty);
 }
 
 message MessageHubRegisterRequest {
@@ -64,4 +65,9 @@ message MessageHubSetPostLimitRequest {
 message MessageHubReportMessageRequest {
     string hub_id = 1;
     string report_id = 2;
+}
+
+message MessageHubBlockUserRequest {
+    string hub_id = 1;
+    string user_id = 2;
 }

@@ -19,6 +19,7 @@ type User struct {
 	ID         string
 	Name       string
 	IsHubAdmin bool
+	IsBlocked  bool
 }
 
 type BaseService struct {

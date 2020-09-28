@@ -88,6 +88,10 @@ func (s *Server) Run() error {
 	infoServiceHandler := rpc.NewInfoServiceServer(infoService, rpcHooks)
 	r.Handle(infoServiceHandler.PathPrefix()+"*", infoServiceHandler)
 
+	userService := services.NewUser(baseService)
+	userServiceHandler := rpc.NewUserServiceServer(userService, rpcHooks)
+	r.Handle(userServiceHandler.PathPrefix()+"*", userServiceHandler)
+
 	log.Println("started on " + s.cfg.ListenAddress)
 	return http.ListenAndServe(s.cfg.ListenAddress, r)
 }
@@ -136,7 +140,7 @@ func (s *Server) checkAuth(next http.Handler) http.Handler {
 			}
 		}
 
-		err = s.repos.User.AddUser(userID, userName)
+		user, err := s.repos.User.AddUser(userID, userName)
 		if err != nil {
 			log.Println(err)
 		}
@@ -145,6 +149,7 @@ func (s *Server) checkAuth(next http.Handler) http.Handler {
 			ID:         userID,
 			Name:       userName,
 			IsHubAdmin: isHubAdmin,
+			IsBlocked:  user.BlockedAt.Valid,
 		})
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

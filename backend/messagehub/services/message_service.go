@@ -36,6 +36,9 @@ func NewMessage(base *BaseService) rpc.MessageService {
 
 func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*rpc.MessagePostResponse, error) {
 	user := s.getUser(ctx)
+	if user.IsBlocked {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
+	}
 
 	_, claims, err := s.tokenParser.Parse(r.Token, "post-message")
 	if err != nil {
@@ -359,6 +362,10 @@ func (s *messageService) Message(ctx context.Context, r *rpc.MessageMessageReque
 
 func (s *messageService) Edit(ctx context.Context, r *rpc.MessageEditRequest) (*rpc.MessageEditResponse, error) {
 	user := s.getUser(ctx)
+	if user.IsBlocked {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
+	}
+
 	now := common.CurrentTimestamp()
 	if r.TextChanged {
 		err := s.repos.Message.EditMessageText(user.ID, r.MessageId, r.Text, now)
@@ -433,6 +440,9 @@ func (s *messageService) Delete(ctx context.Context, r *rpc.MessageDeleteRequest
 
 func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostCommentRequest) (*rpc.MessagePostCommentResponse, error) {
 	user := s.getUser(ctx)
+	if user.IsBlocked {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
+	}
 
 	_, claims, err := s.tokenParser.Parse(r.Token, "get-messages")
 	if err != nil {
@@ -547,6 +557,9 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 
 func (s *messageService) EditComment(ctx context.Context, r *rpc.MessageEditCommentRequest) (*rpc.MessageEditCommentResponse, error) {
 	user := s.getUser(ctx)
+	if user.IsBlocked {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
+	}
 	now := common.CurrentTimestamp()
 	if r.TextChanged {
 		err := s.repos.Message.EditMessageText(user.ID, r.CommentId, r.Text, now)
@@ -667,6 +680,9 @@ func (s *messageService) getAttachmentThumbnailID(ctx context.Context, attachmen
 
 func (s *messageService) LikeMessage(ctx context.Context, r *rpc.MessageLikeMessageRequest) (*rpc.MessageLikeMessageResponse, error) {
 	user := s.getUser(ctx)
+	if user.IsBlocked {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
+	}
 
 	msg, err := s.repos.Message.Message(user.ID, r.MessageId)
 	if err != nil {
@@ -697,6 +713,9 @@ func (s *messageService) LikeMessage(ctx context.Context, r *rpc.MessageLikeMess
 
 func (s *messageService) LikeComment(ctx context.Context, r *rpc.MessageLikeCommentRequest) (*rpc.MessageLikeCommentResponse, error) {
 	user := s.getUser(ctx)
+	if user.IsBlocked {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
+	}
 
 	comment, err := s.repos.Message.Message(user.ID, r.CommentId)
 	if err != nil {
@@ -817,6 +836,10 @@ func (s *messageService) SetCommentVisibility(ctx context.Context, r *rpc.Messag
 
 func (s *messageService) ReportMessage(ctx context.Context, r *rpc.MessageReportMessageRequest) (*rpc.MessageReportMessageResponse, error) {
 	user := s.getUser(ctx)
+	if user.IsBlocked {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
+	}
+
 	reportID, err := s.repos.Message.ReportMessage(user.ID, r.MessageId, r.Report)
 	if err != nil {
 		return nil, err

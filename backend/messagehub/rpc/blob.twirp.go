@@ -11,6 +11,7 @@ It is generated from these files:
 	message.proto
 	model.proto
 	notification.proto
+	user.proto
 */
 package rpc
 

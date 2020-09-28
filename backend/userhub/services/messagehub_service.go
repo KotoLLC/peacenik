@@ -282,3 +282,25 @@ Please visit the audit dashboard to review the content.`, reportedBy.Name, autho
 	}
 	return &rpc.Empty{}, nil
 }
+
+func (s *messageHubService) BlockUser(ctx context.Context, r *rpc.MessageHubBlockUserRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+
+	hub, err := s.repos.MessageHubs.Hub(r.HubId)
+	if err != nil {
+		if merry.Is(err, repo.ErrHubNotFound) {
+			return nil, twirp.NotFoundError(err.Error())
+		}
+		return nil, err
+	}
+
+	if hub.AdminID != user.ID {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
+	}
+
+	err = s.repos.MessageHubs.BlockUser(r.UserId, r.HubId)
+	if err != nil {
+		return nil, err
+	}
+	return &rpc.Empty{}, nil
+}
