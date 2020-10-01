@@ -70,6 +70,7 @@ type MessageRepo interface {
 	MessageReport(reportID string) (MessageReport, error)
 	MessageReports() ([]MessageReport, error)
 	DeleteReportedMessage(reportID string) error
+	BlockReportedUser(reportID string) error
 	ResolveMessageReport(reportID string) error
 }
 
@@ -494,6 +495,43 @@ func (r *messageRepo) DeleteReportedMessage(reportID string) error {
 		set message_deleted_at = $1
 		where id = $2`,
 			common.CurrentTimestamp(), reportID)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+		return nil
+	})
+}
+
+func (r *messageRepo) BlockReportedUser(reportID string) error {
+	var message Message
+	err := r.db.Get(&message, `
+		select id, user_id
+		from messages
+		where id = (select message_id from message_reports where id = $1)`,
+		reportID)
+	if err != nil {
+		if merry.Is(err, sql.ErrNoRows) {
+			return ErrMessageReportNotFound
+		}
+		return merry.Wrap(err)
+	}
+
+	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+		now := common.CurrentTimestamp()
+
+		_, err := tx.Exec(`
+		update users
+		set blocked_at = $1
+		where id = $2 and blocked_at is null;`,
+			now, message.UserID)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+		_, err = tx.Exec(`
+		update message_reports
+		set user_ejected_at = $1
+		where id = $2`,
+			now, reportID)
 		if err != nil {
 			return merry.Wrap(err)
 		}

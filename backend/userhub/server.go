@@ -68,24 +68,28 @@ func (s *Server) Run() error {
 
 	r.Mount("/image", routers.Image(s.repos.User, s.s3Storage, s.staticFS))
 
-	rpcHooks := &twirp.ServerHooks{
-		Error: func(ctx context.Context, err twirp.Error) context.Context {
-			cause := errors.Unwrap(err)
-			if cause != nil {
-				if err.Code() == twirp.Internal {
-					log.Print(merry.Details(cause))
-				} else {
-					sourceLine := merry.SourceLine(cause)
-					if sourceLine != "" {
-						log.Printf("%s: %s\n", cause, sourceLine)
+	rpcOptions := []interface{}{
+		&twirp.ServerHooks{
+			Error: func(ctx context.Context, err twirp.Error) context.Context {
+				cause := errors.Unwrap(err)
+				if cause != nil {
+					if err.Code() == twirp.Internal {
+						log.Print(merry.Details(cause))
+					} else {
+						sourceLine := merry.SourceLine(cause)
+						if sourceLine != "" {
+							log.Printf("%s: %s\n", cause, sourceLine)
+						}
 					}
+				} else {
+					log.Println(err)
 				}
-			} else {
-				log.Println(err)
-			}
-			return ctx
+				return ctx
+			},
 		},
+		twirp.WithServerPathPrefix(""),
 	}
+
 	mailSender := common.NewMailSender(s.cfg.SMTP)
 	var firebaseClient *fcm.Client
 	if s.cfg.FirebaseToken != "" {
@@ -103,39 +107,39 @@ func (s *Server) Run() error {
 	passwordHash := bcrypt.NewPasswordHash()
 
 	authService := services.NewAuth(baseService, sessionUserKey, sessionUserPasswordHashKey, passwordHash, s.cfg.TestMode, s.cfg.AdminList(), s.cfg.AdminFriendship)
-	authServiceHandler := rpc.NewAuthServiceServer(authService, rpcHooks)
+	authServiceHandler := rpc.NewAuthServiceServer(authService, rpcOptions...)
 	r.Handle(authServiceHandler.PathPrefix()+"*", s.findSessionUser(s.authSessionProvider(authServiceHandler)))
 
 	infoService := services.NewInfo(baseService, s.pubKeyPEM)
-	infoServiceHandler := rpc.NewInfoServiceServer(infoService, rpcHooks)
+	infoServiceHandler := rpc.NewInfoServiceServer(infoService, rpcOptions...)
 	r.Handle(infoServiceHandler.PathPrefix()+"*", infoServiceHandler)
 
 	tokenService := services.NewToken(baseService, s.tokenGenerator, s.cfg.TokenDuration())
-	tokenServiceHandler := rpc.NewTokenServiceServer(tokenService, rpcHooks)
+	tokenServiceHandler := rpc.NewTokenServiceServer(tokenService, rpcOptions...)
 	r.Handle(tokenServiceHandler.PathPrefix()+"*", s.checkAuth(tokenServiceHandler))
 
 	userService := services.NewUser(baseService, passwordHash)
-	userServiceHandler := rpc.NewUserServiceServer(userService, rpcHooks)
+	userServiceHandler := rpc.NewUserServiceServer(userService, rpcOptions...)
 	r.Handle(userServiceHandler.PathPrefix()+"*", s.checkAuth(userServiceHandler))
 
 	messageHubService := services.NewMessageHub(baseService, s.cfg.AdminList())
-	messageHubServiceHandler := rpc.NewMessageHubServiceServer(messageHubService, rpcHooks)
+	messageHubServiceHandler := rpc.NewMessageHubServiceServer(messageHubService, rpcOptions...)
 	r.Handle(messageHubServiceHandler.PathPrefix()+"*", s.checkAuth(messageHubServiceHandler))
 
 	inviteService := services.NewInvite(baseService)
-	inviteServiceHandler := rpc.NewInviteServiceServer(inviteService, rpcHooks)
+	inviteServiceHandler := rpc.NewInviteServiceServer(inviteService, rpcOptions...)
 	r.Handle(inviteServiceHandler.PathPrefix()+"*", s.checkAuth(inviteServiceHandler))
 
 	blobService := services.NewBlob(baseService)
-	blobServiceHandler := rpc.NewBlobServiceServer(blobService, rpcHooks)
+	blobServiceHandler := rpc.NewBlobServiceServer(blobService, rpcOptions...)
 	r.Handle(blobServiceHandler.PathPrefix()+"*", s.checkAuth(blobServiceHandler))
 
 	notificationService := services.NewNotification(baseService)
-	notificationServiceHandler := rpc.NewNotificationServiceServer(notificationService, rpcHooks)
+	notificationServiceHandler := rpc.NewNotificationServiceServer(notificationService, rpcOptions...)
 	r.Handle(notificationServiceHandler.PathPrefix()+"*", s.checkAuth(notificationServiceHandler))
 
 	messageHubNotificationService := services.NewMessageHubNotification(baseService)
-	messageHubNotificationServiceHandler := rpc.NewMessageHubNotificationServiceServer(messageHubNotificationService, rpcHooks)
+	messageHubNotificationServiceHandler := rpc.NewMessageHubNotificationServiceServer(messageHubNotificationService, rpcOptions...)
 	r.Handle(messageHubNotificationServiceHandler.PathPrefix()+"*", messageHubNotificationServiceHandler)
 
 	log.Println("started on " + s.cfg.ListenAddress)

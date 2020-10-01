@@ -263,3 +263,69 @@ Content-Type: application/json
   "last_known_id": "LAST-KNOWN-NOTIFICATION-ID"
 }
 ```
+
+## Report a message
+
+```
+POST http://localhost:12012/rpc.MessageService/ReportMessage
+Authorization: BEARER AUTH-TOKEN
+Content-Type: application/json
+
+{
+  "message_id": "ed61fc76-1172-4579-8a5f-ec4532094993",
+  "report": "bad message"
+}
+```
+
+Returns:
+```
+{
+  "report_id": "REPORT-ID"
+}
+```
+
+## Get all message reports (node admin access)
+
+```
+POST http://localhost:12012/rpc.MessageService/MessageReports
+Authorization: BEARER AUTH-TOKEN
+Content-Type: application/json
+
+{}
+```
+
+## Delete a reported message (node admin access)
+
+```
+POST http://localhost:12002/rpc.MessageService/DeleteReportedMessage
+Authorization: BEARER AUTH-TOKEN
+Content-Type: application/json
+
+{
+  "report_id": "REPORT-ID"
+}
+```
+
+## Block an author of a reported message (node admin access)
+
+```
+POST http://localhost:12002/rpc.MessageService/BlockReportedUser
+Authorization: BEARER AUTH-TOKEN
+Content-Type: application/json
+
+{
+  "report_id": "REPORT-ID"
+}
+```
+
+## Mark a message report as resolved (node admin access)
+
+```
+POST http://localhost:12002/rpc.MessageService/ResolveMessageReport
+Authorization: BEARER AUTH-TOKEN
+Content-Type: application/json
+
+{
+  "report_id": "REPORT-ID"
+}
+```

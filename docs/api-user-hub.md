@@ -402,3 +402,27 @@ Content-Type: application/json
   "os": "android"
 }
 ```
+
+## Report a message
+
+```
+POST http://central.koto.at/rpc.MessageHubService/ReportMessage
+Content-Type: application/json
+
+{
+  "hub_id": "HUB-ID",
+  "report_id": "REPORT-ID"
+}
+```
+
+## Block a user on a node (node admin access)
+
+```
+POST http://central.koto.at/rpc.MessageHubService/BlockUser
+Content-Type: application/json
+
+{
+  "hub_id": "HUB-ID",
+  "user_id": "USER-ID"
+}
+```

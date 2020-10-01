@@ -47,23 +47,26 @@ func (s *Server) Run() error {
 	r := chi.NewRouter()
 	s.setupMiddlewares(r)
 
-	rpcHooks := &twirp.ServerHooks{
-		Error: func(ctx context.Context, err twirp.Error) context.Context {
-			cause := errors.Unwrap(err)
-			if cause != nil {
-				if err.Code() == twirp.Internal {
-					log.Print(merry.Details(cause))
-				} else {
-					sourceLine := merry.SourceLine(cause)
-					if sourceLine != "" {
-						log.Printf("%s: %s\n", cause, sourceLine)
+	rpcOptions := []interface{}{
+		&twirp.ServerHooks{
+			Error: func(ctx context.Context, err twirp.Error) context.Context {
+				cause := errors.Unwrap(err)
+				if cause != nil {
+					if err.Code() == twirp.Internal {
+						log.Print(merry.Details(cause))
+					} else {
+						sourceLine := merry.SourceLine(cause)
+						if sourceLine != "" {
+							log.Printf("%s: %s\n", cause, sourceLine)
+						}
 					}
+				} else {
+					log.Println(err)
 				}
-			} else {
-				log.Println(err)
-			}
-			return ctx
+				return ctx
+			},
 		},
+		twirp.WithServerPathPrefix(""),
 	}
 
 	notificationSender := services.NewNotificationSender(s.repos.Notification, s.cfg.ExternalAddress,
@@ -73,23 +76,23 @@ func (s *Server) Run() error {
 	baseService := services.NewBase(s.repos, s.tokenParser, s.cfg.ExternalAddress, s.s3Storage, notificationSender)
 
 	messageService := services.NewMessage(baseService)
-	messageServiceHandler := rpc.NewMessageServiceServer(messageService, rpcHooks)
+	messageServiceHandler := rpc.NewMessageServiceServer(messageService, rpcOptions...)
 	r.Handle(messageServiceHandler.PathPrefix()+"*", s.checkAuth(messageServiceHandler))
 
 	blobService := services.NewBlob(baseService)
-	blobServiceHandler := rpc.NewBlobServiceServer(blobService, rpcHooks)
+	blobServiceHandler := rpc.NewBlobServiceServer(blobService, rpcOptions...)
 	r.Handle(blobServiceHandler.PathPrefix()+"*", s.checkAuth(blobServiceHandler))
 
 	notificationService := services.NewNotification(baseService)
-	notificationServiceHandler := rpc.NewNotificationServiceServer(notificationService, rpcHooks)
+	notificationServiceHandler := rpc.NewNotificationServiceServer(notificationService, rpcOptions...)
 	r.Handle(notificationServiceHandler.PathPrefix()+"*", s.checkAuth(notificationServiceHandler))
 
 	infoService := services.NewInfo(baseService, s.pubKeyPEM)
-	infoServiceHandler := rpc.NewInfoServiceServer(infoService, rpcHooks)
+	infoServiceHandler := rpc.NewInfoServiceServer(infoService, rpcOptions...)
 	r.Handle(infoServiceHandler.PathPrefix()+"*", infoServiceHandler)
 
 	userService := services.NewUser(baseService)
-	userServiceHandler := rpc.NewUserServiceServer(userService, rpcHooks)
+	userServiceHandler := rpc.NewUserServiceServer(userService, rpcOptions...)
 	r.Handle(userServiceHandler.PathPrefix()+"*", userServiceHandler)
 
 	log.Println("started on " + s.cfg.ListenAddress)

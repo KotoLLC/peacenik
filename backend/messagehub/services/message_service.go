@@ -926,6 +926,21 @@ func (s *messageService) DeleteReportedMessage(ctx context.Context, r *rpc.Messa
 	return &rpc.Empty{}, nil
 }
 
+func (s *messageService) BlockReportedUser(ctx context.Context, r *rpc.MessageBlockReportedUserRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+	if !user.IsHubAdmin {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
+	}
+	err := s.repos.Message.BlockReportedUser(r.ReportId)
+	if err != nil {
+		if merry.Is(err, repo.ErrMessageReportNotFound) {
+			return nil, twirp.NotFoundError(err.Error())
+		}
+		return nil, err
+	}
+	return &rpc.Empty{}, nil
+}
+
 func (s *messageService) ResolveMessageReport(ctx context.Context, r *rpc.MessageResolveMessageReportRequest) (*rpc.Empty, error) {
 	user := s.getUser(ctx)
 	if !user.IsHubAdmin {

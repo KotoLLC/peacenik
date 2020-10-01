@@ -24,6 +24,7 @@ service MessageService {
     rpc MessageReport (MessageMessageReportRequest) returns (MessageMessageReportResponse);
     rpc MessageReports (Empty) returns (MessageMessageReportsResponse);
     rpc DeleteReportedMessage (MessageDeleteReportedMessageRequest) returns (Empty);
+    rpc BlockReportedUser (MessageBlockReportedUserRequest) returns (Empty);
     rpc ResolveMessageReport (MessageResolveMessageReportRequest) returns (Empty);
 }
 
@@ -165,6 +166,10 @@ message MessageMessageReportsResponse {
 }
 
 message MessageDeleteReportedMessageRequest {
+    string report_id = 1;
+}
+
+message MessageBlockReportedUserRequest {
     string report_id = 1;
 }
 
