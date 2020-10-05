@@ -32,6 +32,10 @@ export enum Types {
 
   DELETE_MESSAGE_REQUEST = 'DELETE_MESSAGE_REQUEST',
   DELETE_MESSAGE_SUCCESS = 'DELETE_MESSAGE_SUCCESS',
+  
+  REPORT_MESSAGE_HUB_REQUEST = 'REPORT_MESSAGE_HUB_REQUEST',
+  REPORT_MESSAGE_CENTRAL_REQUEST = 'REPORT_MESSAGE_CENTRAL_REQUEST',
+  REPORT_MESSAGE_SUCCESS = 'REPORT_MESSAGE_SUCCESS',
 
   EDIT_MESSAGE_REQUEST = 'EDIT_MESSAGE_REQUEST',
   EDIT_MESSAGE_SUCCESS = 'EDIT_MESSAGE_SUCCESS',
@@ -126,6 +130,20 @@ const deleteMessageRequest = (payload: ApiTypes.Messages.DeleteMessage) => ({
 
 const deleteMessageSucces = () => ({
   type: Types.DELETE_MESSAGE_SUCCESS,
+})
+
+const reportMessageHubRequest = (payload: ApiTypes.Messages.ReportMessageHub) => ({
+  type: Types.REPORT_MESSAGE_HUB_REQUEST,
+  payload
+})
+
+const reportMessageCentralRequest = (payload: ApiTypes.Messages.ReportMessageCentral) => ({
+  type: Types.REPORT_MESSAGE_CENTRAL_REQUEST,
+  payload
+})
+
+const reportMessageSucces = () => ({
+  type: Types.REPORT_MESSAGE_SUCCESS,
 })
 
 const editMessageRequest = (payload: ApiTypes.Messages.EditMessage) => ({
@@ -338,4 +356,7 @@ export default {
   hideMessageSuccess,
   hideCommentRequest,
   hideCommentSuccess,
+  reportMessageHubRequest,
+  reportMessageCentralRequest,
+  reportMessageSucces,
 }

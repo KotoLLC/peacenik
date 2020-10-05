@@ -161,3 +161,9 @@ export const AvatarWrapper = styled(Link)`
   height: 40px;
   margin: 0 10px;
 `
+
+export const ErrorMessage = styled.div`
+  font-size: 14px;
+  color: red;
+  margin-top: 20px;
+`

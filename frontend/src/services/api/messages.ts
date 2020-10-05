@@ -237,4 +237,26 @@ export default {
       return response
     }).catch(error => ({ error }))
   },
+ 
+  reportMessageHub: async (data: ApiTypes.Messages.ReportMessageHub) => {
+    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const config = {
+      withCredentials: false,
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      }
+    }
+    return await axiosInstance.post(`${data.host}/rpc.MessageService/ReportMessage`, {
+      'message_id': data.body.message_id,
+      'report': data.body.report,
+    }, config).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
+  
+  reportMessageCentral: async (data: ApiTypes.Messages.ReportMessageCentral) => {
+    return await axiosInstance.post(`/rpc.MessageHubService/ReportMessage`, data).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
 }

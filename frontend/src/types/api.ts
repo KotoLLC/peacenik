@@ -166,6 +166,19 @@ export declare namespace ApiTypes {
         message_id: string,
       }
     }
+
+    export interface ReportMessageHub {
+      host: string,
+      body: {
+        message_id: string,
+        report: string
+      }
+    }
+    
+    export interface ReportMessageCentral {
+      hub_id: string,
+      report_id: string
+    }
     
     export interface EditMessage {
       host: string,

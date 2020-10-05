@@ -321,3 +321,28 @@ export function* watchGetLikesForComment(action: { type: string, payload: ApiTyp
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
+
+export function* watchReportMessageHub(action: { type: string, payload: ApiTypes.Messages.ReportMessageHub }) {
+  const response = yield API.messages.reportMessageHub(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.messages.reportMessageCentralRequest({
+      hub_id: action.payload.host,
+      report_id: response.data?.report_id
+    }))
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
+export function* watchReportMessageCentral(action: { type: string, payload: ApiTypes.Messages.ReportMessageCentral }) {
+  const response = yield API.messages.reportMessageCentral(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.messages.reportMessageSucces())
+    yield put(Actions.common.setSuccessNotify('Sent successfully'))
+
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}

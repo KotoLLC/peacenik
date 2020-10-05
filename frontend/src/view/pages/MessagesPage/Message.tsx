@@ -21,6 +21,7 @@ import { getAvatarUrl } from '@services/avatarUrl'
 import Avatar from '@material-ui/core/Avatar'
 import loadImage from 'blueimp-load-image'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
+import ComplainContentDialog from './ComplainContentDialog'
 import {
   PaperStyled,
   MessageHeader,
@@ -416,6 +417,7 @@ const Message: React.SFC<Props> = (props) => {
                   <VisibilityOffIcon />
                 </IconButton>
               </Tooltip>
+              <ComplainContentDialog {...{ message, id, sourceHost }}/>
             </ButtonsWrapper>
           }
         </MessageHeader>
