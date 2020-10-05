@@ -35,7 +35,8 @@ type MessageHubRepo interface {
 	AddHub(address, details string, hubAdmin User, postLimit int) (string, error)
 	AllHubs() ([]MessageHub, error)
 	Hubs(user User) ([]MessageHub, error)
-	Hub(hubID string) (*MessageHub, error)
+	HubByID(hubID string) (*MessageHub, error)
+	HubByIDOrAddress(hubID string) (*MessageHub, error)
 	ApproveHub(hubID string) error
 	RemoveHub(hubID string) error
 	ConnectedHubs(user User) ([]ConnectedMessageHub, error)
@@ -115,12 +116,29 @@ func (r *messageHubRepo) Hubs(user User) ([]MessageHub, error) {
 	return hubs, merry.Wrap(err)
 }
 
-func (r *messageHubRepo) Hub(hubID string) (*MessageHub, error) {
+func (r *messageHubRepo) HubByID(hubID string) (*MessageHub, error) {
 	var hub MessageHub
 	err := r.db.Get(&hub, `
 		select id, address, admin_id, created_at, approved_at, disabled_at, details, post_limit
 		from message_hubs
 		where id = $1`, hubID)
+	if err != nil {
+		if merry.Is(err, sql.ErrNoRows) {
+			return nil, ErrHubNotFound.Here()
+		}
+		return nil, merry.Wrap(err)
+	}
+
+	hub.Address = common.CleanPublicURL(hub.Address)
+	return &hub, nil
+}
+
+func (r *messageHubRepo) HubByIDOrAddress(hubID string) (*MessageHub, error) {
+	var hub MessageHub
+	err := r.db.Get(&hub, `
+		select id, address, admin_id, created_at, approved_at, disabled_at, details, post_limit
+		from message_hubs
+		where id = $1 or address = $1`, hubID)
 	if err != nil {
 		if merry.Is(err, sql.ErrNoRows) {
 			return nil, ErrHubNotFound.Here()

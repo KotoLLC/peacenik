@@ -98,7 +98,7 @@ func (s *messageHubService) Hubs(ctx context.Context, _ *rpc.Empty) (*rpc.Messag
 }
 
 func (s *messageHubService) Verify(ctx context.Context, r *rpc.MessageHubVerifyRequest) (*rpc.MessageHubVerifyResponse, error) {
-	hub, err := s.repos.MessageHubs.Hub(r.HubId)
+	hub, err := s.repos.MessageHubs.HubByID(r.HubId)
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +132,7 @@ func (s *messageHubService) Approve(ctx context.Context, r *rpc.MessageHubApprov
 		return nil, err
 	}
 
-	hub, err := s.repos.MessageHubs.Hub(r.HubId)
+	hub, err := s.repos.MessageHubs.HubByID(r.HubId)
 	if err != nil {
 		return nil, err
 	}
@@ -146,7 +146,7 @@ func (s *messageHubService) Approve(ctx context.Context, r *rpc.MessageHubApprov
 
 func (s *messageHubService) Remove(ctx context.Context, r *rpc.MessageHubRemoveRequest) (*rpc.Empty, error) {
 	user := s.getUser(ctx)
-	hub, err := s.repos.MessageHubs.Hub(r.HubId)
+	hub, err := s.repos.MessageHubs.HubByID(r.HubId)
 	if err != nil {
 		if merry.Is(err, repo.ErrHubNotFound) {
 			return nil, twirp.NotFoundError(err.Error())
@@ -175,7 +175,7 @@ func (s *messageHubService) Remove(ctx context.Context, r *rpc.MessageHubRemoveR
 
 func (s *messageHubService) SetPostLimit(ctx context.Context, r *rpc.MessageHubSetPostLimitRequest) (*rpc.Empty, error) {
 	user := s.getUser(ctx)
-	hub, err := s.repos.MessageHubs.Hub(r.HubId)
+	hub, err := s.repos.MessageHubs.HubByID(r.HubId)
 	if err != nil {
 		if merry.Is(err, repo.ErrHubNotFound) {
 			return nil, twirp.NotFoundError(err.Error())
@@ -198,7 +198,7 @@ func (s *messageHubService) SetPostLimit(ctx context.Context, r *rpc.MessageHubS
 func (s *messageHubService) ReportMessage(ctx context.Context, r *rpc.MessageHubReportMessageRequest) (*rpc.Empty, error) {
 	user := s.getUser(ctx)
 
-	hub, err := s.repos.MessageHubs.Hub(r.HubId)
+	hub, err := s.repos.MessageHubs.HubByIDOrAddress(r.HubId)
 	if err != nil {
 		if merry.Is(err, repo.ErrHubNotFound) {
 			return nil, twirp.NotFoundError(err.Error())
@@ -286,7 +286,7 @@ Please visit the audit dashboard to review the content.`, reportedBy.Name, autho
 func (s *messageHubService) BlockUser(ctx context.Context, r *rpc.MessageHubBlockUserRequest) (*rpc.Empty, error) {
 	user := s.getUser(ctx)
 
-	hub, err := s.repos.MessageHubs.Hub(r.HubId)
+	hub, err := s.repos.MessageHubs.HubByIDOrAddress(r.HubId)
 	if err != nil {
 		if merry.Is(err, repo.ErrHubNotFound) {
 			return nil, twirp.NotFoundError(err.Error())
