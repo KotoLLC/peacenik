@@ -864,7 +864,7 @@ func (s *messageService) MessageReport(ctx context.Context, r *rpc.MessageMessag
 	}
 
 	return &rpc.MessageMessageReportResponse{
-		ReportedBy: report.ReportedBy,
+		ReportedBy: report.ReportedByID,
 		Report:     report.Report,
 		AuthorId:   report.AuthorID,
 	}, nil
@@ -893,12 +893,14 @@ func (s *messageService) MessageReports(ctx context.Context, _ *rpc.Empty) (*rpc
 
 		rpcReports[i] = &rpc.MessageReport{
 			Id:                  report.ID,
-			ReportedBy:          report.ReportedBy,
+			ReporterId:          report.ReportedByID,
+			ReporterName:        report.ReportedByName,
 			Report:              report.Report,
 			CreatedAt:           common.TimeToRPCString(report.CreatedAt),
 			ResolvedAt:          common.NullTimeToRPCString(report.ResolvedAt),
 			MessageId:           report.MessageID,
 			AuthorId:            report.AuthorID,
+			AuthorName:          report.AuthorName,
 			Text:                report.Text,
 			AttachmentType:      report.AttachmentType,
 			Attachment:          attachmentLink,

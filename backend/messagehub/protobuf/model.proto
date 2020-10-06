@@ -46,14 +46,16 @@ message Notification {
 
 message MessageReport {
     string id = 1;
-    string reported_by = 2;
-    string report = 3;
-    string created_at = 4;
-    string resolved_at = 5;
-    string message_id = 6;
-    string author_id = 7;
-    string text = 8;
-    string attachment_type = 9;
-    string attachment = 10;
-    string attachment_thumbnail = 11;
+    string reporter_id = 2;
+    string reporter_name = 3;
+    string report = 4;
+    string created_at = 5;
+    string resolved_at = 6;
+    string message_id = 7;
+    string author_id = 8;
+    string author_name = 9;
+    string text = 10;
+    string attachment_type = 11;
+    string attachment = 12;
+    string attachment_thumbnail = 13;
 }
