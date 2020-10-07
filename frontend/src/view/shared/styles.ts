@@ -25,7 +25,6 @@ export const LogoWrapper = styled(Link)`
   font-size: 1.25rem;
   font-weight: bold;
   text-decoration: none;
-  color: #fff;
 `
 
 export const Logo = styled.img`

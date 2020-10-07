@@ -74,6 +74,10 @@ import {
 import {  
     watchGetMessageReports,
     watchGetMessageReportsFromHub,
+    watchResolveReport,
+    watchDeleteReportedMessage,
+    watchBlockReportedUser,
+    watchBlockUser,
 } from './dashboard'
 
 export function* rootSaga() {
@@ -136,5 +140,9 @@ export function* rootSaga() {
       
         takeEvery(DashboardTypes.GET_MESSAGE_REPORTS_REQUEST, watchGetMessageReports),
         takeEvery(DashboardTypes.GET_MESSAGE_REPORTS_FROM_HUB_REQUEST, watchGetMessageReportsFromHub),
+        takeEvery(DashboardTypes.RESOLVE_REPORT_REQUEST, watchResolveReport),
+        takeEvery(DashboardTypes.DELETE_REPORTED_MESSAGE_REQUEST, watchDeleteReportedMessage),
+        takeEvery(DashboardTypes.BLOCK_REPORTED_USER_REQUEST, watchBlockReportedUser),
+        takeEvery(DashboardTypes.BLOCK_USER_REQUEST, watchBlockUser),
     ])
 }

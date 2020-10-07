@@ -60,12 +60,12 @@ const ComplainContentDialog: React.SFC<Props> = (props) => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitleStyled id="alert-dialog-title">Why do you want to complain this content?</DialogTitleStyled>
+        <DialogTitleStyled id="alert-dialog-title">Tell us why you find this content objectionable:</DialogTitleStyled>
         <DialogContentStyled>
           <DialogTextWrapper>
             <TextFieldStyled
               id="outlined-multiline-static"
-              label="Describe your claim"
+              label="Description"
               multiline
               rows={4}
               onChange={(event) => setDescription(event?.target?.value)}

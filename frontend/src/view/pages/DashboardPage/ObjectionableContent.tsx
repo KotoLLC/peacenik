@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
-import DeleteIcon from '@material-ui/icons/Delete'
 import { ApiTypes, StoreTypes } from 'src/types'
 import selectors from '@selectors/index'
 import Avatar from '@material-ui/core/Avatar'
@@ -9,16 +8,18 @@ import { getAvatarUrl } from '@services/avatarUrl'
 import ReactMarkdown from 'react-markdown'
 import moment from 'moment'
 import { Player } from 'video-react'
+import DeleteComplainContentDialog from './DeleteComplainContentDialog'
+import UserEjectDialog from './UserEjectDialog'
 import {
   DashboardSection,
   Header,
   Title,
   ContentWrapper,
   ButtonsWrapper,
-  ButtonStyled,
   ResolveButton,
   ReportText,
   ReportTitle,
+  MessageContent,
 } from './styles'
 
 import {
@@ -27,7 +28,6 @@ import {
   UserNameWrapper,
   UserName,
   MessageDate,
-  MessageContent,
   AttachmentWrapper,
   ImagePreview,
 } from '@view/pages/MessagesPage/styles'
@@ -37,11 +37,12 @@ interface Props {
   ownedHubs: string[]
 
   onGetObjectionableContent: () => void
+  onReportResolve: (data: ApiTypes.Dashboard.ResolveReport) => void
 }
 
 export const ObjectionableContent: React.FC<Props> = (props) => {
   const { ownedHubs, objectionableContent } = props
-  const { onGetObjectionableContent } = props
+  const { onGetObjectionableContent, onReportResolve } = props
 
   const renderAttachment = (attachment_type: string, attachment: string) => {
 
@@ -66,6 +67,26 @@ export const ObjectionableContent: React.FC<Props> = (props) => {
     return null
   }
 
+  const compareByData = (a: ApiTypes.Dashboard.ObjectionableContent, b: ApiTypes.Dashboard.ObjectionableContent) => {
+    if (a.created_at < b.created_at) {
+      return -1
+    }
+    if (a.created_at > b.created_at) {
+      return 1
+    }
+    return 0
+  }
+
+  const compareByResolved = (a: ApiTypes.Dashboard.ObjectionableContent, b: ApiTypes.Dashboard.ObjectionableContent) => {
+    if (a.resolved_at === '') {
+      return -1
+    }
+    if (a.resolved_at !== '') {
+      return 1
+    }
+    return 0
+  }
+
   useEffect(() => {
     onGetObjectionableContent()
   }, [ownedHubs, onGetObjectionableContent])
@@ -75,7 +96,7 @@ export const ObjectionableContent: React.FC<Props> = (props) => {
       <Header>
         <Title>Objectionable content</Title>
       </Header>
-      {Boolean(objectionableContent.length) && objectionableContent.map(item => (
+      {Boolean(objectionableContent.length) && objectionableContent.sort(compareByData).sort(compareByResolved).map(item => (
         <ContentWrapper key={item.id} className={item.resolved_at ? '' : 'unresolved'}>
           <ReportTitle>Report from:</ReportTitle>
           <UserInfo>
@@ -102,15 +123,21 @@ export const ObjectionableContent: React.FC<Props> = (props) => {
           </MessageContent>
           {renderAttachment(item.attachment_type, item.attachment)}
           <ButtonsWrapper>
-            <ButtonStyled
-              variant="contained"
-              color="primary"
-            >Delete</ButtonStyled>
-            <ButtonStyled
-              variant="contained"
-              color="secondary"
-            >Eject</ButtonStyled>
+            <DeleteComplainContentDialog {...{ message: item.text, id: item.id, sourceHost: item.sourceHost }} />
+            <UserEjectDialog {...{
+              userName: item.author_name,
+              userId: item.author_id,
+              reportId: item.id,
+              sourceHost: item.sourceHost
+            }} />
             <ResolveButton
+              disabled={item.resolved_at ? true : false}
+              onClick={() => onReportResolve({
+                host: item.sourceHost,
+                body: {
+                  report_id: item.id,
+                }
+              })}
               variant="contained"
               color="secondary"
             >Resolve</ResolveButton>
@@ -127,9 +154,10 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   ownedHubs: selectors.profile.ownedHubs(state),
 })
 
-type DispatchProps = Pick<Props, 'onGetObjectionableContent'>
+type DispatchProps = Pick<Props, 'onGetObjectionableContent' | 'onReportResolve'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetObjectionableContent: () => dispatch(Actions.dashboard.getMessageReportsRequest()),
+  onReportResolve: (data: ApiTypes.Dashboard.ResolveReport) => dispatch(Actions.dashboard.resolveReportRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(ObjectionableContent)

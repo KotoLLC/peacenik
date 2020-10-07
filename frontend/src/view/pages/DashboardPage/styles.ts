@@ -67,6 +67,12 @@ export const ButtonStyled = styled(Button)`
   && {
     margin-left: 10px;
   }
+
+  @media (max-width: 600px) {
+    && {
+      margin-top: 10px;
+    }
+  }
 `
 export const ResolveButton = styled(Button)`
   && {
@@ -75,6 +81,12 @@ export const ResolveButton = styled(Button)`
 
     &:hover {
       background: #32ab3d;
+    }
+  }
+
+  @media (max-width: 600px) {
+    && {
+      margin-top: 10px;
     }
   }
 `
@@ -90,4 +102,12 @@ export const ReportText = styled.p`
 export const ReportTitle = styled.h3`
   font-size: 1.2em;
   margin: 0 0 10px;
+`
+
+export const MessageContent = styled.div`
+  font-family: Raleway, Arial;
+  font-size: 14px;
+  margin: 10px 0;
+  padding: 0;
+  white-space: pre-wrap;
 `

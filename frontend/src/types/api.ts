@@ -17,12 +17,12 @@ export declare namespace ApiTypes {
     password: string
     remember_me?: boolean
   }
-  
+
   export interface ForgotPassword {
     name: string
     email: string
   }
-  
+
   export interface ResetPassword {
     reset_token: string
     new_password: string
@@ -78,8 +78,8 @@ export declare namespace ApiTypes {
 
     export interface Friend {
       user: User
-      friends: { 
-        user: User 
+      friends: {
+        user: User
         invite_status: InvitationStatus
       }[]
       invite_status: InvitationStatus
@@ -150,7 +150,7 @@ export declare namespace ApiTypes {
         attachment_changed?: boolean
       }
     }
-    
+
     export interface PostComment {
       host: string,
       body: {
@@ -159,7 +159,7 @@ export declare namespace ApiTypes {
         message_id: string,
       }
     }
-    
+
     export interface DeleteMessage {
       host: string,
       body: {
@@ -174,12 +174,12 @@ export declare namespace ApiTypes {
         report: string
       }
     }
-    
+
     export interface ReportMessageCentral {
       hub_id: string,
       report_id: string
     }
-    
+
     export interface EditMessage {
       host: string,
       body: {
@@ -190,7 +190,7 @@ export declare namespace ApiTypes {
         attachment_id?: string,
       }
     }
-    
+
     export interface EditComment {
       host: string,
       body: {
@@ -199,7 +199,7 @@ export declare namespace ApiTypes {
         text_changed: boolean
       }
     }
-  
+
     export interface DeleteComment {
       host: string,
       body: {
@@ -233,7 +233,7 @@ export declare namespace ApiTypes {
       user_name: string
       created_at: string
       updated_at: string
-      comments?: Comment[] 
+      comments?: Comment[]
       liked_by?: LikeInfo[]
       attachment?: string
       attachment_type?: string
@@ -241,7 +241,7 @@ export declare namespace ApiTypes {
       likes?: number
       liked_by_me?: boolean
     }
-    
+
     export interface Comment {
       sourceHost: string
       id: string
@@ -288,7 +288,7 @@ export declare namespace ApiTypes {
   }
 
   export namespace Notifications {
- 
+
     export type MessageTypes = 'message/post' | 'message/tag' | 'message/like'
     export type CommentTypes = 'comment/post' | 'comment/tag' | 'comment/like'
     export type HubTypes = 'message-hub/add' | 'message-hub/approve' | 'message-hub/remove'
@@ -315,7 +315,7 @@ export declare namespace ApiTypes {
   }
 
   export namespace Dashboard {
-    
+
     export interface ObjectionableContent {
       attachment: string
       attachment_thumbnail: string
@@ -330,7 +330,27 @@ export declare namespace ApiTypes {
       reporter_name: string
       resolved_at: string
       text: string
+      sourceHost: string
     }
 
+    export interface ResolveReport {
+      host: string,
+      body: {
+        report_id: string,
+      }
+    }
+
+    export interface DeleteReportedMessage {
+      host: string,
+      body: {
+        report_id: string,
+      }
+    }
+
+    export interface EjectUser {
+      host: string,
+      user_id: string,
+      report_id: string
+    }
   }
 }
