@@ -6,6 +6,7 @@ import { Types as HubTypes } from '@store/hubs/actions'
 import { Types as ProfileTypes } from '@store/profile/actions'
 import { Types as MessagesTypes } from '@store/messages/actions'
 import { Types as NotificationsTypes } from '@store/notifications/actions'
+import { Types as DashboardTypes } from '@store/dashboard/actions'
 
 import {
     watchlogin,
@@ -70,6 +71,10 @@ import {
     watchCleanNotificationsInUserHub,
     watchCleanNotificationsInHub,
 } from './notifications'
+import {  
+    watchGetMessageReports,
+    watchGetMessageReportsFromHub,
+} from './dashboard'
 
 export function* rootSaga() {
     yield all([
@@ -128,5 +133,8 @@ export function* rootSaga() {
         takeEvery(NotificationsTypes.GET_NOTIFICATIONS_REQUEST, watchGetNotifications),
         takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_USER_HUB_REQUEST, watchCleanNotificationsInUserHub),
         takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_HUB_REQUEST, watchCleanNotificationsInHub),
+      
+        takeEvery(DashboardTypes.GET_MESSAGE_REPORTS_REQUEST, watchGetMessageReports),
+        takeEvery(DashboardTypes.GET_MESSAGE_REPORTS_FROM_HUB_REQUEST, watchGetMessageReportsFromHub),
     ])
 }

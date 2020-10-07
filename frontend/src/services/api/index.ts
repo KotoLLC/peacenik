@@ -6,6 +6,7 @@ import hubs from './hubs'
 import profile from './profile'
 import messages from './messages'
 import notifications from './notifications'
+import dashboard from './dashboard'
 
 // @ts-ignore
 const URL: string = window.apiEndpoint
@@ -26,4 +27,5 @@ export const API = {
   profile,
   messages,
   notifications,
+  dashboard,
 }

@@ -6,6 +6,7 @@ import authorization from './authorization'
 import registration from './registration'
 import common from './common'
 import notifications from './notifications'
+import dashboard from './dashboard'
 
 export default {
     friends,
@@ -16,4 +17,5 @@ export default {
     registration,
     common,
     notifications,
+    dashboard,
 }

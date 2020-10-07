@@ -13,12 +13,14 @@ const user: ApiTypes.Profile.UserProfile = profile ? JSON.parse(profile) : {
 export interface State extends ApiTypes.Profile.UserProfile {
   uploadLink: ApiTypes.UploadLink | null
   profileErrorMessage: string
+  owned_hubs: string[]
 }
 
 const initialState: State = {
   ...user,
   uploadLink: null,
   profileErrorMessage: '',
+  owned_hubs: [],
 }
 
 const reducer = (state = initialState, action) => {

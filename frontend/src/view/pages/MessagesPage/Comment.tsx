@@ -10,6 +10,7 @@ import selectors from '@selectors/index'
 import SendIcon from '@material-ui/icons/Send'
 import { getAvatarUrl } from '@services/avatarUrl'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
+import ComplainContentDialog from './ComplainContentDialog'
 import {
   CommentWrapper,
   UserName,
@@ -148,6 +149,7 @@ const Comment: React.SFC<Props> = (props) => {
             <VisibilityOffIcon />
           </IconButton>
         </Tooltip>
+        <ComplainContentDialog {...{message: comment, id, sourceHost}} />
       </ButtonsWrapper>
     )
   }

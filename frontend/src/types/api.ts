@@ -313,4 +313,24 @@ export declare namespace ApiTypes {
       messageToken: string
     }
   }
+
+  export namespace Dashboard {
+    
+    export interface ObjectionableContent {
+      attachment: string
+      attachment_thumbnail: string
+      attachment_type: string
+      author_id: string
+      author_name: string
+      created_at: string
+      id: string
+      message_id: string
+      report: string
+      reporter_id: string
+      reporter_name: string
+      resolved_at: string
+      text: string
+    }
+
+  }
 }

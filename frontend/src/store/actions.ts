@@ -6,6 +6,7 @@ import hubs from './hubs/actions'
 import profile from './profile/actions'
 import messages from './messages/actions'
 import notifications from './notifications/actions'
+import dashboard from './dashboard/actions'
 
 export default {
   registration,
@@ -16,4 +17,5 @@ export default {
   profile,
   messages,
   notifications,
+  dashboard,
 }

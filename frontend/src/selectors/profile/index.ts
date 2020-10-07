@@ -3,6 +3,7 @@ import { selector, deepEqualSelector } from '../common'
 
 const profile = createSelector(selector, data => data.profile)
 const isAdmin = createSelector(profile, data => data.is_admin)
+const ownedHubs = createSelector(profile, data => data.owned_hubs)
 const user = createSelector(profile, data => data.user)
 const userName = createSelector(user, data => data.name)
 const isEmailConfirmed = createSelector(user, data => data.is_confirmed)
@@ -20,4 +21,5 @@ export default {
     userEmail,
     uploadLink,
     profileErrorMessage,
+    ownedHubs,
 }

@@ -16,6 +16,7 @@ import ConfirmUserPage from '@view/pages/ConfirmUserPage'
 import ResendConfirmEmailPage from '@view/pages/ResendConfirmEmailPage'
 import ForgotPasswordPage from '@view/pages/ForgotPasswordPage'
 import ResetPasswordPage from '@view/pages/ResetPasswordPage'
+import { DashboardPage } from '@view/pages/DashboardPage'
 import selectors from '@selectors/index'
 import { LastLocationProvider } from 'react-router-last-location'
 
@@ -56,6 +57,7 @@ export const Routes = () => {
           <PrivateRoute path="/messages" component={MessagesPage} />
           <PrivateRoute path="/notifications" component={NotificationsPage} />
           <PrivateRoute path="/user-profile" component={UserProfilePage} />
+          <PrivateRoute path="/dashboard" component={DashboardPage} />
           <Route component={() => <>404 not found</>} />
         </Switch>
       </LastLocationProvider>
