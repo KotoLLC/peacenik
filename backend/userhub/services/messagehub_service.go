@@ -298,7 +298,7 @@ func (s *messageHubService) BlockUser(ctx context.Context, r *rpc.MessageHubBloc
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 
-	err = s.repos.MessageHubs.BlockUser(r.UserId, r.HubId)
+	err = s.repos.MessageHubs.BlockUser(r.UserId, hub.ID)
 	if err != nil {
 		return nil, err
 	}
