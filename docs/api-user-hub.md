@@ -426,3 +426,14 @@ Content-Type: application/json
   "user_id": "USER-ID"
 }
 ```
+
+## Block a user (for the current user)
+
+```
+POST http://central.koto.at/rpc.UserService/BlockUser
+Content-Type: application/json
+
+{
+  "user_id": "USER-ID"
+}
+```

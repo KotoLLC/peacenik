@@ -35,6 +35,7 @@ type UserRepo interface {
 	SetPassword(userID, passwordHash string) error
 	FindUsers(ids []string) ([]User, error)
 	ConfirmUser(userID string) (bool, error)
+	BlockUser(userID, blockedUserID string) error
 }
 
 type userRepo struct {
@@ -221,4 +222,27 @@ func (r *userRepo) ConfirmUser(userID string) (ok bool, err error) {
 		return false, merry.Wrap(err)
 	}
 	return rowsAffected == 1, nil
+}
+
+func (r *userRepo) BlockUser(userID, blockedUserID string) error {
+	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+		_, err := tx.Exec(`
+			insert into blocked_users(user_id, blocked_user_id, created_at)
+			select $1, $2, $3
+			where not exists(select * from blocked_users where user_id=$1 and blocked_user_id=$2);`,
+			userID, blockedUserID, common.CurrentTimestamp(),
+		)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+
+		_, err = tx.Exec(`
+			delete from friends
+			where (user_id = $1 and friend_id = $2) or (user_id = $2 and friend_id = $1)`,
+			userID, blockedUserID)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+		return nil
+	})
 }

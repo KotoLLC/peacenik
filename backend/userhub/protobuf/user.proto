@@ -13,6 +13,7 @@ service UserService {
     rpc Users (UserUsersRequest) returns (UserUsersResponse);
     rpc User (UserUserRequest) returns (UserUserResponse);
     rpc RegisterFCMToken (UserRegisterFCMTokenRequest) returns (Empty);
+    rpc BlockUser (UserBlockUserRequest) returns (Empty);
 }
 
 message UserFriendsFriendOfFriend {
@@ -76,4 +77,8 @@ message UserRegisterFCMTokenRequest {
     string token = 1;
     string device_id = 2;
     string os = 3;
+}
+
+message UserBlockUserRequest {
+    string user_id = 1;
 }

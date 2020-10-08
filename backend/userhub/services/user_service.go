@@ -323,3 +323,16 @@ func (s *userService) RegisterFCMToken(ctx context.Context, r *rpc.UserRegisterF
 	}
 	return &rpc.Empty{}, nil
 }
+
+func (s *userService) BlockUser(ctx context.Context, r *rpc.UserBlockUserRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+	if user.ID == r.UserId || r.UserId == "" {
+		return nil, twirp.InvalidArgumentError("user_id", "is invalid")
+	}
+
+	err := s.repos.User.BlockUser(user.ID, r.UserId)
+	if err != nil {
+		return nil, err
+	}
+	return &rpc.Empty{}, nil
+}
