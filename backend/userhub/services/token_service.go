@@ -38,8 +38,17 @@ func (s *tokenService) Auth(ctx context.Context, _ *rpc.Empty) (*rpc.TokenAuthRe
 		ownedHubAddresses[i] = hub.Address
 	}
 
+	blockedUserIDs, err := s.repos.User.BlockedUserIDs(user.ID)
+	if err != nil {
+		return nil, err
+	}
+	if blockedUserIDs == nil {
+		blockedUserIDs = []string{}
+	}
+
 	claims := map[string]interface{}{
-		"owned_hubs": ownedHubAddresses,
+		"owned_hubs":    ownedHubAddresses,
+		"blocked_users": blockedUserIDs,
 	}
 
 	authToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "auth", time.Now().Add(s.tokenDuration), claims)

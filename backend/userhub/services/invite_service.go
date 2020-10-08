@@ -64,6 +64,14 @@ func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) 
 	}
 
 	if friend != nil {
+		areBlocked, err := s.repos.User.AreBlocked(user.ID, friend.ID)
+		if err != nil {
+			return nil, err
+		}
+		if areBlocked {
+			return nil, twirp.NotFoundError("user not found")
+		}
+
 		alreadyFriends, err := s.repos.Friend.AreFriends(user, *friend)
 		if err != nil {
 			return nil, err

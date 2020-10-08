@@ -94,7 +94,7 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 	}
 	notifyUsers := make([]string, 0, len(users))
 	for _, u := range users {
-		if u.ID != msg.UserID {
+		if u.ID != msg.UserID && !user.IsBlockedUser(u.ID) {
 			notifyUsers = append(notifyUsers, u.ID)
 		}
 	}
@@ -216,8 +216,12 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 		return nil, err
 	}
 	for messageID, messageComments := range comments {
-		rpcComments := make([]*rpc.Message, len(messageComments))
-		for i, comment := range messageComments {
+		rpcComments := make([]*rpc.Message, 0, len(messageComments))
+		for _, comment := range messageComments {
+			if user.IsBlockedUser(comment.UserID) {
+				continue
+			}
+
 			attachmentLink, err := s.createBlobLink(ctx, comment.AttachmentID)
 			if err != nil {
 				return nil, err
@@ -227,7 +231,7 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 				return nil, err
 			}
 
-			rpcComments[i] = &rpc.Message{
+			rpcComment := &rpc.Message{
 				Id:                  comment.ID,
 				UserId:              comment.UserID,
 				UserName:            comment.UserName,
@@ -240,6 +244,7 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 				Likes:               int32(comment.Likes),
 				LikedByMe:           comment.LikedByMe,
 			}
+			rpcComments = append(rpcComments, rpcComment)
 		}
 		rpcMessageMap[messageID].Comments = rpcComments
 	}
@@ -327,8 +332,12 @@ func (s *messageService) Message(ctx context.Context, r *rpc.MessageMessageReque
 		return nil, err
 	}
 	for _, messageComments := range comments {
-		rpcComments := make([]*rpc.Message, len(messageComments))
-		for i, comment := range messageComments {
+		rpcComments := make([]*rpc.Message, 0, len(messageComments))
+		for _, comment := range messageComments {
+			if user.IsBlockedUser(comment.UserID) {
+				continue
+			}
+
 			attachmentLink, err := s.createBlobLink(ctx, comment.AttachmentID)
 			if err != nil {
 				return nil, err
@@ -338,7 +347,7 @@ func (s *messageService) Message(ctx context.Context, r *rpc.MessageMessageReque
 				return nil, err
 			}
 
-			rpcComments[i] = &rpc.Message{
+			rpcComment := &rpc.Message{
 				Id:                  comment.ID,
 				UserId:              comment.UserID,
 				UserName:            comment.UserName,
@@ -351,6 +360,7 @@ func (s *messageService) Message(ctx context.Context, r *rpc.MessageMessageReque
 				Likes:               int32(comment.Likes),
 				LikedByMe:           comment.LikedByMe,
 			}
+			rpcComments = append(rpcComments, rpcComment)
 		}
 		rpcMessage.Comments = rpcComments
 	}
@@ -518,7 +528,7 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 
 	notifyUsers := make([]string, 0, len(users))
 	for _, u := range users {
-		if u.ID != comment.UserID {
+		if u.ID != comment.UserID && !user.IsBlockedUser(u.ID) {
 			notifyUsers = append(notifyUsers, u.ID)
 		}
 	}
@@ -698,6 +708,10 @@ func (s *messageService) LikeMessage(ctx context.Context, r *rpc.MessageLikeMess
 		return nil, twirp.InvalidArgumentError("message_id", "is not a message")
 	}
 
+	if user.IsBlockedUser(msg.UserID) {
+		return nil, twirp.NotFoundError("message not found")
+	}
+
 	newLikeCount, err := s.repos.Message.LikeMessage(user.ID, msg.ID)
 	if err != nil {
 		return nil, err
@@ -729,6 +743,10 @@ func (s *messageService) LikeComment(ctx context.Context, r *rpc.MessageLikeComm
 
 	if !comment.ParentID.Valid {
 		return nil, twirp.InvalidArgumentError("comment_id", "is not a comment")
+	}
+
+	if user.IsBlockedUser(comment.UserID) {
+		return nil, twirp.NotFoundError("message not found")
 	}
 
 	newLikeCount, err := s.repos.Message.LikeMessage(user.ID, comment.ID)

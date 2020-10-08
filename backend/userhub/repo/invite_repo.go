@@ -146,6 +146,9 @@ func (r *inviteRepo) InvitesFromMe(user User) ([]Invite, error) {
 		from invites i
 			left join users u on u.id = i.friend_id 
 		where i.user_id = $1
+			and not exists(select * from blocked_users
+						   where (user_id = $1 and blocked_user_id = i.friend_id)
+						      or (user_id = i.friend_id and blocked_user_id = $1))
 		order by i.created_at desc;`,
 		user.ID)
 	if err != nil {
@@ -162,6 +165,9 @@ func (r *inviteRepo) InvitesForMe(user User) ([]Invite, error) {
 		from invites i
 			inner join users u on u.id = i.user_id
 		where i.friend_id = $1
+			and not exists(select * from blocked_users
+						   where (user_id = $1 and blocked_user_id = i.user_id)
+						      or (user_id = i.user_id and blocked_user_id = $1))
 		order by i.created_at desc;`,
 		user.ID)
 	if err != nil {

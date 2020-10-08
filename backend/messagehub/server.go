@@ -134,12 +134,18 @@ func (s *Server) checkAuth(next http.Handler) http.Handler {
 		userID := claims["id"].(string)
 		userName, _ := claims["name"].(string)
 		var isHubAdmin bool
+		var blockedUsers []string
 		if ownedHubs, ok := claims["owned_hubs"].([]interface{}); ok {
 			for _, hub := range ownedHubs {
 				if hub.(string) == s.cfg.ExternalAddress {
 					isHubAdmin = true
 					break
 				}
+			}
+		}
+		if rawBlockedUsers, ok := claims["blocked_users"].([]interface{}); ok {
+			for _, id := range rawBlockedUsers {
+				blockedUsers = append(blockedUsers, id.(string))
 			}
 		}
 
@@ -149,10 +155,11 @@ func (s *Server) checkAuth(next http.Handler) http.Handler {
 		}
 
 		ctx := context.WithValue(r.Context(), services.ContextUserKey, services.User{
-			ID:         userID,
-			Name:       userName,
-			IsHubAdmin: isHubAdmin,
-			IsBlocked:  user.BlockedAt.Valid,
+			ID:           userID,
+			Name:         userName,
+			IsHubAdmin:   isHubAdmin,
+			IsBlocked:    user.BlockedAt.Valid,
+			BlockedUsers: blockedUsers,
 		})
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

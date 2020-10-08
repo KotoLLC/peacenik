@@ -36,6 +36,8 @@ type UserRepo interface {
 	FindUsers(ids []string) ([]User, error)
 	ConfirmUser(userID string) (bool, error)
 	BlockUser(userID, blockedUserID string) error
+	AreBlocked(userID1, userID2 string) (bool, error)
+	BlockedUserIDs(userID string) ([]string, error)
 }
 
 type userRepo struct {
@@ -245,4 +247,35 @@ func (r *userRepo) BlockUser(userID, blockedUserID string) error {
 		}
 		return nil
 	})
+}
+
+func (r *userRepo) AreBlocked(userID1, userID2 string) (bool, error) {
+	var exists bool
+	err := r.db.Get(&exists, `
+		select exists(
+		    select *
+		    from blocked_users
+		    where (user_id = $1 and blocked_user_id = $2) or (user_id = $2 and blocked_user_id = $1))`,
+		userID1, userID2)
+	if err != nil {
+		return false, merry.Wrap(err)
+	}
+	return exists, nil
+}
+
+func (r *userRepo) BlockedUserIDs(userID string) ([]string, error) {
+	var ids []string
+	err := r.db.Select(&ids, `
+		select blocked_user_id
+		from blocked_users
+		where user_id = $1
+		union
+		select user_id
+		from blocked_users
+		where blocked_user_id = $1`,
+		userID)
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+	return ids, nil
 }

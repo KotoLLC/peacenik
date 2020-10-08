@@ -16,10 +16,20 @@ const (
 )
 
 type User struct {
-	ID         string
-	Name       string
-	IsHubAdmin bool
-	IsBlocked  bool
+	ID           string
+	Name         string
+	IsHubAdmin   bool
+	IsBlocked    bool
+	BlockedUsers []string
+}
+
+func (u User) IsBlockedUser(userID string) bool {
+	for _, id := range u.BlockedUsers {
+		if id == userID {
+			return true
+		}
+	}
+	return false
 }
 
 type BaseService struct {
