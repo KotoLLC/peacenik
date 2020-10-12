@@ -14,6 +14,7 @@ export interface State extends ApiTypes.Profile.UserProfile {
   uploadLink: ApiTypes.UploadLink | null
   profileErrorMessage: string
   owned_hubs: string[]
+  users: ApiTypes.User[]
 }
 
 const initialState: State = {
@@ -21,6 +22,7 @@ const initialState: State = {
   uploadLink: null,
   profileErrorMessage: '',
   owned_hubs: [],
+  users: []
 }
 
 const reducer = (state = initialState, action) => {
@@ -48,6 +50,13 @@ const reducer = (state = initialState, action) => {
       return {
         ...state, ...{
           profileErrorMessage: ''
+        }
+      }
+    }
+    case Types.GET_USERS_SUCCESS: {
+      return {
+        ...state, ...{
+          users: action.payload
         }
       }
     }

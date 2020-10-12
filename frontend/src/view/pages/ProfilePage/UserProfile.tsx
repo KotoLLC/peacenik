@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import selectors from '@selectors/index'
-import { StoreTypes } from 'src/types'
-import Button from '@material-ui/core/Button'
+import { StoreTypes, ApiTypes } from 'src/types'
 import Actions from '@store/actions'
 import { getAvatarUrl } from '@services/avatarUrl'
 import queryString from 'query-string'
 import { history } from '@view/routes'
+import BlockUserDialog from './BlockUserDialog'
 
 import {
   UserContentWrapper,
@@ -18,19 +18,20 @@ import {
 
 interface Props {
   userName: string
-  onGetProfile: () => void
+  users: ApiTypes.User[]
+
+  onGetUser: (value: string) => void
 }
 
 const UserProfile: React.FC<Props> = (props) => {
-  const { userName } = props
+  const { userName, onGetUser, users } = props
   const url = history.location.search
   const params = queryString.parse(url)
   const userId = params.id ? params.id : ''
 
   useEffect(() => {
-    props.onGetProfile()
-    
-  }, [props])
+    onGetUser(userId as string)
+  }, [props, users, onGetUser, userId])
 
   return (
     <UserContentWrapper>
@@ -41,22 +42,23 @@ const UserProfile: React.FC<Props> = (props) => {
     </AvatarWrapper>
     <FormWrapper>
       <UserNameWrapper>
-        Name: {userName}
+        Name: {(users[0]?.name) ? users[0]?.name : ''}
       </UserNameWrapper>
-      <Button variant="contained" color="secondary" onClick={() => {/* */}}>Block</Button>
+      <BlockUserDialog userId={userId as string}/>
     </FormWrapper>
   </UserContentWrapper>
   )
 }
 
-type StateProps = Pick<Props, 'userName'>
+type StateProps = Pick<Props, 'userName' | 'users'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   userName: selectors.profile.userName(state),
+  users: selectors.profile.users(state),
 })
 
-type DispatchProps = Pick<Props, 'onGetProfile'>
+type DispatchProps = Pick<Props, 'onGetUser'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onGetProfile: () => dispatch(Actions.profile.getProfileRequest()),
+  onGetUser: (value: string) => dispatch(Actions.profile.getUsersRequest([value])),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserProfile)

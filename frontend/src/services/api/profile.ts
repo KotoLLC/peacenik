@@ -7,6 +7,22 @@ export default {
       return response
     }).catch(error => ({ error }))
   }, 
+  
+  getUsers: async (ids: string[]) => {
+    return await axiosInstance.post('/rpc.UserService/Users', {
+      user_ids: ids,
+    }).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  }, 
+  
+  disableUser: async (value: string) => {
+    return await axiosInstance.post('/rpc.UserService/BlockUser', {
+      user_id: value,
+    }).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  }, 
 
   getUploadLink: async (data: ApiTypes.Profile.UploadLinkRequest) => {
     return await axiosInstance.post('/rpc.BlobService/UploadLink', {

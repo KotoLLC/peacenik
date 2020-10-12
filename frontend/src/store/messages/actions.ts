@@ -26,6 +26,8 @@ export enum Types {
   GET_MESSAGE_BY_ID_FROM_HUB_FAILED = 'GET_MESSAGE_BY_ID_FROM_HUB_FAILED',
 
   RESET_MESSAGE_BY_ID = 'RESET_MESSAGE_BY_ID',
+  
+  CLEAN_ALL_MESSAGES = 'CLEAN_ALL_MESSAGES',
 
   POST_MESSAGE_REQUEST = 'POST_MESSAGE_REQUEST',
   POST_MESSAGE_SUCCESS = 'POST_MESSAGE_SUCCESS',
@@ -309,6 +311,10 @@ const resetMessageById = () => ({
   type: Types.RESET_MESSAGE_BY_ID,
 })
 
+const cleanAllMessages = () => ({
+  type: Types.CLEAN_ALL_MESSAGES,
+})
+
 export default {
   getMessagesRequest,
   getMessagesSuccess,
@@ -359,4 +365,5 @@ export default {
   reportMessageHubRequest,
   reportMessageCentralRequest,
   reportMessageSucces,
+  cleanAllMessages,
 }

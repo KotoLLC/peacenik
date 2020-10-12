@@ -5,6 +5,12 @@ export enum Types {
   GET_PROFILE_REQUEST = 'GET_PROFILE_REQUEST',
   GET_PROFILE_SUCCESS = 'GET_PROFILE_SUCCESS',
   
+  GET_USERS_REQUEST = 'GET_USERS_REQUEST',
+  GET_USERS_SUCCESS = 'GET_USERS_SUCCESS',
+  
+  DISABLE_USER_REQUEST = 'DISABLE_USER_REQUEST',
+  DISABLE_USER_SUCCESS = 'DISABLE_USER_SUCCESS',
+  
   GET_UPLOAD_LINK_REQUEST = 'GET_UPLOAD_LINK_REQUEST',
   GET_UPLOAD_LINK_SUCCESS = 'GET_UPLOAD_LINK_SUCCESS',
 
@@ -24,6 +30,16 @@ const getProfileRequest = () => ({
 
 const getProfileSucces = (payload: ApiTypes.Profile.UserProfile) => ({
   type: Types.GET_PROFILE_SUCCESS,
+  payload
+})
+
+const getUsersRequest = (payload: string[]) => ({
+  type: Types.GET_USERS_REQUEST,
+  payload
+})
+
+const getUsersSucces = (payload: ApiTypes.User[]) => ({
+  type: Types.GET_USERS_SUCCESS,
   payload
 })
 
@@ -65,6 +81,15 @@ const resetProfileErrorMessage = () => ({
   type: Types.RESET_PROFILE_ERROR_MESSAGE,
 })
 
+const disableUserRequest = (payload: string) => ({
+  type: Types.DISABLE_USER_REQUEST,
+  payload,
+})
+
+const disableUserSuccess = () => ({
+  type: Types.DISABLE_USER_SUCCESS
+})
+
 export default {
   getProfileRequest,
   getProfileSucces,
@@ -76,4 +101,8 @@ export default {
   editProfileFailed,
   editProfileSuccess,
   resetProfileErrorMessage,
+  getUsersRequest,
+  getUsersSucces,
+  disableUserRequest,
+  disableUserSuccess,
 }

@@ -173,6 +173,14 @@ const reducer = (state = initialState, action) => {
         ...state, ...{ messageById: undefined }
       }
     }
+    case Types.CLEAN_ALL_MESSAGES: {
+      return {
+        ...state, ...{ 
+          messageTokens: [],
+          messages: [],
+         }
+      }
+    }
     default: return state
   }
 }

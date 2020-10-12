@@ -57,3 +57,25 @@ export function* watchEditProfile(action: { type: string, payload: ApiTypes.Prof
     yield put(Actions.profile.editProfileFailed(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
+
+export function* watchGetUsers(action: { type: string, payload: string[] }) {
+  const response = yield API.profile.getUsers(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.profile.getUsersSucces(response.data?.users))
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
+export function* watchDisableUser(action: { type: string, payload: string }) {
+  const response = yield API.profile.disableUser(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.authorization.getAuthTokenRequest())
+    yield put(Actions.messages.cleanAllMessages())
+    yield put(Actions.messages.getMessagesRequest())
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
