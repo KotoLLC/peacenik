@@ -11,9 +11,10 @@ import SendIcon from '@material-ui/icons/Send'
 import { getAvatarUrl } from '@services/avatarUrl'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 import ComplainContentDialog from './ComplainContentDialog'
+import { Link } from 'react-router-dom'
 import {
   CommentWrapper,
-  UserName,
+  UserNameLink,
   CommentReactionsNav,
   CommentTextWrapper,
   AvatarStyled,
@@ -72,7 +73,7 @@ const Comment: React.SFC<Props> = (props) => {
       body: {
         comment_id: id,
         text: comment,
-        text_changed: true, 
+        text_changed: true,
       }
     })
   }
@@ -85,13 +86,13 @@ const Comment: React.SFC<Props> = (props) => {
 
   const getLikesInfo = () => {
     if (currentCommentLikes?.id === id) {
-      setLikesInfoRequest(false)  
+      setLikesInfoRequest(false)
     }
 
     if (currentCommentLikes?.id !== id) {
       setLikesInfoRequest(true)
       getLikesForComment({
-        host: sourceHost, 
+        host: sourceHost,
         id: id
       })
     }
@@ -103,31 +104,31 @@ const Comment: React.SFC<Props> = (props) => {
 
     if (currentCommentLikes?.id === id) {
       currentCommentLikes.likes.length && currentCommentLikes.likes.forEach((item, counter) => {
-        
+
         if (counter < 15) {
           const comma = ((currentCommentLikes.likes.length - 1) === counter) ? '' : ', '
           usersLikes += `${item.user_name}${comma}`
-        } 
+        }
 
         if (counter === 15) {
           usersLikes += `...`
         }
-        
+
       })
     }
 
     return (
-      <Tooltip 
+      <Tooltip
         onClick={() => {
           if (liked_by_me) return false
           onLikeComment({ host: sourceHost, id: id })
         }}
-        title={(isLikesInfoRequested) ? <CircularProgressStyled size={30}/> : <>{usersLikes || likesInfo}</>} 
+        title={(isLikesInfoRequested) ? <CircularProgressStyled size={30} /> : <>{usersLikes || likesInfo}</>}
         interactive onOpen={() => getLikesInfo()}>
         <LikeCommentButton>{likes} like</LikeCommentButton>
       </Tooltip>
     )
-    
+
   }
 
   const renderCurrentIcons = () => {
@@ -145,20 +146,22 @@ const Comment: React.SFC<Props> = (props) => {
     } else return (
       <ButtonsWrapper>
         <Tooltip title={`Hide`}>
-          <IconButton onClick={() => onHideComment({id, host: sourceHost})}>
+          <IconButton onClick={() => onHideComment({ id, host: sourceHost })}>
             <VisibilityOffIcon />
           </IconButton>
         </Tooltip>
-        <ComplainContentDialog {...{message: comment, id, sourceHost}} />
+        <ComplainContentDialog {...{ message: comment, id, sourceHost }} />
       </ButtonsWrapper>
     )
   }
 
   return (
     <CommentWrapper ref={commentRef}>
-      <AvatarStyled src={getAvatarUrl(user_id)} />
+      <Link to={`/profile/user?id=${user_id}`}>
+        <AvatarStyled src={getAvatarUrl(user_id)} />
+      </Link>
       <CommentTextWrapper>{
-         isEditer ?
+        isEditer ?
           <EditMessageField>
             <TextareaAutosizeStyled
               onKeyDown={onComandEnterDown}
@@ -167,16 +170,16 @@ const Comment: React.SFC<Props> = (props) => {
             <IconButton onClick={onMessageSave}>
               <SendIcon fontSize="small" />
             </IconButton>
-          </EditMessageField> 
-          : 
+          </EditMessageField>
+          :
           <CommentContent>
-            <UserName>{user_name}</UserName> {comment}
+            <UserNameLink to={`/profile/user?id=${user_id}`}>{user_name}</UserNameLink> {comment}
           </CommentContent>
       }
-      <CommentReactionsNavWrapper> 
-        <CommentReactionsNav>{rendreLikeButton()}</CommentReactionsNav>
-        <CommentReactionsNav>{moment(created_at).fromNow()}</CommentReactionsNav>
-      </CommentReactionsNavWrapper>
+        <CommentReactionsNavWrapper>
+          <CommentReactionsNav>{rendreLikeButton()}</CommentReactionsNav>
+          <CommentReactionsNav>{moment(created_at).fromNow()}</CommentReactionsNav>
+        </CommentReactionsNavWrapper>
       </CommentTextWrapper>
       {renderCurrentIcons()}
     </CommentWrapper>

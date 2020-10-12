@@ -7,6 +7,7 @@ import IconButton from '@material-ui/core/IconButton'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Avatar from '@material-ui/core/Avatar'
 import TextField from '@material-ui/core/TextField'
+import { Link } from 'react-router-dom'
 
 export const ContainerStyled = styled(Container)`
   && {
@@ -132,6 +133,24 @@ export const UserNameWrapper = styled.div`
 
 export const UserName = styled.span`
   font-weight: bold;
+  
+  @media (max-width: 600px) {
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 130px;
+  }
+`
+
+export const UserNameLink = styled(Link)`
+  font-weight: bold;
+  color: #000;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
   
   @media (max-width: 600px) {
     display: inline-block;
@@ -301,6 +320,15 @@ export const CircularProgressStyled = styled(CircularProgress)`
 `
 
 export const AvatarWrapper = styled.div`
+  border-radius: 50%;
+  overflow: hidden;
+  background: #bdbdbd;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+`
+
+export const AvatarWrapperLink = styled(Link)`
   border-radius: 50%;
   overflow: hidden;
   background: #bdbdbd;

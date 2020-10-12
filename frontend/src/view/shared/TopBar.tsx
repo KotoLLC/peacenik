@@ -51,7 +51,7 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
             </Badge>
           </NotificationsWrapper>}
           <TopMenu />
-          <AvatarWrapper to="/user-profile">
+          <AvatarWrapper to="/profile/me">
             <Avatar src={getAvatarUrl(userId)} />
           </AvatarWrapper>
           <TooltipStyle title={`Logout`}>

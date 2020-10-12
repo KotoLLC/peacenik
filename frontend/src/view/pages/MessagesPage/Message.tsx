@@ -26,7 +26,8 @@ import {
   PaperStyled,
   MessageHeader,
   UserInfo,
-  UserName,
+  AvatarWrapperLink,
+  UserNameLink,
   MessageDate,
   UserNameWrapper,
   ButtonsWrapper,
@@ -42,7 +43,6 @@ import {
   EditorButtonsWrapper,
   UploadInput,
   CircularProgressStyled,
-  AvatarWrapper,
   LikesNamesList,
   LikesWrapper,
   ReactionNavWrapper,
@@ -393,11 +393,11 @@ const Message: React.SFC<Props> = (props) => {
       <PaperStyled>
         <MessageHeader>
           <UserInfo>
-            <AvatarWrapper>
+            <AvatarWrapperLink to={`/profile/user?id=${user_id}`}>
               <Avatar src={getAvatarUrl(user_id)} />
-            </AvatarWrapper>
+            </AvatarWrapperLink>
             <UserNameWrapper>
-              <UserName>{user_name}</UserName>
+              <UserNameLink to={`/profile/user?id=${user_id}`}>{user_name}</UserNameLink>
               <MessageDate>{moment(created_at).fromNow()}</MessageDate>
             </UserNameWrapper>
           </UserInfo>

@@ -9,7 +9,7 @@ import { HubPages } from './pages/HubPages'
 import { MessagesPage } from './pages/MessagesPage'
 import { NotificationsPage } from './pages/NotificationsPage'
 import AboutUsPage from './pages/AboutUsPage'
-import UserProfilePage from './pages/UserProfilePage'
+import ProfilePage from './pages/ProfilePage'
 import RegistrationPage from './pages/RegistrationPage'
 import DocsPages from './pages/DocsPages'
 import ConfirmUserPage from '@view/pages/ConfirmUserPage'
@@ -56,7 +56,7 @@ export const Routes = () => {
           <PrivateRoute path="/hubs" component={HubPages} />
           <PrivateRoute path="/messages" component={MessagesPage} />
           <PrivateRoute path="/notifications" component={NotificationsPage} />
-          <PrivateRoute path="/user-profile" component={UserProfilePage} />
+          <PrivateRoute path="/profile" component={ProfilePage} />
           <PrivateRoute path="/dashboard" component={DashboardPage} />
           <Route component={() => <>404 not found</>} />
         </Switch>

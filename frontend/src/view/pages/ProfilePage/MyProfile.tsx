@@ -1,5 +1,4 @@
 import React, { ChangeEvent, FormEvent } from 'react'
-import { WithTopBar } from '@view/shared/WithTopBar'
 import { connect } from 'react-redux'
 import selectors from '@selectors/index'
 import { StoreTypes, ApiTypes } from 'src/types'
@@ -18,10 +17,6 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff'
 import loadImage from 'blueimp-load-image'
 
 import {
-  ContainerStyled,
-  ProfileWrapper,
-  Header,
-  Title,
   UserContentWrapper,
   AvatarWrapper,
   FormWrapper,
@@ -60,7 +55,7 @@ interface State {
   isNewPasswordVisible: boolean
 }
 
-class UserProfile extends React.PureComponent<Props, State> {
+class MyProfile extends React.PureComponent<Props, State> {
 
   state = {
     email: null,
@@ -304,103 +299,95 @@ class UserProfile extends React.PureComponent<Props, State> {
     } = this.state
 
     return (
-      <WithTopBar>
-        <ContainerStyled>
-          <ProfileWrapper>
-            <Header>
-              <Title>Profile</Title>
-            </Header>
-            <UserContentWrapper>
-              <AvatarWrapper>
-                <Tooltip title={`Upload your avatar`}>
-                  <AvatarLabel htmlFor="file">
-                    <UploadInput
-                      type="file"
-                      id="file"
-                      name="file"
-                      onChange={this.onAvatarUpload}
-                      accept="image/x-png,image/gif,image/jpeg"
-                    />
-                    {this.renderAvatar()}
-                  </AvatarLabel>
-                </Tooltip>
-              </AvatarWrapper>
-              <FormWrapper onSubmit={this.onFormSubmit}>
-                <UserNameWrapper>
-                  Name: {userName}
-                </UserNameWrapper>
-                <FormControlStyled variant="outlined">
-                  <InputLabel
-                    htmlFor="email"
-                    color={(noValideField === 'email') ? 'secondary' : 'primary'}
-                  >Email</InputLabel>
-                  <OutlinedInput
-                    id="email"
-                    type={'text'}
-                    value={email || ''}
-                    error={(noValideField === 'email') ? true : false}
-                    onChange={this.onEmailChange}
-                    labelWidth={40}
-                  />
-                </FormControlStyled>
-                <FieldNote>To change your password, fill in the fields below</FieldNote>
-                <FormControlStyled variant="outlined">
-                  <InputLabel
-                    htmlFor="currentPassword"
-                    color={(noValideField === 'currentPassword') ? 'secondary' : 'primary'}
-                  >Current Password</InputLabel>
-                  <OutlinedInput
-                    id="currentPassword"
-                    type={isCurrentPasswordVisible ? 'text' : 'password'}
-                    value={currentPassword}
-                    onChange={this.onCurrentPaaswordChange}
-                    error={(noValideField === 'currentPassword') ? true : false}
-                    labelWidth={130}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={() => this.onCurrentPasswordOpen(!isCurrentPasswordVisible)}
-                          onMouseDown={() => this.onCurrentPasswordOpen(!isCurrentPasswordVisible)}
-                          edge="end"
-                        >
-                          {isCurrentPasswordVisible ? <Visibility /> : <VisibilityOff />}
-                        </IconButton>
-                      </InputAdornment>
-                    } />
-                </FormControlStyled>
-                <FormControlStyled variant="outlined">
-                  <InputLabel
-                    htmlFor="newPassword"
-                    color={(noValideField === 'newPassword') ? 'secondary' : 'primary'}
-                  >New Password</InputLabel>
-                  <OutlinedInput
-                    id="newPassword"
-                    type={isNewPasswordVisible ? 'text' : 'password'}
-                    value={newPassword}
-                    onChange={this.onNewPaaswordChange}
-                    error={(noValideField === 'newPassword') ? true : false}
-                    labelWidth={110}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={() => this.onNewPasswordOpen(!isNewPasswordVisible)}
-                          onMouseDown={() => this.onNewPasswordOpen(!isNewPasswordVisible)}
-                          edge="end"
-                        >
-                          {isNewPasswordVisible ? <Visibility /> : <VisibilityOff />}
-                        </IconButton>
-                      </InputAdornment>
-                    } />
-                </FormControlStyled>
-                <Button variant="contained" color="primary" onClick={this.onFormSubmit}>Save</Button>
-                {errorMessage && <FormHelperText error>{errorMessage}</FormHelperText>}
-              </FormWrapper>
-            </UserContentWrapper>
-          </ProfileWrapper>
-        </ContainerStyled>
-      </WithTopBar>
+      <UserContentWrapper>
+        <AvatarWrapper>
+          <Tooltip title={`Upload your avatar`}>
+            <AvatarLabel htmlFor="file">
+              <UploadInput
+                type="file"
+                id="file"
+                name="file"
+                onChange={this.onAvatarUpload}
+                accept="image/x-png,image/gif,image/jpeg"
+              />
+              {this.renderAvatar()}
+            </AvatarLabel>
+          </Tooltip>
+        </AvatarWrapper>
+        <FormWrapper onSubmit={this.onFormSubmit}>
+          <UserNameWrapper>
+            Name: {userName}
+          </UserNameWrapper>
+          <FormControlStyled variant="outlined">
+            <InputLabel
+              htmlFor="email"
+              color={(noValideField === 'email') ? 'secondary' : 'primary'}
+            >Email</InputLabel>
+            <OutlinedInput
+              id="email"
+              type={'text'}
+              value={email || ''}
+              error={(noValideField === 'email') ? true : false}
+              onChange={this.onEmailChange}
+              labelWidth={40}
+            />
+          </FormControlStyled>
+          <FieldNote>To change your password, fill in the fields below</FieldNote>
+          <FormControlStyled variant="outlined">
+            <InputLabel
+              htmlFor="currentPassword"
+              color={(noValideField === 'currentPassword') ? 'secondary' : 'primary'}
+            >Current Password</InputLabel>
+            <OutlinedInput
+              id="currentPassword"
+              type={isCurrentPasswordVisible ? 'text' : 'password'}
+              value={currentPassword}
+              onChange={this.onCurrentPaaswordChange}
+              error={(noValideField === 'currentPassword') ? true : false}
+              labelWidth={130}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => this.onCurrentPasswordOpen(!isCurrentPasswordVisible)}
+                    onMouseDown={() => this.onCurrentPasswordOpen(!isCurrentPasswordVisible)}
+                    edge="end"
+                  >
+                    {isCurrentPasswordVisible ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              } />
+          </FormControlStyled>
+          <FormControlStyled variant="outlined">
+            <InputLabel
+              htmlFor="newPassword"
+              color={(noValideField === 'newPassword') ? 'secondary' : 'primary'}
+            >New Password</InputLabel>
+            <OutlinedInput
+              id="newPassword"
+              type={isNewPasswordVisible ? 'text' : 'password'}
+              value={newPassword}
+              onChange={this.onNewPaaswordChange}
+              error={(noValideField === 'newPassword') ? true : false}
+              labelWidth={110}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => this.onNewPasswordOpen(!isNewPasswordVisible)}
+                    onMouseDown={() => this.onNewPasswordOpen(!isNewPasswordVisible)}
+                    edge="end"
+                  >
+                    {isNewPasswordVisible ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              } />
+          </FormControlStyled>
+          <Button variant="contained" color="primary" onClick={this.onFormSubmit}>Save</Button>
+          {errorMessage && <FormHelperText error>{errorMessage}</FormHelperText>}
+        </FormWrapper>
+      </UserContentWrapper>
+
     )
   }
 }
@@ -422,4 +409,4 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetProfile: () => dispatch(Actions.profile.getProfileRequest()),
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserProfile)
+export default connect(mapStateToProps, mapDispatchToProps)(MyProfile)

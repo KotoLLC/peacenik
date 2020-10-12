@@ -55,7 +55,7 @@ export const TopMenu = () => {
           </ListItemIconStyled>
           <ListItemText primary="Notifications" />
         </MenuItem>
-        <MenuItem onClick={() => goToPage('/user-profile')}>
+        <MenuItem onClick={() => goToPage('/profile/me')}>
           <ListItemIconStyled>
             <AccountCircleIcon fontSize="small" />
           </ListItemIconStyled>
