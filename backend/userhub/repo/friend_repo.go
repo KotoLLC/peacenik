@@ -55,7 +55,13 @@ func (r *friendRepo) FriendsWithSubFriends(user User) (map[User][]User, error) {
 		from friends f
         	inner join users uu on uu.id = f.user_id
         	inner join users uf on uf.id = f.friend_id
-		where f.user_id in (select friend_id from friends where user_id = $1)`,
+		where f.user_id in (select friend_id from friends where user_id = $1)
+			and not exists(
+		  	    select *
+		  	    from blocked_users bu
+		  		where (bu.user_id = $1 and bu.blocked_user_id = f.friend_id)
+		  		   or (bu.user_id = f.friend_id and bu.blocked_user_id = $1)) 
+`,
 		user.ID)
 	if err != nil {
 		return nil, merry.Wrap(err)
@@ -88,6 +94,11 @@ func (r *friendRepo) FriendsOfFriends(user User) (map[User][]User, error) {
 			inner join users uf on uf.id = f.friend_id
 		where f.user_id in (select friend_id from friends where user_id = $1)
 			and f.friend_id not in (select friend_id from friends where user_id = $1)
+		  	and not exists(
+		  	    select *
+		  	    from blocked_users bu
+		  		where (bu.user_id = $1 and bu.blocked_user_id = f.friend_id)
+		  		   or (bu.user_id = f.friend_id and bu.blocked_user_id = $1)) 
 			and f.friend_id <> $1`,
 		user.ID)
 	if err != nil {
