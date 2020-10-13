@@ -8,6 +8,7 @@ import { connect } from 'react-redux'
 import Tooltip from '@material-ui/core/Tooltip'
 import { ApiTypes } from 'src/types'
 import Actions from '@store/actions'
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 import {
   DialogTextWrapper,
   DialogTitleStyled,
@@ -19,29 +20,27 @@ interface Props {
   message: string
   id: string
   sourceHost: string
-  
-  onDeleteMessage: (data: ApiTypes.Messages.DeleteMessage) => void
+
+  onHideMessage: (data: ApiTypes.Messages.Hide) => void
 }
 
-const RemoveMessageDialog: React.SFC<Props> = (props) => {
+const HideMessageDialog: React.SFC<Props> = (props) => {
   const [open, setOpen] = React.useState(false)
-  const { message, onDeleteMessage, id, sourceHost } = props
+  const { message, onHideMessage, id, sourceHost } = props
 
-  const onRemove = () => {
-    onDeleteMessage({
+  const onHide = () => {
+    onHideMessage({
       host: sourceHost,
-      body: {
-        message_id: id
-      }
+      id: id
     })
     setOpen(false)
   }
 
   return (
     <div>
-      <Tooltip title={`Delete`}>
-        <IconButton onClick={() => setOpen(true)}>
-          <DeleteIcon />
+      <Tooltip title={`Hide`} onClick={() => setOpen(true)}>
+        <IconButton>
+          <VisibilityOffIcon />
         </IconButton>
       </Tooltip>
       <Dialog
@@ -50,7 +49,7 @@ const RemoveMessageDialog: React.SFC<Props> = (props) => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitleStyled id="alert-dialog-title">You really want to remove this message?</DialogTitleStyled>
+        <DialogTitleStyled id="alert-dialog-title">Are you sure, there is no way to undo this?</DialogTitleStyled>
         <DialogContentStyled>
           <DialogTextWrapper>
             <CroppedText>{message}</CroppedText>
@@ -60,8 +59,8 @@ const RemoveMessageDialog: React.SFC<Props> = (props) => {
           <Button onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button color="secondary" onClick={onRemove} autoFocus>
-            Remove
+          <Button color="secondary" onClick={onHide} autoFocus>
+            Hide
           </Button>
         </DialogActions>
       </Dialog>
@@ -69,9 +68,9 @@ const RemoveMessageDialog: React.SFC<Props> = (props) => {
   )
 }
 
-type DispatchProps = Pick<Props, 'onDeleteMessage'>
+type DispatchProps = Pick<Props, 'onHideMessage'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onDeleteMessage: (data: ApiTypes.Messages.DeleteMessage) => dispatch(Actions.messages.deleteMessageRequest(data)),
+  onHideMessage: (data: ApiTypes.Messages.Hide) => dispatch(Actions.messages.hideMessageRequest(data)),
 })
 
-export default connect(null, mapDispatchToProps)(RemoveMessageDialog)
+export default connect(null, mapDispatchToProps)(HideMessageDialog)

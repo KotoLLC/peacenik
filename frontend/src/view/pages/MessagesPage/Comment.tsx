@@ -9,7 +9,7 @@ import Actions from '@store/actions'
 import selectors from '@selectors/index'
 import SendIcon from '@material-ui/icons/Send'
 import { getAvatarUrl } from '@services/avatarUrl'
-import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
+import HideMessageDialog from './HideMessageDialog'
 import ComplainContentDialog from './ComplainContentDialog'
 import { Link } from 'react-router-dom'
 import {
@@ -35,7 +35,6 @@ interface Props extends ApiTypes.Messages.Comment {
   onCommentEdit: (data: ApiTypes.Messages.EditComment) => void
   onCommentDelete: (data: ApiTypes.Messages.DeleteComment) => void
   onLikeComment: (data: ApiTypes.Messages.Like) => void
-  onHideComment: (data: ApiTypes.Messages.Hide) => void
   getLikesForComment: (data: ApiTypes.Messages.Like) => void
 }
 
@@ -51,7 +50,6 @@ const Comment: React.SFC<Props> = (props) => {
     liked_by_me,
     likes,
     onLikeComment,
-    onHideComment,
     currentCommentLikes,
     getLikesForComment,
   } = props
@@ -145,11 +143,7 @@ const Comment: React.SFC<Props> = (props) => {
       )
     } else return (
       <ButtonsWrapper>
-        <Tooltip title={`Hide this post`}>
-          <IconButton onClick={() => onHideComment({ id, host: sourceHost })}>
-            <VisibilityOffIcon />
-          </IconButton>
-        </Tooltip>
+        <HideMessageDialog {...{ message: comment, id, sourceHost }}/>
         <ComplainContentDialog {...{ message: comment, id, sourceHost }} />
       </ButtonsWrapper>
     )
@@ -192,12 +186,11 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   currentCommentLikes: selectors.messages.currentCommentLikes(state),
 })
 
-type DispatchProps = Pick<Props, 'onCommentEdit' | 'onCommentDelete' | 'onLikeComment' | 'getLikesForComment' | 'onHideComment'>
+type DispatchProps = Pick<Props, 'onCommentEdit' | 'onCommentDelete' | 'onLikeComment' | 'getLikesForComment'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onCommentEdit: (data: ApiTypes.Messages.EditComment) => dispatch(Actions.messages.editCommentRequest(data)),
   onCommentDelete: (data: ApiTypes.Messages.DeleteComment) => dispatch(Actions.messages.deleteCommentRequest(data)),
   onLikeComment: (data: ApiTypes.Messages.Like) => dispatch(Actions.messages.linkCommnetRequest(data)),
-  onHideComment: (data: ApiTypes.Messages.Hide) => dispatch(Actions.messages.hideCommentRequest(data)),
   getLikesForComment: (data: ApiTypes.Messages.Like) => dispatch(Actions.messages.getLikesForCommentRequest(data)),
 })
 

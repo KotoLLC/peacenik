@@ -20,8 +20,8 @@ import LayersClearIcon from '@material-ui/icons/LayersClear'
 import { getAvatarUrl } from '@services/avatarUrl'
 import Avatar from '@material-ui/core/Avatar'
 import loadImage from 'blueimp-load-image'
-import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 import ComplainContentDialog from './ComplainContentDialog'
+import HideMessageDialog from './HideMessageDialog'
 import {
   PaperStyled,
   MessageHeader,
@@ -66,7 +66,6 @@ interface Props extends ApiTypes.Messages.Message {
   onResetMessageUploadLink: () => void
   onLikeMessage: (data: ApiTypes.Messages.Like) => void
   getLikesForMessage: (data: ApiTypes.Messages.Like) => void
-  onHideMessage: (data: ApiTypes.Messages.Hide) => void
   callback?: () => void
 }
 
@@ -85,7 +84,6 @@ const Message: React.SFC<Props> = (props) => {
     uploadLink,
     onResetMessageUploadLink,
     onLikeMessage,
-    onHideMessage,
     getLikesForMessage,
     likes,
     currentMessageLikes,
@@ -410,13 +408,7 @@ const Message: React.SFC<Props> = (props) => {
             <RemoveMessageDialog {...{ message, id, sourceHost }} />
           </ButtonsWrapper> :
             <ButtonsWrapper>
-              <Tooltip title={`Hide`} onClick={() => {
-                onHideMessage({ host: sourceHost, id: id })
-              }}>
-                <IconButton>
-                  <VisibilityOffIcon />
-                </IconButton>
-              </Tooltip>
+              <HideMessageDialog {...{ message, id, sourceHost }}/>
               <ComplainContentDialog {...{ message, id, sourceHost }}/>
             </ButtonsWrapper>
           }
@@ -495,7 +487,6 @@ type DispatchProps = Pick<Props,
   | 'onResetMessageUploadLink'
   | 'onLikeMessage'
   | 'getLikesForMessage'
-  | 'onHideMessage'
 >
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onMessageEdit: (data: ApiTypes.Messages.EditMessage) => dispatch(Actions.messages.editMessageRequest(data)),
@@ -505,7 +496,6 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onResetMessageUploadLink: () => dispatch(Actions.messages.getMessageUploadLinkSucces(null)),
   onLikeMessage: (data: ApiTypes.Messages.Like) => dispatch(Actions.messages.linkMessageRequest(data)),
   getLikesForMessage: (data: ApiTypes.Messages.Like) => dispatch(Actions.messages.getLikesForMessageRequest(data)),
-  onHideMessage: (data: ApiTypes.Messages.Hide) => dispatch(Actions.messages.hideMessageRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Message)
