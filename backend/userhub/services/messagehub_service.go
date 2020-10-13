@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"html"
 	"log"
 	"net/http"
 	"strings"
@@ -274,9 +275,10 @@ func (s *messageHubService) ReportMessage(ctx context.Context, r *rpc.MessageHub
 		return nil, twirp.NotFoundError("message author not found")
 	}
 
-	err = s.mailSender.SendTextEmail([]string{hubAdmin.Email}, "Objectional Content Reported",
-		fmt.Sprintf(`User %s just reported objectionable content for user %s: %s.
-Please visit the audit dashboard to review the content.`, reportedBy.Name, author.Name, body.Report))
+	err = s.mailSender.SendHTMLEmail([]string{hubAdmin.Email}, "Objectional Content Reported",
+		fmt.Sprintf(`<p>User %s just reported objectionable content for user %s: %s<p>
+<p>Please visit <a href="%s" target="_blank">the audit dashboard</a> to review the content.</p>`,
+			reportedBy.Name, author.Name, html.EscapeString(body.Report), s.frontendAddress+"/dashboard"))
 	if err != nil {
 		return nil, err
 	}
