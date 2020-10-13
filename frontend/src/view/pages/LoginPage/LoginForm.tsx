@@ -114,7 +114,7 @@ export const LoginForm = (props) => {
     <ContainerStyled maxWidth="sm">
       <Header>
         <Logo src={logo} />
-        <Typography variant="subtitle1" gutterBottom>Koto is a safe, friendly, distributed social  network.</Typography>
+        <Typography variant="subtitle1" gutterBottom>Koto is an ad-free, friendly, distributed social network.</Typography>
       </Header>
       <FormWrapper onSubmit={onFormSubmit}>
         <FormControlStyled variant="outlined">
@@ -171,6 +171,7 @@ export const LoginForm = (props) => {
             label="Remember me"
           />
         </CheckBoxWrapper>
+        <Typography variant="body2" gutterBottom>By clicking LOGIN you are agreeing to Koto's End User License Agreement (EULA).</Typography>
         <ButtonStyled
           variant="contained"
           size="large"
@@ -196,7 +197,7 @@ export const LoginForm = (props) => {
           href: 'https://docs.koto.at',
         },
         {
-          title: 'Code of conduct',
+          title: 'End User License Agreement (EULA)',
           to: '/docs/code-of-conduct'
         },
         {

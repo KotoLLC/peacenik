@@ -145,7 +145,7 @@ const Comment: React.SFC<Props> = (props) => {
       )
     } else return (
       <ButtonsWrapper>
-        <Tooltip title={`Hide`}>
+        <Tooltip title={`Hide this post`}>
           <IconButton onClick={() => onHideComment({ id, host: sourceHost })}>
             <VisibilityOffIcon />
           </IconButton>

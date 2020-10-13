@@ -1,0 +1,5 @@
+lane :beta do
+    build_app(scheme: "Koto",
+              workspace: "Koto.xcworkspace",
+              include_bitcode: true)
+end

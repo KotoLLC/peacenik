@@ -49,7 +49,7 @@ const ComplainContentDialog: React.SFC<Props> = (props) => {
 
   return (
     <div>
-      <Tooltip title={`Complain this content`}>
+      <Tooltip title={`Report objectionable content`}>
         <IconButton onClick={() => setOpen(true)}>
           <ErrorOutlineIcon />
         </IconButton>
@@ -80,7 +80,7 @@ const ComplainContentDialog: React.SFC<Props> = (props) => {
             Cancel
           </Button>
           <Button color="secondary" onClick={onComplane} autoFocus>
-            Complain
+            Report
           </Button>
         </DialogActions>
       </Dialog>
