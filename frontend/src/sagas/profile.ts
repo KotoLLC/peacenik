@@ -75,6 +75,8 @@ export function* watchDisableUser(action: { type: string, payload: string }) {
     yield put(Actions.authorization.getAuthTokenRequest())
     yield put(Actions.messages.cleanAllMessages())
     yield put(Actions.messages.getMessagesRequest())
+    yield put(Actions.friends.getFriendsRequest())
+    yield put(Actions.common.setSuccessNotify('Blocked successfuly'))
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }

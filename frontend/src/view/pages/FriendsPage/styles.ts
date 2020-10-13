@@ -69,10 +69,16 @@ export const SearchInput = styled.input`
 `
 
 export const FriendsTitleWrapper = styled.div`
-  height: 42px;
+  height: 56px;
   display: flex;
   align-items: center;
-  padding-left: 10px;
+  justify-content: space-between;
+  padding: 0 15px;
+`
+
+export const FriendsTitle = styled.div`
+  display: flex;
+  align-items: center;
 `
 
 export const ContainerTitle = styled.h3`

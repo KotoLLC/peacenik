@@ -13,15 +13,20 @@ import {
 interface Props {
   userId: string
   onDisableUser: (value: string) => void
+  callback?: () => void
 }
 
-const BlockUserDialog: React.FC<Props> = (props) => {
+const DisableUserDialog: React.FC<Props> = (props) => {
   const [open, setOpen] = React.useState(false)
-  const { onDisableUser, userId } = props
+  const { onDisableUser, userId, callback } = props
 
   const onBlock = () => {
     onDisableUser(userId)
     setOpen(false)
+
+    if (callback) {
+      callback()
+    }
   }
 
   return (
@@ -59,4 +64,4 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onDisableUser: (value: string) => dispatch(Actions.profile.disableUserRequest(value)),
 })
 
-export default connect(null, mapDispatchToProps)(BlockUserDialog)
+export default connect(null, mapDispatchToProps)(DisableUserDialog)

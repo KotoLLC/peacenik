@@ -6,7 +6,7 @@ import Actions from '@store/actions'
 import { getAvatarUrl } from '@services/avatarUrl'
 import queryString from 'query-string'
 import { history } from '@view/routes'
-import BlockUserDialog from './BlockUserDialog'
+import DisableUserDialog from '@view/shared/DisableUserDialog'
 
 import {
   UserContentWrapper,
@@ -44,7 +44,7 @@ const UserProfile: React.FC<Props> = (props) => {
       <UserNameWrapper>
         Name: {(users[0]?.name) ? users[0]?.name : ''}
       </UserNameWrapper>
-      <BlockUserDialog userId={userId as string}/>
+      <DisableUserDialog userId={userId as string}/>
     </FormWrapper>
   </UserContentWrapper>
   )

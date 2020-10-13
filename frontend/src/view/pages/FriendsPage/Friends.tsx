@@ -14,8 +14,8 @@ import { capitalizeFirstLetter } from '@services/capitalizeFirstLetter'
 import AccessTimeIcon from '@material-ui/icons/AccessTime'
 import PersonAddIcon from '@material-ui/icons/PersonAdd'
 import RemoveFriendDialog from './RemoveFriendDialog'
-import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import { getAvatarUrl } from '@services/avatarUrl'
+import DisableUserDialog from '@view/shared/DisableUserDialog'
 import {
   UsersWrapper,
   FriendsTitleWrapper,
@@ -29,6 +29,7 @@ import {
   ListItemWrapper,
   AvatarStyled,
   SearchIconStyled,
+  FriendsTitle,
 } from './styles'
 
 export interface Props {
@@ -139,13 +140,13 @@ class Friends extends React.Component<Props, State> {
       <ListItemWrapper key={item.user.id}>
         <ListItem>
           <ListItemAvatar>
-            <AvatarStyled 
-              onClick={() => this.onFriendSelect(item.user.id, item.user.name)} 
-              alt={item.user.name} 
-              src={getAvatarUrl(item.user.id)}/>
+            <AvatarStyled
+              onClick={() => this.onFriendSelect(item.user.id, item.user.name)}
+              alt={item.user.name}
+              src={getAvatarUrl(item.user.id)} />
           </ListItemAvatar>
-          <ListItemText 
-            onClick={() => this.onFriendSelect(item.user.id, item.user.name)} 
+          <ListItemText
+            onClick={() => this.onFriendSelect(item.user.id, item.user.name)}
             primary={<UserName>{item.user.name}</UserName>} />
           <RemoveFriendDialog {...item} />
         </ListItem>
@@ -179,16 +180,13 @@ class Friends extends React.Component<Props, State> {
             {selectedFriendId ?
               <>
                 <FriendsTitleWrapper>
-                  <Tooltip title={`Back`}>
-                    <IconButton
-                      color="primary"
-                      size="small"
+                  <FriendsTitle>
+                    <AvatarStyled
                       onClick={() => this.onFriendSelect('', '')}
-                    >
-                      <ArrowBackIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <ContainerTitle>{(selectedFriendName) ? `${selectedFriendName}\`s friends` : 'Title'}</ContainerTitle>
+                      src={getAvatarUrl(selectedFriendId)} />
+                    <ContainerTitle>{(selectedFriendName) ? `${selectedFriendName}\`s friends` : 'Title'}</ContainerTitle>
+                  </FriendsTitle>
+                  <DisableUserDialog userId={selectedFriendId} callback={() => {this.onFriendSelect('', '')}}/>
                 </FriendsTitleWrapper>
                 <Divider />
                 <ListStyled>
