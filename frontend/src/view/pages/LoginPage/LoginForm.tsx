@@ -171,7 +171,7 @@ export const LoginForm = (props) => {
             label="Remember me"
           />
         </CheckBoxWrapper>
-        <Typography variant="body2" gutterBottom>By clicking LOGIN you are agreeing to Koto's End User License Agreement (EULA).</Typography>
+        <Typography variant="body2" gutterBottom>Login only if you agree with the End User License Agreement.</Typography>
         <ButtonStyled
           variant="contained"
           size="large"
