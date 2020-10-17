@@ -10,7 +10,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@react-native-community/cli-platform-android": "^4.13.0",
+    "@react-native-community/cli-platform-android": "3.0.0-alpha.2",
     "@react-native-community/cookies": "^4.0.1",
     "@react-native-firebase/app": "^8.3.1",
     "@react-native-firebase/messaging": "^7.7.4",
