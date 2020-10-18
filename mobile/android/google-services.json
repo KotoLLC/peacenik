@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "367003757790",
+    "firebase_url": "https://koto-285509.firebaseio.com",
+    "project_id": "koto-285509",
+    "storage_bucket": "koto-285509.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:367003757790:android:ab57beeccb92ac0e69264f",
+        "android_client_info": {
+          "package_name": "koto.at"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "367003757790-vmdkbjafder4ghbto1v946ndihnctici.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCy55VCj46gjIt3y_tMD3SwCU9vAeNMCqg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "367003757790-vmdkbjafder4ghbto1v946ndihnctici.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "367003757790-3ij69ol1ouj1l9crtr9s3qul6p4qcoo3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "at.koto",
+                "app_store_id": "1530633715"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
