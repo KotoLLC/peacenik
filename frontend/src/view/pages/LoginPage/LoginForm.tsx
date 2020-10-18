@@ -171,7 +171,6 @@ export const LoginForm = (props) => {
             label="Remember me"
           />
         </CheckBoxWrapper>
-        <Typography variant="body2" gutterBottom>Login only if you agree with the End User License Agreement.</Typography>
         <ButtonStyled
           variant="contained"
           size="large"

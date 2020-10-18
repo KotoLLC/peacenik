@@ -5,7 +5,10 @@ platform :ios, '10.0'
 
 target 'Koto' do
   config = use_native_modules!
-
+  pod 'Firebase/Analytics'
+  pod 'Firebase/Auth'
+  pod 'Firebase/Firestore'
+  
   use_react_native!(:path => config["reactNativePath"])
 
   target 'KotoTests' do
@@ -23,11 +26,3 @@ target 'Koto' do
   end
 end
 
-target 'Koto-tvOS' do
-  # Pods for Koto-tvOS
-
-  target 'Koto-tvOSTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-end
