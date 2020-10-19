@@ -9,15 +9,9 @@ import Tooltip from '@material-ui/core/Tooltip'
 import { ApiTypes } from 'src/types'
 import Actions from '@store/actions'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
-import {
-  DialogTextWrapper,
-  DialogTitleStyled,
-  DialogContentStyled,
-} from '@view/shared/styles'
-import { CroppedText } from './styles'
+import { DialogTitleStyled } from '@view/shared/styles'
 
 interface Props {
-  message: string
   id: string
   sourceHost: string
 
@@ -26,7 +20,7 @@ interface Props {
 
 const HideMessageDialog: React.SFC<Props> = (props) => {
   const [open, setOpen] = React.useState(false)
-  const { message, onHideMessage, id, sourceHost } = props
+  const { onHideMessage, id, sourceHost } = props
 
   const onHide = () => {
     onHideMessage({
@@ -50,11 +44,6 @@ const HideMessageDialog: React.SFC<Props> = (props) => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitleStyled id="alert-dialog-title">Are you sure, there is no way to undo this?</DialogTitleStyled>
-        <DialogContentStyled>
-          <DialogTextWrapper>
-            <CroppedText>{message}</CroppedText>
-          </DialogTextWrapper>
-        </DialogContentStyled>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>
             Cancel

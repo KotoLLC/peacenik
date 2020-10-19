@@ -33,6 +33,18 @@ export const Logo = styled.img`
   top: 3px;
 
   @media (max-width: 600px){
+    display: none;
+  }
+`
+
+export const LogoMobile = styled.img`
+  display: none;
+
+  @media (max-width: 600px){
+    position: relative;
+    top: 0px;
+    left: -5px;
+    display: block;
     max-height: 40px;
   }
 `
@@ -125,6 +137,10 @@ export const DialogStyled = styled(DialogTitle)`
 export const DialogContentStyled = styled(DialogContent)`
   && {
     min-width: 500px;
+
+    @media (max-width: 600px) {
+      min-width: auto;
+    }    
   }
 `
 

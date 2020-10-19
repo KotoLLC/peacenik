@@ -2,47 +2,38 @@ import React from 'react'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import { connect } from 'react-redux'
-import Actions from '@store/actions'
-import ExitToAppIcon from '@material-ui/icons/ExitToApp'
-import { TopMenu } from './TopMenu'
+import TopMenu from './TopMenu'
 import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive'
-import { history } from '@view/routes'
 import selectors from '@selectors/index'
 import { StoreTypes } from 'src/types'
 import logo from './../../assets/images/logo-white.png'
+import logoMobile from './../../assets/images/koto-logo-mobile.png'
 import { getAvatarUrl } from '@services/avatarUrl'
 import Badge from '@material-ui/core/Badge'
 import Avatar from '@material-ui/core/Avatar'
 import {
-  TooltipStyle,
-  IconButtonStyled,
   LogoWrapper,
   TopBarRightSide,
   NotificationsWrapper,
   AvatarWrapper,
   Logo,
+  LogoMobile,
 } from './styles'
 
 interface Props {
   notificationLength: number
   userId: string
-
-  onLogout: () => void
 }
 
 const TopBar: React.SFC<Props> = React.memo((props) => {
   const { notificationLength, userId } = props
-
-  const onLogoutClick = () => {
-    history.push('/login')
-    props.onLogout()
-  }
 
   return (
     <AppBar position="fixed" color="primary">
       <Toolbar>
         <LogoWrapper to="/messages">
           <Logo src={logo} />
+          <LogoMobile src={logoMobile} />
         </LogoWrapper>
         <TopBarRightSide>
           {<NotificationsWrapper to="/notifications">
@@ -54,11 +45,6 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
           <AvatarWrapper to="/profile/me">
             <Avatar src={getAvatarUrl(userId)} />
           </AvatarWrapper>
-          <TooltipStyle title={`Logout`}>
-            <IconButtonStyled onClick={onLogoutClick}>
-              <ExitToAppIcon fontSize="small" />
-            </IconButtonStyled>
-          </TooltipStyle>
         </TopBarRightSide>
       </Toolbar>
     </AppBar>
@@ -71,9 +57,4 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   userId: selectors.profile.userId(state),
 })
 
-type DispatchProps = Pick<Props, 'onLogout'>
-const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onLogout: () => dispatch(Actions.authorization.logoutRequest()),
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(TopBar)
+export default connect(mapStateToProps)(TopBar)

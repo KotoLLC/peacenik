@@ -418,5 +418,10 @@ export const ErrorMessage = styled.div`
 export const TextFieldStyled = styled(TextField)`
   && {
     width: 100%;
+    max-width: 100%;
+
+    @media (max-width: 600px) {
+      max-width: 300px;
+    }
   }
 ` 

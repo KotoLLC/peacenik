@@ -408,7 +408,7 @@ const Message: React.SFC<Props> = (props) => {
             <RemoveMessageDialog {...{ message, id, sourceHost }} />
           </ButtonsWrapper> :
             <ButtonsWrapper>
-              <HideMessageDialog {...{ message, id, sourceHost }}/>
+              <HideMessageDialog {...{ id, sourceHost }}/>
               <ComplainContentDialog {...{ message, id, sourceHost }}/>
             </ButtonsWrapper>
           }

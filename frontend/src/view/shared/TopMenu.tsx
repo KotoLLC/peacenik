@@ -8,11 +8,18 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle'
 import DnsIcon from '@material-ui/icons/Dns'
 import ForumIcon from '@material-ui/icons/Forum'
 import HelpIcon from '@material-ui/icons/Help'
+import { connect } from 'react-redux'
 import DescriptionIcon from '@material-ui/icons/Description'
 import { ListItemIconStyled, MenuButton } from './styles'
 import { history } from '@view/routes'
+import Actions from '@store/actions'
+import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 
-export const TopMenu = () => {
+interface Props {
+  onLogout: () => void
+}
+
+const TopMenu: React.FC<Props> = (props) => {
   const [anchorEl, setAnchorEl] = React.useState(null)
 
   const onMenuClick = (event) => {
@@ -26,6 +33,11 @@ export const TopMenu = () => {
   const goToPage = (path: string) => {
     history.push(path)
     setAnchorEl(null)
+  }
+
+  const onLogoutClick = () => {
+    history.push('/login')
+    props.onLogout()
   }
 
   return (
@@ -83,7 +95,20 @@ export const TopMenu = () => {
           </ListItemIconStyled>
           <ListItemText primary="Help" />
         </MenuItem>
+        <MenuItem onClick={onLogoutClick}>
+          <ListItemIconStyled>
+            <ExitToAppIcon fontSize="small" />
+          </ListItemIconStyled>
+          <ListItemText primary="Log out" />
+        </MenuItem>
       </Menu>
     </div>
   )
 }
+
+type DispatchProps = Pick<Props, 'onLogout'>
+const mapDispatchToProps = (dispatch): DispatchProps => ({
+  onLogout: () => dispatch(Actions.authorization.logoutRequest()),
+})
+
+export default connect(null, mapDispatchToProps)(TopMenu)

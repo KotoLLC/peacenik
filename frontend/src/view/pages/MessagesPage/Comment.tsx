@@ -143,7 +143,7 @@ const Comment: React.SFC<Props> = (props) => {
       )
     } else return (
       <ButtonsWrapper>
-        <HideMessageDialog {...{ message: comment, id, sourceHost }}/>
+        <HideMessageDialog {...{ id, sourceHost }}/>
         <ComplainContentDialog {...{ message: comment, id, sourceHost }} />
       </ButtonsWrapper>
     )
