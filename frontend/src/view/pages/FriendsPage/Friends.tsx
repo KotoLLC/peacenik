@@ -64,7 +64,11 @@ class Friends extends React.Component<Props, State> {
   }
 
   checkCurrentIcon = (user: ApiTypes.User, status: ApiTypes.Friends.InvitationStatus) => {
-    const { onAddFriend } = this.props
+    const { onAddFriend, friends } = this.props
+
+    if(friends.some(item => item.user.id === user.id)){
+      return null
+    }
 
     if (status === 'accepted') return null
 
