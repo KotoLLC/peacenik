@@ -3,21 +3,22 @@ import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
 import selectors from '@selectors/index'
-import AttachFileIcon from '@material-ui/icons/AttachFile'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import LayersClearIcon from '@material-ui/icons/LayersClear'
+import PhotoIcon from '@material-ui/icons/Photo'
 import { Player } from 'video-react'
 import { getAvatarUrl } from '@services/avatarUrl'
 import Avatar from '@material-ui/core/Avatar'
 import loadImage from 'blueimp-load-image'
+import SendIcon from '@material-ui/icons/Send'
 
 import {
   TextareaAutosizeStyled,
-  ButtonSend,
+  IconButtonWrapper,
+  EditorPaperWrapper,
   TextareaTitle,
   CreateWrapper,
-  PaperStyled,
   EditorWrapper,
   MessageSticky,
   EditorButtonsWrapper,
@@ -25,6 +26,7 @@ import {
   ImagePreview,
   AvatarWrapper,
   ErrorMessage,
+  EditMessageField,
 } from './styles'
 
 interface Props {
@@ -107,7 +109,7 @@ const Editor: React.SFC<Props> = (props) => {
         { meta: true, orientation: true, canvas: true }
       )
       /* tslint:enable */
-      
+
     }
   }
 
@@ -157,48 +159,56 @@ const Editor: React.SFC<Props> = (props) => {
 
   return (
     <MessageSticky>
-      <PaperStyled>
+      <EditorPaperWrapper>
         <CreateWrapper>
           <AvatarWrapper>
             <Avatar src={getAvatarUrl(props.userId)} />
           </AvatarWrapper>
           <EditorWrapper>
             <TextareaTitle className={value.length ? 'active' : ''}>Post a message to your friend</TextareaTitle>
-            <TextareaAutosizeStyled
-              className="bordered"
-              value={value}
-              onKeyDown={onComandEnterDown}
-              onChange={(evant) => onValueChange(evant.currentTarget.value)} />
+            <EditMessageField>
+              <TextareaAutosizeStyled
+                onKeyDown={onComandEnterDown}
+                value={value}
+                onChange={(evant) => onValueChange(evant.currentTarget.value)} />
+              <IconButton onClick={onMessageSend}>
+                <SendIcon fontSize="small" />
+              </IconButton>
+            </EditMessageField>
             {renderAttachment()}
             <EditorButtonsWrapper>
               <Tooltip title={`Attach image or video`}>
-                <IconButton component="label">
-                  <AttachFileIcon fontSize="small" color="primary" />
-                  <UploadInput
-                    type="file"
-                    id="file"
-                    name="file"
-                    onChange={onFileUpload}
-                    accept="video/*,image/*"
-                  />
-                </IconButton>
+                <IconButtonWrapper>
+                  <IconButton component="label">
+                    <PhotoIcon fontSize="small" color="primary" />
+                    <UploadInput
+                      type="file"
+                      id="file"
+                      name="file"
+                      onChange={onFileUpload}
+                      accept="video/*,image/*"
+                    />
+                  </IconButton>
+                </IconButtonWrapper>
               </Tooltip>
               {file && <Tooltip title={`Delete attachment`}>
-                <IconButton component="label" onClick={onFileDelete}>
-                  <LayersClearIcon fontSize="small" color="primary" />
-                </IconButton>
+                <IconButtonWrapper>
+                  <IconButton component="label" onClick={onFileDelete}>
+                    <LayersClearIcon fontSize="small" color="primary" />
+                  </IconButton>
+                </IconButtonWrapper>
               </Tooltip>}
-              <ButtonSend
+              {/* <ButtonSend
                 variant="contained"
                 color="primary"
                 onClick={onMessageSend}
-              >Post</ButtonSend>
+              >Post</ButtonSend> */}
             </EditorButtonsWrapper>
             {isHubsEmptyMessageShowed && <ErrorMessage>You cannot post messages until you are friends with someone
                 who has their own node. Alternatively, you can start a node yourself.</ErrorMessage>}
           </EditorWrapper>
         </CreateWrapper>
-      </PaperStyled>
+      </EditorPaperWrapper>
     </MessageSticky>
   )
 }

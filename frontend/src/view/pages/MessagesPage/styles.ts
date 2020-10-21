@@ -19,11 +19,28 @@ export const ContainerStyled = styled(Container)`
 export const PaperStyled = styled(Paper)`
   && {
     padding: 20px 0px;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
   }
 
   @media (max-width: 600px) {
     padding: 15px 0px;
+  }
+`
+
+export const IconButtonWrapper = styled.span`
+  * {
+    color: rgba(0, 0, 0, 0.54);
+  }
+`
+
+export const EditorPaperWrapper = styled(Paper)`
+  && {
+    padding: 20px 0px 10px;
+    margin-bottom: 12px;
+  }
+
+  @media (max-width: 600px) {
+    padding: 15px 0px 10px;
   }
 `
 
@@ -67,16 +84,17 @@ export const TextareaAutosizeStyled = styled(TextareaAutosize)`
   font-size: 14px;
   line-height: 1.5;
   background: transparent;
+  
 
   &.bordered {
-    border-bottom: 1px solid #000;
+    border: 1px solid #000;
   }
 `
 
 export const EditorButtonsWrapper = styled.div`
   display: flex;
   align-items: center;
-  margin-top: 5px;
+  /* margin-top: 5px; */
   padding-right: 40px;
   position: relative;
 `
@@ -185,7 +203,7 @@ export const CommentContent = styled.pre`
   font-size: 14px;
   margin: 0 0 5px;
   padding: 5px 10px;
-  border-radius: 20px;
+  border-radius: 22px;
   background: #ededed;
   max-width: 100%;
   white-space: pre-wrap;
@@ -228,7 +246,7 @@ export const EditMessageField = styled.div`
   flex-grow: 2;
   align-items: flex-end;
   margin-bottom: 10px;
-  border-radius: 20px;
+  border-radius: 22px;
   border: 1px solid #ccc;
   background: #ededed;
   position: relative;
