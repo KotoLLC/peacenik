@@ -11,6 +11,7 @@ import logoMobile from './../../assets/images/koto-logo-mobile.png'
 import { getAvatarUrl } from '@services/avatarUrl'
 import Badge from '@material-ui/core/Badge'
 import Avatar from '@material-ui/core/Avatar'
+
 import {
   LogoWrapper,
   TopBarRightSide,

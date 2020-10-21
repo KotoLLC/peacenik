@@ -32,7 +32,7 @@ export const Logo = styled.img`
   position: relative;
   top: 3px;
 
-  @media (max-width: 600px){
+  @media (max-width: 800px){
     display: none;
   }
 `
@@ -40,7 +40,7 @@ export const Logo = styled.img`
 export const LogoMobile = styled.img`
   display: none;
 
-  @media (max-width: 600px){
+  @media (max-width: 800px){
     position: relative;
     top: 0px;
     left: -5px;

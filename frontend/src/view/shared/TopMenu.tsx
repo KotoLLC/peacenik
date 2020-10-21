@@ -10,10 +10,12 @@ import ForumIcon from '@material-ui/icons/Forum'
 import HelpIcon from '@material-ui/icons/Help'
 import { connect } from 'react-redux'
 import DescriptionIcon from '@material-ui/icons/Description'
-import { ListItemIconStyled, MenuButton } from './styles'
+import { ListItemIconStyled, IconButtonStyled } from './styles'
 import { history } from '@view/routes'
 import Actions from '@store/actions'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
+import MoreVertIcon from '@material-ui/icons/MoreVert'
+import Tooltip from '@material-ui/core/Tooltip'
 
 interface Props {
   onLogout: () => void
@@ -42,7 +44,11 @@ const TopMenu: React.FC<Props> = (props) => {
 
   return (
     <div>
-      <MenuButton onClick={onMenuClick}>Menu</MenuButton>
+      <Tooltip title={`Menu`}>
+        <IconButtonStyled onClick={onMenuClick}>
+          <MoreVertIcon />
+        </IconButtonStyled>
+      </Tooltip>
       <Menu
         getContentAnchorEl={null}
         anchorEl={anchorEl}
