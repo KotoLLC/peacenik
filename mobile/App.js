@@ -46,7 +46,10 @@ const App = () => {
 
   const onNavigationStateChange = async (navState) => {
     if (navState.url.includes('messages')) {
-      const cookies = await CookieManager.getAll(true);
+      const cookies =
+        Platform.OS === 'ios'
+          ? await CookieManager.getAll(true)
+          : await CookieManager.get('https://central.koto.at');
       console.log('CookieManager.get =>', cookies);
       const cookie = Object.values(cookies)
         .map((c) => `${c.name}=${c.value};`)
