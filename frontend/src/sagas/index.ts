@@ -72,6 +72,8 @@ import {
     watchGetNotifications,
     watchCleanNotificationsInUserHub,
     watchCleanNotificationsInHub,
+    watchMarkAsReadNotificationsInUserHub,
+    watchMarkAsReadNotificationsInHub,
 } from './notifications'
 import {  
     watchGetMessageReports,
@@ -141,6 +143,8 @@ export function* rootSaga() {
         takeEvery(NotificationsTypes.GET_NOTIFICATIONS_REQUEST, watchGetNotifications),
         takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_USER_HUB_REQUEST, watchCleanNotificationsInUserHub),
         takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_HUB_REQUEST, watchCleanNotificationsInHub),
+        takeEvery(NotificationsTypes.MARK_AS_READ_NOTIFICATIONS_IN_USER_HUB_REQUEST, watchMarkAsReadNotificationsInUserHub),
+        takeEvery(NotificationsTypes.MARK_AS_READ_NOTIFICATIONS_IN_HUB_REQUEST, watchMarkAsReadNotificationsInHub),
       
         takeEvery(DashboardTypes.GET_MESSAGE_REPORTS_REQUEST, watchGetMessageReports),
         takeEvery(DashboardTypes.GET_MESSAGE_REPORTS_FROM_HUB_REQUEST, watchGetMessageReportsFromHub),

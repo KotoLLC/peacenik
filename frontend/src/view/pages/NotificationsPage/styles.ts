@@ -51,6 +51,14 @@ export const ListIten = styled.div`
   display: flex;
   flex-wrap: wrap;
 
+  &.read {
+    color: #b0b0b0;
+
+    a {
+      color: #b0b0b0;
+    }
+  }
+
   @media (max-width: 600px) {
     padding-bottom: 10px;
     border-bottom: 1px solid #ccc;

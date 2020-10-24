@@ -18,6 +18,12 @@ export enum Types {
   
   CLEAN_NOTIFICATIONS_IN_USER_HUB_REQUEST = 'CLEAN_NOTIFICATIONS_IN_USER_HUB_REQUEST',
   CLEAN_NOTIFICATIONS_IN_USER_HUB_SUCCESS = 'CLEAN_NOTIFICATIONS_IN_USER_HUB_SUCCESS',
+  
+  MARK_AS_READ_NOTIFICATIONS_IN_HUB_REQUEST = 'MARK_AS_READ_NOTIFICATIONS_IN_HUB_REQUEST',
+  MARK_AS_READ_NOTIFICATIONS_IN_HUB_SUCCESS = 'MARK_AS_READ_NOTIFICATIONS_IN_HUB_SUCCESS',
+  
+  MARK_AS_READ_NOTIFICATIONS_IN_USER_HUB_REQUEST = 'MARK_AS_READ_NOTIFICATIONS_IN_USER_HUB_REQUEST',
+  MARK_AS_READ_NOTIFICATIONS_IN_USER_HUB_SUCCESS = 'MARK_AS_READ_NOTIFICATIONS_IN_USER_HUB_SUCCESS',
 }
 
 const getNotificationsRequest = () => ({
@@ -61,6 +67,24 @@ const cleanNotificationsInHubSuccess = () => ({
   type: Types.CLEAN_NOTIFICATIONS_IN_HUB_SUCCESS,
 })
 
+const markAsReadNotificationsInUserHubRequest = (payload: CommonTypes.NotificationTypes.LastKnown) => ({
+  type: Types.MARK_AS_READ_NOTIFICATIONS_IN_USER_HUB_REQUEST,
+  payload,
+})
+
+const markAsReadNotificationsInUserHubSuccess = () => ({
+  type: Types.MARK_AS_READ_NOTIFICATIONS_IN_USER_HUB_SUCCESS,
+})
+
+const markAsReadNotificationsInHubRequest = (payload: CommonTypes.NotificationTypes.LastKnown) => ({
+  type: Types.MARK_AS_READ_NOTIFICATIONS_IN_HUB_REQUEST,
+  payload,
+})
+
+const markAsReadNotificationsInHubSuccess = () => ({
+  type: Types.MARK_AS_READ_NOTIFICATIONS_IN_HUB_SUCCESS,
+})
+
 const setLastKnownIdFromUserHub = (payload: CommonTypes.NotificationTypes.LastKnown) => ({
   type: Types.SET_LAST_KNOWN_ID_FROM_USER_HUB,
   payload,
@@ -82,4 +106,8 @@ export default {
   cleanNotificationsInHubSuccess,
   setLastKnownIdFromUserHub,
   setLastKnownIdFromMessageHub,
+  markAsReadNotificationsInUserHubRequest,
+  markAsReadNotificationsInUserHubSuccess,
+  markAsReadNotificationsInHubRequest,
+  markAsReadNotificationsInHubSuccess,
 }

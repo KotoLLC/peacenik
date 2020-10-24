@@ -90,3 +90,24 @@ export function* watchCleanNotificationsInHub(action: { type: string, payload: C
     yield put(Actions.notifications.getNotificationsRequest())
   }
 }
+
+export function* watchMarkAsReadNotificationsInUserHub(action: { type: string, payload: CommonTypes.NotificationTypes.LastKnown }) {
+  const response = yield API.notifications.markAsReadNotificationsInUserHub(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.notifications.markAsReadNotificationsInHubSuccess())
+    yield put(Actions.notifications.getNotificationsRequest())
+  } else if (response.error.response.status === 401) {
+    localStorage.clear()
+    window.location.reload()
+  }
+}
+
+export function* watchMarkAsReadNotificationsInHub(action: { type: string, payload: CommonTypes.NotificationTypes.LastKnown }) {
+  const response = yield API.notifications.markAsReadNotificationsInHub(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.notifications.markAsReadNotificationsInHubSuccess())
+    yield put(Actions.notifications.getNotificationsRequest())
+  }
+}

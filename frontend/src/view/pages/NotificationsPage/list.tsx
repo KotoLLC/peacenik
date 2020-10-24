@@ -32,6 +32,8 @@ interface Props {
   onGetNotifications: () => void
   onCleanNotificationsInUserHub: (data: CommonTypes.NotificationTypes.LastKnown) => void
   onCleanNotificationsInMessageHub: (data: CommonTypes.NotificationTypes.LastKnown) => void
+  onMarkAsReadNotificationsInUserHub: (data: CommonTypes.NotificationTypes.LastKnown) => void
+  onMarkAsReadNotificationsInMessageHub: (data: CommonTypes.NotificationTypes.LastKnown) => void
 }
 
 interface State {
@@ -110,7 +112,7 @@ class NotificationsList extends React.PureComponent<Props, State> {
 
   mapNotifiactions = (notifications: ApiTypes.Notifications.Notification[]) => {
     return notifications.map(item => (
-      <ListIten key={item.id}>
+      <ListIten key={item.id} className={Boolean(item.read_at) ? 'read' : ''}>
         <ListDate>{moment(item.created_at).format('DD MMM YYYY hh:mm a')}</ListDate>
         {this.checkCurrentIcon(item)}
       </ListIten>
@@ -133,6 +135,10 @@ class NotificationsList extends React.PureComponent<Props, State> {
     }
   }
 
+  componentWillUnmount() {
+    this.markAsReadNotification()
+  }
+
   onClean = () => {
     const {
       lastKnownIdFromMessageHubs,
@@ -148,6 +154,25 @@ class NotificationsList extends React.PureComponent<Props, State> {
     if (lastKnownIdFromMessageHubs.length) {
       lastKnownIdFromMessageHubs.forEach(item => {
         onCleanNotificationsInMessageHub(item)
+      })
+    }
+  }
+ 
+  markAsReadNotification = () => {
+    const {
+      lastKnownIdFromMessageHubs,
+      lastKnownIdFromUserHub,
+      onMarkAsReadNotificationsInUserHub,
+      onMarkAsReadNotificationsInMessageHub,
+    } = this.props
+
+    if (lastKnownIdFromUserHub) {
+      onMarkAsReadNotificationsInUserHub(lastKnownIdFromUserHub)
+    }
+
+    if (lastKnownIdFromMessageHubs.length) {
+      lastKnownIdFromMessageHubs.forEach(item => {
+        onMarkAsReadNotificationsInMessageHub(item)
       })
     }
   }
@@ -172,7 +197,7 @@ class NotificationsList extends React.PureComponent<Props, State> {
             >clear</Button>
           </Footer>
         </NotificationsWrapper>
-      </ContainerStyled>
+      </ContainerStyled> 
     )
   }
 }
@@ -184,13 +209,23 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   lastKnownIdFromMessageHubs: selectors.notifications.lastKnownIdFromMessageHubs(state),
 })
 
-type DispatchProps = Pick<Props, 'onGetNotifications' | 'onCleanNotificationsInUserHub' | 'onCleanNotificationsInMessageHub'>
+type DispatchProps = Pick<Props, 
+  | 'onGetNotifications' 
+  | 'onCleanNotificationsInUserHub' 
+  | 'onCleanNotificationsInMessageHub'
+  | 'onMarkAsReadNotificationsInUserHub'
+  | 'onMarkAsReadNotificationsInMessageHub'
+  >
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetNotifications: () => dispatch(Actions.notifications.getNotificationsRequest()),
   onCleanNotificationsInUserHub: (data: CommonTypes.NotificationTypes.LastKnown) =>
     dispatch(Actions.notifications.cleanNotificationsInUserHubRequest(data)),
   onCleanNotificationsInMessageHub: (data: CommonTypes.NotificationTypes.LastKnown) =>
     dispatch(Actions.notifications.cleanNotificationsInHubRequest(data)),
+  onMarkAsReadNotificationsInUserHub: (data: CommonTypes.NotificationTypes.LastKnown) =>
+    dispatch(Actions.notifications.markAsReadNotificationsInUserHubRequest(data)),
+  onMarkAsReadNotificationsInMessageHub: (data: CommonTypes.NotificationTypes.LastKnown) =>
+    dispatch(Actions.notifications.markAsReadNotificationsInHubRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(NotificationsList)

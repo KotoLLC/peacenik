@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import TopMenu from './TopMenu'
 import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive'
 import selectors from '@selectors/index'
-import { StoreTypes } from 'src/types'
+import { StoreTypes, ApiTypes } from 'src/types'
 import logo from './../../assets/images/logo-white.png'
 import logoMobile from './../../assets/images/koto-logo-mobile.png'
 import { getAvatarUrl } from '@services/avatarUrl'
@@ -22,13 +22,13 @@ import {
 } from './styles'
 
 interface Props {
-  notificationLength: number
+  notificationsUnread: ApiTypes.Notifications.Notification[]
   userId: string
 }
 
 const TopBar: React.SFC<Props> = React.memo((props) => {
-  const { notificationLength, userId } = props
-
+  const { notificationsUnread, userId } = props
+  
   return (
     <AppBar position="fixed" color="primary">
       <Toolbar>
@@ -38,7 +38,7 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
         </LogoWrapper>
         <TopBarRightSide>
           {<NotificationsWrapper to="/notifications">
-            <Badge badgeContent={notificationLength} color="secondary">
+            <Badge badgeContent={notificationsUnread.length} color="secondary">
               <NotificationsActiveIcon />
             </Badge>
           </NotificationsWrapper>}
@@ -52,9 +52,9 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
   )
 })
 
-type StateProps = Pick<Props, 'notificationLength' | 'userId'>
+type StateProps = Pick<Props, 'notificationsUnread' | 'userId'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  notificationLength: selectors.notifications.notificationLength(state),
+  notificationsUnread: selectors.notifications.notificationsUnread(state),
   userId: selectors.profile.userId(state),
 })
 
