@@ -166,7 +166,7 @@ const Editor: React.SFC<Props> = (props) => {
           </AvatarWrapper>
           
           <EditorWrapper>
-            <TextareaTitle className={value.length ? 'active' : ''}>Post a message to your friend</TextareaTitle>
+            <TextareaTitle className={value.length ? 'active' : ''}>Post a message to your friends</TextareaTitle>
             <EditMessageField>
               <TextareaAutosizeStyled
                 onKeyDown={onComandEnterDown}
