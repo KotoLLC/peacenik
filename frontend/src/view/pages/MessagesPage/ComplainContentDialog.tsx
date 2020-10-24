@@ -2,13 +2,14 @@ import React from 'react'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
-import IconButton from '@material-ui/core/IconButton'
 import { connect } from 'react-redux'
-import Tooltip from '@material-ui/core/Tooltip'
 import { ApiTypes } from 'src/types'
 import Actions from '@store/actions'
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline'
+import MenuItem from '@material-ui/core/MenuItem'
+import ListItemText from '@material-ui/core/ListItemText'
 import {
+  ListItemIconStyled,
   DialogTextWrapper,
   DialogTitleStyled,
   DialogContentStyled,
@@ -49,11 +50,12 @@ const ComplainContentDialog: React.SFC<Props> = (props) => {
 
   return (
     <div>
-      <Tooltip title={`Report objectionable content`}>
-        <IconButton onClick={() => setOpen(true)}>
-          <ErrorOutlineIcon />
-        </IconButton>
-      </Tooltip>
+      <MenuItem onClick={() => setOpen(true)}>
+        <ListItemIconStyled>
+          <ErrorOutlineIcon fontSize="small" />
+        </ListItemIconStyled>
+        <ListItemText primary="Report" />
+      </MenuItem>
       <Dialog
         open={open}
         onClose={() => setOpen(false)}

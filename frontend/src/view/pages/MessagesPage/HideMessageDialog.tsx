@@ -2,14 +2,13 @@ import React from 'react'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
-import DeleteIcon from '@material-ui/icons/Delete'
-import IconButton from '@material-ui/core/IconButton'
 import { connect } from 'react-redux'
-import Tooltip from '@material-ui/core/Tooltip'
 import { ApiTypes } from 'src/types'
 import Actions from '@store/actions'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
-import { DialogTitleStyled } from '@view/shared/styles'
+import MenuItem from '@material-ui/core/MenuItem'
+import ListItemText from '@material-ui/core/ListItemText'
+import { ListItemIconStyled, DialogTitleStyled } from '@view/shared/styles'
 
 interface Props {
   id: string
@@ -32,11 +31,12 @@ const HideMessageDialog: React.SFC<Props> = (props) => {
 
   return (
     <div>
-      <Tooltip title={`Hide`} onClick={() => setOpen(true)}>
-        <IconButton>
-          <VisibilityOffIcon />
-        </IconButton>
-      </Tooltip>
+      <MenuItem onClick={() => setOpen(true)}>
+        <ListItemIconStyled>
+          <VisibilityOffIcon fontSize="small" />
+        </ListItemIconStyled>
+        <ListItemText primary="Hide" />
+      </MenuItem>
       <Dialog
         open={open}
         onClose={() => setOpen(false)}

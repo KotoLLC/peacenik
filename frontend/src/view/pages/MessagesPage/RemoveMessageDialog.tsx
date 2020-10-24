@@ -3,12 +3,13 @@ import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DeleteIcon from '@material-ui/icons/Delete'
-import IconButton from '@material-ui/core/IconButton'
 import { connect } from 'react-redux'
-import Tooltip from '@material-ui/core/Tooltip'
 import { ApiTypes } from 'src/types'
 import Actions from '@store/actions'
+import MenuItem from '@material-ui/core/MenuItem'
+import ListItemText from '@material-ui/core/ListItemText'
 import {
+  ListItemIconStyled,
   DialogTextWrapper,
   DialogTitleStyled,
   DialogContentStyled,
@@ -19,7 +20,7 @@ interface Props {
   message: string
   id: string
   sourceHost: string
-  
+
   onDeleteMessage: (data: ApiTypes.Messages.DeleteMessage) => void
 }
 
@@ -39,11 +40,12 @@ const RemoveMessageDialog: React.SFC<Props> = (props) => {
 
   return (
     <div>
-      <Tooltip title={`Delete`}>
-        <IconButton onClick={() => setOpen(true)}>
-          <DeleteIcon />
-        </IconButton>
-      </Tooltip>
+      <MenuItem onClick={() => setOpen(true)}>
+        <ListItemIconStyled>
+          <DeleteIcon fontSize="small" />
+        </ListItemIconStyled>
+        <ListItemText primary="Delete" />
+      </MenuItem>
       <Dialog
         open={open}
         onClose={() => setOpen(false)}

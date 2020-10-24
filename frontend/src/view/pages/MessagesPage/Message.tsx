@@ -1,7 +1,5 @@
 import React, { useState, useEffect, ChangeEvent, useRef } from 'react'
 import ReactMarkdown from 'react-markdown'
-import EditIcon from '@material-ui/icons/Edit'
-import RemoveMessageDialog from './RemoveMessageDialog'
 import moment from 'moment'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
@@ -20,8 +18,8 @@ import LayersClearIcon from '@material-ui/icons/LayersClear'
 import { getAvatarUrl } from '@services/avatarUrl'
 import Avatar from '@material-ui/core/Avatar'
 import loadImage from 'blueimp-load-image'
-import ComplainContentDialog from './ComplainContentDialog'
-import HideMessageDialog from './HideMessageDialog'
+import { AuthorButtonsMenu } from './AuthorButtonsMenu'
+import { NoAuthorButtonsMenu } from './NoAuthorButtonsMenu'
 import {
   PaperStyled,
   MessageHeader,
@@ -30,7 +28,6 @@ import {
   UserNameLink,
   MessageDate,
   UserNameWrapper,
-  ButtonsWrapper,
   MessageContent,
   TextareaAutosizeStyled,
   EditMessageField,
@@ -282,7 +279,7 @@ const Message: React.SFC<Props> = (props) => {
             </LikesNamesList>
           </LikesWrapper> : <span />
         }
-        {(comments?.length) && <span onClick={() => openComments(!isCommentsOpen)}>{comments.length} comments</span>}
+        { Boolean(comments?.length) && <span onClick={() => openComments(!isCommentsOpen)}>{Number(comments?.length)} comments</span>}
       </ReactionsWrapper>
     )
   }
@@ -399,18 +396,8 @@ const Message: React.SFC<Props> = (props) => {
               <MessageDate>{moment(created_at).fromNow()}</MessageDate>
             </UserNameWrapper>
           </UserInfo>
-          {isAuthor ? <ButtonsWrapper>
-            <Tooltip title={`Edit`}>
-              <IconButton onClick={() => setEditor(!isEditer)}>
-                <EditIcon />
-              </IconButton>
-            </Tooltip>
-            <RemoveMessageDialog {...{ message, id, sourceHost }} />
-          </ButtonsWrapper> :
-            <ButtonsWrapper>
-              <HideMessageDialog {...{ id, sourceHost }}/>
-              <ComplainContentDialog {...{ message, id, sourceHost }}/>
-            </ButtonsWrapper>
+          {isAuthor ? <AuthorButtonsMenu {...{ isEditer, setEditor, message, id, sourceHost }} /> :
+            <NoAuthorButtonsMenu {...{ message, id, sourceHost }} />
           }
         </MessageHeader>
         {

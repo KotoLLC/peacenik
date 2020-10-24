@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import EditIcon from '@material-ui/icons/Edit'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
-import RemoveCommentDialog from './RemoveCommentDialog'
 import moment from 'moment'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'
 import SendIcon from '@material-ui/icons/Send'
 import { getAvatarUrl } from '@services/avatarUrl'
-import HideMessageDialog from './HideMessageDialog'
-import ComplainContentDialog from './ComplainContentDialog'
 import { Link } from 'react-router-dom'
+import { AuthorButtonsMenu } from './AuthorButtonsMenu'
+import { NoAuthorButtonsMenu } from './NoAuthorButtonsMenu'
 import {
   CommentWrapper,
   UserNameLink,
@@ -20,7 +18,6 @@ import {
   AvatarStyled,
   TextareaAutosizeStyled,
   EditMessageField,
-  ButtonsWrapper,
   CircularProgressStyled,
   CommentContent,
   CommentReactionsNavWrapper,
@@ -130,23 +127,9 @@ const Comment: React.SFC<Props> = (props) => {
   }
 
   const renderCurrentIcons = () => {
-    if (userId === user_id) {
-      return (
-        <ButtonsWrapper>
-          <Tooltip title={`Edit`}>
-            <IconButton onClick={() => setEditor(!isEditer)}>
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-          <RemoveCommentDialog {...{ comment, id, sourceHost }} />
-        </ButtonsWrapper>
-      )
-    } else return (
-      <ButtonsWrapper>
-        <HideMessageDialog {...{ id, sourceHost }}/>
-        <ComplainContentDialog {...{ message: comment, id, sourceHost }} />
-      </ButtonsWrapper>
-    )
+    return (userId === user_id) ? 
+      <AuthorButtonsMenu {...{message: comment, id, sourceHost, setEditor, isEditer}} /> :
+      <NoAuthorButtonsMenu {...{message: comment, id, sourceHost, }}/>
   }
 
   return (
