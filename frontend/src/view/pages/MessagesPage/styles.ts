@@ -71,6 +71,7 @@ export const EditorWrapper = styled.div`
 
 export const EditorInMessageWrapper = styled.div`
   margin: 0 20px 15px;
+  
 `
 
 export const TextareaAutosizeStyled = styled(TextareaAutosize)`
@@ -84,11 +85,6 @@ export const TextareaAutosizeStyled = styled(TextareaAutosize)`
   font-size: 14px;
   line-height: 1.5;
   background: transparent;
-  
-
-  &.bordered {
-    border: 1px solid #000;
-  }
 `
 
 export const EditorButtonsWrapper = styled.div`
@@ -122,6 +118,7 @@ export const MessageHeader = styled.header`
   justify-content: space-between;
   padding-left: 20px;
   padding-right: 10px;
+  margin-bottom: 5px;
 
   @media (max-width: 600px) {
     padding-left: 15px;

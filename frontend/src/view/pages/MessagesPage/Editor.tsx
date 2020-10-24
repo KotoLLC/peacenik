@@ -164,6 +164,7 @@ const Editor: React.SFC<Props> = (props) => {
           <AvatarWrapper>
             <Avatar src={getAvatarUrl(props.userId)} />
           </AvatarWrapper>
+          
           <EditorWrapper>
             <TextareaTitle className={value.length ? 'active' : ''}>Post a message to your friend</TextareaTitle>
             <EditMessageField>
@@ -198,11 +199,6 @@ const Editor: React.SFC<Props> = (props) => {
                   </IconButton>
                 </IconButtonWrapper>
               </Tooltip>}
-              {/* <ButtonSend
-                variant="contained"
-                color="primary"
-                onClick={onMessageSend}
-              >Post</ButtonSend> */}
             </EditorButtonsWrapper>
             {isHubsEmptyMessageShowed && <ErrorMessage>You cannot post messages until you are friends with someone
                 who has their own node. Alternatively, you can start a node yourself.</ErrorMessage>}

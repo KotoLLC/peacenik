@@ -20,6 +20,7 @@ import Avatar from '@material-ui/core/Avatar'
 import loadImage from 'blueimp-load-image'
 import { AuthorButtonsMenu } from './AuthorButtonsMenu'
 import { NoAuthorButtonsMenu } from './NoAuthorButtonsMenu'
+import PhotoIcon from '@material-ui/icons/Photo'
 import {
   PaperStyled,
   MessageHeader,
@@ -47,6 +48,7 @@ import {
   ReactionNavItem,
   EditMessageWrapper,
   EditorInMessageWrapper,
+  IconButtonWrapper,
 } from './styles'
 
 interface Props extends ApiTypes.Messages.Message {
@@ -401,38 +403,44 @@ const Message: React.SFC<Props> = (props) => {
           }
         </MessageHeader>
         {
+
           isEditer ?
+
             <EditorInMessageWrapper>
-              <TextareaAutosizeStyled
-                className="bordered"
-                onKeyDown={onComandEnterDownInMessage}
-                value={message}
-                onChange={(evant) => onMessageChange(evant.currentTarget.value)} />
+              <EditMessageField>
+                <TextareaAutosizeStyled
+                  onKeyDown={onComandEnterDownInMessage}
+                  value={message}
+                  onChange={(evant) => onMessageChange(evant.currentTarget.value)} />
+                <IconButton onClick={onMessageSave}>
+                  <SendIcon fontSize="small" />
+                </IconButton>
+              </EditMessageField>
               <EditorButtonsWrapper>
                 <Tooltip title={`Attach image or video`}>
-                  <IconButton component="label">
-                    <AttachFileIcon fontSize="small" color="primary" />
-                    <UploadInput
-                      type="file"
-                      id="file"
-                      name="file"
-                      onChange={onFileUpload}
-                      accept="video/*,image/*"
-                    />
-                  </IconButton>
+                  <IconButtonWrapper>
+                    <IconButton component="label">
+                      <PhotoIcon fontSize="small" color="primary" />
+                      <UploadInput
+                        type="file"
+                        id="file"
+                        name="file"
+                        onChange={onFileUpload}
+                        accept="video/*,image/*"
+                      />
+                    </IconButton>
+                  </IconButtonWrapper>
                 </Tooltip>
                 {(file || attachment_type) && <Tooltip title={`Delete attachment`}>
-                  <IconButton component="label" onClick={onFileDelete}>
-                    <LayersClearIcon fontSize="small" color="primary" />
-                  </IconButton>
+                  <IconButtonWrapper>
+                    <IconButton component="label" onClick={onFileDelete}>
+                      <LayersClearIcon fontSize="small" color="primary" />
+                    </IconButton>
+                  </IconButtonWrapper>
                 </Tooltip>}
-                <ButtonSend
-                  variant="contained"
-                  color="primary"
-                  onClick={onMessageSave}
-                >Save</ButtonSend>
               </EditorButtonsWrapper>
             </EditorInMessageWrapper>
+
             : <MessageContent className="markdown-body">
               <ReactMarkdown>{message}</ReactMarkdown>
             </MessageContent>
