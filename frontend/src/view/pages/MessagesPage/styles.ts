@@ -365,11 +365,14 @@ export const LikesWrapper = styled.p`
   text-overflow: ellipsis;
   overflow: hidden; 
   margin: 0;
+  max-width: calc(100% - 150px);
 `
 
 export const LikesNamesList = styled.span`
-  display: inline-block;
   margin-left: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  overflow: hidden; 
 `
 
 export const ReactionNavWrapper = styled.div`

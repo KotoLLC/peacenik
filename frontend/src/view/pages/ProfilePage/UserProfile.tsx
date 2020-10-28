@@ -54,7 +54,7 @@ const UserProfile: React.FC<Props> = (props) => {
   useEffect(() => {
     onGetUser(userId as string)
     onGetFriends()
-  }, [props, users, onGetUser, userId, friends])
+  }, [props, users, onGetUser, userId, friends, onGetFriends])
 
   const checkCurrentIcon = (user: ApiTypes.User, status: ApiTypes.Friends.InvitationStatus) => {
 
