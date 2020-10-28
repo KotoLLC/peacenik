@@ -10,9 +10,6 @@ import queryString from 'query-string'
 
 import {
   ContainerStyled,
-  ProfileWrapper,
-  Header,
-  Title,
 } from './styles'
 
 interface Props extends RouteComponentProps {
@@ -28,17 +25,12 @@ const ProfilePage: React.FC<Props> = (props) => {
   return (
     <WithTopBar>
       <ContainerStyled>
-        <ProfileWrapper>
-          <Header>
-            <Title>Profile</Title>
-          </Header>
-          <Switch>
-            <Route path="/profile/me" exact component={MyProfile} />
-            <Route path="/profile/user">
-              {(myUserId === currentUserId) ? <Redirect to="/profile/me" /> : <UserProfile/>}
-            </Route>
-          </Switch>
-        </ProfileWrapper>
+        <Switch>
+          <Route path="/profile/me" exact component={MyProfile} />
+          <Route path="/profile/user">
+            {(myUserId === currentUserId) ? <Redirect to="/profile/me" /> : <UserProfile />}
+          </Route>
+        </Switch>
       </ContainerStyled>
     </WithTopBar>
   )

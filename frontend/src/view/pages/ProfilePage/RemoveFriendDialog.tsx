@@ -1,40 +1,40 @@
 import React from 'react'
-import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
-import IconButton from '@material-ui/core/IconButton'
 import { ApiTypes } from 'src/types'
-import CancelIcon from '@material-ui/icons/Cancel'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import { capitalizeFirstLetter } from '@services/capitalizeFirstLetter'
 import { DialogTitleStyled } from '@view/shared/styles'
+import { UnfriendButton } from './styles'
+import Button from '@material-ui/core/Button'
 
-interface Props extends ApiTypes.Friends.Friend {
+interface Props {
+  userId: string
+  userName: string
+
   onRejectInvitation: (value: ApiTypes.Friends.InvitationReject) => void
 }
 
 const RemoveFriendDialog: React.SFC<Props> = (props) => {
   const [open, setOpen] = React.useState(false)
-  const { onRejectInvitation, user } = props
+  const { onRejectInvitation, userId, userName = '' } = props
 
   const onRemove = () => {
-    onRejectInvitation({ inviter_id: user.id })
+    onRejectInvitation({ inviter_id: userId })
     setOpen(false)
   }
 
   return (
     <div>
-      <IconButton onClick={() => setOpen(true)} >
-        <CancelIcon />
-      </IconButton>
+      <UnfriendButton variant="contained" onClick={() => setOpen(true)}>Unfiend</UnfriendButton>
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitleStyled id="alert-dialog-title">Are you sure you'd like to remove {capitalizeFirstLetter(user.name)} from your friend's list?</DialogTitleStyled>
+        <DialogTitleStyled id="alert-dialog-title">Are you sure you'd like to remove {capitalizeFirstLetter(userName)} from your friend's list?</DialogTitleStyled>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>
             Cancel

@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import Container from '@material-ui/core/Container'
 import Paper from '@material-ui/core/Paper'
 import FormControl from '@material-ui/core/FormControl'
+import Button from '@material-ui/core/Button'
 
 export const ContainerStyled = styled(Container)`
   && {
@@ -11,9 +12,9 @@ export const ContainerStyled = styled(Container)`
 
 export const ProfileWrapper = styled(Paper)`
   padding: 15px;
-  min-height: 50vh;
   position: relative;
-  padding-bottom: 80px;
+  padding-bottom: 60px;
+  margin-bottom: 10px;
   
   @media (max-width: 600px) {
     padding-bottom: 40px;
@@ -58,6 +59,10 @@ export const AvatarLabel = styled.label`
   cursor: pointer;
   border: 1px solid #ccc;
 
+  &.no-link {
+    cursor: default;
+  }
+
   img {
     width: 100%;
   }
@@ -93,4 +98,20 @@ export const UploadInput = styled.input`
 export const FieldNote = styled.p`
   margin: 0 0 15px;
   color: #999;
+`
+
+export const UnfriendButton = styled(Button)`
+  && {
+    margin-bottom: 10px;
+  }
+`
+
+export const UsersWrapper = styled.div`
+  max-width: 500px;
+  width: 100%;
+  margin: 20px auto;
+
+  @media (max-width: 600px) {
+    max-width: 100%;
+  }
 `

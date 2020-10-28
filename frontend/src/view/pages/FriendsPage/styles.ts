@@ -7,6 +7,7 @@ import Container from '@material-ui/core/Container'
 import FormControl from '@material-ui/core/FormControl'
 import Button from '@material-ui/core/Button'
 import Avatar from '@material-ui/core/Avatar'
+import { Link } from 'react-router-dom'
 
 export const PageWrapper = styled.div`
   display: flex;
@@ -43,6 +44,10 @@ export const ListStyled = styled(List)`
   position: relative;
   overflow: auto;
   height: calc(100vh - 220px);
+
+  &.resize {
+    height: auto;
+  }
 `
 
 export const SearchWrapper = styled.div`
@@ -104,7 +109,16 @@ export const UserNoteUnderlined = styled.span`
 `
 export const UserName = styled.span`
   text-transform: capitalize;
+`
+
+export const UserNameLink = styled(Link)`
   cursor: pointer;
+  text-transform: capitalize;
+  color: #000;
+
+  &:hover {
+    text-decoration: none;
+  }
 `
 
 export const IconButtonGreen = styled(IconButton)`
@@ -160,5 +174,9 @@ export const AvatarStyled = styled(Avatar)`
   && {
     cursor: pointer;
     background: #bdbdbd;
+
+    &.no-link {
+      cursor: default;
+    }
   }
 `

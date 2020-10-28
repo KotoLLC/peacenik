@@ -12,6 +12,7 @@ import {
 
 interface Props {
   userId: string
+  
   onDisableUser: (value: string) => void
   callback?: () => void
 }

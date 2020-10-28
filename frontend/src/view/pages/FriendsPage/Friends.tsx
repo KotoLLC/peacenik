@@ -8,29 +8,20 @@ import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import { StoreTypes, ApiTypes } from 'src/types'
 import selectors from '@selectors/index'
-import IconButton from '@material-ui/core/IconButton'
-import Tooltip from '@material-ui/core/Tooltip'
-import { capitalizeFirstLetter } from '@services/capitalizeFirstLetter'
-import AccessTimeIcon from '@material-ui/icons/AccessTime'
-import PersonAddIcon from '@material-ui/icons/PersonAdd'
-import RemoveFriendDialog from './RemoveFriendDialog'
 import { getAvatarUrl } from '@services/avatarUrl'
-import DisableUserDialog from '@view/shared/DisableUserDialog'
 import {
   UsersWrapper,
-  FriendsTitleWrapper,
   ListStyled,
   SearchWrapper,
   SearchInput,
-  ContainerTitle,
   EmptyMessage,
-  UserName,
+  UserNameLink,
   PageWrapper,
   ListItemWrapper,
   AvatarStyled,
   SearchIconStyled,
-  FriendsTitle,
 } from './styles'
+import { AvatarWrapperLink } from '@view/pages/MessagesPage/styles'
 
 export interface Props {
   friends: ApiTypes.Friends.Friend[]
@@ -41,8 +32,6 @@ export interface Props {
 interface State {
   searchValue: string
   searchResult: ApiTypes.Friends.Friend[]
-  selectedFriendId: string
-  selectedFriendName: string
 }
 
 class Friends extends React.Component<Props, State> {
@@ -50,79 +39,9 @@ class Friends extends React.Component<Props, State> {
   state = {
     searchValue: '',
     searchResult: [],
-    selectedFriendId: '',
-    selectedFriendName: '',
   }
 
   searchInputRef = React.createRef<HTMLInputElement>()
-
-  onFriendSelect = (id: string, name: string) => {
-    this.setState({
-      selectedFriendId: id,
-      selectedFriendName: name,
-    })
-  }
-
-  checkCurrentIcon = (user: ApiTypes.User, status: ApiTypes.Friends.InvitationStatus) => {
-    const { onAddFriend, friends } = this.props
-
-    if (friends.some(item => item.user.id === user.id)) {
-      return null
-    }
-
-    if (status === 'accepted') return null
-
-    if (status === 'pending') return (
-      <Tooltip title={`Wait for a reply`}>
-        <IconButton color="primary">
-          <AccessTimeIcon />
-        </IconButton>
-      </Tooltip>
-    )
-
-    if (status === 'rejected') {
-      return (
-        <Tooltip title={`Add ${capitalizeFirstLetter(user.name)} to friends`}>
-          <IconButton color="primary" onClick={() => onAddFriend({ friend: user.id })}>
-            <PersonAddIcon />
-          </IconButton>
-        </Tooltip>
-      )
-    } else {
-      return (
-        <Tooltip title={`Add ${capitalizeFirstLetter(user.name)} to friends`}>
-          <IconButton color="primary" onClick={() => onAddFriend({ friend: user.id })}>
-            <PersonAddIcon />
-          </IconButton>
-        </Tooltip>
-      )
-    }
-  }
-
-  mapPotentialFriendsList = (id: string, friends) => {
-    const selectedFriend = friends.find(item => item.user.id === id) || null
-
-    if (!selectedFriend?.friends) {
-      return this.showEmptyListMessage()
-    }
-
-    return selectedFriend.friends.map(item => {
-      const { user, invite_status } = item
-
-      return (
-        <div key={user.id}>
-          <ListItem>
-            <ListItemAvatar>
-              <AvatarStyled alt={user.name} src={getAvatarUrl(user.id)} />
-            </ListItemAvatar>
-            <ListItemText primary={<UserName>{user.name}</UserName>} />
-            {this.checkCurrentIcon(user, invite_status)}
-          </ListItem>
-          <Divider variant="inset" />
-        </div>
-      )
-    })
-  }
 
   showEmptyListMessage = () => {
     const { searchValue } = this.state
@@ -144,15 +63,14 @@ class Friends extends React.Component<Props, State> {
       <ListItemWrapper key={item.user.id}>
         <ListItem>
           <ListItemAvatar>
-            <AvatarStyled
-              onClick={() => this.onFriendSelect(item.user.id, item.user.name)}
-              alt={item.user.name}
-              src={getAvatarUrl(item.user.id)} />
+            <AvatarWrapperLink to={`/profile/user?id=${item.user.id}`}>
+              <AvatarStyled
+                alt={item.user.name}
+                src={getAvatarUrl(item.user.id)} />
+            </AvatarWrapperLink>
           </ListItemAvatar>
           <ListItemText
-            onClick={() => this.onFriendSelect(item.user.id, item.user.name)}
-            primary={<UserName>{item.user.name}</UserName>} />
-          <RemoveFriendDialog {...item} />
+            primary={<UserNameLink to={`/profile/user?id=${item.user.id}`}>{item.user.name}</UserNameLink>} />
         </ListItem>
         <Divider variant="inset" component="li" />
       </ListItemWrapper>
@@ -175,45 +93,25 @@ class Friends extends React.Component<Props, State> {
 
   render() {
     const { friends } = this.props
-    const { searchResult, searchValue, selectedFriendId, selectedFriendName } = this.state
+    const { searchResult, searchValue } = this.state
 
     return (
       <PageWrapper>
         <UsersWrapper>
           <Paper>
-            {selectedFriendId ?
-              <>
-                <FriendsTitleWrapper>
-                  <FriendsTitle>
-                    <AvatarStyled
-                      onClick={() => this.onFriendSelect('', '')}
-                      src={getAvatarUrl(selectedFriendId)} />
-                    <ContainerTitle>{(selectedFriendName) ? `${selectedFriendName}\`s friends` : 'Title'}</ContainerTitle>
-                  </FriendsTitle>
-                  <DisableUserDialog userId={selectedFriendId} callback={() => {this.onFriendSelect('', '')}}/>
-                </FriendsTitleWrapper>
-                <Divider />
-                <ListStyled>
-                  {this.mapPotentialFriendsList(selectedFriendId, friends)}
-                </ListStyled>
-              </>
-              :
-              <>
-                <SearchWrapper>
-                  <SearchIconStyled onClick={() => this.searchInputRef?.current?.focus()} />
-                  <SearchInput
-                    ref={this.searchInputRef}
-                    id="filter"
-                    placeholder="Filter"
-                    onChange={this.onSearch}
-                    value={searchValue}
-                  />
-                </SearchWrapper>
-                <ListStyled>
-                  {this.mapFriends((searchValue) ? searchResult : friends)}
-                </ListStyled>
-              </>
-            }
+            <SearchWrapper>
+              <SearchIconStyled onClick={() => this.searchInputRef?.current?.focus()} />
+              <SearchInput
+                ref={this.searchInputRef}
+                id="filter"
+                placeholder="Filter"
+                onChange={this.onSearch}
+                value={searchValue}
+              />
+            </SearchWrapper>
+            <ListStyled>
+              {this.mapFriends((searchValue) ? searchResult : friends)}
+            </ListStyled>
           </Paper>
         </UsersWrapper>
       </PageWrapper>
