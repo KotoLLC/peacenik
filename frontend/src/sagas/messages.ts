@@ -160,7 +160,8 @@ export function* watchPostMessage(action: { type: string, payload: ApiTypes.Mess
   if (response.status === 200) {
     yield put(Actions.messages.postMessageSucces(true))
     yield put(Actions.messages.getMessagesRequest())
-  }
+    yield put(Actions.messages.getMessageUploadLinkSucces(null))
+  } 
 }
 
 export function* watchDeleteMessage(action: { type: string, payload: ApiTypes.Messages.DeleteMessage }) {

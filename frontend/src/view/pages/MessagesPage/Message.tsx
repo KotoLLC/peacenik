@@ -5,7 +5,6 @@ import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import Comment from './Comment'
 import selectors from '@selectors/index'
-import AttachFileIcon from '@material-ui/icons/AttachFile'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import FavoriteIcon from '@material-ui/icons/Favorite'
@@ -32,7 +31,6 @@ import {
   MessageContent,
   TextareaAutosizeStyled,
   EditMessageField,
-  ButtonSend,
   CommentsLink,
   ReactionsWrapper,
   CommentsWrapepr,
