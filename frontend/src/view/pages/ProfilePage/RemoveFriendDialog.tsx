@@ -27,7 +27,7 @@ const RemoveFriendDialog: React.SFC<Props> = (props) => {
 
   return (
     <div>
-      <UnfriendButton variant="contained" onClick={() => setOpen(true)}>Unfiend</UnfriendButton>
+      <UnfriendButton variant="contained" onClick={() => setOpen(true)}>Unfriend</UnfriendButton>
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
