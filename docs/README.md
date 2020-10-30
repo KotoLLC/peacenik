@@ -3,8 +3,11 @@
 
 Koto is an ad-free distributed Facebook alternative
 
-[![Apple Store][readme-images/available_apple.png]][https://apps.apple.com/us/app/koto-social-network/id1530633715]
-[![Google Play][readme-images/available_google.png]][https://play.google.com/store/apps/details?id=koto.at&gl=AT]
+![Apple Store](readme-images/available_apple.png)
+[Koto in the Apple Store](https://apps.apple.com/us/app/koto-social-network/id1530633715)
+
+![Google Play](readme-images/available_google.png)
+[Koto in Google Play](https://play.google.com/store/apps/details?id=koto.at)
 
 ## Table of Contents
 
