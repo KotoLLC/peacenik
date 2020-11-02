@@ -10,19 +10,24 @@ import ForumIcon from '@material-ui/icons/Forum'
 import HelpIcon from '@material-ui/icons/Help'
 import { connect } from 'react-redux'
 import DescriptionIcon from '@material-ui/icons/Description'
-import { ListItemIconStyled, IconButtonStyled } from './styles'
+import { ListItemIconStyled, AvatarWrapper } from './styles'
 import { history } from '@view/routes'
 import Actions from '@store/actions'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
-import MoreVertIcon from '@material-ui/icons/MoreVert'
-import Tooltip from '@material-ui/core/Tooltip'
+import Avatar from '@material-ui/core/Avatar'
+import { getAvatarUrl } from '@services/avatarUrl'
+import selectors from '@selectors/index'
+import { StoreTypes } from 'src/types'
 
 interface Props {
+  userId: string
+
   onLogout: () => void
 }
 
 const TopMenu: React.FC<Props> = (props) => {
   const [anchorEl, setAnchorEl] = React.useState(null)
+  const { userId } = props
 
   const onMenuClick = (event) => {
     setAnchorEl(event.currentTarget)
@@ -44,11 +49,9 @@ const TopMenu: React.FC<Props> = (props) => {
 
   return (
     <div>
-      <Tooltip title={`Menu`}>
-        <IconButtonStyled onClick={onMenuClick}>
-          <MoreVertIcon />
-        </IconButtonStyled>
-      </Tooltip>
+      <AvatarWrapper onClick={onMenuClick}>
+        <Avatar src={getAvatarUrl(userId)} />
+      </AvatarWrapper>
       <Menu
         getContentAnchorEl={null}
         anchorEl={anchorEl}
@@ -112,9 +115,14 @@ const TopMenu: React.FC<Props> = (props) => {
   )
 }
 
+type StateProps = Pick<Props, 'userId'>
+const mapStateToProps = (state: StoreTypes): StateProps => ({
+  userId: selectors.profile.userId(state),
+})
+
 type DispatchProps = Pick<Props, 'onLogout'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onLogout: () => dispatch(Actions.authorization.logoutRequest()),
 })
 
-export default connect(null, mapDispatchToProps)(TopMenu)
+export default connect(mapStateToProps, mapDispatchToProps)(TopMenu)

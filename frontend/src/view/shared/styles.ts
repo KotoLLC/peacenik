@@ -168,13 +168,23 @@ export const PreloaderViewport = styled.div`
   background: #fff;
 `
 
-export const AvatarWrapper = styled(Link)`
+export const AvatarWrapperLink = styled(Link)`
   border-radius: 50%;
   overflow: hidden;
   background: #bdbdbd;
   width: 40px;
   height: 40px;
   margin: 0 10px;
+`
+
+export const AvatarWrapper = styled.div`
+  border-radius: 50%;
+  overflow: hidden;
+  background: #bdbdbd;
+  width: 40px;
+  height: 40px;
+  margin: 0 10px;
+  cursor: pointer;
 `
 
 export const ErrorMessage = styled.div`

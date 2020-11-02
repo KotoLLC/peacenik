@@ -8,26 +8,22 @@ import selectors from '@selectors/index'
 import { StoreTypes, ApiTypes } from 'src/types'
 import logo from './../../assets/images/logo-white.png'
 import logoMobile from './../../assets/images/koto-logo-mobile.png'
-import { getAvatarUrl } from '@services/avatarUrl'
 import Badge from '@material-ui/core/Badge'
-import Avatar from '@material-ui/core/Avatar'
 
 import {
   LogoWrapper,
   TopBarRightSide,
   NotificationsWrapper,
-  AvatarWrapper,
   Logo,
   LogoMobile,
 } from './styles'
 
 interface Props {
   notificationsUnread: ApiTypes.Notifications.Notification[]
-  userId: string
 }
 
 const TopBar: React.SFC<Props> = React.memo((props) => {
-  const { notificationsUnread, userId } = props
+  const { notificationsUnread } = props
   
   return (
     <AppBar position="fixed" color="primary">
@@ -43,19 +39,15 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
             </Badge>
           </NotificationsWrapper>}
           <TopMenu />
-          <AvatarWrapper to="/profile/me">
-            <Avatar src={getAvatarUrl(userId)} />
-          </AvatarWrapper>
         </TopBarRightSide>
       </Toolbar>
     </AppBar>
   )
 })
 
-type StateProps = Pick<Props, 'notificationsUnread' | 'userId'>
+type StateProps = Pick<Props, 'notificationsUnread'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   notificationsUnread: selectors.notifications.notificationsUnread(state),
-  userId: selectors.profile.userId(state),
 })
 
 export default connect(mapStateToProps)(TopBar)
