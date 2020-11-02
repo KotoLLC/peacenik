@@ -2,7 +2,6 @@ import styled from 'styled-components'
 import Container from '@material-ui/core/Container'
 import Paper from '@material-ui/core/Paper'
 import FormControl from '@material-ui/core/FormControl'
-import Button from '@material-ui/core/Button'
 
 export const ContainerStyled = styled(Container)`
   && {
@@ -25,7 +24,7 @@ export const Header = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-` 
+`
 
 export const Title = styled.h3`
   font-size: 18px;
@@ -36,6 +35,10 @@ export const UserContentWrapper = styled.div`
   margin-top: 10px;
   display: flex;
   justify-content: center;
+  
+  &.user-profile {
+    align-items: flex-end;
+  }
 
   @media (max-width: 600px) {
     flex-wrap: wrap;
@@ -44,7 +47,12 @@ export const UserContentWrapper = styled.div`
 `
 
 export const AvatarWrapper = styled.div`
-  width: 200px;
+  width: 180px;
+
+  &.user-profile {
+    margin-top: 0;
+    width: 170px;
+  }
 `
 
 export const AvatarLabel = styled.label`
@@ -100,12 +108,6 @@ export const FieldNote = styled.p`
   color: #999;
 `
 
-export const UnfriendButton = styled(Button)`
-  && {
-    margin-bottom: 10px;
-  }
-`
-
 export const UsersWrapper = styled.div`
   max-width: 500px;
   width: 100%;
@@ -114,4 +116,8 @@ export const UsersWrapper = styled.div`
   @media (max-width: 600px) {
     max-width: 100%;
   }
+`
+
+export const UserMenuWrapper = styled.div`
+  /* align-items: flex-end; */
 `

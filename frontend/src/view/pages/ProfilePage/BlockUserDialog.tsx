@@ -4,10 +4,14 @@ import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
+import BlockIcon from '@material-ui/icons/Block'
+import ListItemText from '@material-ui/core/ListItemText'
 import {
   DialogTextWrapper,
   DialogTitleStyled,
   DialogContentStyled,
+  ListItemIconStyled, 
+  MenuItemWrapper,
 } from '@view/shared/styles'
 
 interface Props {
@@ -17,7 +21,7 @@ interface Props {
   callback?: () => void
 }
 
-const DisableUserDialog: React.FC<Props> = (props) => {
+const BlockUserDialog: React.FC<Props> = (props) => {
   const [open, setOpen] = React.useState(false)
   const { onDisableUser, userId, callback } = props
 
@@ -32,7 +36,12 @@ const DisableUserDialog: React.FC<Props> = (props) => {
 
   return (
     <div>
-      <Button variant="contained" color="secondary" onClick={() => setOpen(true)}>Block</Button>
+      <MenuItemWrapper onClick={() => setOpen(true)}>
+        <ListItemIconStyled>
+          <BlockIcon fontSize="small" />
+        </ListItemIconStyled>
+        <ListItemText primary="Block" />
+      </MenuItemWrapper>
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
@@ -65,4 +74,4 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onDisableUser: (value: string) => dispatch(Actions.profile.disableUserRequest(value)),
 })
 
-export default connect(null, mapDispatchToProps)(DisableUserDialog)
+export default connect(null, mapDispatchToProps)(BlockUserDialog)

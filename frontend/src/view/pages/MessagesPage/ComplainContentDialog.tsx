@@ -8,12 +8,14 @@ import Actions from '@store/actions'
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline'
 import MenuItem from '@material-ui/core/MenuItem'
 import ListItemText from '@material-ui/core/ListItemText'
+
 import {
   ListItemIconStyled,
   DialogTextWrapper,
   DialogTitleStyled,
   DialogContentStyled,
   ErrorMessage,
+  MenuItemWrapper,
 } from '@view/shared/styles'
 import { TextFieldStyled } from './styles'
 
@@ -49,13 +51,13 @@ const ComplainContentDialog: React.SFC<Props> = (props) => {
   }
 
   return (
-    <div>
-      <MenuItem onClick={() => setOpen(true)}>
+    <>
+      <MenuItemWrapper onClick={() => setOpen(true)}>
         <ListItemIconStyled>
           <ErrorOutlineIcon fontSize="small" />
         </ListItemIconStyled>
         <ListItemText primary="Report" />
-      </MenuItem>
+      </MenuItemWrapper>
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
@@ -86,7 +88,7 @@ const ComplainContentDialog: React.SFC<Props> = (props) => {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </>
   )
 }
 

@@ -4,6 +4,7 @@ import Menu from '@material-ui/core/Menu'
 import IconButton from '@material-ui/core/IconButton'
 import ComplainContentDialog from './ComplainContentDialog'
 import HideMessageDialog from './HideMessageDialog'
+import MenuItem from '@material-ui/core/MenuItem'
 
 interface Props {
   sourceHost: string
@@ -39,8 +40,12 @@ export const NoAuthorButtonsMenu: React.FC<Props> = React.memo((props) => {
         open={Boolean(anchorEl)}
         onClose={onMenuClose}
       >
-        <HideMessageDialog {...{ id, sourceHost }} />
-        <ComplainContentDialog {...{ message, id, sourceHost }} />
+        <MenuItem>
+          <HideMessageDialog {...{ id, sourceHost }} />
+        </MenuItem>
+        <MenuItem>
+          <ComplainContentDialog {...{ message, id, sourceHost }} />
+        </MenuItem>
       </Menu>
     </>
   )

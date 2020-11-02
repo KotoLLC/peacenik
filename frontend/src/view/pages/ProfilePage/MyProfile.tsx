@@ -15,13 +15,13 @@ import InputAdornment from '@material-ui/core/InputAdornment'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
 import loadImage from 'blueimp-load-image'
+import { capitalizeFirstLetter } from '@services/capitalizeFirstLetter'
 
 import {
   UserContentWrapper,
   AvatarWrapper,
   FormWrapper,
   AvatarLabel,
-  UserNameWrapper,
   FormControlStyled,
   UploadInput,
   FieldNote,
@@ -301,26 +301,10 @@ class MyProfile extends React.PureComponent<Props, State> {
       isNewPasswordVisible,
     } = this.state
 
-    /*
-    
-    <ProfileWrapper>
-            <Header>
-              <Title>Profile</Title>
-            </Header>
-            <Switch>
-              <Route path="/profile/me" exact component={MyProfile} />
-              <Route path="/profile/user">
-                {(myUserId === currentUserId) ? <Redirect to="/profile/me" /> : <UserProfile/>}
-              </Route>
-            </Switch>
-          </ProfileWrapper>
-  
-    */
-
     return (
       <ProfileWrapper>
         <Header>
-          <Title>Profile</Title>
+        <Title>{capitalizeFirstLetter(userName)}</Title>
         </Header>
         <UserContentWrapper>
           <AvatarWrapper>
@@ -338,9 +322,6 @@ class MyProfile extends React.PureComponent<Props, State> {
             </Tooltip>
           </AvatarWrapper>
           <FormWrapper onSubmit={this.onFormSubmit}>
-            <UserNameWrapper>
-              Name: {userName}
-            </UserNameWrapper>
             <FormControlStyled variant="outlined">
               <InputLabel
                 htmlFor="email"

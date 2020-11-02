@@ -5,9 +5,10 @@ import { ApiTypes } from 'src/types'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import { capitalizeFirstLetter } from '@services/capitalizeFirstLetter'
-import { DialogTitleStyled } from '@view/shared/styles'
-import { UnfriendButton } from './styles'
 import Button from '@material-ui/core/Button'
+import PersonAddDisabledIcon from '@material-ui/icons/PersonAddDisabled'
+import ListItemText from '@material-ui/core/ListItemText'
+import { DialogTitleStyled, ListItemIconStyled, MenuItemWrapper } from '@view/shared/styles'
 
 interface Props {
   userId: string
@@ -16,7 +17,7 @@ interface Props {
   onRejectInvitation: (value: ApiTypes.Friends.InvitationReject) => void
 }
 
-const RemoveFriendDialog: React.SFC<Props> = (props) => {
+const UnfriendDialog: React.SFC<Props> = (props) => {
   const [open, setOpen] = React.useState(false)
   const { onRejectInvitation, userId, userName = '' } = props
 
@@ -26,8 +27,13 @@ const RemoveFriendDialog: React.SFC<Props> = (props) => {
   }
 
   return (
-    <div>
-      <UnfriendButton variant="contained" onClick={() => setOpen(true)}>Unfriend</UnfriendButton>
+    <>
+      <MenuItemWrapper onClick={() => setOpen(true)}>
+        <ListItemIconStyled>
+          <PersonAddDisabledIcon fontSize="small" />
+        </ListItemIconStyled>
+        <ListItemText primary="Unfriend" />
+      </MenuItemWrapper>
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
@@ -44,7 +50,7 @@ const RemoveFriendDialog: React.SFC<Props> = (props) => {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </>
   )
 }
 
@@ -53,4 +59,4 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onRejectInvitation: (data: ApiTypes.Friends.InvitationReject) => dispatch(Actions.friends.rejectInvitationRequest(data)),
 })
 
-export default connect(null, mapDispatchToProps)(RemoveFriendDialog)
+export default connect(null, mapDispatchToProps)(UnfriendDialog)

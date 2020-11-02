@@ -6,8 +6,6 @@ import Actions from '@store/actions'
 import { getAvatarUrl } from '@services/avatarUrl'
 import queryString from 'query-string'
 import { history } from '@view/routes'
-import DisableUserDialog from '@view/shared/DisableUserDialog'
-import RemoveFriendDialog from './RemoveFriendDialog'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemAvatar from '@material-ui/core/ListItemAvatar'
@@ -17,6 +15,7 @@ import IconButton from '@material-ui/core/IconButton'
 import AccessTimeIcon from '@material-ui/icons/AccessTime'
 import PersonAddIcon from '@material-ui/icons/PersonAdd'
 import { capitalizeFirstLetter } from '@services/capitalizeFirstLetter'
+import { UserProfileMenu } from './UserProfileMenu'
 
 import {
   UserName,
@@ -27,7 +26,6 @@ import {
 import {
   UserContentWrapper,
   AvatarWrapper,
-  FormWrapper,
   AvatarLabel,
   ProfileWrapper,
   Header,
@@ -120,16 +118,13 @@ const UserProfile: React.FC<Props> = (props) => {
         <Header>
           <Title>{(users[0]?.name) ? capitalizeFirstLetter(users[0]?.name) : ''}</Title>
         </Header>
-        <UserContentWrapper>
-          <AvatarWrapper>
+        <UserContentWrapper className="user-profile">
+          <AvatarWrapper className="user-profile">
             <AvatarLabel className="no-link">
               <img src={getAvatarUrl(userId as string)} alt={userName} />
             </AvatarLabel>
           </AvatarWrapper>
-          <FormWrapper>
-            <RemoveFriendDialog userId={userId as string} userName={users[0]?.name} />
-            <DisableUserDialog userId={userId as string} />
-          </FormWrapper>
+          <UserProfileMenu userId={userId as string} userName={users[0]?.name} />
         </UserContentWrapper>
       </ProfileWrapper>
       <ProfileWrapper>

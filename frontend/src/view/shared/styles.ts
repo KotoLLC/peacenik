@@ -192,3 +192,12 @@ export const ErrorMessage = styled.div`
   color: red;
   margin-top: 20px;
 `
+
+export const MenuItemWrapper = styled.div`
+  display: flex;
+  position: relative;
+  box-sizing: border-box;
+  text-align: left;
+  align-items: center;
+  justify-content: flex-start;
+`

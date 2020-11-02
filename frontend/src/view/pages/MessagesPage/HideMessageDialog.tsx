@@ -6,9 +6,8 @@ import { connect } from 'react-redux'
 import { ApiTypes } from 'src/types'
 import Actions from '@store/actions'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
-import MenuItem from '@material-ui/core/MenuItem'
 import ListItemText from '@material-ui/core/ListItemText'
-import { ListItemIconStyled, DialogTitleStyled } from '@view/shared/styles'
+import { ListItemIconStyled, DialogTitleStyled, MenuItemWrapper } from '@view/shared/styles'
 
 interface Props {
   id: string
@@ -30,13 +29,13 @@ const HideMessageDialog: React.SFC<Props> = (props) => {
   }
 
   return (
-    <div>
-      <MenuItem onClick={() => setOpen(true)}>
+    <>
+      <MenuItemWrapper onClick={() => setOpen(true)}>
         <ListItemIconStyled>
           <VisibilityOffIcon fontSize="small" />
         </ListItemIconStyled>
         <ListItemText primary="Hide" />
-      </MenuItem>
+      </MenuItemWrapper>
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
@@ -53,7 +52,7 @@ const HideMessageDialog: React.SFC<Props> = (props) => {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </>
   )
 }
 
