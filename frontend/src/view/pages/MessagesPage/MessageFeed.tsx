@@ -34,17 +34,20 @@ interface Props extends RouteComponentProps {
 
 interface State {
   authToken: string
+  messageLenght: number
 }
 
 class MessageFeed extends React.Component<Props, State> {
 
   state = {
     authToken: '',
+    messageLenght: 0,
   }
 
   timerId
 
   editorRef = React.createRef<HTMLDivElement>()
+  lastMessageRef = React.createRef<HTMLDivElement>()
 
   componentDidMount() {
     const { onGetMessages, onGetCurrentHub, authToken } = this.props
@@ -62,19 +65,24 @@ class MessageFeed extends React.Component<Props, State> {
   }
 
   onScrollList = () => {
-    const scrollHeight = Math.max(
-      document.body.scrollHeight, document.documentElement.scrollHeight,
-      document.body.offsetHeight, document.documentElement.offsetHeight,
-      document.body.clientHeight, document.documentElement.clientHeight
-    )
+    const { isMoreMessagesRequested, messages } = this.props
+    const { messageLenght } = this.state
+    const lastMessageRect = this.lastMessageRef?.current?.getBoundingClientRect()
 
-    if (scrollHeight === window.innerHeight + window.pageYOffset) {
-      this.props.onGetMoreMessages()
+    if (!lastMessageRect) return 
+
+    if (lastMessageRect?.top <= window.innerHeight && isMoreMessagesRequested !== true) {
+      if (messages?.length !== messageLenght) {
+        this.props.onGetMoreMessages()
+        this.setState({
+          messageLenght: messages.length
+        })
+      }
     }
   }
 
   static getDerivedStateFromProps(newProps: Props, prevState: State) {
-    
+
     if (newProps.authToken !== prevState.authToken) {
       newProps.onGetMessages()
       newProps.onGetCurrentHub()
@@ -82,7 +90,6 @@ class MessageFeed extends React.Component<Props, State> {
         authToken: newProps.authToken
       }
     }
-
     return null
   }
 
@@ -90,7 +97,7 @@ class MessageFeed extends React.Component<Props, State> {
     if (this.props.authToken !== newState.authToken) {
       this.timerId = setInterval(() => {
         newProps.onGetMessages()
-      }, 10000)
+      }, 20000)
     }
 
     return true
@@ -104,13 +111,26 @@ class MessageFeed extends React.Component<Props, State> {
   mapMessages = (messages: ApiTypes.Messages.Message[]) => {
     const { userId } = this.props
     const sortedData = sortByDate(messages)
-    return sortedData.map(item => <Message
-      {...item}
-      key={item.id}
-      isAuthor={(userId === item.user_id) ? true : false} />
-    )
+
+    return sortedData.map((item, index) => {
+
+      if (index === sortedData.length - 1) {
+        return (
+          <div ref={this.lastMessageRef} key={item.id}>
+            <Message
+              {...item}
+              isAuthor={(userId === item.user_id) ? true : false} />
+          </div>
+        )
+      }
+
+      return <Message
+        {...item}
+        key={item.id}
+        isAuthor={(userId === item.user_id) ? true : false} />
+    })
   }
- 
+
   onScrollUp = () => {
     this.editorRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
   }
@@ -122,7 +142,7 @@ class MessageFeed extends React.Component<Props, State> {
       return (
         <EmptyMessageFeed>
           <PreloaderWrapper>
-            <CircularProgress/>
+            <CircularProgress />
           </PreloaderWrapper>
         </EmptyMessageFeed>
       )
@@ -152,7 +172,7 @@ class MessageFeed extends React.Component<Props, State> {
     return (
       <ContainerStyled maxWidth="md">
         {this.checkCurrentHub()}
-        {isMoreMessagesRequested && <PreloaderWrapper className="bottom"><CircularProgress/></PreloaderWrapper>}
+        {isMoreMessagesRequested && <PreloaderWrapper className="bottom"><CircularProgress /></PreloaderWrapper>}
         <UpButton color="inherit" onClick={this.onScrollUp}>
           <ArrowUpwardIcon />
         </UpButton>
@@ -161,17 +181,17 @@ class MessageFeed extends React.Component<Props, State> {
   }
 }
 
-type StateProps = Pick<Props, 
-  | 'messageTokens' 
+type StateProps = Pick<Props,
+  | 'messageTokens'
   | 'currentHub'
-  | 'messages' 
-  | 'userId' 
-  | 'authToken' 
+  | 'messages'
+  | 'userId'
+  | 'authToken'
   | 'isMoreMessagesRequested'
   | 'isMessagesRequested'
   | 'isAboutUsViewed'
   | 'isCurrentHubReqyested'
-  >
+>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   messageTokens: selectors.messages.messageTokens(state),
   currentHub: selectors.messages.currentHub(state),

@@ -22,6 +22,10 @@ export const PaperStyled = styled(Paper)`
     margin-bottom: 12px;
   }
 
+  &.last {
+    background: grey;
+  }
+
   @media (max-width: 600px) {
     padding: 15px 0px;
   }
