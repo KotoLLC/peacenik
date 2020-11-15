@@ -102,6 +102,7 @@ message MessageDeleteCommentRequest {
 
 message MessageLikeMessageRequest {
     string message_id = 1;
+    bool unlike = 2;
 }
 
 message MessageLikeMessageResponse {
@@ -110,6 +111,7 @@ message MessageLikeMessageResponse {
 
 message MessageLikeCommentRequest {
     string comment_id = 1;
+    bool unlike = 2;
 }
 
 message MessageLikeCommentResponse {

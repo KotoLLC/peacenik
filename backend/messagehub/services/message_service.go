@@ -712,14 +712,23 @@ func (s *messageService) LikeMessage(ctx context.Context, r *rpc.MessageLikeMess
 		return nil, twirp.NotFoundError("message not found")
 	}
 
-	newLikeCount, err := s.repos.Message.LikeMessage(user.ID, msg.ID)
-	if err != nil {
-		return nil, err
+	var newLikeCount int
+	if r.Unlike {
+		newLikeCount, err = s.repos.Message.UnlikeMessage(user.ID, msg.ID)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		newLikeCount, err = s.repos.Message.LikeMessage(user.ID, msg.ID)
+		if err != nil {
+			return nil, err
+		}
+		s.notificationSender.SendNotification([]string{msg.UserID}, user.Name+" liked your post", "message/like", map[string]interface{}{
+			"user_id":    user.ID,
+			"message_id": msg.ID,
+		})
 	}
-	s.notificationSender.SendNotification([]string{msg.UserID}, user.Name+" liked your post", "message/like", map[string]interface{}{
-		"user_id":    user.ID,
-		"message_id": msg.ID,
-	})
+
 	return &rpc.MessageLikeMessageResponse{
 		Likes: int32(newLikeCount),
 	}, nil
@@ -749,15 +758,23 @@ func (s *messageService) LikeComment(ctx context.Context, r *rpc.MessageLikeComm
 		return nil, twirp.NotFoundError("message not found")
 	}
 
-	newLikeCount, err := s.repos.Message.LikeMessage(user.ID, comment.ID)
-	if err != nil {
-		return nil, err
+	var newLikeCount int
+	if r.Unlike {
+		newLikeCount, err = s.repos.Message.UnlikeMessage(user.ID, comment.ID)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		newLikeCount, err = s.repos.Message.LikeMessage(user.ID, comment.ID)
+		if err != nil {
+			return nil, err
+		}
+		s.notificationSender.SendNotification([]string{comment.UserID}, user.Name+" liked your comment", "comment/like", map[string]interface{}{
+			"user_id":    user.ID,
+			"message_id": comment.ParentID.String,
+			"comment_id": comment.ID,
+		})
 	}
-	s.notificationSender.SendNotification([]string{comment.UserID}, user.Name+" liked your comment", "comment/like", map[string]interface{}{
-		"user_id":    user.ID,
-		"message_id": comment.ParentID.String,
-		"comment_id": comment.ID,
-	})
 	return &rpc.MessageLikeCommentResponse{
 		Likes: int32(newLikeCount),
 	}, nil

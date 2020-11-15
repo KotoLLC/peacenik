@@ -165,6 +165,19 @@ Content-Type: application/json
 }
 ```
 
+### Unlike a message
+
+```
+POST http://localhost:12012/rpc.MessageService/LikeMessage
+Authorization: Bearer AUTH-TOKEN
+Content-Type: application/json
+
+{
+  "message_id": "MESSAGE-ID",
+  "unlike": true
+}
+```
+
 ### Like a comment
 
 ```
@@ -174,6 +187,19 @@ Content-Type: application/json
 
 {
   "comment_id": "COMMENT-ID"
+}
+```
+
+### Unlike a comment
+
+```
+POST http://localhost:12012/rpc.MessageService/LikeComment
+Authorization: Bearer AUTH-TOKEN
+Content-Type: application/json
+
+{
+  "comment_id": "COMMENT-ID",
+  "unlike": true
 }
 ```
 

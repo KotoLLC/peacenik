@@ -65,6 +65,7 @@ type MessageRepo interface {
 	DeleteMessage(userID, messageID string) error
 	Comments(currentUserID string, messageIDs []string) (map[string][]Message, error)
 	LikeMessage(userID, messageID string) (likes int, err error)
+	UnlikeMessage(userID, messageID string) (likes int, err error)
 	MessagesLikes(messageIDs []string) (likes map[string][]MessageLike, err error)
 	MessageLikes(messageID string) (likes []MessageLike, err error)
 	SetMessageVisibility(userID, messageID string, visibility bool) error
@@ -351,6 +352,21 @@ func (r *messageRepo) LikeMessage(userID, messageID string) (likes int, err erro
 		select $1, $2, $3
 		where not exists(select * from message_likes where message_id = $1 and user_id = $2)`,
 		messageID, userID, common.CurrentTimestamp())
+	if err != nil {
+		return -1, merry.Wrap(err)
+	}
+	err = r.db.Get(&likes, "select count(*) from message_likes where message_id = $1", messageID)
+	if err != nil {
+		return -1, merry.Wrap(err)
+	}
+	return likes, nil
+}
+
+func (r *messageRepo) UnlikeMessage(userID, messageID string) (likes int, err error) {
+	_, err = r.db.Exec(`
+		delete from message_likes
+		where message_id = $1 and user_id = $2;`,
+		messageID, userID)
 	if err != nil {
 		return -1, merry.Wrap(err)
 	}
