@@ -101,8 +101,16 @@ func (s *messageHubService) Hubs(ctx context.Context, _ *rpc.Empty) (*rpc.Messag
 func (s *messageHubService) Verify(ctx context.Context, r *rpc.MessageHubVerifyRequest) (*rpc.MessageHubVerifyResponse, error) {
 	hub, err := s.repos.MessageHubs.HubByID(r.HubId)
 	if err != nil {
-		return nil, err
+		if !merry.Is(err, repo.ErrHubNotFound) {
+			return nil, err
+		}
+		hubAddress := common.CleanPublicURL(r.HubId)
+		hub, err = s.repos.MessageHubs.HubByIDOrAddress(hubAddress)
+		if err != nil {
+			return nil, err
+		}
 	}
+
 	_, err = loadNodePublicKey(ctx, hub.Address)
 	if err != nil {
 		return &rpc.MessageHubVerifyResponse{
