@@ -42,6 +42,12 @@ func (s *messageHubService) Register(ctx context.Context, r *rpc.MessageHubRegis
 	if hubExists {
 		return nil, twirp.NewError(twirp.AlreadyExists, "hub already exists")
 	}
+
+	_, err = loadNodePublicKey(ctx, r.Address)
+	if err != nil {
+		return nil, twirp.NewError(twirp.InvalidArgument, err.Error())
+	}
+
 	hubID, err := s.repos.MessageHubs.AddHub(r.Address, r.Details, user, int(r.PostLimit))
 	if err != nil {
 		return nil, err
@@ -99,19 +105,18 @@ func (s *messageHubService) Hubs(ctx context.Context, _ *rpc.Empty) (*rpc.Messag
 }
 
 func (s *messageHubService) Verify(ctx context.Context, r *rpc.MessageHubVerifyRequest) (*rpc.MessageHubVerifyResponse, error) {
+	var hubAddress string
 	hub, err := s.repos.MessageHubs.HubByID(r.HubId)
 	if err != nil {
 		if !merry.Is(err, repo.ErrHubNotFound) {
 			return nil, err
 		}
-		hubAddress := common.CleanPublicURL(r.HubId)
-		hub, err = s.repos.MessageHubs.HubByIDOrAddress(hubAddress)
-		if err != nil {
-			return nil, err
-		}
+		hubAddress = common.CleanPublicURL(r.HubId)
+	} else {
+		hubAddress = hub.Address
 	}
 
-	_, err = loadNodePublicKey(ctx, hub.Address)
+	_, err = loadNodePublicKey(ctx, hubAddress)
 	if err != nil {
 		return &rpc.MessageHubVerifyResponse{
 			Error: err.Error(),
