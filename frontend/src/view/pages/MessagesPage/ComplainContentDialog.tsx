@@ -6,7 +6,6 @@ import { connect } from 'react-redux'
 import { ApiTypes } from 'src/types'
 import Actions from '@store/actions'
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline'
-import MenuItem from '@material-ui/core/MenuItem'
 import ListItemText from '@material-ui/core/ListItemText'
 
 import {

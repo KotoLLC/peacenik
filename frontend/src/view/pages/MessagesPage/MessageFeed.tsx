@@ -9,7 +9,8 @@ import { RouteComponentProps } from 'react-router-dom'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { sortByDate } from '@services/sortByDate'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
-import ReactPullToRefresh from 'react-pull-to-refresh'
+// import ReactPullToRefresh from 'react-pull-to-refresh'
+
 import {
   ContainerStyled,
   EmptyMessageFeed,
@@ -70,7 +71,7 @@ class MessageFeed extends React.Component<Props, State> {
     const { messageLenght } = this.state
     const lastMessageRect = this.lastMessageRef?.current?.getBoundingClientRect()
 
-    if (!lastMessageRect) return 
+    if (!lastMessageRect) return
 
     if (lastMessageRect?.top <= window.innerHeight && isMoreMessagesRequested !== true) {
       if (messages?.length !== messageLenght) {
@@ -138,7 +139,7 @@ class MessageFeed extends React.Component<Props, State> {
 
   onRefresh = (resolve, reject) => {
     this.props.onGetMessages()
-    
+
     if (true) {
       resolve()
     }
@@ -158,10 +159,10 @@ class MessageFeed extends React.Component<Props, State> {
     } else {
 
       return (
-        <ReactPullToRefresh onRefresh={this.onRefresh}>
+        <>
           <div ref={this.editorRef}><Editor /></div>
           {this.mapMessages(messages)}
-        </ReactPullToRefresh>
+        </>
       )
     }
   }
@@ -179,13 +180,15 @@ class MessageFeed extends React.Component<Props, State> {
     const { isMoreMessagesRequested } = this.props
 
     return (
-      <ContainerStyled maxWidth="md">
-        {this.checkCurrentHub()}
-        {isMoreMessagesRequested && <PreloaderWrapper className="bottom"><CircularProgress /></PreloaderWrapper>}
-        <UpButton color="inherit" onClick={this.onScrollUp}>
-          <ArrowUpwardIcon />
-        </UpButton>
-      </ContainerStyled>
+      // <ReactPullToRefresh onRefresh={this.onRefresh}>
+        <ContainerStyled maxWidth="md">
+          {this.checkCurrentHub()}
+          {isMoreMessagesRequested && <PreloaderWrapper className="bottom"><CircularProgress /></PreloaderWrapper>}
+          <UpButton color="inherit" onClick={this.onScrollUp}>
+            <ArrowUpwardIcon />
+          </UpButton>
+        </ContainerStyled>
+      // </ReactPullToRefresh>
     )
   }
 }
