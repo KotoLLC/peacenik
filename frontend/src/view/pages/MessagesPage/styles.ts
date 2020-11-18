@@ -447,3 +447,18 @@ export const TextFieldStyled = styled(TextField)`
     }
   }
 ` 
+
+export const MobileImageWrapper = styled.div`
+  display: none;
+
+  @media (max-width: 600px) {
+    display: block;
+  }
+`
+
+export const DesktopImageWrapper = styled.div`
+
+  @media (max-width: 600px) {
+    display: none;
+  }
+`
