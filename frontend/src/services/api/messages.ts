@@ -154,8 +154,10 @@ export default {
         Authorization: `Bearer ${authToken}`,
       }
     }
+
     return await axiosInstance.post(`${data.host}/rpc.MessageService/LikeMessage`, {
-      'message_id': data.id
+      'message_id': data.id,
+      'unlike': data?.unlike
     }, config).then(response => {
       return response
     }).catch(error => ({ error }))
@@ -170,7 +172,8 @@ export default {
       }
     }
     return await axiosInstance.post(`${data.host}/rpc.MessageService/LikeComment`, {
-      'comment_id': data.id
+      'comment_id': data.id,
+      'unlike': data?.unlike
     }, config).then(response => {
       return response
     }).catch(error => ({ error }))

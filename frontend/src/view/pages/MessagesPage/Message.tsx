@@ -174,8 +174,11 @@ const Message: React.SFC<Props> = (props) => {
     return (
       <Tooltip
         onClick={() => {
-          if (liked_by_me) return false
-          onLikeMessage({ host: sourceHost, id: id })
+          if (liked_by_me) {
+            onLikeMessage({ host: sourceHost, id: id, unlike: true })
+          } else {
+            onLikeMessage({ host: sourceHost, id: id })
+          }
         }}
         title={(isLikesInfoRequested) ? <CircularProgressStyled size={30} /> : <>{usersLikes || likesInfo}</>}
         interactive onOpen={() => getLikesInfo()}>
@@ -288,8 +291,11 @@ const Message: React.SFC<Props> = (props) => {
     return (
       <ReactionNavWrapper>
         <ReactionNavItem onClick={() => {
-          if (liked_by_me) return false
-          onLikeMessage({ host: sourceHost, id: id })
+          if (liked_by_me) {
+            onLikeMessage({ host: sourceHost, id: id, unlike: true })
+          } else {
+            onLikeMessage({ host: sourceHost, id: id })
+          }
         }}>
           {liked_by_me ? <FavoriteIcon color="inherit" /> : <FavoriteBorderIcon color="inherit" />}
           <ReactionNavText>Like</ReactionNavText>

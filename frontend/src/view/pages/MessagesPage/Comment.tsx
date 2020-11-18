@@ -115,8 +115,11 @@ const Comment: React.SFC<Props> = (props) => {
     return (
       <Tooltip
         onClick={() => {
-          if (liked_by_me) return false
-          onLikeComment({ host: sourceHost, id: id })
+          if (liked_by_me) {
+            onLikeComment({ host: sourceHost, id: id, unlike: true })
+          } else {
+            onLikeComment({ host: sourceHost, id: id })
+          }
         }}
         title={(isLikesInfoRequested) ? <CircularProgressStyled size={30} /> : <>{usersLikes || likesInfo}</>}
         interactive onOpen={() => getLikesInfo()}>

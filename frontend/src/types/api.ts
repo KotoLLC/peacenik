@@ -268,6 +268,7 @@ export declare namespace ApiTypes {
     export interface Like {
       host: string
       id: string
+      unlike?: boolean
     }
 
     export interface Hide {
