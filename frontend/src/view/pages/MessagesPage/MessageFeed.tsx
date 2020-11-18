@@ -9,6 +9,7 @@ import { RouteComponentProps } from 'react-router-dom'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { sortByDate } from '@services/sortByDate'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
+import ReactPullToRefresh from 'react-pull-to-refresh'
 import {
   ContainerStyled,
   EmptyMessageFeed,
@@ -135,6 +136,14 @@ class MessageFeed extends React.Component<Props, State> {
     this.editorRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
   }
 
+  onRefresh = (resolve, reject) => {
+    this.props.onGetMessages()
+    
+    if (true) {
+      resolve()
+    }
+  }
+
   checkCurrentHub = () => {
     const { messages, isCurrentHubReqyested } = this.props
 
@@ -149,10 +158,10 @@ class MessageFeed extends React.Component<Props, State> {
     } else {
 
       return (
-        <>
+        <ReactPullToRefresh onRefresh={this.onRefresh}>
           <div ref={this.editorRef}><Editor /></div>
           {this.mapMessages(messages)}
-        </>
+        </ReactPullToRefresh>
       )
     }
   }

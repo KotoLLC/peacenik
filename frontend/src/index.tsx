@@ -14,6 +14,8 @@ import moment from 'moment'
 import 'video-react/dist/video-react.css'
 import 'react-awesome-slider/dist/styles.css'
 import 'github-markdown-css'
+import './assets/styles/pullToRefresh.css'
+import './assets/styles/genericons/genericons.css'
 
 const defaultTheme = createMuiTheme({
   typography: {

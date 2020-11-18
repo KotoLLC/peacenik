@@ -5,6 +5,7 @@ import NotificationsList from './list'
 import NotificationsInfo from './info'
 
 export const NotificationsPage = () => (
+
   <WithTopBar>
     <Switch>
       <Route path="/notifications" exact component={NotificationsList} />

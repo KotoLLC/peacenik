@@ -10,6 +10,8 @@ import Actions from '@store/actions'
 import FavoriteIcon from '@material-ui/icons/Favorite'
 import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
 import selectors from '@selectors/index'
+import ReactPullToRefresh from 'react-pull-to-refresh'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 import {
   Header,
@@ -28,7 +30,7 @@ interface Props {
   notifications: ApiTypes.Notifications.Notification[]
   lastKnownIdFromMessageHubs: CommonTypes.NotificationTypes.LastKnown[]
   lastKnownIdFromUserHub: CommonTypes.NotificationTypes.LastKnown | null
-  
+
   onGetNotifications: () => void
   onCleanNotificationsInUserHub: (data: CommonTypes.NotificationTypes.LastKnown) => void
   onCleanNotificationsInMessageHub: (data: CommonTypes.NotificationTypes.LastKnown) => void
@@ -56,7 +58,7 @@ class NotificationsList extends React.PureComponent<Props, State> {
     let urlVars = `?type=${type}`
 
     const dataObj = JSON.parse(data as any) // tslint:disable-line
-    
+
     dataObj.messageToken = messageToken
     dataObj.sourceHost = sourceHost
 
@@ -157,7 +159,7 @@ class NotificationsList extends React.PureComponent<Props, State> {
       })
     }
   }
- 
+
   markAsReadNotification = () => {
     const {
       lastKnownIdFromMessageHubs,
@@ -177,27 +179,37 @@ class NotificationsList extends React.PureComponent<Props, State> {
     }
   }
 
+  onRefresh = (resolve, reject) => {
+    this.props.onGetNotifications()
+    
+    if (true) {
+      resolve()
+    }
+  }
+
   render() {
     const { notifications } = this.state
 
     return (
       <ContainerStyled>
-        <NotificationsWrapper>
-          <Header>
-            <Title>Notifications</Title>
-          </Header>
-          <ListWrapper>
-            {this.mapNotifiactions(notifications)}
-          </ListWrapper>
-          <Footer>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={this.onClean}
-            >clear</Button>
-          </Footer>
-        </NotificationsWrapper>
-      </ContainerStyled> 
+        <ReactPullToRefresh onRefresh={this.onRefresh}>
+          <NotificationsWrapper>
+            <Header>
+              <Title>Notifications</Title>
+            </Header>
+            <ListWrapper>
+              {this.mapNotifiactions(notifications)}
+            </ListWrapper>
+            <Footer>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={this.onClean}
+              >clear</Button>
+            </Footer>
+          </NotificationsWrapper>
+        </ReactPullToRefresh>
+      </ContainerStyled>
     )
   }
 }
@@ -209,13 +221,13 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   lastKnownIdFromMessageHubs: selectors.notifications.lastKnownIdFromMessageHubs(state),
 })
 
-type DispatchProps = Pick<Props, 
-  | 'onGetNotifications' 
-  | 'onCleanNotificationsInUserHub' 
+type DispatchProps = Pick<Props,
+  | 'onGetNotifications'
+  | 'onCleanNotificationsInUserHub'
   | 'onCleanNotificationsInMessageHub'
   | 'onMarkAsReadNotificationsInUserHub'
   | 'onMarkAsReadNotificationsInMessageHub'
-  >
+>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetNotifications: () => dispatch(Actions.notifications.getNotificationsRequest()),
   onCleanNotificationsInUserHub: (data: CommonTypes.NotificationTypes.LastKnown) =>
