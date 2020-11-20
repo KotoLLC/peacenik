@@ -10,7 +10,8 @@ import Actions from '@store/actions'
 import FavoriteIcon from '@material-ui/icons/Favorite'
 import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
 import selectors from '@selectors/index'
-// import ReactPullToRefresh from 'react-pull-to-refresh'
+import PullToRefresh from 'react-simple-pull-to-refresh'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 import {
   Header,
@@ -178,20 +179,27 @@ class NotificationsList extends React.PureComponent<Props, State> {
     }
   }
 
-  onRefresh = (resolve, reject) => {
-    this.props.onGetNotifications()
-    
-    if (true) {
-      resolve()
-    }
+  onRefresh = () => {
+    return new Promise((resolve, reject) => {
+
+      this.props.onGetNotifications()
+      setTimeout(() => {
+        resolve()
+      }, 700)
+
+    })
   }
 
   render() {
     const { notifications } = this.state
 
     return (
-      <ContainerStyled>
-        {/* <ReactPullToRefresh onRefresh={this.onRefresh}> */}
+
+      <PullToRefresh
+        onRefresh={this.onRefresh}
+        refreshingContent={<CircularProgress />}
+      >
+        <ContainerStyled>
           <NotificationsWrapper>
             <Header>
               <Title>Notifications</Title>
@@ -207,8 +215,8 @@ class NotificationsList extends React.PureComponent<Props, State> {
               >clear</Button>
             </Footer>
           </NotificationsWrapper>
-        {/* </ReactPullToRefresh> */}
-      </ContainerStyled>
+        </ContainerStyled>
+      </PullToRefresh>
     )
   }
 }

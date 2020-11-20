@@ -9,7 +9,7 @@ import { RouteComponentProps } from 'react-router-dom'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { sortByDate } from '@services/sortByDate'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
-// import ReactPullToRefresh from 'react-pull-to-refresh'
+import PullToRefresh from 'react-simple-pull-to-refresh'
 
 import {
   ContainerStyled,
@@ -137,12 +137,15 @@ class MessageFeed extends React.Component<Props, State> {
     this.editorRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
   }
 
-  onRefresh = (resolve, reject) => {
-    this.props.onGetMessages()
+  onRefresh = () => {
+    return new Promise((resolve, reject) => {
+      
+      this.props.onGetMessages()
+      setTimeout(() => {
+        resolve()
+      }, 700)
 
-    if (true) {
-      resolve()
-    }
+    })
   }
 
   checkCurrentHub = () => {
@@ -180,7 +183,10 @@ class MessageFeed extends React.Component<Props, State> {
     const { isMoreMessagesRequested } = this.props
 
     return (
-      // <ReactPullToRefresh onRefresh={this.onRefresh}>
+      <PullToRefresh 
+        onRefresh={this.onRefresh}
+        refreshingContent={<CircularProgress />}
+      >
         <ContainerStyled maxWidth="md">
           {this.checkCurrentHub()}
           {isMoreMessagesRequested && <PreloaderWrapper className="bottom"><CircularProgress /></PreloaderWrapper>}
@@ -188,7 +194,7 @@ class MessageFeed extends React.Component<Props, State> {
             <ArrowUpwardIcon />
           </UpButton>
         </ContainerStyled>
-      // </ReactPullToRefresh>
+      </PullToRefresh>
     )
   }
 }
