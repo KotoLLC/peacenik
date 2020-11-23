@@ -138,12 +138,8 @@ class HubCreation extends React.PureComponent<Props, State> {
         <TitleWrapper>
           <Typography variant="h4" gutterBottom>Register a message hub</Typography>
           <Typography variant="subtitle1" gutterBottom>
-            Message hubs store messages, photos, and videos for a group of friends.
-          </Typography>
-          <Typography variant="subtitle1" gutterBottom>
-            <ButtonStyled rel="noopener" target="_blank" href="https://docs.koto.at/#/install-message-hub" color="primary">
-            Learn how to create a Message Hub
-           </ButtonStyled> 
+            Message hubs store messages, photos, and videos for a group of friends. To learn how
+            message hubs work, visit the help docs at https://docs.koto.at.
           </Typography>
         </TitleWrapper>
         <FormWrapper onSubmit={this.onFormSubmit}>
