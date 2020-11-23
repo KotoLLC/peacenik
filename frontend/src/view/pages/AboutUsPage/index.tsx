@@ -46,7 +46,7 @@ export const AboutUsSlider: React.SFC<Props> = (props) => {
           <Button rel="noopener" variant="contained" target="_blank" href="https://docs.koto.at/#/install-message-hub" color="primary">
           Set up a hub (technical!)
            </Button>
-
+           {''}
           <Button
           variant="contained"
           color="primary"
