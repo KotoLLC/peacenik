@@ -44,13 +44,14 @@ export const AboutUsSlider: React.SFC<Props> = (props) => {
   `}
         </ReactMarkdown>
           <Button rel="noopener" variant="contained" target="_blank" href="https://docs.koto.at/#/install-message-hub" color="primary">
-          Set up a hub (very technical)
-           </Button> 
+          Set up a hub (technical!)
+           </Button>
+
           <Button
           variant="contained"
           color="primary"
           onClick={onGoToInvites}>
-          Invite friend that has a hub
+          Find a friend that has a hub
           </Button>
       </ContainerStyled>
     </WithTopBar>
