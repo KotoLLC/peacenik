@@ -31,13 +31,15 @@ Now that you're signed up it's time to create a Droplet. Droplets are just Linux
 1. [Login to Digital Ocean](https://cloud.digitalocean.com/login)
 2. Click the Create button and choose `Droplet` (or click [here](https://cloud.digitalocean.com/droplets/new))
 3. Choose the following options for your Droplet:
-   **Image:** Ubuntu
-   **Plan:** Shared CPU for $5/month
-   **Datacenter region:** (choose the datacenter that is closest your friends)
-   **Authentication:** Password
-   **Create root password:** (unique password saved to your password manager)
-   **Choose a hostname:** koto-message-hub
-   **Enable backups:** Check this option ($1.00 extra) if you want backups
+```
+Image: Ubuntu
+Plan: Shared CPU for $5/month
+Datacenter region: (choose the datacenter that is closest your friends)
+Authentication: Password
+Create root password: (unique password saved to your password manager)
+Choose a hostname: koto-message-hub
+Enable backups: Check this option ($1.00 extra) if you want backups
+```
 4. Wait for the new Droplet to appear
 5. Copy the Droplet's IP address
 
@@ -48,9 +50,11 @@ Now that you're signed up it's time to create a Droplet. Droplets are just Linux
 3. Click **Manage**
 4. In the **Name Servers** section select **Custom DNS**
 5. Enter the following nameservers to point at Digital Ocean:
-    ns1.digitalocean.com
-    ns2.digitalocean.com
-    ns3.digitalocean.com
+```
+ ns1.digitalocean.com
+ ns2.digitalocean.com
+ ns3.digitalocean.com
+ ```
 6. Click the green checkmark to apply your changes
 
 ## Create DNS records for your domain
@@ -61,9 +65,11 @@ Now that you're signed up it's time to create a Droplet. Droplets are just Linux
 4. The name of your Droplet should appear in the box to right
 5. Click **Add Domain*
 6. Create a new 'A' record with the following settings:
-    **Hostname:** @
-    **Will Direct To:** (replace with your droplet's IP address)
-    **TTL:** 3600
+```
+Hostname: @
+Will Direct To: (replace with your droplet's IP address)
+TTL: 3600
+```
 7. Click **Create Record**
 
 ## Create a Digital Ocean Space
@@ -87,8 +93,10 @@ You need a Digital Ocean Space to store phots and videos.
 ## Install Docker and Koto on your Droplet
 
 1. Open a terminal session
-2. SSH into your instance using the Droplet's IP address
-`ssh root@(replace with your droplet's IP address)`
+2. SSH into your instance using the Droplet's IP address:
+```
+ssh root@(replace with your droplet's IP address)
+```
 3. Install Docker Engine (be patient - the update takes a minute)
 ```
 sudo apt-get update
@@ -153,18 +161,21 @@ echo "deb [trusted=yes] https://apt.fury.io/caddy/ /" | sudo tee -a /etc/apt/sou
 sudo apt update
 sudo apt install caddy
 ```
-2. Open `/etc/caddy/Caddyfile` in a text editor:
-`sudo nano /etc/caddy/Caddyfile` 
+2. Open your Caddyfile in a text editor:
+```
+sudo nano /etc/caddy/Caddyfile
+```
 3. Delete the contents of the file and replace as follows (replace foo.xyz with your domain):
 ```
 foo.xyz
-
 route {
   reverse_proxy localhost:12001
 }
 ```
 3 Reload Caddy configuration
-`sudo systemctl reload caddy`
+```
+sudo systemctl reload caddy
+```
 
 ## Register the hub
 
