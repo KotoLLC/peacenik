@@ -38,24 +38,20 @@ export const AboutUsSlider: React.SFC<Props> = (props) => {
   Message hubs store messages, photos, and videos. Without a hub, you can't
   post a message.
 
-  To use Koto - you must be friends with someone who has a hub.
-  ## Summer / Fall 2020
-
-  As we're just getting started, everyone can use my hub, by sending an invite
-  to mreider@gmail.com or 'matt' (my username). If you'd like to experiment, feel free to start your own.
+  Your group of friends only needs one hub. You need to either create a hub on your own, or find a friend who has one. 
+  You need to know their email address ahead of time.
 
   `}
         </ReactMarkdown>
-        <Button
+          <Button rel="noopener" variant="contained" target="_blank" href="https://docs.koto.at/#/install-message-hub" color="primary">
+          Learn how to create a hub
+           </Button>
+            or 
+          <Button
           variant="contained"
           color="primary"
           onClick={onGoToInvites}>
-          Invite friends
-          </Button> <Button
-          variant="contained"
-          color="primary"
-          onClick={onGoToHubs}>
-          Create a hub
+          Email an invite to a friend who has a one
           </Button>
       </ContainerStyled>
     </WithTopBar>

@@ -1,6 +1,6 @@
 # Installing a user hub server
 
-If you would like to run your own network, instead of using koto.at, you can use either docker-compose or kubernetes.
+If you would like to run your own network, instead of using koto.at, and the koto mobile apps, you can install everything by yourself using either docker-compose or kubernetes.
 
 ## Docker compose
 
