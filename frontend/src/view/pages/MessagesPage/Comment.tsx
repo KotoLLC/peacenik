@@ -10,6 +10,9 @@ import { getAvatarUrl } from '@services/avatarUrl'
 import { Link } from 'react-router-dom'
 import { AuthorButtonsMenu } from './AuthorButtonsMenu'
 import { NoAuthorButtonsMenu } from './NoAuthorButtonsMenu'
+import { ApiTypes, StoreTypes } from 'src/types'
+import { LinkRenderer } from '@view/shared/LinkRenderer'
+import ReactMarkdown from 'react-markdown'
 import {
   CommentWrapper,
   UserNameLink,
@@ -23,7 +26,6 @@ import {
   CommentReactionsNavWrapper,
   LikeCommentButton,
 } from './styles'
-import { ApiTypes, StoreTypes } from 'src/types'
 
 interface Props extends ApiTypes.Messages.Comment {
   userId: string
@@ -130,9 +132,9 @@ const Comment: React.SFC<Props> = (props) => {
   }
 
   const renderCurrentIcons = () => {
-    return (userId === user_id) ? 
-      <AuthorButtonsMenu {...{message: comment, id, sourceHost, setEditor, isEditer}} /> :
-      <NoAuthorButtonsMenu {...{message: comment, id, sourceHost, }}/>
+    return (userId === user_id) ?
+      <AuthorButtonsMenu {...{ message: comment, id, sourceHost, setEditor, isEditer }} /> :
+      <NoAuthorButtonsMenu {...{ message: comment, id, sourceHost, }} />
   }
 
   return (
@@ -152,8 +154,9 @@ const Comment: React.SFC<Props> = (props) => {
             </IconButton>
           </EditMessageField>
           :
-          <CommentContent>
-            <UserNameLink to={`/profile/user?id=${user_id}`}>{user_name}</UserNameLink> {comment}
+          <CommentContent className="markdown-body">
+            <UserNameLink to={`/profile/user?id=${user_id}`}>{user_name}</UserNameLink>
+            <ReactMarkdown renderers={{ link: LinkRenderer }}>{comment}</ReactMarkdown>
           </CommentContent>
       }
         <CommentReactionsNavWrapper>

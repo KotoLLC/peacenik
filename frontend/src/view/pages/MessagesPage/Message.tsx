@@ -21,7 +21,6 @@ import { AuthorButtonsMenu } from './AuthorButtonsMenu'
 import { NoAuthorButtonsMenu } from './NoAuthorButtonsMenu'
 import PhotoIcon from '@material-ui/icons/Photo'
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
-
 import {
   PaperStyled,
   MessageHeader,
@@ -52,6 +51,11 @@ import {
   MobileImageWrapper,
   DesktopImageWrapper,
 } from './styles'
+
+
+function LinkRenderer(props) {
+  return <a href={props.href} target="_blank">{props.children}</a>
+}
 
 interface Props extends ApiTypes.Messages.Message {
   isAuthor: boolean
@@ -458,7 +462,7 @@ const Message: React.SFC<Props> = (props) => {
             </EditorInMessageWrapper>
 
             : <MessageContent className="markdown-body">
-              <ReactMarkdown>{message}</ReactMarkdown>
+              <ReactMarkdown renderers={{link: LinkRenderer}}>{message}</ReactMarkdown>
             </MessageContent>
         }
         {renderAttachment()}
