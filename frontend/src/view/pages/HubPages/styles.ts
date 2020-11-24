@@ -43,6 +43,12 @@ export const ButtonStyled = styled(Button)`
     height: 42px;
     min-width: 200px;
   }
+
+  &.yellow {
+    && {
+      background: #f2c641;
+    }
+  }  
 `
 
 export const TitleWrapper = styled.div`
@@ -104,6 +110,17 @@ export const LinkWrapper = styled.div`
 `
 
 export const LinkStyled = styled(Link)`
+  color: #1976d2;
+  font-size: 1rem;
+  text-decoration: none;
+  display: block;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`
+
+export const ALinkStyled = styled.a`
   color: #1976d2;
   font-size: 1rem;
   text-decoration: none;
