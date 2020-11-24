@@ -295,7 +295,6 @@ const Message: React.SFC<Props> = (props) => {
             </LikesNamesList>
           </LikesWrapper> : <span />
         }
-        { Boolean(comments?.length) && <span onClick={() => openComments(!isCommentsOpen)}>{Number(comments?.length)} comments</span>}
       </ReactionsWrapper>
     )
   }
