@@ -1,5 +1,4 @@
 import React from 'react'
-import Button from '@material-ui/core/Button'
 import moment from 'moment'
 import AlternateEmailIcon from '@material-ui/icons/AlternateEmail'
 import GroupAddIcon from '@material-ui/icons/GroupAdd'
@@ -16,7 +15,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import {
   Header,
   Title,
-  Footer,
+  NoNotificationsText,
   ListWrapper,
   ListIten,
   ListDate,
@@ -113,12 +112,16 @@ class NotificationsList extends React.PureComponent<Props, State> {
   }
 
   mapNotifiactions = (notifications: ApiTypes.Notifications.Notification[]) => {
-    return notifications.map(item => (
-      <ListIten key={item.id} className={Boolean(item.read_at) ? 'read' : ''}>
-        <ListDate>{moment(item.created_at).format('DD MMM YYYY hh:mm a')}</ListDate>
-        {this.checkCurrentIcon(item)}
-      </ListIten>
-    ))
+    if (notifications.length) {
+      return notifications.map(item => (
+        <ListIten key={item.id} className={Boolean(item.read_at) ? 'read' : ''}>
+          <ListDate>{moment(item.created_at).format('DD MMM YYYY hh:mm a')}</ListDate>
+          {this.checkCurrentIcon(item)}
+        </ListIten>
+      ))
+    } else {
+      return <NoNotificationsText>No new notifications</NoNotificationsText>
+    }
   }
 
   static getDerivedStateFromProps(newProps: Props) {
@@ -138,7 +141,8 @@ class NotificationsList extends React.PureComponent<Props, State> {
   }
 
   componentWillUnmount() {
-    this.markAsReadNotification()
+    // this.markAsReadNotification()
+    this.onClean()
   }
 
   onClean = () => {
@@ -207,13 +211,6 @@ class NotificationsList extends React.PureComponent<Props, State> {
             <ListWrapper>
               {this.mapNotifiactions(notifications)}
             </ListWrapper>
-            <Footer>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={this.onClean}
-              >clear</Button>
-            </Footer>
           </NotificationsWrapper>
         </ContainerStyled>
       </PullToRefresh>

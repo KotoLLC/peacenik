@@ -13,7 +13,6 @@ export const NotificationsWrapper = styled(Paper)`
   padding: 15px;
   min-height: 50vh;
   position: relative;
-  padding-bottom: 80px;
 `
 
 export const Header = styled.header`
@@ -99,4 +98,12 @@ export const ButtonsWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   margin: 20px 0;
+`
+
+export const NoNotificationsText = styled.p`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  height: 35vh;
 `
