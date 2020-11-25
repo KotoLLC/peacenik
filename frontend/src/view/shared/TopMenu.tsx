@@ -70,12 +70,6 @@ const TopMenu: React.FC<Props> = (props) => {
           </ListItemIconStyled>
           <ListItemText primary="Friends" />
         </MenuItem>
-        <MenuItem onClick={() => goToPage('/notifications')}>
-          <ListItemIconStyled>
-            <NotificationsIcon fontSize="small" />
-          </ListItemIconStyled>
-          <ListItemText primary="Notifications" />
-        </MenuItem>
         <MenuItem onClick={() => goToPage('/profile/me')}>
           <ListItemIconStyled>
             <AccountCircleIcon fontSize="small" />
@@ -87,22 +81,6 @@ const TopMenu: React.FC<Props> = (props) => {
             <DnsIcon fontSize="small" />
           </ListItemIconStyled>
           <ListItemText primary="Message Hubs" />
-        </MenuItem>
-        <MenuItem onClick={() => goToPage('/docs/code-of-conduct')}>
-          <ListItemIconStyled>
-            <DescriptionIcon fontSize="small" />
-          </ListItemIconStyled>
-          <ListItemText primary="Code of conduct" />
-        </MenuItem>
-        <MenuItem
-          component="a"
-          href="https://docs.koto.at/#/"
-          target="_blank"
-        >
-          <ListItemIconStyled>
-            <HelpIcon fontSize="small" />
-          </ListItemIconStyled>
-          <ListItemText primary="Help" />
         </MenuItem>
         <MenuItem onClick={onLogoutClick}>
           <ListItemIconStyled>
