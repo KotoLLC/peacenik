@@ -16,10 +16,10 @@ require (
 	github.com/go-chi/cors v1.1.1
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
 	github.com/gofrs/uuid v3.3.0+incompatible
-	github.com/golang/protobuf v1.4.2
+	github.com/golang/protobuf v1.4.3
 	github.com/gorilla/sessions v1.2.1
 	github.com/h2non/filetype v1.1.0
-	github.com/jinzhu/configor v1.2.0
+	github.com/jinzhu/configor v1.2.1
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/lib/pq v1.8.0
 	github.com/minio/minio-go/v7 v7.0.5
@@ -32,6 +32,6 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/twitchtv/twirp v7.1.0+incompatible
 	github.com/xhit/go-simple-mail/v2 v2.5.1
-	golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0
+	golang.org/x/crypto v0.0.0-20201124201722-c8d3bf9c5392
 	google.golang.org/protobuf v1.24.0
 )
