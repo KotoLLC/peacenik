@@ -1,59 +1,64 @@
 package common
 
 import (
+	"bytes"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
 	"io/ioutil"
-	"os"
 
 	"github.com/ansel1/merry"
 	"github.com/dgrijalva/jwt-go"
 )
 
-func GenerateRSAKey(keyPath string) error {
-	_, err := os.Stat(keyPath)
-	if err == nil {
-		return nil
-	}
-	if !os.IsNotExist(err) {
-		return merry.Wrap(err)
-	}
-
-	const bitSize = 1024
-	reader := rand.Reader
-	key, err := rsa.GenerateKey(reader, bitSize)
+func LoadRSAKey(settingRepo SettingRepo, keyPath string) (string, error) {
+	const privateKeyId = "private-key"
+	privateKey, exists, err := settingRepo.Get(privateKeyId)
 	if err != nil {
-		return err
+		return "", merry.Wrap(err)
+	}
+	if exists {
+		return privateKey, nil
 	}
 
-	outFile, err := os.Create(keyPath)
+	var keyContent []byte
+	if keyPath != "" {
+		keyContent, err = ioutil.ReadFile(keyPath)
+		if err != nil {
+			keyContent = nil
+		}
+	}
+
+	if len(keyContent) == 0 {
+		const bitSize = 1024
+		reader := rand.Reader
+		key, err := rsa.GenerateKey(reader, bitSize)
+		if err != nil {
+			return "", merry.Wrap(err)
+		}
+		var privateKey = &pem.Block{
+			Type:  "PRIVATE KEY",
+			Bytes: x509.MarshalPKCS1PrivateKey(key),
+		}
+
+		var b bytes.Buffer
+		err = pem.Encode(&b, privateKey)
+		if err != nil {
+			return "", merry.Wrap(err)
+		}
+		keyContent = b.Bytes()
+	}
+
+	err = settingRepo.Add(privateKeyId, string(keyContent))
 	if err != nil {
-		return err
+		return "", merry.Wrap(err)
 	}
-	defer func() {
-		_ = outFile.Close()
-	}()
-
-	var privateKey = &pem.Block{
-		Type:  "PRIVATE KEY",
-		Bytes: x509.MarshalPKCS1PrivateKey(key),
-	}
-
-	err = pem.Encode(outFile, privateKey)
-	if err != nil {
-		return err
-	}
-	return nil
+	return string(keyContent), nil
 }
 
-func RSAKeysFromPrivateKeyFile(privateKeyPath string) (privateKey *rsa.PrivateKey, publicKey *rsa.PublicKey, publicKeyPEM []byte, err error) {
-	privateKeyBytes, err := ioutil.ReadFile(privateKeyPath)
-	if err != nil {
-		return nil, nil, nil, merry.Wrap(err)
-	}
-	privateKey, err = jwt.ParseRSAPrivateKeyFromPEM(privateKeyBytes)
+func RSAKeysFromPrivateKeyContent(privateKeyContent string) (privateKey *rsa.PrivateKey, publicKey *rsa.PublicKey, publicKeyPEM []byte, err error) {
+	privateKey, err = jwt.ParseRSAPrivateKeyFromPEM([]byte(privateKeyContent))
 	if err != nil {
 		return nil, nil, nil, merry.Wrap(err)
 	}

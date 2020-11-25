@@ -48,12 +48,19 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	err = common.GenerateRSAKey(cfg.PrivateKeyPath)
+	repos := repo.Repos{
+		Message:      repo.NewMessages(db),
+		Notification: common.NewNotifications(db),
+		User:         repo.NewUsers(db),
+		Setting:      common.NewSettings(db),
+	}
+
+	privateKeyContent, err := common.LoadRSAKey(repos.Setting, cfg.PrivateKeyPath)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	privateKey, _, publicKeyPEM, err := common.RSAKeysFromPrivateKeyFile(cfg.PrivateKeyPath)
+	privateKey, _, publicKeyPEM, err := common.RSAKeysFromPrivateKeyContent(privateKeyContent)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -77,11 +84,6 @@ func main() {
 		userHubPublicKey = key
 		return userHubPublicKey
 	})
-	repos := repo.Repos{
-		Message:      repo.NewMessages(db),
-		Notification: common.NewNotifications(db),
-		User:         repo.NewUsers(db),
-	}
 
 	s3Cleaner := common.NewS3Cleaner(db, s3Storage)
 	go s3Cleaner.Clean(context.Background())

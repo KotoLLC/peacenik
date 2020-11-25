@@ -11,4 +11,5 @@ type Repos struct {
 	MessageHubs  MessageHubRepo
 	Notification common.NotificationRepo
 	FCMToken     FCMTokenRepo
+	Setting      common.SettingRepo
 }

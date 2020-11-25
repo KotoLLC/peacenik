@@ -8,4 +8,5 @@ type Repos struct {
 	Message      MessageRepo
 	Notification common.NotificationRepo
 	User         UserRepo
+	Setting      common.SettingRepo
 }
