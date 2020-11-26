@@ -21,6 +21,7 @@ import { AuthorButtonsMenu } from './AuthorButtonsMenu'
 import { NoAuthorButtonsMenu } from './NoAuthorButtonsMenu'
 import PhotoIcon from '@material-ui/icons/Photo'
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
+import { urlify } from '@services/urlify'
 import {
   PaperStyled,
   MessageHeader,
@@ -208,7 +209,7 @@ const Message: React.SFC<Props> = (props) => {
       host: sourceHost,
       body: {
         message_id: id,
-        text: comment,
+        text: urlify(comment),
         token: messageToken,
       }
     })

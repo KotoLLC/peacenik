@@ -12,6 +12,7 @@ import { getAvatarUrl } from '@services/avatarUrl'
 import Avatar from '@material-ui/core/Avatar'
 import loadImage from 'blueimp-load-image'
 import SendIcon from '@material-ui/icons/Send'
+import { urlify } from '@services/urlify'
 
 import {
   TextareaAutosizeStyled,
@@ -61,7 +62,7 @@ const Editor: React.SFC<Props> = (props) => {
         host: props.currentHub.host,
         body: {
           token: props.currentHub.token,
-          text: value,
+          text: urlify(value),
           attachment_id: uploadLink?.blob_id,
         }
       }
