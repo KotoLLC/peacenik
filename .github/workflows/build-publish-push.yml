@@ -86,6 +86,9 @@ jobs:
       DO_CLUSTER_ID: "b68876cd-8a1d-4073-bb00-0ac36beacc0c"
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       # Install Doctl
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
