@@ -55,27 +55,27 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # - name: Push to user hub
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: central.koto.at
-      #     username: ${{ secrets.CENTRAL_SERVER_USERNAME }}
-      #     password: ${{ secrets.CENTRAL_SERVER_PASSWORD }}
-      #     script: |
-      #       cd koto-hub
-      #       docker-compose pull
-      #       docker-compose up -d
+       - name: Push to user hub
+         uses: appleboy/ssh-action@master
+         with:
+           host: central.koto.at
+           username: ${{ secrets.CENTRAL_SERVER_USERNAME }}
+           password: ${{ secrets.CENTRAL_SERVER_PASSWORD }}
+           script: |
+             cd koto-hub
+             docker-compose pull
+             docker-compose up -d
 
-      # - name: Push to message hub
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: node1.koto.at
-      #     username: ${{ secrets.NODE_SERVER_USERNAME }}
-      #     password: ${{ secrets.NODE_SERVER_PASSWORD }}
-      #     script: |
-      #       cd koto-hub
-      #       docker-compose pull
-      #       docker-compose up -d
+       - name: Push to message hub
+         uses: appleboy/ssh-action@master
+         with:
+           host: node1.koto.at
+           username: ${{ secrets.NODE_SERVER_USERNAME }}
+           password: ${{ secrets.NODE_SERVER_PASSWORD }}
+           script: |
+             cd koto-hub
+             docker-compose pull
+             docker-compose up -d
 
   deploy:
     name: Deploy Application
@@ -103,8 +103,10 @@ jobs:
         run: |
           sed -i 's|<TAG>|'${{ needs.build.outputs.version }}'|' $GITHUB_WORKSPACE/.k8s/orbits/backend/user-hub.yaml
           sed -i 's|<TAG>|'${{ needs.build.outputs.version }}'|' $GITHUB_WORKSPACE/.k8s/orbits/frontend/frontend.yaml
+          sed -i 's|<TAG>|'${{ needs.build.outputs.version }}'|' $GITHUB_WORKSPACE/.k8s/orbits/backend/message-hub.yaml
 
       - name: Deploy Frontend and User-hub to DigitalOcean Kubernetes
         run: |
           kubectl apply -f $GITHUB_WORKSPACE/.k8s/orbits/backend/user-hub.yaml
           kubectl apply -f $GITHUB_WORKSPACE/.k8s/orbits/frontend/frontend.yaml
+          kubectl apply -f $GITHUB_WORKSPACE/.k8s/orbits/backend/message-hub.yaml
