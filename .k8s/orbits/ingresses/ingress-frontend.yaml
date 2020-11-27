@@ -11,10 +11,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - orbits.at
-    secretName: orbits-tls
+    - koto.at
+    secretName: koto-tls
   rules:
-  - host: orbits.at
+  - host: koto.at
     http:
       paths:
       - path: /

@@ -11,11 +11,11 @@ metadata:
 spec:
   tls:
   - hosts:
-    - central.orbits.at
-    - node1.orbits.at
-    secretName: orbits-tls-backend
+    - central.koto.at
+    - node1.koto.at
+    secretName: koto-tls-backend
   rules:
-  - host: central.orbits.at
+  - host: central.koto.at
     http:
       paths:
       - path: /
@@ -25,7 +25,7 @@ spec:
             name: user-hub-service
             port: 
               number: 12001
-  - host: node1.orbits.at
+  - host: node1.koto.at
     http:
       paths:
       - path: /
