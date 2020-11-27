@@ -13,6 +13,7 @@ import { NoAuthorButtonsMenu } from './NoAuthorButtonsMenu'
 import { ApiTypes, StoreTypes } from 'src/types'
 import { LinkRenderer } from '@view/shared/LinkRenderer'
 import ReactMarkdown from 'react-markdown'
+import { YoutubeFrame } from './YoutubeFrame'
 import {
   CommentWrapper,
   UserNameLink,
@@ -157,6 +158,7 @@ const Comment: React.SFC<Props> = (props) => {
           <CommentContent className="markdown-body">
             <UserNameLink to={`/profile/user?id=${user_id}`}>{user_name}</UserNameLink>
             <ReactMarkdown renderers={{ link: LinkRenderer }}>{comment}</ReactMarkdown>
+            <YoutubeFrame text={comment}/>
           </CommentContent>
       }
         <CommentReactionsNavWrapper>
