@@ -22,6 +22,7 @@ import { NoAuthorButtonsMenu } from './NoAuthorButtonsMenu'
 import PhotoIcon from '@material-ui/icons/Photo'
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
 import { urlify } from '@services/urlify'
+import { YoutubeFrame } from './YoutubeFrame'
 import {
   PaperStyled,
   MessageHeader,
@@ -52,7 +53,6 @@ import {
   MobileImageWrapper,
   DesktopImageWrapper,
 } from './styles'
-
 
 function LinkRenderer(props) {
   return <a href={props.href} target="_blank">{props.children}</a>
@@ -464,6 +464,7 @@ const Message: React.SFC<Props> = (props) => {
 
             : <MessageContent className="markdown-body">
               <ReactMarkdown renderers={{link: LinkRenderer}}>{message}</ReactMarkdown>
+              <YoutubeFrame text={message}/>
             </MessageContent>
         }
         {renderAttachment()}

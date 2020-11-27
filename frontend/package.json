@@ -36,6 +36,7 @@
 		"react-awesome-slider": "^4.1.0",
 		"react-cookie": "^4.0.3",
 		"react-dom": "16.13.1",
+		"react-iframe": "^1.8.0",
 		"react-markdown": "^4.3.1",
 		"react-notify-toast": "^0.5.1",
 		"react-pull-to-refresh": "^1.1.2",

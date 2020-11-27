@@ -139,7 +139,7 @@ class MessageFeed extends React.Component<Props, State> {
 
   onRefresh = () => {
     return new Promise((resolve, reject) => {
-      
+
       this.props.onGetMessages()
       setTimeout(() => {
         resolve()
@@ -183,7 +183,7 @@ class MessageFeed extends React.Component<Props, State> {
     const { isMoreMessagesRequested } = this.props
 
     return (
-      <PullToRefresh 
+      <PullToRefresh
         onRefresh={this.onRefresh}
         refreshingContent={<CircularProgress />}
       >
