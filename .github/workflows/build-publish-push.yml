@@ -1,5 +1,3 @@
-name: build and publish
-
 on:
   push:
     # branches:
@@ -11,7 +9,11 @@ on:
 
 jobs:
   build:
+    name: Build and Publish images
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.VERSION }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -74,3 +76,32 @@ jobs:
             cd koto-hub
             docker-compose pull
             docker-compose up -d
+
+  deploy:
+    name: Deploy Application
+    runs-on: ubuntu-latest
+    needs: build
+
+    env:
+      DO_CLUSTER_ID: "b68876cd-8a1d-4073-bb00-0ac36beacc0c"
+
+    steps:
+      # Install Doctl
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Save DigitalOcean kubeconfig
+        run: doctl kubernetes cluster kubeconfig save ${{ env.DO_CLUSTER_ID }}
+
+
+      - name: Update deployment file
+        run: |
+          sed -i 's|<TAG>|'${{ needs.build.outputs.version }}'|' $GITHUB_WORKSPACE/.k8s/orbits/backend/user-hub.yaml
+          sed -i 's|<TAG>|'${{ needs.build.outputs.version }}'|' $GITHUB_WORKSPACE/.k8s/orbits/frontend/frontend.yaml
+
+      - name: Deploy Frontend and User-hub to DigitalOcean Kubernetes
+        run: |
+          kubectl apply -f $GITHUB_WORKSPACE/.k8s/orbits/backend/user-hub.yaml
+          kubectl apply -f $GITHUB_WORKSPACE/.k8s/orbits/frontend/frontend.yaml
