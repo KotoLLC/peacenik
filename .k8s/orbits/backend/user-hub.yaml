@@ -20,7 +20,7 @@ spec:
             secretName: user-hub-key
       containers:
       - name: user-hub
-        image: k0t0/central:<TAG>
+        image: k0t0/central:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 12001
@@ -39,7 +39,7 @@ spec:
           - name: KOTO_DB_SSL_MODE
             value: disable
           - name: KOTO_FRONTEND_ADDRESS
-            value: http://orbits.at
+            value: http://koto.at
           - name: KOTO_DB_USER
             value: postgres
           - name: KOTO_DB_PASSWORD

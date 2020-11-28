@@ -17,16 +17,16 @@ spec:
       containers:
       - name: message-hub
         image: k0t0/node:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 12002
         env:
           - name: KOTO_ADDRESS
             value: ":12002"
           - name: KOTO_EXTERNAL_ADDRESS
-            value: https://node1.orbits.at
+            value: https://node1.koto.at
           - name: KOTO_USER_HUB_ADDRESS
-            value: http://central.orbits.at
+            value: http://central.koto.at
           - name: KOTO_DB_HOST
             value: db-message-hub-service.backend
           - name: KOTO_DB_SSL_MODE
