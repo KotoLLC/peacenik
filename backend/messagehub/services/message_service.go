@@ -82,23 +82,29 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		return nil, err
 	}
 
-	s.notificationSender.SendNotification(friends, msg.UserName+" posted a new message", "message/post", map[string]interface{}{
-		"user_id":    msg.UserID,
-		"message_id": msg.ID,
-	})
-
 	userTags := message.FindUserTags(msg.Text)
 	users, err := s.repos.User.FindUsersByName(userTags)
 	if err != nil {
 		return nil, err
 	}
-	notifyUsers := make([]string, 0, len(users))
-	for _, u := range users {
-		if u.ID != msg.UserID && !user.IsBlockedUser(u.ID) {
-			notifyUsers = append(notifyUsers, u.ID)
-		}
+	taggedUserIDs := make([]string, len(users))
+	for i, u := range users {
+		taggedUserIDs[i] = u.ID
 	}
-	s.notificationSender.SendNotification(notifyUsers, msg.UserName+" tagged you in a message", "message/tag", map[string]interface{}{
+
+	taggedFriendIDs, onlyFriendIDs, onlyTaggedIDs := s.groupFriendsAndTaggedUsers(user, friends, taggedUserIDs)
+
+	s.notificationSender.SendNotification(taggedFriendIDs, msg.UserName+" posted a new message and tagged you", "message/post", map[string]interface{}{
+		"user_id":    msg.UserID,
+		"message_id": msg.ID,
+	})
+
+	s.notificationSender.SendNotification(onlyFriendIDs, msg.UserName+" posted a new message", "message/post", map[string]interface{}{
+		"user_id":    msg.UserID,
+		"message_id": msg.ID,
+	})
+
+	s.notificationSender.SendNotification(onlyTaggedIDs, msg.UserName+" tagged you in a message", "message/tag", map[string]interface{}{
 		"user_id":    msg.UserID,
 		"message_id": msg.ID,
 	})
@@ -991,4 +997,33 @@ func (s *messageService) ResolveMessageReport(ctx context.Context, r *rpc.Messag
 		return nil, err
 	}
 	return &rpc.Empty{}, nil
+}
+
+func (s *messageService) groupFriendsAndTaggedUsers(user User, friendIDs, taggedIDs []string) (taggedFriendIDs, friendOnlyIDs, taggedOnlyIDs []string) {
+	taggedIDset := make(map[string]int)
+	for _, userID := range taggedIDs {
+		taggedIDset[userID] = 0
+	}
+	for _, userID := range friendIDs {
+		if user.IsBlockedUser(userID) || user.ID == userID {
+			continue
+		}
+
+		if _, ok := taggedIDset[userID]; ok {
+			taggedFriendIDs = append(taggedFriendIDs, userID)
+			taggedIDset[userID]++
+		} else {
+			friendOnlyIDs = append(friendOnlyIDs, userID)
+		}
+	}
+	for _, userID := range taggedIDs {
+		if user.IsBlockedUser(userID) || user.ID == userID {
+			continue
+		}
+		if taggedIDset[userID] == 0 {
+			taggedOnlyIDs = append(taggedOnlyIDs, userID)
+		}
+	}
+
+	return taggedFriendIDs, friendOnlyIDs, taggedOnlyIDs
 }
