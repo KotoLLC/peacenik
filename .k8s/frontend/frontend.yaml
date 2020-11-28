@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
+  namespace: frontend
 spec:
   selector:
     matchLabels:
@@ -15,18 +16,19 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: frontend
-        image: k0t0/frontend:v1.11
+        image: k0t0/frontend:<TAG>
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
         env:
           - name: KOTO_USER_HUB_ADDRESS
-            value: http://central.koto.at
+            value: https://central.koto.at
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: frontend-service
+  namespace: frontend
 spec:
   type: NodePort
   selector:

@@ -77,12 +77,12 @@ jobs:
 
       - name: Update deployment file
         run: |
-          sed -i 's|<TAG>|'${{ needs.build.outputs.version }}'|' $GITHUB_WORKSPACE/.k8s/orbits/backend/user-hub.yaml
-          sed -i 's|<TAG>|'${{ needs.build.outputs.version }}'|' $GITHUB_WORKSPACE/.k8s/orbits/frontend/frontend.yaml
-          sed -i 's|<TAG>|'${{ needs.build.outputs.version }}'|' $GITHUB_WORKSPACE/.k8s/orbits/backend/message-hub.yaml
+          sed -i 's|<TAG>|'${{ needs.build.outputs.version }}'|' $GITHUB_WORKSPACE/.k8s/backend/user-hub.yaml
+          sed -i 's|<TAG>|'${{ needs.build.outputs.version }}'|' $GITHUB_WORKSPACE/.k8s/frontend/frontend.yaml
+          sed -i 's|<TAG>|'${{ needs.build.outputs.version }}'|' $GITHUB_WORKSPACE/.k8s/backend/message-hub.yaml
 
       - name: Deploy Frontend and User-hub to DigitalOcean Kubernetes
         run: |
-          kubectl apply -f $GITHUB_WORKSPACE/.k8s/orbits/backend/user-hub.yaml
-          kubectl apply -f $GITHUB_WORKSPACE/.k8s/orbits/frontend/frontend.yaml
-          kubectl apply -f $GITHUB_WORKSPACE/.k8s/orbits/backend/message-hub.yaml
+          kubectl apply -f $GITHUB_WORKSPACE/.k8s/backend/user-hub.yaml
+          kubectl apply -f $GITHUB_WORKSPACE/.k8s/frontend/frontend.yaml
+          kubectl apply -f $GITHUB_WORKSPACE/.k8s/backend/message-hub.yaml

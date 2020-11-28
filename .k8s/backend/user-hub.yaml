@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: user-hub
+  namespace: backend
 spec:
   selector:
     matchLabels:
@@ -19,7 +20,7 @@ spec:
             secretName: user-hub-key
       containers:
       - name: user-hub
-        image: k0t0/central:v1.11
+        image: k0t0/central:<TAG>
         imagePullPolicy: Always
         ports:
         - containerPort: 12001
@@ -34,7 +35,7 @@ spec:
           - name: KOTO_ADMINS
             value: matt
           - name: KOTO_DB_HOST
-            value: db-user-hub-service
+            value: db-user-hub-service.backend
           - name: KOTO_DB_SSL_MODE
             value: disable
           - name: KOTO_FRONTEND_ADDRESS
@@ -49,7 +50,7 @@ spec:
           - name: KOTO_DB_NAME
             value: koto-user-hub
           - name: KOTO_S3_ENDPOINT
-            value: https://storage.googleapis.com
+            value: https://ams3.digitaloceanspaces.com
           - name: KOTO_S3_KEY
             valueFrom:
               secretKeyRef:
@@ -63,7 +64,7 @@ spec:
           - name: KOTO_S3_BUCKET
             value: koto-user-hub
           - name: KOTO_SMTP_HOST
-            value: smtp.sendgrid.net
+            value: smtp.eu.mailgun.org
           - name: KOTO_SMTP_PORT
             value: "587"
           - name: KOTO_SMTP_USER
@@ -80,11 +81,19 @@ spec:
             value: admin@koto.at
           - name: KOTO_TEST_MODE
             value: "true"
+          - name: KOTO_FIREBASE_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: user-hub-firebase
+                key: firebase_token
+          - name: KOTO_ADMIN_FRIENDSHIP
+            value: ""
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: user-hub-service
+  namespace: backend
 spec:
   type: NodePort
   selector:
