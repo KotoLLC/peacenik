@@ -23,7 +23,7 @@ export const YoutubeFrame: React.FC<Props> = React.memo((props) => {
 
     if (videoId && videoId[2].length === 11) {
       Element = <Iframe
-        url={`http://www.youtube.com/embed/${videoId[2]}`}
+        url={`https://www.youtube.com/embed/${videoId[2]}`}
         width="100%"
         height="450px"
         display="block"
