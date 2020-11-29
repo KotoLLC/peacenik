@@ -16,6 +16,12 @@ import axios from 'axios';
 import SplashScreen from 'react-native-splash-screen';
 
 const url = 'https://koto.at';
+const inAppUrls = [
+  url,
+  'https://www.youtube.com',
+  'https://youtube.com',
+  'https://m.youtube.com'
+];
 
 const App = () => {
   let token = null;
@@ -75,28 +81,21 @@ const App = () => {
       } catch (e) {
         console.log(e);
       }
-
-      // const body = await fetch(
-      //   'https://central.koto.at/rpc.UserService/RegisterFCMToken',
-      //   {
-      //     method: 'POST',
-      //     headers: {
-      //       Accept: 'application/json',
-      //       'Content-Type': 'application/json',
-      //     },
-      //     body: JSON.stringify({
-      //       token,
-      //       device_id: DeviceInfo.getDeviceId(),
-      //       os: DeviceInfo.getBaseOs(),
-      //     }),
-      //   },
-      // );
-      // console.log(body);
     }
   };
 
-  const onShouldLoad = (event) => {
-    if (!event.url.startsWith(url)) {
+  const urlIsInApp = (str) => {
+    for (const item of inAppUrls) {
+      if (str.startsWith(item)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  const onShouldLoad = (event, t) => {
+  console.log(event,t);
+    if (!urlIsInApp(event.url)) {
       Linking.openURL(event.url);
       return false;
     }
