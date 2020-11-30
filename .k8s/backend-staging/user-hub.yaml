@@ -1,0 +1,103 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-hub
+  namespace: backend-staging
+spec:
+  selector:
+    matchLabels:
+      app: user-hub
+  template:
+    metadata:
+      labels:
+        app: user-hub
+    spec:
+      terminationGracePeriodSeconds: 5
+      volumes:
+        - name: user-hub-key
+          secret:
+            secretName: user-hub-key
+      containers:
+      - name: user-hub
+        image: k0t0/central:<TAG>
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 12001
+        volumeMounts:
+          - name: user-hub-key
+            mountPath: "/tmp"
+        env:
+          - name: KOTO_ADDRESS
+            value: ":12001"
+          - name: KOTO_PRIVATE_KEY
+            value: /tmp/key
+          - name: KOTO_ADMINS
+            value: matt
+          - name: KOTO_DB_HOST
+            value: db-user-hub-service.backend-staging
+          - name: KOTO_DB_SSL_MODE
+            value: disable
+          - name: KOTO_FRONTEND_ADDRESS
+            value: http://orbits.at
+          - name: KOTO_DB_USER
+            value: postgres
+          - name: KOTO_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-user-hub-password
+                key: password
+          - name: KOTO_DB_NAME
+            value: koto-user-hub
+          - name: KOTO_S3_ENDPOINT
+            value: https://fra1.digitaloceanspaces.com
+          - name: KOTO_S3_KEY
+            valueFrom:
+              secretKeyRef:
+                name: user-hub-s3
+                key: s3_key
+          - name: KOTO_S3_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: user-hub-s3
+                key: s3_secret
+          - name: KOTO_S3_BUCKET
+            value: koto-user-hub-staging
+          - name: KOTO_SMTP_HOST
+            value: smtp.eu.mailgun.org
+          - name: KOTO_SMTP_PORT
+            value: "587"
+          - name: KOTO_SMTP_USER
+            valueFrom:
+              secretKeyRef:
+                name: user-hub-smtp
+                key: smtp_user
+          - name: KOTO_SMTP_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: user-hub-smtp
+                key: smtp_password
+          - name: KOTO_SMTP_FROM
+            value: admin@orbits.at
+          - name: KOTO_TEST_MODE
+            value: "true"
+          - name: KOTO_FIREBASE_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: user-hub-firebase
+                key: firebase_token
+          - name: KOTO_ADMIN_FRIENDSHIP
+            value: ""
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-hub-service
+  namespace: backend-staging
+spec:
+  type: ClusterIP
+  selector:
+    app: user-hub
+  ports:
+  - name: http
+    port: 12001

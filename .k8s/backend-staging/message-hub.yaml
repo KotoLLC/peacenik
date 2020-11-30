@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: message-hub
-  namespace: backend
+  namespace: backend-staging
 spec:
   selector:
     matchLabels:
@@ -24,11 +24,11 @@ spec:
           - name: KOTO_ADDRESS
             value: ":12002"
           - name: KOTO_EXTERNAL_ADDRESS
-            value: https://node1.koto.at
+            value: https://node1.orbits.at
           - name: KOTO_USER_HUB_ADDRESS
-            value: http://central.koto.at
+            value: http://central.orbits.at
           - name: KOTO_DB_HOST
-            value: db-message-hub-service.backend
+            value: db-message-hub-service.backend-staging
           - name: KOTO_DB_SSL_MODE
             value: disable
           - name: KOTO_DB_USER
@@ -41,7 +41,7 @@ spec:
           - name: KOTO_DB_NAME
             value: koto-message-hub-1
           - name: KOTO_S3_ENDPOINT
-            value: https://ams3.digitaloceanspaces.com
+            value: https://fra1.digitaloceanspaces.com
           - name: KOTO_S3_KEY
             valueFrom:
               secretKeyRef:
@@ -53,13 +53,13 @@ spec:
                 name: message-hub-secrets
                 key: s3_secret
           - name: KOTO_S3_BUCKET
-            value: koto-message-hub-1
+            value: koto-message-hub-1-staging
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: message-hub-service
-  namespace: backend
+  namespace: backend-staging
 spec:
   type: ClusterIP
   selector:
