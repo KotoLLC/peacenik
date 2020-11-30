@@ -1,6 +1,8 @@
 on:
-  release:
-    types: [released]
+  push:
+    tags:
+      - '*'
+      - '!*staging'
 
 jobs:
   build:

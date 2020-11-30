@@ -1,7 +1,8 @@
 on:
-  release:
-    types: [released]
-
+  push:
+    tags:
+      - '*staging'
+ 
 jobs:
   build:
     name: Build and Publish images
