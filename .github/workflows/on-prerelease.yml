@@ -1,7 +1,7 @@
 on:
   push:
     tags:
-      - '*staging'
+      - '*-staging'
  
 jobs:
   build:
