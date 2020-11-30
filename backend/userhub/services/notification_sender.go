@@ -108,6 +108,10 @@ func (s *notificationSender) sendEmailNotifications(n Notification) {
 		return
 	}
 
+	if n.MessageType != "message/tag" {
+		return
+	}
+
 	for _, userID := range n.UserIDs {
 		user, err := s.repos.User.FindUserByID(userID)
 		if err != nil {
