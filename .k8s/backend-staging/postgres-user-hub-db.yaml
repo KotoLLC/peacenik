@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: user-hub-db-pvc
+  name: user-hub-db-pvc-staging
   namespace: backend-staging
 spec:
   accessModes:
@@ -59,4 +59,4 @@ spec:
       volumes:
       - name: user-hub-db-data
         persistentVolumeClaim:
-          claimName: user-hub-db-pvc
+          claimName: user-hub-db-pvc-staging

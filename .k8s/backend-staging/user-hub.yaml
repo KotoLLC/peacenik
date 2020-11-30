@@ -64,7 +64,7 @@ spec:
           - name: KOTO_S3_BUCKET
             value: koto-user-hub-staging
           - name: KOTO_SMTP_HOST
-            value: smtp.eu.mailgun.org
+            value: "dummy"
           - name: KOTO_SMTP_PORT
             value: "587"
           - name: KOTO_SMTP_USER
@@ -82,10 +82,11 @@ spec:
           - name: KOTO_TEST_MODE
             value: "true"
           - name: KOTO_FIREBASE_TOKEN
-            valueFrom:
-              secretKeyRef:
-                name: user-hub-firebase
-                key: firebase_token
+            value: "dummy"
+            #valueFrom:
+            #  secretKeyRef:
+            #    name: user-hub-firebase
+            #    key: firebase_token
           - name: KOTO_ADMIN_FRIENDSHIP
             value: ""
 ---
