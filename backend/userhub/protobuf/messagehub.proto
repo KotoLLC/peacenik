@@ -6,6 +6,7 @@ option go_package = "../rpc";
 import "model.proto";
 
 service MessageHubService {
+    rpc Create (MessageHubCreateRequest) returns (Empty);
     rpc Register (MessageHubRegisterRequest) returns (Empty);
     rpc Hubs (Empty) returns (MessageHubHubsResponse);
     rpc Verify (MessageHubVerifyRequest) returns (MessageHubVerifyResponse);
@@ -14,6 +15,14 @@ service MessageHubService {
     rpc SetPostLimit (MessageHubSetPostLimitRequest) returns (Empty);
     rpc ReportMessage (MessageHubReportMessageRequest) returns (Empty);
     rpc BlockUser (MessageHubBlockUserRequest) returns (Empty);
+}
+
+message MessageHubCreateRequest {
+    string owner = 1;
+    string subdomain = 2;
+    string notes = 3;
+    string hub_type = 4;
+    string transaction_reference = 5;
 }
 
 message MessageHubRegisterRequest {

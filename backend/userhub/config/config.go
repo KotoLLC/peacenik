@@ -12,6 +12,7 @@ import (
 
 type Config struct {
 	ListenAddress        string `yaml:"address" default:":12001" env:"KOTO_LISTEN_ADDRESS"`
+	ExternalAddress      string `yaml:"external_address" default:"http://localhost:12002" env:"KOTO_EXTERNAL_ADDRESS"`
 	PrivateKeyPath       string `yaml:"private_key_path" default:"user_hub.rsa" env:"KOTO_PRIVATE_KEY"`
 	Admins               string `yaml:"admins" env:"KOTO_ADMINS"`
 	TokenDurationSeconds int    `yaml:"token_duration" default:"3600" env:"KOTO_TOKEN_DURATION"`
@@ -19,6 +20,7 @@ type Config struct {
 	TestMode             bool   `yaml:"test_mode" default:"false" env:"KOTO_TEST_MODE"`
 	AdminFriendship      string `yaml:"admin_friendship" default:"" env:"KOTO_ADMIN_FRIENDSHIP"`
 	FirebaseToken        string `yaml:"firebase_token" default:"" env:"KOTO_FIREBASE_TOKEN"`
+	DigitalOceanToken    string `yaml:"digitalocean_token" default:"" env:"KOTO_DIGITALOCEAN_TOKEN"`
 
 	DB   common.DatabaseConfig `yaml:"db"`
 	S3   common.S3Config       `yaml:"s3"`

@@ -211,7 +211,7 @@ func (s *inviteService) sendInviteLinkToUnregisteredUser(inviter repo.User, user
 		return merry.Wrap(err)
 	}
 
-	link := fmt.Sprintf("%s"+registerFrontendPath, s.frontendAddress, url.QueryEscape(userEmail), inviteToken)
+	link := fmt.Sprintf("%s"+registerFrontendPath, s.cfg.FrontendAddress, url.QueryEscape(userEmail), inviteToken)
 	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviter.Name+" invited you to be friends on KOTO", fmt.Sprintf(inviteUnregisteredUserEmailBody, link))
 }
 
@@ -220,6 +220,6 @@ func (s *inviteService) sendInviteLinkToRegisteredUser(inviter repo.User, userEm
 		return nil
 	}
 
-	link := fmt.Sprintf("%s"+invitationsFrontendPath, s.frontendAddress)
+	link := fmt.Sprintf("%s"+invitationsFrontendPath, s.cfg.FrontendAddress)
 	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviter.Name+" invited you to be friends on KOTO", fmt.Sprintf(inviteRegisteredUserEmailBody, link))
 }
