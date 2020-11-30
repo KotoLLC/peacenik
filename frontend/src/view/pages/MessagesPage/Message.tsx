@@ -54,6 +54,7 @@ import {
   DesktopImageWrapper,
 } from './styles'
 
+// tslint:disable-next-line
 function LinkRenderer(props) {
   return <a href={props.href} rel="noopener noreferrer" target="_blank">{props.children}</a>
 }

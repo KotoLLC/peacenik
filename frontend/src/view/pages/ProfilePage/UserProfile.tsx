@@ -5,7 +5,6 @@ import { StoreTypes, ApiTypes } from 'src/types'
 import Actions from '@store/actions'
 import { getAvatarUrl } from '@services/avatarUrl'
 import queryString from 'query-string'
-import { history } from '@view/routes'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemAvatar from '@material-ui/core/ListItemAvatar'
@@ -16,9 +15,11 @@ import AccessTimeIcon from '@material-ui/icons/AccessTime'
 import PersonAddIcon from '@material-ui/icons/PersonAdd'
 import { capitalizeFirstLetter } from '@services/capitalizeFirstLetter'
 import { UserProfileMenu } from './UserProfileMenu'
+import { withRouter, RouteComponentProps, Link } from 'react-router-dom'
 
 import {
   UserName,
+  UserNameLink,
   AvatarStyled,
   ListStyled,
   ContainerTitle,
@@ -31,9 +32,10 @@ import {
   Header,
   Title,
   UsersWrapper,
+  NoCommonFriendsMessage,
 } from './styles'
 
-interface Props {
+interface Props extends RouteComponentProps {
   userName: string
   users: ApiTypes.User[]
   friends: ApiTypes.Friends.Friend[]
@@ -44,8 +46,8 @@ interface Props {
 }
 
 const UserProfile: React.FC<Props> = (props) => {
-  const { userName, onGetUser, users, friends, onGetFriends, onAddFriend } = props
-  const url = history.location.search
+  const { userName, onGetUser, users, friends, onGetFriends, onAddFriend, location } = props
+  const url = location.search
   const params = queryString.parse(url)
   const userId = params.id ? params.id : ''
 
@@ -89,6 +91,45 @@ const UserProfile: React.FC<Props> = (props) => {
     }
   }
 
+  const mapCommonFriendsList = (id: string) => {
+    const selectedFriend = friends.find(item => item.user.id === id) || null
+
+    if (!selectedFriend) return null
+
+    let commonFriends: ApiTypes.Friends.Friend[] = []
+
+    selectedFriend.friends.forEach(item => {
+      if (friends.some(myFriend => myFriend.user.id === item.user.id)) {
+        commonFriends.push(item as never)
+      }
+    })
+
+    if (commonFriends.length) {
+
+      return commonFriends.map(item => {
+        const { user, invite_status } = item
+
+        return (
+          <div key={user.id}>
+            <ListItem>
+              <ListItemAvatar>
+                <Link to={`/profile/user?id=${user.id}`}>
+                  <AvatarStyled src={getAvatarUrl(user.id)} />
+                </Link>
+              </ListItemAvatar>
+              <ListItemText primary={<UserNameLink to={`/profile/user?id=${user.id}`}>{user.name}</UserNameLink>} />
+              {checkCurrentIcon(user, invite_status)}
+            </ListItem>
+            <Divider variant="inset" />
+          </div>
+        )
+      })
+    } else {
+      return <NoCommonFriendsMessage>No common friends found</NoCommonFriendsMessage>
+    }
+
+  }
+
   const mapPotentialFriendsList = (id: string) => {
     const selectedFriend = friends.find(item => item.user.id === id) || null
 
@@ -130,6 +171,10 @@ const UserProfile: React.FC<Props> = (props) => {
       <ProfileWrapper>
         <UsersWrapper>
           <ListStyled className="resize">
+            <ContainerTitle>{`Common friends`}</ContainerTitle>
+            {mapCommonFriendsList(userId as string)}
+          </ListStyled>
+          <ListStyled className="resize">
             <ContainerTitle>{`${users[0]?.name}\`s friends`}</ContainerTitle>
             {mapPotentialFriendsList(userId as string)}
           </ListStyled>
@@ -153,4 +198,4 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onAddFriend: (data: ApiTypes.Friends.Request) => dispatch(Actions.friends.addFriendRequest(data)),
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserProfile)
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(UserProfile))

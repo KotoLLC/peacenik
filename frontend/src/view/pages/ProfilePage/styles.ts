@@ -121,3 +121,7 @@ export const UsersWrapper = styled.div`
 export const UserMenuWrapper = styled.div`
   /* align-items: flex-end; */
 `
+
+export const NoCommonFriendsMessage = styled.p`
+  text-align: center;
+`
