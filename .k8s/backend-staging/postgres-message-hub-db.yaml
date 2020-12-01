@@ -51,11 +51,13 @@ spec:
               secretKeyRef:
                 name: db-message-hub-password
                 key: password
+          - name: PGDATA
+            value: /var/lib/postgresql/data/pgdata
           ports:
           - containerPort: 5432
           volumeMounts:
           - name: message-hub-db-data
-            mountPath: /var/lib/postgresql
+            mountPath: /var/lib/postgresql/data
       volumes:
       - name: message-hub-db-data
         persistentVolumeClaim:
