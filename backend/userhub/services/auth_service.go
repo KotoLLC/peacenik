@@ -215,7 +215,7 @@ func (s *authService) SendResetPasswordLink(_ context.Context, r *rpc.AuthSendRe
 		return nil, err
 	}
 
-	link := fmt.Sprintf("%s"+resetPasswordFrontendPath, s.frontendAddress, url.QueryEscape(r.Name), url.QueryEscape(r.Email), resetToken)
+	link := fmt.Sprintf("%s"+resetPasswordFrontendPath, s.cfg.FrontendAddress, url.QueryEscape(r.Name), url.QueryEscape(r.Email), resetToken)
 	err = s.mailSender.SendHTMLEmail([]string{r.Email}, resetPasswordSubject, fmt.Sprintf(resetPasswordEmailBody, link))
 	if err != nil {
 		return nil, err
@@ -277,7 +277,7 @@ func (s *authService) sendConfirmLink(user repo.User) error {
 		return merry.Wrap(err)
 	}
 
-	link := fmt.Sprintf("%s"+confirmFrontendPath, s.frontendAddress, confirmToken)
+	link := fmt.Sprintf("%s"+confirmFrontendPath, s.cfg.FrontendAddress, confirmToken)
 	return s.mailSender.SendHTMLEmail([]string{user.Email}, confirmEmailSubject, fmt.Sprintf(confirmEmailBody, link))
 }
 
@@ -366,6 +366,6 @@ func (s *authService) sendInviteLinkToRegisteredUser(inviter repo.User, userEmai
 		return nil
 	}
 
-	link := fmt.Sprintf("%s"+invitationsFrontendPath, s.frontendAddress)
+	link := fmt.Sprintf("%s"+invitationsFrontendPath, s.cfg.FrontendAddress)
 	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviter.Name+" invited you to be friends on KOTO", fmt.Sprintf(inviteRegisteredUserEmailBody, link))
 }

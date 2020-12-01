@@ -6,6 +6,7 @@ import (
 
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/token"
+	"github.com/mreider/koto/backend/userhub/config"
 	"github.com/mreider/koto/backend/userhub/repo"
 )
 
@@ -15,19 +16,19 @@ type BaseService struct {
 	tokenGenerator     token.Generator
 	tokenParser        token.Parser
 	mailSender         *common.MailSender
-	frontendAddress    string
+	cfg                config.Config
 	notificationSender NotificationSender
 }
 
 func NewBase(repos repo.Repos, s3Storage *common.S3Storage, tokenGenerator token.Generator, tokenParser token.Parser,
-	mailSender *common.MailSender, frontendAddress string, notificationSender NotificationSender) *BaseService {
+	mailSender *common.MailSender, cfg config.Config, notificationSender NotificationSender) *BaseService {
 	return &BaseService{
 		repos:              repos,
 		s3Storage:          s3Storage,
 		tokenGenerator:     tokenGenerator,
 		tokenParser:        tokenParser,
 		mailSender:         mailSender,
-		frontendAddress:    frontendAddress,
+		cfg:                cfg,
 		notificationSender: notificationSender,
 	}
 }

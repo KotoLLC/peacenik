@@ -26,11 +26,11 @@ spec:
           - name: KOTO_EXTERNAL_ADDRESS
             value: https://node1.orbits.at
           - name: KOTO_USER_HUB_ADDRESS
-            value: http://central.orbits.at
+            value: https://central.orbits.at
           - name: KOTO_DB_HOST
             value: db-message-hub-service.backend-staging
           - name: KOTO_DB_SSL_MODE
-            value: disable
+            value: require
           - name: KOTO_DB_USER
             value: postgres
           - name: KOTO_DB_PASSWORD

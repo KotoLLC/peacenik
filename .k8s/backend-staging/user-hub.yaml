@@ -28,8 +28,10 @@ spec:
           - name: user-hub-key
             mountPath: "/tmp"
         env:
-          - name: KOTO_ADDRESS
+          - name: KOTO_LISTEN_ADDRESS
             value: ":12001"
+          - name: KOTO_EXTERNAL_ADDRESS
+            value: https://central.orbits.at
           - name: KOTO_PRIVATE_KEY
             value: /tmp/key
           - name: KOTO_ADMINS
@@ -37,9 +39,9 @@ spec:
           - name: KOTO_DB_HOST
             value: db-user-hub-service.backend-staging
           - name: KOTO_DB_SSL_MODE
-            value: disable
+            value: require
           - name: KOTO_FRONTEND_ADDRESS
-            value: http://orbits.at
+            value: https://orbits.at
           - name: KOTO_DB_USER
             value: postgres
           - name: KOTO_DB_PASSWORD
@@ -89,6 +91,10 @@ spec:
             #    key: firebase_token
           - name: KOTO_ADMIN_FRIENDSHIP
             value: ""
+          - name: KOTO_DIGITALOCEAN_TOKEN
+            value: ""
+          - name: KOTO_MESSAGEHUB_CONFIG
+            value: "https://raw.githubusercontent.com/mreider/koto/master/.k8s/backend-staging/message-hub.yaml"
 ---
 apiVersion: v1
 kind: Service
