@@ -316,6 +316,53 @@ func (x *AuthResetPasswordRequest) GetNewPassword() string {
 	return ""
 }
 
+type AuthRecallNamesRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Email string `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+}
+
+func (x *AuthRecallNamesRequest) Reset() {
+	*x = AuthRecallNamesRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_auth_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AuthRecallNamesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AuthRecallNamesRequest) ProtoMessage() {}
+
+func (x *AuthRecallNamesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AuthRecallNamesRequest.ProtoReflect.Descriptor instead.
+func (*AuthRecallNamesRequest) Descriptor() ([]byte, []int) {
+	return file_auth_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *AuthRecallNamesRequest) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
 var File_auth_proto protoreflect.FileDescriptor
 
 var file_auth_proto_rawDesc = []byte{
@@ -348,7 +395,10 @@ var file_auth_proto_rawDesc = []byte{
 	0x65, 0x74, 0x5f, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a,
 	0x72, 0x65, 0x73, 0x65, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x21, 0x0a, 0x0c, 0x6e, 0x65,
 	0x77, 0x5f, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x0b, 0x6e, 0x65, 0x77, 0x50, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x32, 0xf0, 0x02,
+	0x52, 0x0b, 0x6e, 0x65, 0x77, 0x50, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x22, 0x2e, 0x0a,
+	0x16, 0x41, 0x75, 0x74, 0x68, 0x52, 0x65, 0x63, 0x61, 0x6c, 0x6c, 0x4e, 0x61, 0x6d, 0x65, 0x73,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x6d, 0x61, 0x69, 0x6c,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x32, 0xa8, 0x03,
 	0x0a, 0x0b, 0x41, 0x75, 0x74, 0x68, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x30, 0x0a,
 	0x08, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x12, 0x18, 0x2e, 0x72, 0x70, 0x63, 0x2e,
 	0x41, 0x75, 0x74, 0x68, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75,
@@ -372,8 +422,11 @@ var file_auth_proto_rawDesc = []byte{
 	0x73, 0x74, 0x1a, 0x0a, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x12, 0x20,
 	0x0a, 0x06, 0x4c, 0x6f, 0x67, 0x6f, 0x75, 0x74, 0x12, 0x0a, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x45,
 	0x6d, 0x70, 0x74, 0x79, 0x1a, 0x0a, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79,
-	0x42, 0x08, 0x5a, 0x06, 0x2e, 0x2e, 0x2f, 0x72, 0x70, 0x63, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x12, 0x36, 0x0a, 0x0b, 0x52, 0x65, 0x63, 0x61, 0x6c, 0x6c, 0x4e, 0x61, 0x6d, 0x65, 0x73, 0x12,
+	0x1b, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x41, 0x75, 0x74, 0x68, 0x52, 0x65, 0x63, 0x61, 0x6c, 0x6c,
+	0x4e, 0x61, 0x6d, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x0a, 0x2e, 0x72,
+	0x70, 0x63, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x42, 0x08, 0x5a, 0x06, 0x2e, 0x2e, 0x2f, 0x72,
+	0x70, 0x63, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -388,32 +441,35 @@ func file_auth_proto_rawDescGZIP() []byte {
 	return file_auth_proto_rawDescData
 }
 
-var file_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_auth_proto_goTypes = []interface{}{
 	(*AuthRegisterRequest)(nil),              // 0: rpc.AuthRegisterRequest
 	(*AuthLoginRequest)(nil),                 // 1: rpc.AuthLoginRequest
 	(*AuthConfirmRequest)(nil),               // 2: rpc.AuthConfirmRequest
 	(*AuthSendResetPasswordLinkRequest)(nil), // 3: rpc.AuthSendResetPasswordLinkRequest
 	(*AuthResetPasswordRequest)(nil),         // 4: rpc.AuthResetPasswordRequest
-	(*Empty)(nil),                            // 5: rpc.Empty
+	(*AuthRecallNamesRequest)(nil),           // 5: rpc.AuthRecallNamesRequest
+	(*Empty)(nil),                            // 6: rpc.Empty
 }
 var file_auth_proto_depIdxs = []int32{
 	0, // 0: rpc.AuthService.Register:input_type -> rpc.AuthRegisterRequest
 	1, // 1: rpc.AuthService.Login:input_type -> rpc.AuthLoginRequest
 	2, // 2: rpc.AuthService.Confirm:input_type -> rpc.AuthConfirmRequest
-	5, // 3: rpc.AuthService.SendConfirmLink:input_type -> rpc.Empty
+	6, // 3: rpc.AuthService.SendConfirmLink:input_type -> rpc.Empty
 	3, // 4: rpc.AuthService.SendResetPasswordLink:input_type -> rpc.AuthSendResetPasswordLinkRequest
 	4, // 5: rpc.AuthService.ResetPassword:input_type -> rpc.AuthResetPasswordRequest
-	5, // 6: rpc.AuthService.Logout:input_type -> rpc.Empty
-	5, // 7: rpc.AuthService.Register:output_type -> rpc.Empty
-	5, // 8: rpc.AuthService.Login:output_type -> rpc.Empty
-	5, // 9: rpc.AuthService.Confirm:output_type -> rpc.Empty
-	5, // 10: rpc.AuthService.SendConfirmLink:output_type -> rpc.Empty
-	5, // 11: rpc.AuthService.SendResetPasswordLink:output_type -> rpc.Empty
-	5, // 12: rpc.AuthService.ResetPassword:output_type -> rpc.Empty
-	5, // 13: rpc.AuthService.Logout:output_type -> rpc.Empty
-	7, // [7:14] is the sub-list for method output_type
-	0, // [0:7] is the sub-list for method input_type
+	6, // 6: rpc.AuthService.Logout:input_type -> rpc.Empty
+	5, // 7: rpc.AuthService.RecallNames:input_type -> rpc.AuthRecallNamesRequest
+	6, // 8: rpc.AuthService.Register:output_type -> rpc.Empty
+	6, // 9: rpc.AuthService.Login:output_type -> rpc.Empty
+	6, // 10: rpc.AuthService.Confirm:output_type -> rpc.Empty
+	6, // 11: rpc.AuthService.SendConfirmLink:output_type -> rpc.Empty
+	6, // 12: rpc.AuthService.SendResetPasswordLink:output_type -> rpc.Empty
+	6, // 13: rpc.AuthService.ResetPassword:output_type -> rpc.Empty
+	6, // 14: rpc.AuthService.Logout:output_type -> rpc.Empty
+	6, // 15: rpc.AuthService.RecallNames:output_type -> rpc.Empty
+	8, // [8:16] is the sub-list for method output_type
+	0, // [0:8] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -486,6 +542,18 @@ func file_auth_proto_init() {
 				return nil
 			}
 		}
+		file_auth_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AuthRecallNamesRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -493,7 +561,7 @@ func file_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_auth_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

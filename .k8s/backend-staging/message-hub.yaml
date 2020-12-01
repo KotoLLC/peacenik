@@ -30,7 +30,7 @@ spec:
           - name: KOTO_DB_HOST
             value: db-message-hub-service.backend-staging
           - name: KOTO_DB_SSL_MODE
-            value: require
+            value: disable
           - name: KOTO_DB_USER
             value: postgres
           - name: KOTO_DB_PASSWORD

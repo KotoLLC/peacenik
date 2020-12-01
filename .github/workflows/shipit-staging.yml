@@ -1,8 +1,7 @@
 on:
   push:
     tags:
-      - '*'
-
+      - '*staging'
 jobs:
   build:
     name: Build and Publish images
@@ -82,16 +81,4 @@ jobs:
           kubectl apply -f $GITHUB_WORKSPACE/.k8s/frontend-staging/frontend.yaml --force
           kubectl apply -f $GITHUB_WORKSPACE/.k8s/backend-staging/message-hub.yaml --force
 
-      - name: Update deployment file to (prod)
-        if: "!github.event.release.prerelease"
-        run: |
-          sed -i 's|<TAG>|'${{ needs.build.outputs.version }}'|' $GITHUB_WORKSPACE/.k8s/backend/user-hub.yaml
-          sed -i 's|<TAG>|'${{ needs.build.outputs.version }}'|' $GITHUB_WORKSPACE/.k8s/frontend/frontend.yaml
-          sed -i 's|<TAG>|'${{ needs.build.outputs.version }}'|' $GITHUB_WORKSPACE/.k8s/backend/message-hub.yaml
-
-      - name: Deploy Frontend and User-hub to DigitalOcean Kubernetes (prod)
-        if: "!github.event.release.prerelease"
-        run: |
-          kubectl apply -f $GITHUB_WORKSPACE/.k8s/backend/user-hub.yaml --force
-          kubectl apply -f $GITHUB_WORKSPACE/.k8s/frontend/frontend.yaml --force
-          kubectl apply -f $GITHUB_WORKSPACE/.k8s/backend/message-hub.yaml --force
+ 
