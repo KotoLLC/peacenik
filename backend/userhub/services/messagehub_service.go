@@ -391,6 +391,7 @@ func (s *messageHubService) createDomainRecord(ctx context.Context, externalDoma
 	_, _, err := client.Domains.CreateRecord(ctx, externalDomain, &godo.DomainRecordEditRequest{
 		Type: "CNAME",
 		Name: subdomain,
+		Data: "@",
 		TTL:  1800,
 	})
 	if err != nil {
