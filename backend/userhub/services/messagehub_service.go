@@ -490,6 +490,13 @@ func (s *messageHubService) downloadConfiguration(ctx context.Context, externalA
 		return nil, merry.Wrap(err)
 	}
 
+	err = s.modifyYAMLValue(&doc1, "/spec/template/spec/containers/0/image", func(value string) string {
+		return strings.ReplaceAll(value, "<TAG>", "latest")
+	})
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+
 	err = s.modifyYAMLValue(&doc1, "/spec/template/spec/containers/0/env/~{name: KOTO_EXTERNAL_ADDRESS}/value", func(value string) string {
 		return externalAddress
 	})
