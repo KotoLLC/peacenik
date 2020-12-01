@@ -3,9 +3,8 @@ import { withRouter, RouteComponentProps } from 'react-router'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import { WithTopBar } from '@view/shared/WithTopBar'
-import { ContainerStyled } from './styles'
+import { ContainerStyled, ButtonStyled } from './styles'
 import ReactMarkdown from 'react-markdown'
-import Button from '@material-ui/core/Button'
 import nothingPicture from './../../../assets/images/nothing.jpg'
 
 interface Props extends RouteComponentProps {
@@ -43,16 +42,15 @@ export const AboutUsSlider: React.SFC<Props> = (props) => {
 
   `}
         </ReactMarkdown>
-          <Button rel="noopener" variant="contained" target="_blank" href="https://docs.koto.at/#/install-message-hub" color="primary">
-          Set up a hub (technical!)
-           </Button>
-           {''}
-          <Button
+        <a rel="noopener" target="_blank" href="https://docs.koto.at/#/install-message-hub" >
+          <ButtonStyled variant="contained" color="primary">Set up a hub (technical!)</ButtonStyled>
+        </a>
+        <ButtonStyled
           variant="contained"
           color="primary"
           onClick={onGoToInvites}>
           Find a friend that has a hub
-          </Button>
+        </ButtonStyled>
       </ContainerStyled>
     </WithTopBar>
   )

@@ -171,11 +171,11 @@ class MessageFeed extends React.Component<Props, State> {
   }
 
   componentDidUpdate() {
-    const { isMessagesRequested, messageTokens, isAboutUsViewed } = this.props
+    const { isMessagesRequested, messageTokens, isAboutUsViewed, currentHub } = this.props
     if (isAboutUsViewed) return false
 
-    if (isMessagesRequested === false && !messageTokens.length) {
-      this.props.history.push('/about-us')
+    if (isMessagesRequested === false && !messageTokens.length && !currentHub.token) {
+      this.props.history.push('/no-hubs')
     }
   }
 

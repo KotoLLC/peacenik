@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import Container from '@material-ui/core/Container'
+import Button from '@material-ui/core/Button'
 
 export const ContainerStyled = styled(Container)`
   && {
@@ -26,4 +27,8 @@ export const SwipeNote = styled.div`
   @media (max-width: 520px) {
     display: block;
   }
+`
+
+export const ButtonStyled = styled(Button)`
+  margin-right: 10px;
 `

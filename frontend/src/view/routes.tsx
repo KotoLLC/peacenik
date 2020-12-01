@@ -51,7 +51,7 @@ export const Routes = () => {
           <Route path="/docs" component={DocsPages} />
           <Route path="/confirm-user" component={ConfirmUserPage} />
           <Route path="/resend-confirm-email" component={ResendConfirmEmailPage} />
-          <Route path="/about-us" component={AboutUsPage} />
+          <Route path="/no-hubs" component={AboutUsPage} />
           <PrivateRoute path="/friends" component={FriendsPage} />
           <PrivateRoute path="/hubs" component={HubPages} />
           <PrivateRoute path="/messages" component={MessagesPage} />

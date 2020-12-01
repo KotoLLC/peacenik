@@ -81,7 +81,7 @@ export const LoginForm = (props) => {
   }
 
   const checkExcludedRoutes = (path?: string) => {
-    const excludedRoutes = ['reset-password', 'forgot-password', 'docs', 'about-us', 'registration']
+    const excludedRoutes = ['reset-password', 'forgot-password', 'docs', 'no-hubs', 'registration']
     if (!path) return false
     return excludedRoutes.some(item => path.indexOf(item) !== -1)
   }
