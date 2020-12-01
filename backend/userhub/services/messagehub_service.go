@@ -346,7 +346,7 @@ func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateR
 		return nil, twirp.InvalidArgumentError("owner", "is invalid")
 	}
 
-	if s.cfg.DigitalOceanToken == "" || s.cfg.ExternalAddress == "" {
+	if s.cfg.DigitalOceanToken == "" || s.cfg.ExternalAddress == "" || s.cfg.MessageHubConfig == "" {
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid operation")
 	}
 
@@ -436,7 +436,7 @@ func (s *messageHubService) downloadConfiguration(ctx context.Context, externalA
 		Timeout: time.Second * 20,
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://raw.githubusercontent.com/mreider/koto/master/.k8s/backend/message-hub.yaml", nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, s.cfg.MessageHubConfig, nil)
 	if err != nil {
 		return nil, merry.Prepend(err, "can't create http request")
 	}

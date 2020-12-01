@@ -92,6 +92,8 @@ spec:
             value: ""
           - name: KOTO_DIGITALOCEAN_TOKEN
             value: ""
+          - name: KOTO_MESSAGEHUB_CONFIG
+            value: "https://raw.githubusercontent.com/mreider/koto/master/.k8s/backend/message-hub.yaml"
 ---
 apiVersion: v1
 kind: Service

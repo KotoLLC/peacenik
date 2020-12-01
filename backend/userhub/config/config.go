@@ -21,6 +21,7 @@ type Config struct {
 	AdminFriendship      string `yaml:"admin_friendship" default:"" env:"KOTO_ADMIN_FRIENDSHIP"`
 	FirebaseToken        string `yaml:"firebase_token" default:"" env:"KOTO_FIREBASE_TOKEN"`
 	DigitalOceanToken    string `yaml:"digitalocean_token" default:"" env:"KOTO_DIGITALOCEAN_TOKEN"`
+	MessageHubConfig     string `yaml:"messagehub_config" default:"" env:"KOTO_MESSAGEHUB_CONFIG"`
 
 	DB   common.DatabaseConfig `yaml:"db"`
 	S3   common.S3Config       `yaml:"s3"`
