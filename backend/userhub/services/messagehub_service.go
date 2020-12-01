@@ -1,18 +1,25 @@
 package services
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"html"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"os/exec"
 	"strings"
 	"time"
 
 	"github.com/ansel1/merry"
+	"github.com/digitalocean/godo"
 	"github.com/twitchtv/twirp"
+	yptr "github.com/vmware-labs/yaml-jsonpointer"
+	"gopkg.in/yaml.v3"
 
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/userhub/repo"
@@ -291,7 +298,7 @@ func (s *messageHubService) ReportMessage(ctx context.Context, r *rpc.MessageHub
 	err = s.mailSender.SendHTMLEmail([]string{hubAdmin.Email}, "Objectional Content Reported",
 		fmt.Sprintf(`<p>User %s just reported objectionable content for user %s: %s<p>
 <p>Please visit <a href="%s" target="_blank">the audit dashboard</a> to review the content.</p>`,
-			reportedBy.Name, author.Name, html.EscapeString(body.Report), s.frontendAddress+"/dashboard"))
+			reportedBy.Name, author.Name, html.EscapeString(body.Report), s.cfg.FrontendAddress+"/dashboard"))
 	if err != nil {
 		return nil, err
 	}
@@ -318,4 +325,226 @@ func (s *messageHubService) BlockUser(ctx context.Context, r *rpc.MessageHubBloc
 		return nil, err
 	}
 	return &rpc.Empty{}, nil
+}
+
+func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateRequest) (*rpc.Empty, error) {
+	if !s.isAdmin(ctx) {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
+	}
+	if r.Owner == "" {
+		return nil, twirp.InvalidArgumentError("owner", "is empty")
+	}
+	if r.Subdomain == "" {
+		return nil, twirp.InvalidArgumentError("subdomain", "is empty")
+	}
+
+	owner, err := s.repos.User.FindUserByIDOrName(r.Owner)
+	if err != nil {
+		return nil, err
+	}
+	if owner == nil {
+		return nil, twirp.InvalidArgumentError("owner", "is invalid")
+	}
+
+	if s.cfg.DigitalOceanToken == "" || s.cfg.ExternalAddress == "" || s.cfg.MessageHubConfig == "" {
+		return nil, twirp.NewError(twirp.InvalidArgument, "invalid operation")
+	}
+
+	externalDomain, err := common.GetEffectiveTLDPlusOne(s.cfg.ExternalAddress)
+	if err != nil {
+		return nil, merry.Prepend(err, "can't get GetEffectiveTLDPlusOne")
+	}
+	hubAddress := common.CleanPublicURL("https://" + r.Subdomain + "." + externalDomain)
+	hubExists, err := s.repos.MessageHubs.HubExists(hubAddress)
+	if err != nil {
+		return nil, err
+	}
+	if hubExists {
+		return nil, twirp.NewError(twirp.AlreadyExists, "hub already exists")
+	}
+
+	err = s.createDomainRecord(ctx, externalDomain, r.Subdomain)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.applyConfiguration(ctx, hubAddress, r.Subdomain)
+	if err != nil {
+		return nil, err
+	}
+
+	hubID, err := s.repos.MessageHubs.AddHub(hubAddress, r.Notes, *owner, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.repos.MessageHubs.ApproveHub(hubID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &rpc.Empty{}, nil
+}
+
+func (s *messageHubService) createDomainRecord(ctx context.Context, externalDomain, subdomain string) error {
+	client := godo.NewFromToken(s.cfg.DigitalOceanToken)
+	_, _, err := client.Domains.CreateRecord(ctx, externalDomain, &godo.DomainRecordEditRequest{
+		Type: "CNAME",
+		Name: subdomain,
+		TTL:  1800,
+	})
+	if err != nil {
+		return merry.Prepend(err, "can't create new domain record")
+	}
+	return nil
+}
+
+func (s *messageHubService) applyConfiguration(ctx context.Context, externalAddress, subdomain string) error {
+	config, err := s.downloadConfiguration(ctx, externalAddress, subdomain)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+	f, err := ioutil.TempFile("", "*.yaml")
+	if err != nil {
+		return merry.Prepend(err, "can't create temp file")
+	}
+	defer func() {
+		_ = f.Close()
+		_ = os.Remove(f.Name())
+	}()
+
+	_, err = f.Write(config)
+	if err != nil {
+		return merry.Prepend(err, "can't write to temp config file")
+	}
+	err = f.Close()
+	if err != nil {
+		return merry.Prepend(err, "can't close temp config file")
+	}
+
+	cmd := exec.Command("kubectl", "apply", "-f", f.Name())
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return merry.Prepend(err, string(output))
+	}
+
+	return nil
+}
+
+func (s *messageHubService) downloadConfiguration(ctx context.Context, externalAddress, subdomain string) ([]byte, error) {
+	client := &http.Client{
+		Timeout: time.Second * 20,
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, s.cfg.MessageHubConfig, nil)
+	if err != nil {
+		return nil, merry.Prepend(err, "can't create http request")
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, merry.Prepend(err, "can't do http request")
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode < 200 || 300 <= resp.StatusCode {
+		return nil, merry.Errorf("unexpected status code: %s", resp.StatusCode)
+	}
+
+	var doc1, doc2 yaml.Node
+	decoder := yaml.NewDecoder(resp.Body)
+	err = decoder.Decode(&doc1)
+	if err != nil {
+		return nil, merry.Prepend(err, "can't decode yaml")
+	}
+	err = decoder.Decode(&doc2)
+	if err != nil {
+		return nil, merry.Prepend(err, "can't decode yaml")
+	}
+
+	err = s.modifyYAMLValue(&doc1, "/metadata/name", func(value string) string {
+		return value + "-" + subdomain
+	})
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+
+	err = s.modifyYAMLValue(&doc1, "/spec/selector/matchLabels/app", func(value string) string {
+		return value + "-" + subdomain
+	})
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+
+	err = s.modifyYAMLValue(&doc1, "/spec/template/metadata/labels/app", func(value string) string {
+		return value + "-" + subdomain
+	})
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+
+	err = s.modifyYAMLValue(&doc1, "/spec/template/spec/containers/0/name", func(value string) string {
+		return value + "-" + subdomain
+	})
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+
+	err = s.modifyYAMLValue(&doc1, "/spec/template/spec/containers/0/env/~{name: KOTO_EXTERNAL_ADDRESS}/value", func(value string) string {
+		return externalAddress
+	})
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+
+	err = s.modifyYAMLValue(&doc1, "/spec/template/spec/containers/0/env/~{name: KOTO_DB_NAME}/value", func(value string) string {
+		return strings.ReplaceAll(value, "-message-hub-1", "-message-hub-"+subdomain)
+	})
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+
+	err = s.modifyYAMLValue(&doc1, "/spec/template/spec/containers/0/env/~{name: KOTO_S3_BUCKET}/value", func(value string) string {
+		return strings.ReplaceAll(value, "-message-hub-1", "-message-hub-"+subdomain)
+	})
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+
+	err = s.modifyYAMLValue(&doc2, "/metadata/name", func(value string) string {
+		return strings.ReplaceAll(value, "message-hub-", "message-hub-"+subdomain+"-")
+	})
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+
+	err = s.modifyYAMLValue(&doc2, "/spec/selector/app", func(value string) string {
+		return value + "-" + subdomain
+	})
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+
+	var b bytes.Buffer
+	b.WriteString("---\n")
+
+	encoder := yaml.NewEncoder(&b)
+	err = encoder.Encode(&doc1)
+	if err != nil {
+		return nil, merry.Prepend(err, "can't ecnode yaml")
+	}
+	err = encoder.Encode(&doc2)
+	if err != nil {
+		return nil, merry.Prepend(err, "can't ecnode yaml")
+	}
+
+	return b.Bytes(), nil
+}
+
+func (s *messageHubService) modifyYAMLValue(config *yaml.Node, path string, getNewValue func(value string) string) error {
+	node, err := yptr.Find(config, path)
+	if err != nil {
+		return merry.Prepend(err, "can't find "+path)
+	}
+	node.Value = getNewValue(node.Value)
+	return nil
 }

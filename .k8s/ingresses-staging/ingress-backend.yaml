@@ -1,0 +1,37 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: koto-ingress1
+  namespace: backend-staging
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: "do-issuer"
+    # acme.cert-manager.io/http01-edit-in-place: "true"
+    # cert-manager.io/issue-temporary-certificate: "true"
+spec:
+  tls:
+  - hosts:
+    - central.orbits.at
+    - node1.orbits.at
+    secretName: koto-tls-backend
+  rules:
+  - host: central.orbits.at
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: user-hub-service
+            port: 
+              number: 12001
+  - host: node1.orbits.at
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: message-hub-service
+            port:
+              number: 12002

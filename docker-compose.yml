@@ -20,7 +20,8 @@ services:
     ports:
       - 12001:12001
     environment:
-      KOTO_ADDRESS: :12001
+      KOTO_LISTEN_ADDRESS: :12001
+      KOTO_EXTERNAL_ADDRESS: http://localhost:12001/
       KOTO_PRIVATE_KEY: /user-hub.rsa
       KOTO_ADMINS: "matt"
       KOTO_DB_HOST: db-user-hub
@@ -53,7 +54,7 @@ services:
     ports:
       - 12002:12002
     environment:
-      KOTO_ADDRESS: :12002
+      KOTO_LISTEN_ADDRESS: :12002
       KOTO_EXTERNAL_ADDRESS: http://localhost:12002/
       KOTO_USER_HUB_ADDRESS: http://central:12001/
       KOTO_DB_HOST: db-message-hub

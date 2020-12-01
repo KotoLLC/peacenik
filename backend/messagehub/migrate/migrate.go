@@ -9,13 +9,13 @@ import (
 func Migrate(db *sqlx.DB, dialect string) (n int, err error) {
 	migrationSource := &migrate.MemoryMigrationSource{
 		Migrations: []*migrate.Migration{
-			//	migration0002a(),
-			//	migration0002b(),
-			//	migration0002c(),
-			//	migration0002d(),
-			//	migration0002e(),
-			//	migration0002f(),
-			//	migration0003a(),
+			migration0002a(),
+			migration0002b(),
+			migration0002c(),
+			migration0002d(),
+			migration0002e(),
+			migration0002f(),
+			migration0003a(),
 		},
 	}
 
