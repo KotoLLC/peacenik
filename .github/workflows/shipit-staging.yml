@@ -17,34 +17,33 @@ jobs:
         id: get_version
         run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
 
-      - uses: belon/docker-build-push@v4.0
+      - uses: whoan/docker-build-with-cache-action@v5
         name: Build & push Frontend Docker image
         with:
-          image: k0t0/frontend
-          tags: ${{ steps.get_version.outputs.VERSION }}, latest
-          registry: docker.io
-          directory: ./frontend
-          dockerfile: ./frontend/Dockerfile.production
+          image_name: k0t0/frontend
+          image_tag: ${{ steps.get_version.outputs.VERSION }},latest
+          context: ./frontend
+          dockerfile: Dockerfile.production
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - uses: belon/docker-build-push@v4.0
+
+      - uses: whoan/docker-build-with-cache-action@v5
         name: Build & push Backend User Hub Docker image
         with:
-          image: k0t0/central
-          tags: ${{ steps.get_version.outputs.VERSION }}, latest
-          registry: docker.io
-          directory: ./backend
-          dockerfile: ./backend/userhub/Dockerfile
+          image_name: k0t0/central
+          image_tag: ${{ steps.get_version.outputs.VERSION }},latest
+          context: ./backend
+          dockerfile: userhub/Dockerfile
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - uses: belon/docker-build-push@v4.0
+
+      - uses: whoan/docker-build-with-cache-action@v5
         name: Build & push Backend Message Hub Docker image
         with:
-          image: k0t0/node
-          tags: ${{ steps.get_version.outputs.VERSION }}, latest
-          registry: docker.io
-          directory: ./backend
-          dockerfile: ./backend/messagehub/Dockerfile
+          image_name: k0t0/node
+          image_tag: ${{ steps.get_version.outputs.VERSION }},latest
+          context: ./backend
+          dockerfile: messagehub/Dockerfile
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 

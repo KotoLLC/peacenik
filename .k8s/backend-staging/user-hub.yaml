@@ -14,12 +14,6 @@ spec:
         app: user-hub
     spec:
       terminationGracePeriodSeconds: 5
-      volumes:
-        - name: user-hub-key
-          secret:
-            secretName: user-hub-key
-        - name: kubectl
-          emptyDir: {}
       initContainers:
       - name: install-kubectl
         image: allanlei/kubectl
@@ -27,6 +21,12 @@ spec:
         - name: kubectl
           mountPath: /data
         command: ["cp", "/usr/local/bin/kubectl", "/data/kubectl"]
+      volumes:
+        - name: user-hub-key
+          secret:
+            secretName: user-hub-key
+        - name: kubectl
+          emptyDir: {}
       containers:
       - name: user-hub
         image: k0t0/central:<TAG>
