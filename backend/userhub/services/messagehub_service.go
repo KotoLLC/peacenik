@@ -7,10 +7,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"html"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"os/exec"
 	"strings"
 	"time"
@@ -391,6 +389,7 @@ func (s *messageHubService) createDomainRecord(ctx context.Context, externalDoma
 	_, _, err := client.Domains.CreateRecord(ctx, externalDomain, &godo.DomainRecordEditRequest{
 		Type: "CNAME",
 		Name: subdomain,
+		Data: "@",
 		TTL:  1800,
 	})
 	if err != nil {
@@ -404,25 +403,9 @@ func (s *messageHubService) applyConfiguration(ctx context.Context, externalAddr
 	if err != nil {
 		return merry.Wrap(err)
 	}
-	f, err := ioutil.TempFile("", "*.yaml")
-	if err != nil {
-		return merry.Prepend(err, "can't create temp file")
-	}
-	defer func() {
-		_ = f.Close()
-		_ = os.Remove(f.Name())
-	}()
 
-	_, err = f.Write(config)
-	if err != nil {
-		return merry.Prepend(err, "can't write to temp config file")
-	}
-	err = f.Close()
-	if err != nil {
-		return merry.Prepend(err, "can't close temp config file")
-	}
-
-	cmd := exec.Command("kubectl", "apply", "-f", f.Name())
+	cmd := exec.Command("kubectl", "apply", "-f", "-")
+	cmd.Stdin = bytes.NewReader(config)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return merry.Prepend(err, string(output))
@@ -484,6 +467,13 @@ func (s *messageHubService) downloadConfiguration(ctx context.Context, externalA
 
 	err = s.modifyYAMLValue(&doc1, "/spec/template/spec/containers/0/name", func(value string) string {
 		return value + "-" + subdomain
+	})
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+
+	err = s.modifyYAMLValue(&doc1, "/spec/template/spec/containers/0/image", func(value string) string {
+		return strings.ReplaceAll(value, "<TAG>", "latest")
 	})
 	if err != nil {
 		return nil, merry.Wrap(err)

@@ -13,6 +13,7 @@ service AuthService {
     rpc SendResetPasswordLink (AuthSendResetPasswordLinkRequest) returns (Empty);
     rpc ResetPassword (AuthResetPasswordRequest) returns (Empty);
     rpc Logout (Empty) returns (Empty);
+    rpc RecallNames (AuthRecallNamesRequest) returns (Empty);
 }
 
 message AuthRegisterRequest {
@@ -40,4 +41,8 @@ message AuthSendResetPasswordLinkRequest {
 message AuthResetPasswordRequest {
     string reset_token = 1;
     string new_password = 2;
+}
+
+message AuthRecallNamesRequest {
+    string email = 1;
 }

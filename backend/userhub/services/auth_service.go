@@ -369,3 +369,28 @@ func (s *authService) sendInviteLinkToRegisteredUser(inviter repo.User, userEmai
 	link := fmt.Sprintf("%s"+invitationsFrontendPath, s.cfg.FrontendAddress)
 	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviter.Name+" invited you to be friends on KOTO", fmt.Sprintf(inviteRegisteredUserEmailBody, link))
 }
+
+func (s *authService) RecallNames(_ context.Context, r *rpc.AuthRecallNamesRequest) (*rpc.Empty, error) {
+	if !s.mailSender.Enabled() {
+		return &rpc.Empty{}, nil
+	}
+
+	users, err := s.repos.User.FindUsersByEmail(r.Email)
+	if err != nil {
+		return nil, err
+	}
+	if len(users) == 0 {
+		return &rpc.Empty{}, nil
+	}
+
+	userNames := make([]string, len(users))
+	for i, user := range users {
+		userNames[i] = user.Name
+	}
+	message := "KOTO usernames: " + strings.Join(userNames, ", ")
+	err = s.mailSender.SendTextEmail([]string{r.Email}, "KOTO: recall your names", message)
+	if err != nil {
+		return nil, err
+	}
+	return &rpc.Empty{}, nil
+}
