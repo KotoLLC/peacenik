@@ -16,16 +16,26 @@ spec:
       terminationGracePeriodSeconds: 5
       initContainers:
       - name: install-kubectl
-        image: allanlei/kubectl
+        image: mreider/kubectl
         volumeMounts:
         - name: kubectl
           mountPath: /data
         command: ["cp", "/usr/local/bin/kubectl", "/data/kubectl"]
+      - name: install-doctl
+        image: mreider/doctl
+        volumeMounts:
+        - name: doctl
+          mountPath: /data
+        command: ["cp", "/usr/local/bin/doctl", "/data/doctl"]
       volumes:
         - name: user-hub-key
           secret:
             secretName: user-hub-key
         - name: kubectl
+          emptyDir: {}
+        - name: doctl
+          emptyDir: {}
+        - name: koto-writeable
           emptyDir: {}
       containers:
       - name: user-hub
@@ -39,6 +49,11 @@ spec:
           - name: kubectl
             subPath: kubectl
             mountPath: /usr/local/bin/kubectl
+          - name: doctl
+            subPath: doctl
+            mountPath: /usr/local/bin/doctl
+          - mountPath: /koto-writeable
+            name: koto-writeable
         env:
           - name: KOTO_DIGITALOCEAN_TOKEN
             valueFrom:

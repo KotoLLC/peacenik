@@ -27,6 +27,8 @@ spec:
             secretName: user-hub-key
         - name: kubectl
           emptyDir: {}
+        - name: koto-writeable
+          emptyDir: {}
       containers:
       - name: user-hub
         image: k0t0/central:<TAG>
@@ -39,6 +41,8 @@ spec:
           - name: kubectl
             subPath: kubectl
             mountPath: /usr/local/bin/kubectl
+          - mountPath: /koto-writeable
+            name: koto-writeable
         env:
           - name: KOTO_DIGITALOCEAN_TOKEN
             valueFrom:
