@@ -35,6 +35,8 @@ spec:
           emptyDir: {}
         - name: doctl
           emptyDir: {}
+        - name: koto-writeable
+          emptyDir: {}
       containers:
       - name: user-hub
         image: k0t0/central:<TAG>
@@ -50,6 +52,8 @@ spec:
           - name: doctl
             subPath: doctl
             mountPath: /usr/local/bin/doctl
+          - mountPath: /koto-writeable
+            name: koto-writeable
         env:
           - name: KOTO_DIGITALOCEAN_TOKEN
             valueFrom:
