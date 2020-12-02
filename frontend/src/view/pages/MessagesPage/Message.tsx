@@ -20,7 +20,6 @@ import loadImage from 'blueimp-load-image'
 import { AuthorButtonsMenu } from './AuthorButtonsMenu'
 import { NoAuthorButtonsMenu } from './NoAuthorButtonsMenu'
 import PhotoIcon from '@material-ui/icons/Photo'
-import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
 import { urlify } from '@services/urlify'
 import { YoutubeFrame } from './YoutubeFrame'
 import {
@@ -50,8 +49,6 @@ import {
   EditMessageWrapper,
   EditorInMessageWrapper,
   IconButtonWrapper,
-  MobileImageWrapper,
-  DesktopImageWrapper,
 } from './styles'
 
 // tslint:disable-next-line
@@ -259,16 +256,7 @@ const Message: React.SFC<Props> = (props) => {
     if (attachment_type && attachment_type.indexOf('image') !== -1) {
       return (
         <AttachmentWrapper>
-          <MobileImageWrapper>
-            <TransformWrapper>
-              <TransformComponent>
-                <ImagePreview src={attachment}/>
-              </TransformComponent>
-            </TransformWrapper>
-          </MobileImageWrapper>
-          <DesktopImageWrapper>
-            <ImagePreview src={attachment} />
-          </DesktopImageWrapper>
+          <ImagePreview src={attachment}/>
         </AttachmentWrapper>
       )
     }

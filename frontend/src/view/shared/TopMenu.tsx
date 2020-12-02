@@ -43,6 +43,8 @@ const TopMenu: React.FC<Props> = (props) => {
   }
 
   const onLogoutClick = () => {
+    localStorage.clear()
+    sessionStorage.clear()
     history.push('/login')
     props.onLogout()
   }

@@ -45,7 +45,6 @@
 		"react-router-last-location": "^2.0.1",
 		"react-scripts": "3.4.1",
 		"react-simple-pull-to-refresh": "^1.2.0",
-		"react-zoom-pan-pinch": "^1.6.1",
 		"redux": "^4.0.5",
 		"redux-devtools-extension": "^2.13.8",
 		"redux-saga": "^1.1.3",
