@@ -404,7 +404,7 @@ func (s *messageHubService) applyConfiguration(ctx context.Context, externalAddr
 		return merry.Wrap(err)
 	}
 
-	cmd := exec.Command("kubectl", "apply")
+	cmd := exec.Command("kubectl", "apply", "-f", "-")
 	cmd.Stdin = bytes.NewReader(config)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
