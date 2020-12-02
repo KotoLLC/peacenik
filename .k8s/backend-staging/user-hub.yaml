@@ -15,14 +15,14 @@ spec:
     spec:
       terminationGracePeriodSeconds: 5
       initContainers:
-      - name: install-kubectl
-        image: mreider/kubectl
+      - name: kubectl
+        image: mreider/kubectl:0.0.1
         volumeMounts:
         - name: kubectl
           mountPath: /data
         command: ["cp", "/usr/local/bin/kubectl", "/data/kubectl"]
-      - name: install-doctl
-        image: mreider/doctl
+      - name: doctl
+        image: mreider/doctl:0.0.1
         volumeMounts:
         - name: doctl
           mountPath: /data
