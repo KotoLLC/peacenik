@@ -5,6 +5,7 @@ export interface State {
   loginErrorMessage: string
   passwordErrorMessage: string
   isForgotPasswordSent: boolean
+  isForgotUserNameSent: boolean
   isResetPasswordSuccess: boolean
   authToken: string
 }
@@ -17,6 +18,7 @@ const initialState: State = {
   loginErrorMessage: '',
   passwordErrorMessage: '',
   isForgotPasswordSent: false,
+  isForgotUserNameSent: false,
   isResetPasswordSuccess: false,
   authToken: authToken ? JSON.parse(authToken) : '',
 }
@@ -79,6 +81,21 @@ const reducer = (state = initialState, action) => {
     case Types.RESET_PASSWORD_SUCCESS: {
       return { ...state, ...{ 
         isResetPasswordSuccess: true, 
+      } }
+    }
+    case Types.FORGOT_USERNAME_REQUEST: {
+      return { ...state, ...{ 
+        isForgotUserNameSent: true, 
+      } }
+    }
+    case Types.FORGOT_USERNAME_FAILED: {
+      return { ...state, ...{ 
+        isForgotUserNameSent: false, 
+      } }
+    }
+    case Types.FORGOT_USERNAME_SUCCESS: {
+      return { ...state, ...{ 
+        isForgotUserNameSent: false, 
       } }
     }
     default: return state

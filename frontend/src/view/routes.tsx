@@ -15,6 +15,7 @@ import DocsPages from './pages/DocsPages'
 import ConfirmUserPage from '@view/pages/ConfirmUserPage'
 import ResendConfirmEmailPage from '@view/pages/ResendConfirmEmailPage'
 import ForgotPasswordPage from '@view/pages/ForgotPasswordPage'
+import ForgotUserNamePage from '@view/pages/ForgotUserNamePage'
 import ResetPasswordPage from '@view/pages/ResetPasswordPage'
 import { DashboardPage } from '@view/pages/DashboardPage'
 import selectors from '@selectors/index'
@@ -47,11 +48,12 @@ export const Routes = () => {
           <Route path="/login" component={LoginPage} />
           <Route path="/registration" component={RegistrationPage} />
           <Route path="/forgot-password" component={ForgotPasswordPage} />
+          <Route path="/forgot-username" component={ForgotUserNamePage} />
           <Route path="/reset-password" component={ResetPasswordPage} />
           <Route path="/docs" component={DocsPages} />
           <Route path="/confirm-user" component={ConfirmUserPage} />
           <Route path="/resend-confirm-email" component={ResendConfirmEmailPage} />
-          <Route path="/no-hubs" component={AboutUsPage} />
+          <Route path="/no-hubs" component={AboutUsPage} /> 
           <PrivateRoute path="/friends" component={FriendsPage} />
           <PrivateRoute path="/hubs" component={HubPages} />
           <PrivateRoute path="/messages" component={MessagesPage} />

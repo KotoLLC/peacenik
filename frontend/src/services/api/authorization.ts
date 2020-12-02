@@ -26,6 +26,12 @@ export default {
     }).catch(error => ({ error }))
   },
   
+  forgotUserName: async (data: ApiTypes.ForgotUserName) => {
+    return await axiosInstance.post('/rpc.AuthService/RecallNames', data).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
+  
   resetPassword: async (data: ApiTypes.ResetPassword) => {
     return await axiosInstance.post('/rpc.AuthService/ResetPassword', data).then(response => {
       return response

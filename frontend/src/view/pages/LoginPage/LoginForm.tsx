@@ -188,6 +188,10 @@ export const LoginForm = (props) => {
           to: '/forgot-password'
         },
         {
+          title: 'I forgot my username',
+          to: '/forgot-username'
+        },
+        {
           title: 'Register for Koto',
           to: '/registration',
         },

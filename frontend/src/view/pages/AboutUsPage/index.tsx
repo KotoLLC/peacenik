@@ -42,7 +42,7 @@ export const AboutUsSlider: React.SFC<Props> = (props) => {
 
   `}
         </ReactMarkdown>
-        <a rel="noopener" target="_blank" href="https://docs.koto.at/#/install-message-hub" >
+        <a rel="noopener noreferrer" target="_blank" href="https://docs.koto.at/#/install-message-hub" >
           <ButtonStyled variant="contained" color="primary">Set up a hub (technical!)</ButtonStyled>
         </a>
         <ButtonStyled

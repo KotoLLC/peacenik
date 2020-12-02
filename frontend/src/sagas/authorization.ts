@@ -54,6 +54,17 @@ export function* watchForgotPassword(action: { type: string, payload: ApiTypes.F
   }
 }
 
+export function* watchForgotUserName(action: { type: string, payload: ApiTypes.ForgotUserName }) {
+  const response = yield API.authorization.forgotUserName(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.authorization.forgotUserNameSuccess())
+    yield put(Actions.common.setSuccessNotify('Sent successfully, check your email'))
+  } else {
+    yield put(Actions.authorization.forgotUserNameFailed(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
 export function* watchResetPassword(action: { type: string, payload: ApiTypes.ResetPassword }) {
   const response = yield API.authorization.resetPassword(action.payload)
 
