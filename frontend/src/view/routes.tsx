@@ -8,7 +8,7 @@ import { StoreTypes } from 'src/types'
 import { HubPages } from './pages/HubPages'
 import { MessagesPage } from './pages/MessagesPage'
 import { NotificationsPage } from './pages/NotificationsPage'
-import AboutUsPage from './pages/AboutUsPage'
+import NoHubsPage from './pages/NoHubsPage'
 import ProfilePage from './pages/ProfilePage'
 import RegistrationPage from './pages/RegistrationPage'
 import DocsPages from './pages/DocsPages'
@@ -53,7 +53,7 @@ export const Routes = () => {
           <Route path="/docs" component={DocsPages} />
           <Route path="/confirm-user" component={ConfirmUserPage} />
           <Route path="/resend-confirm-email" component={ResendConfirmEmailPage} />
-          <Route path="/no-hubs" component={AboutUsPage} /> 
+          <Route path="/no-hubs" component={NoHubsPage} /> 
           <PrivateRoute path="/friends" component={FriendsPage} />
           <PrivateRoute path="/hubs" component={HubPages} />
           <PrivateRoute path="/messages" component={MessagesPage} />
