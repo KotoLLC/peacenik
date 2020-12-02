@@ -16,7 +16,7 @@ spec:
       terminationGracePeriodSeconds: 5
       initContainers:
       - name: kubectl
-        image: mreider/kubectl:0.0.1
+        image: mreider/kubectl:0.0.2
         volumeMounts:
         - name: kubectl
           mountPath: /data
@@ -35,8 +35,6 @@ spec:
           emptyDir: {}
         - name: doctl
           emptyDir: {}
-        - name: koto-writeable
-          emptyDir: {}
       containers:
       - name: user-hub
         image: k0t0/central:<TAG>
@@ -49,13 +47,9 @@ spec:
           - name: kubectl
             subPath: kubectl
             mountPath: /usr/local/bin/kubectl
-          - mountPath: /koto-writeable
-            name: koto-writeable
           - name: doctl
             subPath: doctl
             mountPath: /usr/local/bin/doctl
-          - mountPath: /koto-writeable
-            name: koto-writeable
         env:
           - name: KOTO_DIGITALOCEAN_TOKEN
             valueFrom:
