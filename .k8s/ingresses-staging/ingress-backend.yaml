@@ -11,8 +11,7 @@ metadata:
 spec:
   tls:
   - hosts:
-    - central.orbits.at
-    - node1.orbits.at
+    - "*.orbits.at"
     secretName: koto-tls-backend
   rules:
   - host: central.orbits.at
