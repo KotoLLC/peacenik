@@ -387,8 +387,18 @@ func (s *authService) RecallNames(_ context.Context, r *rpc.AuthRecallNamesReque
 	for i, user := range users {
 		userNames[i] = user.Name
 	}
-	message := "KOTO usernames: " + strings.Join(userNames, ", ")
-	err = s.mailSender.SendTextEmail([]string{r.Email}, "KOTO: recall your names", message)
+
+	var message string
+	switch len(userNames) {
+	case 0:
+		message = "Your email is not associated with username"
+	case 1:
+		message = "Your email is associated with one username: " + userNames[0]
+	default:
+		message = "Your email is associated with more than one username:\n" + strings.Join(userNames, "\n")
+	}
+
+	err = s.mailSender.SendTextEmail([]string{r.Email}, "Koto username reminder", message)
 	if err != nil {
 		return nil, err
 	}
