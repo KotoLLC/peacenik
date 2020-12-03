@@ -79,6 +79,8 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 		return nil, twirp.InvalidArgumentError("username", "is invalid")
 	}
 
+	r.FullName = strings.Join(strings.Fields(r.FullName), " ")
+
 	user, err := s.repos.User.FindUserByName(r.Name)
 	if err != nil {
 		return nil, err
@@ -93,7 +95,7 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 		return nil, merry.Wrap(err)
 	}
 
-	err = s.repos.User.AddUser(userID, r.Name, r.Email, passwordHash)
+	err = s.repos.User.AddUser(userID, r.Name, r.Email, r.FullName, passwordHash)
 	if err != nil {
 		return nil, merry.Wrap(err)
 	}

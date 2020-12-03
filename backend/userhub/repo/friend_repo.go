@@ -25,7 +25,7 @@ func NewFriends(db *sqlx.DB) FriendRepo {
 func (r *friendRepo) Friends(user User) ([]User, error) {
 	var friends []User
 	err := r.db.Select(&friends, `
-		select id, name, avatar_thumbnail_id
+		select id, name, full_name, avatar_thumbnail_id
 		from users
 		where id in (
 			select friend_id
@@ -44,14 +44,16 @@ func (r *friendRepo) FriendsWithSubFriends(user User) (map[User][]User, error) {
 	var items []struct {
 		UserID         string `db:"user_id"`
 		UserName       string `db:"user_name"`
+		UserFullName   string `db:"user_full_name"`
 		UserAvatarID   string `db:"user_avatar_id"`
 		FriendID       string `db:"friend_id"`
 		FriendName     string `db:"friend_name"`
+		FriendFullName string `db:"friend_full_name"`
 		FriendAvatarID string `db:"friend_avatar_id"`
 	}
 	err := r.db.Select(&items, `
-		select f.user_id user_id, uu.name user_name, uu.avatar_thumbnail_id user_avatar_id,
-			f.friend_id friend_id, uf.name friend_name, uf.avatar_thumbnail_id friend_avatar_id
+		select f.user_id user_id, uu.name user_name, uu.full_name user_full_name, uu.avatar_thumbnail_id user_avatar_id,
+			f.friend_id friend_id, uf.name friend_name, uf.full_name friend_full_name, uf.avatar_thumbnail_id friend_avatar_id
 		from friends f
         	inner join users uu on uu.id = f.user_id
         	inner join users uf on uf.id = f.friend_id
@@ -68,8 +70,18 @@ func (r *friendRepo) FriendsWithSubFriends(user User) (map[User][]User, error) {
 	}
 
 	for _, item := range items {
-		user := User{ID: item.UserID, Name: item.UserName, AvatarThumbnailID: item.UserAvatarID}
-		result[user] = append(result[user], User{ID: item.FriendID, Name: item.FriendName, AvatarThumbnailID: item.FriendAvatarID})
+		user := User{
+			ID:                item.UserID,
+			Name:              item.UserName,
+			FullName:          item.UserFullName,
+			AvatarThumbnailID: item.UserAvatarID,
+		}
+		result[user] = append(result[user], User{
+			ID:                item.FriendID,
+			Name:              item.FriendName,
+			FullName:          item.FriendFullName,
+			AvatarThumbnailID: item.FriendAvatarID,
+		})
 	}
 
 	return result, nil
@@ -81,14 +93,16 @@ func (r *friendRepo) FriendsOfFriends(user User) (map[User][]User, error) {
 	var items []struct {
 		UserID         string `db:"user_id"`
 		UserName       string `db:"user_name"`
+		UserFullName   string `db:"user_full_name"`
 		UserAvatarID   string `db:"user_avatar_id"`
 		FriendID       string `db:"friend_id"`
 		FriendName     string `db:"friend_name"`
+		FriendFullName string `db:"friend_full_name"`
 		FriendAvatarID string `db:"friend_avatar_id"`
 	}
 	err := r.db.Select(&items, `
-		select f.friend_id user_id, uf.name user_name, uf.avatar_thumbnail_id user_avatar_id,
-		       f.user_id friend_id, uu.name friend_name, uu.avatar_thumbnail_id friend_avatar_id 
+		select f.friend_id user_id, uf.name user_name, uf.full_name user_full_name, uf.avatar_thumbnail_id user_avatar_id,
+		       f.user_id friend_id, uu.name friend_name, uu.full_name friend_full_name, uu.avatar_thumbnail_id friend_avatar_id 
 		from friends f
 			inner join users uu on uu.id = f.user_id
 			inner join users uf on uf.id = f.friend_id
@@ -106,8 +120,18 @@ func (r *friendRepo) FriendsOfFriends(user User) (map[User][]User, error) {
 	}
 
 	for _, item := range items {
-		user := User{ID: item.UserID, Name: item.UserName, AvatarThumbnailID: item.UserAvatarID}
-		result[user] = append(result[user], User{ID: item.FriendID, Name: item.FriendName, AvatarThumbnailID: item.FriendAvatarID})
+		user := User{
+			ID:                item.UserID,
+			Name:              item.UserName,
+			FullName:          item.UserFullName,
+			AvatarThumbnailID: item.UserAvatarID,
+		}
+		result[user] = append(result[user], User{
+			ID:                item.FriendID,
+			Name:              item.FriendName,
+			FullName:          item.FriendFullName,
+			AvatarThumbnailID: item.FriendAvatarID,
+		})
 	}
 
 	return result, nil

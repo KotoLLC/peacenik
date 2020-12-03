@@ -56,8 +56,9 @@ func (s *userService) Friends(ctx context.Context, _ *rpc.Empty) (*rpc.UserFrien
 
 			rpcUsers = append(rpcUsers, &rpc.UserFriendsFriendOfFriend{
 				User: &rpc.User{
-					Id:   u.ID,
-					Name: u.Name,
+					Id:       u.ID,
+					Name:     u.Name,
+					FullName: u.FullName,
 				},
 				InviteStatus: inviteStatuses[u.ID],
 			})
@@ -69,8 +70,9 @@ func (s *userService) Friends(ctx context.Context, _ *rpc.Empty) (*rpc.UserFrien
 
 		rpcFriends = append(rpcFriends, &rpc.UserFriendsFriend{
 			User: &rpc.User{
-				Id:   friend.ID,
-				Name: friend.Name,
+				Id:       friend.ID,
+				Name:     friend.Name,
+				FullName: friend.FullName,
 			},
 			Friends: rpcUsers,
 		})
@@ -102,8 +104,9 @@ func (s *userService) FriendsOfFriends(ctx context.Context, _ *rpc.Empty) (*rpc.
 		rpcFriends := make([]*rpc.User, len(friends))
 		for i, friend := range friends {
 			rpcFriends[i] = &rpc.User{
-				Id:   friend.ID,
-				Name: friend.Name,
+				Id:       friend.ID,
+				Name:     friend.Name,
+				FullName: friend.FullName,
 			}
 		}
 
@@ -114,8 +117,9 @@ func (s *userService) FriendsOfFriends(ctx context.Context, _ *rpc.Empty) (*rpc.
 		inviteStatus := inviteStatuses[other.ID]
 		rpcFriendsOfFriends = append(rpcFriendsOfFriends, &rpc.UserFriendsOfFriendsResponseFriend{
 			User: &rpc.User{
-				Id:   other.ID,
-				Name: other.Name,
+				Id:       other.ID,
+				Name:     other.Name,
+				FullName: other.FullName,
 			},
 			InviteStatus: inviteStatus,
 			Friends:      rpcFriends,
@@ -150,6 +154,7 @@ func (s *userService) Me(ctx context.Context, _ *rpc.Empty) (*rpc.UserMeResponse
 			Id:          user.ID,
 			Name:        user.Name,
 			Email:       user.Email,
+			FullName:    user.FullName,
 			IsConfirmed: user.ConfirmedAt.Valid,
 		},
 		IsAdmin:   isAdmin,
@@ -194,6 +199,14 @@ func (s *userService) EditProfile(ctx context.Context, r *rpc.UserEditProfileReq
 
 	if r.AvatarChanged {
 		err := s.setAvatar(ctx, user, r.AvatarId)
+		if err != nil {
+			return nil, merry.Wrap(err)
+		}
+	}
+
+	if r.FullNameChanged {
+		fullName := strings.Join(strings.Fields(r.FullName), " ")
+		err := s.repos.User.SetFullName(user.ID, fullName)
 		if err != nil {
 			return nil, merry.Wrap(err)
 		}
@@ -262,8 +275,9 @@ func (s *userService) Users(_ context.Context, r *rpc.UserUsersRequest) (*rpc.Us
 	rpcUsers := make([]*rpc.User, len(users))
 	for i, user := range users {
 		rpcUsers[i] = &rpc.User{
-			Id:   user.ID,
-			Name: user.Name,
+			Id:       user.ID,
+			Name:     user.Name,
+			FullName: user.FullName,
 		}
 	}
 
@@ -300,6 +314,7 @@ func (s *userService) User(_ context.Context, r *rpc.UserUserRequest) (*rpc.User
 	rpcUser := &rpc.User{
 		Id:          user.ID,
 		Name:        user.Name,
+		FullName:    user.FullName,
 		IsConfirmed: user.ConfirmedAt.Valid,
 	}
 	return &rpc.UserUserResponse{

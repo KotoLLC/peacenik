@@ -93,8 +93,9 @@ func (s *messageHubService) Hubs(ctx context.Context, _ *rpc.Empty) (*rpc.Messag
 			Id:      hub.ID,
 			Address: hub.Address,
 			User: &rpc.User{
-				Id:   hub.AdminID,
-				Name: hub.AdminName,
+				Id:       hub.AdminID,
+				Name:     hub.AdminName,
+				FullName: hub.AdminFullName,
 			},
 			CreatedAt:  common.TimeToRPCString(hub.CreatedAt),
 			ApprovedAt: common.NullTimeToRPCString(hub.ApprovedAt),
@@ -430,7 +431,7 @@ func (s *messageHubService) downloadConfiguration(ctx context.Context, externalA
 	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode < 200 || 300 <= resp.StatusCode {
-		return nil, merry.Errorf("unexpected status code: %s", resp.StatusCode)
+		return nil, merry.Errorf("unexpected status code: %s", resp.Status)
 	}
 
 	var doc1, doc2 yaml.Node

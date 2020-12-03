@@ -15,6 +15,7 @@ type User struct {
 	ID                string       `json:"id" db:"id"`
 	Name              string       `json:"name" db:"name"`
 	Email             string       `json:"email,omitempty" db:"email"`
+	FullName          string       `json:"full_name" db:"full_name"`
 	PasswordHash      string       `json:"-" db:"password_hash"`
 	AvatarOriginalID  string       `json:"avatar_original_id,omitempty" db:"avatar_original_id"`
 	AvatarThumbnailID string       `json:"avatar_thumbnail_id,omitempty" db:"avatar_thumbnail_id"`
@@ -28,10 +29,11 @@ type UserRepo interface {
 	FindUserByID(id string) (*User, error)
 	FindUsersByEmail(email string) ([]User, error)
 	FindUserByName(name string) (*User, error)
-	AddUser(id, name, email, passwordHash string) error
+	AddUser(id, name, email, fullName, passwordHash string) error
 	UserCount() (int, error)
 	SetAvatar(userID, avatarOriginalID, avatarThumbnailID string) error
 	SetEmail(userID, email string) error
+	SetFullName(userID, fullName string) error
 	SetPassword(userID, passwordHash string) error
 	FindUsers(ids []string) ([]User, error)
 	ConfirmUser(userID string) (bool, error)
@@ -53,7 +55,7 @@ func NewUsers(db *sqlx.DB) UserRepo {
 func (r *userRepo) FindUserByIDOrName(value string) (*User, error) {
 	var user User
 	err := r.db.Get(&user, `
-		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at
+		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at
 		from users
 		where id = $1 or lower(name) = $2`,
 		value, strings.ToLower(value))
@@ -69,7 +71,7 @@ func (r *userRepo) FindUserByIDOrName(value string) (*User, error) {
 func (r *userRepo) FindUserByID(id string) (*User, error) {
 	var user User
 	err := r.db.Get(&user, `
-		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
+		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
 		from users
 		where id = $1`, id)
 	if err != nil {
@@ -84,7 +86,7 @@ func (r *userRepo) FindUserByID(id string) (*User, error) {
 func (r *userRepo) FindUsersByEmail(email string) ([]User, error) {
 	var users []User
 	err := r.db.Select(&users, `
-		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
+		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
 		from users
 		where email = $1`, email)
 	if err != nil {
@@ -96,7 +98,7 @@ func (r *userRepo) FindUsersByEmail(email string) ([]User, error) {
 func (r *userRepo) FindUserByName(name string) (*User, error) {
 	var user User
 	err := r.db.Get(&user, `
-		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
+		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
 		from users
 		where lower(name) = $1`,
 		strings.ToLower(name))
@@ -109,12 +111,12 @@ func (r *userRepo) FindUserByName(name string) (*User, error) {
 	return &user, nil
 }
 
-func (r *userRepo) AddUser(id, name, email, passwordHash string) error {
+func (r *userRepo) AddUser(id, name, email, fullName, passwordHash string) error {
 	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
 		_, err := tx.Exec(`
-			insert into users(id, name, email, password_hash, created_at, updated_at)
-			values($1, $2, $3, $4, $5, $5)`,
-			id, name, email, passwordHash, common.CurrentTimestamp())
+			insert into users(id, name, email, full_name, password_hash, created_at, updated_at)
+			values($1, $2, $3, $4, $5, $6, $6)`,
+			id, name, email, fullName, passwordHash, common.CurrentTimestamp())
 		if err != nil {
 			return merry.Wrap(err)
 		}
@@ -180,6 +182,15 @@ func (r *userRepo) SetEmail(userID, email string) error {
 	return merry.Wrap(err)
 }
 
+func (r *userRepo) SetFullName(userID, fullName string) error {
+	_, err := r.db.Exec(`
+		update users
+		set full_name = $1, updated_at = $2
+		where id = $3;`,
+		fullName, common.CurrentTimestamp(), userID)
+	return merry.Wrap(err)
+}
+
 func (r *userRepo) SetPassword(userID, passwordHash string) error {
 	_, err := r.db.Exec(`
 		update users
@@ -195,7 +206,7 @@ func (r *userRepo) FindUsers(ids []string) ([]User, error) {
 	}
 
 	query, args, err := sqlx.In(`
-		select id, name, email, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
+		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
 		from users
 		where id in (?)`, ids)
 	if err != nil {

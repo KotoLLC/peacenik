@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/twitchtv/twirp"
 
+	"github.com/mreider/koto/backend/userhub/config"
 	"github.com/mreider/koto/backend/userhub/repo"
 	"github.com/mreider/koto/backend/userhub/rpc"
 	"github.com/mreider/koto/backend/userhub/services"
@@ -17,7 +18,7 @@ func TestAuthService_Register_EmptyValues(t *testing.T) {
 	repos := repo.Repos{
 		User: nil,
 	}
-	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos, nil, nil))
+	base := services.NewBase(repos, nil, nil, nil, nil, config.Config{}, services.NewNotificationSender(repos, nil, nil))
 	s := services.NewAuth(base, "session-user-key", "session-user-password-hash-key", &passwordHash{}, false, nil, "")
 
 	ctx := context.Background()
@@ -57,7 +58,7 @@ func TestAuthService_Register_NameWithSpaces(t *testing.T) {
 	repos := repo.Repos{
 		User: nil,
 	}
-	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos, nil, nil))
+	base := services.NewBase(repos, nil, nil, nil, nil, config.Config{}, services.NewNotificationSender(repos, nil, nil))
 	s := services.NewAuth(base, "session-user-key", "session-user-password-hash-key", &passwordHash{}, false, nil, "")
 
 	ctx := context.Background()
@@ -80,15 +81,16 @@ func TestAuthService_Register_Duplicated(t *testing.T) {
 	repos := repo.Repos{
 		User: repo.NewUsers(te.db),
 	}
-	err := repos.User.AddUser("1", "user1", "user1@mail.org", "password1")
+	err := repos.User.AddUser("1", "user1", "user1@mail.org", "user 1", "password1")
 	require.Nil(t, err)
 
-	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos, nil, nil))
+	base := services.NewBase(repos, nil, nil, nil, nil, config.Config{}, services.NewNotificationSender(repos, nil, nil))
 	s := services.NewAuth(base, "session-user-key", "session-user-password-hash-key", &passwordHash{}, false, nil, "")
 
 	_, err = s.Register(te.ctx, &rpc.AuthRegisterRequest{
 		Name:     "user1",
 		Email:    "user2@mail.org",
+		FullName: "user 2",
 		Password: "password1",
 	})
 	assert.NotNil(t, err)
@@ -111,17 +113,18 @@ func TestAuthService_Register(t *testing.T) {
 	repos := repo.Repos{
 		User: repo.NewUsers(te.db),
 	}
-	err := repos.User.AddUser("1", "user1", "user1@mail.org", "password1")
+	err := repos.User.AddUser("1", "user1", "user1@mail.org", "user 1", "password1")
 	require.Nil(t, err)
 	userCount, err := repos.User.UserCount()
 	require.Nil(t, err)
 
-	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos, nil, nil))
+	base := services.NewBase(repos, nil, nil, nil, nil, config.Config{}, services.NewNotificationSender(repos, nil, nil))
 	s := services.NewAuth(base, "session-user-key", "session-user-password-hash-key", &passwordHash{}, false, nil, "")
 
 	_, err = s.Register(te.ctx, &rpc.AuthRegisterRequest{
 		Name:     "user2",
 		Email:    "user2@mail.org",
+		FullName: "user 1",
 		Password: "password2",
 	})
 	assert.Nil(t, err)
@@ -131,6 +134,7 @@ func TestAuthService_Register(t *testing.T) {
 	assert.NotEmpty(t, user2.ID)
 	assert.Equal(t, "user2", user2.Name)
 	assert.Equal(t, "user2@mail.org", user2.Email)
+	assert.Equal(t, "user 1", user2.FullName)
 	assert.NotEmpty(t, user2.PasswordHash)
 	assert.NotEmpty(t, user2.CreatedAt)
 	assert.NotEmpty(t, user2.UpdatedAt)
@@ -166,15 +170,15 @@ func TestAuthService_Login(t *testing.T) {
 	repos := repo.Repos{
 		User: repo.NewUsers(te.db),
 	}
-	err := repos.User.AddUser("1", "user1", "user1@mail.org", "password1-hash")
+	err := repos.User.AddUser("1", "user1", "user1@mail.org", "user 1", "password1-hash")
 	require.Nil(t, err)
-	err = repos.User.AddUser("11", "User1", "User1@mail.org", "password11-hash")
+	err = repos.User.AddUser("11", "User1", "User1@mail.org", "User 1", "password11-hash")
 	require.NotNil(t, err)
 	assert.Contains(t, err.Error(), `duplicate key value violates unique constraint`)
-	err = repos.User.AddUser("2", "User2", "User2@mail.org", "pass2-hash")
+	err = repos.User.AddUser("2", "User2", "User2@mail.org", "User 2", "pass2-hash")
 	require.Nil(t, err)
 
-	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos, nil, nil))
+	base := services.NewBase(repos, nil, nil, nil, nil, config.Config{}, services.NewNotificationSender(repos, nil, nil))
 	s := services.NewAuth(base, "session-user-key", "session-user-password-hash-key", &passwordHash{}, false, nil, "")
 
 	_, err = s.Login(te.ctx, &rpc.AuthLoginRequest{
@@ -232,7 +236,7 @@ func TestAuthService_Logout(t *testing.T) {
 	session.values["session-user-password-hash-key"] = "hash"
 	ctx := context.WithValue(te.ctx, services.ContextSession, session)
 
-	base := services.NewBase(repos, nil, nil, nil, nil, "", services.NewNotificationSender(repos, nil, nil))
+	base := services.NewBase(repos, nil, nil, nil, nil, config.Config{}, services.NewNotificationSender(repos, nil, nil))
 	s := services.NewAuth(base, "session-user-key", "session-user-password-hash-key", &passwordHash{}, false, nil, "")
 
 	_, err := s.Logout(ctx, &rpc.Empty{})

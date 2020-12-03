@@ -11,7 +11,8 @@ message User {
     string name = 2;
     string avatar_original = 3;
     string email = 4;
-    bool is_confirmed = 5;
+    string full_name = 5;
+    bool is_confirmed = 6;
 }
 
 message Notification {
