@@ -123,7 +123,7 @@ spec:
           - name: KOTO_ADMIN_FRIENDSHIP
             value: ""
           - name: KOTO_MESSAGEHUB_CONFIG
-            value: "https://raw.githubusercontent.com/mreider/koto/master/.k8s/backend-staging/message-hub.yaml"
+            value: "https://raw.githubusercontent.com/mreider/koto/master/.k8s/sponsored-hub/hub.yaml"
 ---
 apiVersion: v1
 kind: Service
