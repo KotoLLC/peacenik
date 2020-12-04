@@ -20,6 +20,7 @@ import ResetPasswordPage from '@view/pages/ResetPasswordPage'
 import { DashboardPage } from '@view/pages/DashboardPage'
 import selectors from '@selectors/index'
 import { LastLocationProvider } from 'react-router-last-location'
+import { useSwipeable } from "react-swipeable"
 
 const Private = ({ component: Component, ...rest }) => {
   return (
@@ -40,29 +41,43 @@ const mapStateToProps = (state: StoreTypes) => ({
 const PrivateRoute = connect(mapStateToProps)(Private)
 
 export const Routes = () => {
+  const handlers = useSwipeable({
+    onSwipedLeft: () => {
+      history.goBack()
+    },
+    onSwipedRight: () => {
+      history.goForward()
+    },
+    delta: 15,
+    // trackMouse: true
+    // preventDefaultTouchmoveEvent: true,
+  });
+
   return (
     <Router history={history}>
-      <LastLocationProvider>
-        <Switch>
-          <Route exact path="/" component={LoginPage} />
-          <Route path="/login" component={LoginPage} />
-          <Route path="/registration" component={RegistrationPage} />
-          <Route path="/forgot-password" component={ForgotPasswordPage} />
-          <Route path="/forgot-username" component={ForgotUserNamePage} />
-          <Route path="/reset-password" component={ResetPasswordPage} />
-          <Route path="/docs" component={DocsPages} />
-          <Route path="/confirm-user" component={ConfirmUserPage} />
-          <Route path="/resend-confirm-email" component={ResendConfirmEmailPage} />
-          <Route path="/no-hubs" component={NoHubsPage} /> 
-          <PrivateRoute path="/friends" component={FriendsPage} />
-          <PrivateRoute path="/hubs" component={HubPages} />
-          <PrivateRoute path="/messages" component={MessagesPage} />
-          <PrivateRoute path="/notifications" component={NotificationsPage} />
-          <PrivateRoute path="/profile" component={ProfilePage} />
-          <PrivateRoute path="/dashboard" component={DashboardPage} />
-          <Route component={() => <>404 not found</>} />
-        </Switch>
-      </LastLocationProvider>
+      <div {...handlers} >
+        <LastLocationProvider>
+          <Switch>
+            <Route exact path="/" component={LoginPage} />
+            <Route path="/login" component={LoginPage} />
+            <Route path="/registration" component={RegistrationPage} />
+            <Route path="/forgot-password" component={ForgotPasswordPage} />
+            <Route path="/forgot-username" component={ForgotUserNamePage} />
+            <Route path="/reset-password" component={ResetPasswordPage} />
+            <Route path="/docs" component={DocsPages} />
+            <Route path="/confirm-user" component={ConfirmUserPage} />
+            <Route path="/resend-confirm-email" component={ResendConfirmEmailPage} />
+            <Route path="/no-hubs" component={NoHubsPage} />
+            <PrivateRoute path="/friends" component={FriendsPage} />
+            <PrivateRoute path="/hubs" component={HubPages} />
+            <PrivateRoute path="/messages" component={MessagesPage} />
+            <PrivateRoute path="/notifications" component={NotificationsPage} />
+            <PrivateRoute path="/profile" component={ProfilePage} />
+            <PrivateRoute path="/dashboard" component={DashboardPage} />
+            <Route component={() => <>404 not found</>} />
+          </Switch>
+        </LastLocationProvider>
+      </div>
     </Router>
   )
 }
