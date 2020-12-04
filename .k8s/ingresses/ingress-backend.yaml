@@ -11,8 +11,7 @@ metadata:
 spec:
   tls:
   - hosts:
-    - central.koto.at
-    - node1.koto.at
+    - "*.koto.at"
     secretName: koto-tls-backend
   rules:
   - host: central.koto.at

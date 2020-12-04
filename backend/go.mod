@@ -7,7 +7,6 @@ require (
 	github.com/ansel1/merry v1.5.1
 	github.com/appleboy/go-fcm v0.1.5
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/digitalocean/godo v1.54.0
 	github.com/disintegration/imaging v1.6.2
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v1.13.1
@@ -32,10 +31,8 @@ require (
 	github.com/sirupsen/logrus v1.6.0 // indirect
 	github.com/stretchr/testify v1.6.1
 	github.com/twitchtv/twirp v7.1.0+incompatible
-	github.com/vmware-labs/yaml-jsonpointer v0.1.0
 	github.com/xhit/go-simple-mail/v2 v2.5.1
 	golang.org/x/crypto v0.0.0-20201124201722-c8d3bf9c5392
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381
 	google.golang.org/protobuf v1.24.0
-	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 )

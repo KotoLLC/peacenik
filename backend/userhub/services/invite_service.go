@@ -144,9 +144,10 @@ func (s *inviteService) FromMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFr
 	}
 	rpcInvites := make([]*rpc.InviteFriendInvite, len(invites))
 	for i, invite := range invites {
-		friendName := invite.FriendName
+		friendName, friendFullName := invite.FriendName, invite.FriendFullName
 		if invite.FriendID == "" {
 			friendName = invite.FriendEmail
+			friendFullName = ""
 		}
 
 		friendAvatarLink, err := s.createBlobLink(ctx, invite.FriendAvatarID)
@@ -155,12 +156,13 @@ func (s *inviteService) FromMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFr
 		}
 
 		rpcInvites[i] = &rpc.InviteFriendInvite{
-			FriendId:     invite.FriendID,
-			FriendName:   friendName,
-			FriendAvatar: friendAvatarLink,
-			CreatedAt:    common.TimeToRPCString(invite.CreatedAt),
-			AcceptedAt:   common.NullTimeToRPCString(invite.AcceptedAt),
-			RejectedAt:   common.NullTimeToRPCString(invite.RejectedAt),
+			FriendId:       invite.FriendID,
+			FriendName:     friendName,
+			FriendFullName: friendFullName,
+			FriendAvatar:   friendAvatarLink,
+			CreatedAt:      common.TimeToRPCString(invite.CreatedAt),
+			AcceptedAt:     common.NullTimeToRPCString(invite.AcceptedAt),
+			RejectedAt:     common.NullTimeToRPCString(invite.RejectedAt),
 		}
 	}
 
@@ -183,12 +185,13 @@ func (s *inviteService) ForMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFor
 		}
 
 		rpcInvites[i] = &rpc.InviteFriendInvite{
-			FriendId:     invite.UserID,
-			FriendName:   invite.UserName,
-			FriendAvatar: userAvatarLink,
-			CreatedAt:    common.TimeToRPCString(invite.CreatedAt),
-			AcceptedAt:   common.NullTimeToRPCString(invite.AcceptedAt),
-			RejectedAt:   common.NullTimeToRPCString(invite.RejectedAt),
+			FriendId:       invite.UserID,
+			FriendName:     invite.UserName,
+			FriendFullName: invite.UserFullName,
+			FriendAvatar:   userAvatarLink,
+			CreatedAt:      common.TimeToRPCString(invite.CreatedAt),
+			AcceptedAt:     common.NullTimeToRPCString(invite.AcceptedAt),
+			RejectedAt:     common.NullTimeToRPCString(invite.RejectedAt),
 		}
 	}
 

@@ -19,8 +19,9 @@ service AuthService {
 message AuthRegisterRequest {
     string name = 1;
     string email = 2;
-    string password = 3;
-    string invite_token = 4;
+    string full_name = 3;
+    string password = 4;
+    string invite_token = 5;
 }
 
 message AuthLoginRequest {

@@ -54,6 +54,8 @@ message UserEditProfileRequest {
     bool password_changed = 5;
     string current_password = 6;
     string new_password = 7;
+    bool full_name_changed = 8;
+    string full_name = 9;
 }
 
 message UserUsersRequest {

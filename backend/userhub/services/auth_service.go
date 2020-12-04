@@ -79,6 +79,8 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 		return nil, twirp.InvalidArgumentError("username", "is invalid")
 	}
 
+	r.FullName = strings.Join(strings.Fields(r.FullName), " ")
+
 	user, err := s.repos.User.FindUserByName(r.Name)
 	if err != nil {
 		return nil, err
@@ -93,7 +95,7 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 		return nil, merry.Wrap(err)
 	}
 
-	err = s.repos.User.AddUser(userID, r.Name, r.Email, passwordHash)
+	err = s.repos.User.AddUser(userID, r.Name, r.Email, r.FullName, passwordHash)
 	if err != nil {
 		return nil, merry.Wrap(err)
 	}
@@ -387,8 +389,18 @@ func (s *authService) RecallNames(_ context.Context, r *rpc.AuthRecallNamesReque
 	for i, user := range users {
 		userNames[i] = user.Name
 	}
-	message := "KOTO usernames: " + strings.Join(userNames, ", ")
-	err = s.mailSender.SendTextEmail([]string{r.Email}, "KOTO: recall your names", message)
+
+	var message string
+	switch len(userNames) {
+	case 0:
+		message = "Your email is not associated with username"
+	case 1:
+		message = "Your email is associated with one username: " + userNames[0]
+	default:
+		message = "Your email is associated with more than one username:\n" + strings.Join(userNames, "\n")
+	}
+
+	err = s.mailSender.SendTextEmail([]string{r.Email}, "Koto username reminder", message)
 	if err != nil {
 		return nil, err
 	}
