@@ -12,6 +12,16 @@ import fourthPicture from './../../../assets/images/4.manual.png'
 import fifthPicture from './../../../assets/images/5.sponsored.png'
 import selectors from '@selectors/index'
 import { StoreTypes, CommonTypes } from 'src/types'
+const ColoredLine = ({ color }) => (
+  <hr
+      style={{
+          color: color,
+          backgroundColor: color,
+          height: 1
+      }}
+  />
+);
+
 
 interface Props extends RouteComponentProps {
   messageTokens: CommonTypes.HubTypes.CurrentHub[]
@@ -59,7 +69,6 @@ You need a message hub to post and share messages.
 ### Option A: find a friend
 
 The easiest way to get a hub is to be friends with someone who has one. Just go to the friends page, click the invite link, and send an invitation. If they accept - you can post and share on their hub.
-
 ![](${secondPicture})
 `}
         </ReactMarkdown>
@@ -69,24 +78,24 @@ The easiest way to get a hub is to be friends with someone who has one. Just go 
           onClick={onGoToInvites}>
           Visit the friends page
         </ButtonStyled>
+<ColoredLine color="#5595ff" />
 
 <ReactMarkdown>{`
 
 ### Option B: create a hub
 
 Another way is to create your own hub.
-
 ![](${thirdPicture})
 
 ### Sponsored hubs
 
 If you want someone from the Koto team to create and sponsor your hub, send an email to **admin@koto.at** and we'll get to work. This is the easiest way to get started. For now we're offering this for free but that will inevitably change. Hosting is expensive!
-
 ![](${fifthPicture})
 
 ### Host it yourself
 
 You can host your own hub on Amazon, Google, Digital Ocean, etc. Of course, this requires some technical skills on your part. Visit the Koto documentation to learn how it works.
+![](${fourthPicture})
 
 `}
 </ReactMarkdown>
