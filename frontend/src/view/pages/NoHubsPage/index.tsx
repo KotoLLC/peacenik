@@ -58,7 +58,7 @@ You need a message hub to post and share messages.
 
 ### Option A: find a friend
 
-The easiest way is to be friends with someone who has one. Just go to the friends page, click the invite link, and send an invitation. If they accept - you can post and sharing thoughts, pictures, and videos on their hub.
+The easiest way to get a hub is to be friends with someone who has one. Just go to the friends page, click the invite link, and send an invitation. If they accept - you can post and share on their hub.
 
 ![](${secondPicture})
 `}
