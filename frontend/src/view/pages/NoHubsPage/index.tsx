@@ -34,7 +34,7 @@ export const NoHubs: React.FC<Props> = (props) => {
   const { messageTokens, currentHub } = props
 
   const onGoToInvites = () => {
-    props.history.push('/friends/invitations')
+    props.history.push('/friends/invite')
     props.onSetAboutUsViewed()
   } 
 
