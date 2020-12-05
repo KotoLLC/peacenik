@@ -78,6 +78,7 @@ The easiest way to get a hub is to be friends with someone who has one. Just go 
           onClick={onGoToInvites}>
           Visit the friends page
         </ButtonStyled>
+        
 <ColoredLine color="#5595ff" />
 
 <ReactMarkdown>{`
