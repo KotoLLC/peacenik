@@ -47,11 +47,16 @@ const theme = {
   }
 }
 
+// const handlers = useSwipeable({
+//   onSwiped: (eventData) => console.log("User Swiped!", eventData),
+// });
+
+
 interface Props {
   isLogged: boolean
   isEmailConfirmed: boolean
   authToken: string
-  
+
   onGetAuthToken: () => void
   onGetNotifications: () => void
   onGetProfile: () => void
@@ -72,7 +77,7 @@ class AppComponent extends React.Component<Props, State> {
     const { isEmailConfirmed } = this.props
 
     if (authTokenDate && isEmailConfirmed) {
-      
+
       const lastTokenDate = moment(JSON.parse(authTokenDate))
       const dateNow = new Date()
       const diffTime = moment(dateNow).diff(lastTokenDate) / 1000 // in seconds
@@ -116,7 +121,7 @@ class AppComponent extends React.Component<Props, State> {
   render() {
     return (
       <ErrorBoundary>
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={theme} >
           <CssBaseline />
           <Routes />
           <Notify />
@@ -143,5 +148,5 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
 const App = connect(mapStateToProps, mapDispatchToProps)(AppComponent)
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+      <App />
   </Provider>, document.getElementById('root') as HTMLElement)

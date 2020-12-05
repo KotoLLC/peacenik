@@ -49,6 +49,7 @@ func (s *tokenService) Auth(ctx context.Context, _ *rpc.Empty) (*rpc.TokenAuthRe
 	claims := map[string]interface{}{
 		"owned_hubs":    ownedHubAddresses,
 		"blocked_users": blockedUserIDs,
+		"full_name":     user.FullName,
 	}
 
 	authToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "auth", time.Now().Add(s.tokenDuration), claims)

@@ -12,11 +12,11 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: message-hub
+      app: message-hub-<NAME>
   template:
     metadata:
       labels:
-        app: message-hub
+        app: message-hub-<NAME>
     spec:
       terminationGracePeriodSeconds: 5
       containers:
@@ -68,7 +68,7 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: message-hub
+    app: message-hub-<NAME>
   ports:
   - name: http
     port: 12002

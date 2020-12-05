@@ -70,6 +70,7 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		ID:                    messageID,
 		UserID:                claims["id"].(string),
 		UserName:              claims["name"].(string),
+		UserFullName:          user.FullName,
 		Text:                  r.Text,
 		AttachmentID:          r.AttachmentId,
 		AttachmentType:        attachmentType,
@@ -82,7 +83,7 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		return nil, err
 	}
 
-	s.notificationSender.SendNotification(friends, msg.UserName+" posted a new message", "message/post", map[string]interface{}{
+	s.notificationSender.SendNotification(friends, user.DisplayName()+" posted a new message", "message/post", map[string]interface{}{
 		"user_id":    msg.UserID,
 		"message_id": msg.ID,
 	})
@@ -98,7 +99,7 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 			notifyUsers = append(notifyUsers, u.ID)
 		}
 	}
-	s.notificationSender.SendNotification(notifyUsers, msg.UserName+" tagged you in a message", "message/tag", map[string]interface{}{
+	s.notificationSender.SendNotification(notifyUsers, user.DisplayName()+" tagged you in a message", "message/tag", map[string]interface{}{
 		"user_id":    msg.UserID,
 		"message_id": msg.ID,
 	})
@@ -118,6 +119,7 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 			Id:                  msg.ID,
 			UserId:              msg.UserID,
 			UserName:            msg.UserName,
+			UserFullName:        msg.UserFullName,
 			Text:                msg.Text,
 			Attachment:          attachmentLink,
 			AttachmentType:      attachmentType,
@@ -183,6 +185,7 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 			Id:                  msg.ID,
 			UserId:              msg.UserID,
 			UserName:            msg.UserName,
+			UserFullName:        msg.UserFullName,
 			Text:                msg.Text,
 			Attachment:          attachmentLink,
 			AttachmentType:      msg.AttachmentType,
@@ -203,9 +206,10 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 		rpcLikes := make([]*rpc.MessageLike, len(likes))
 		for i, like := range likes {
 			rpcLikes[i] = &rpc.MessageLike{
-				UserId:   like.UserID,
-				UserName: like.UserName,
-				LikedAt:  common.TimeToRPCString(like.CreatedAt),
+				UserId:       like.UserID,
+				UserName:     like.UserName,
+				UserFullName: like.UserFullName,
+				LikedAt:      common.TimeToRPCString(like.CreatedAt),
 			}
 		}
 		rpcMessageMap[msgID].LikedBy = rpcLikes
@@ -235,6 +239,7 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 				Id:                  comment.ID,
 				UserId:              comment.UserID,
 				UserName:            comment.UserName,
+				UserFullName:        comment.UserFullName,
 				Text:                comment.Text,
 				Attachment:          attachmentLink,
 				AttachmentType:      comment.AttachmentType,
@@ -301,6 +306,7 @@ func (s *messageService) Message(ctx context.Context, r *rpc.MessageMessageReque
 		Id:                  msg.ID,
 		UserId:              msg.UserID,
 		UserName:            msg.UserName,
+		UserFullName:        msg.UserFullName,
 		Text:                msg.Text,
 		Attachment:          attachmentLink,
 		AttachmentType:      msg.AttachmentType,
@@ -319,9 +325,10 @@ func (s *messageService) Message(ctx context.Context, r *rpc.MessageMessageReque
 		rpcLikes := make([]*rpc.MessageLike, len(likes))
 		for i, like := range likes {
 			rpcLikes[i] = &rpc.MessageLike{
-				UserId:   like.UserID,
-				UserName: like.UserName,
-				LikedAt:  common.TimeToRPCString(like.CreatedAt),
+				UserId:       like.UserID,
+				UserName:     like.UserName,
+				UserFullName: like.UserFullName,
+				LikedAt:      common.TimeToRPCString(like.CreatedAt),
 			}
 		}
 		rpcMessage.LikedBy = rpcLikes
@@ -351,6 +358,7 @@ func (s *messageService) Message(ctx context.Context, r *rpc.MessageMessageReque
 				Id:                  comment.ID,
 				UserId:              comment.UserID,
 				UserName:            comment.UserName,
+				UserFullName:        comment.UserFullName,
 				Text:                comment.Text,
 				Attachment:          attachmentLink,
 				AttachmentType:      comment.AttachmentType,
@@ -423,6 +431,7 @@ func (s *messageService) Edit(ctx context.Context, r *rpc.MessageEditRequest) (*
 			Id:                  msg.ID,
 			UserId:              msg.UserID,
 			UserName:            msg.UserName,
+			UserFullName:        msg.UserFullName,
 			Text:                msg.Text,
 			Attachment:          attachmentLink,
 			AttachmentType:      msg.AttachmentType,
@@ -500,6 +509,7 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 		ID:                    commentID,
 		UserID:                claims["id"].(string),
 		UserName:              claims["name"].(string),
+		UserFullName:          user.FullName,
 		Text:                  r.Text,
 		AttachmentID:          r.AttachmentId,
 		AttachmentType:        attachmentType,
@@ -513,7 +523,7 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 	}
 
 	if user.ID != msg.UserID {
-		s.notificationSender.SendNotification([]string{msg.UserID}, user.Name+" posted a new comment", "comment/post", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{msg.UserID}, user.DisplayName()+" posted a new comment", "comment/post", map[string]interface{}{
 			"user_id":    user.ID,
 			"message_id": msg.ID,
 			"comment_id": comment.ID,
@@ -532,7 +542,7 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 			notifyUsers = append(notifyUsers, u.ID)
 		}
 	}
-	s.notificationSender.SendNotification(notifyUsers, comment.UserName+" tagged you in a comment", "comment/tag", map[string]interface{}{
+	s.notificationSender.SendNotification(notifyUsers, user.DisplayName()+" tagged you in a comment", "comment/tag", map[string]interface{}{
 		"user_id":    comment.UserID,
 		"message_id": msg.ID,
 		"comment_id": comment.ID,
@@ -553,6 +563,7 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 			Id:                  comment.ID,
 			UserId:              comment.UserID,
 			UserName:            comment.UserName,
+			UserFullName:        comment.UserFullName,
 			Text:                comment.Text,
 			Attachment:          attachmentLink,
 			AttachmentType:      attachmentType,
@@ -618,6 +629,7 @@ func (s *messageService) EditComment(ctx context.Context, r *rpc.MessageEditComm
 			Id:                  comment.ID,
 			UserId:              comment.UserID,
 			UserName:            comment.UserName,
+			UserFullName:        comment.UserFullName,
 			Text:                comment.Text,
 			Attachment:          attachmentLink,
 			AttachmentType:      comment.AttachmentType,
@@ -723,7 +735,7 @@ func (s *messageService) LikeMessage(ctx context.Context, r *rpc.MessageLikeMess
 		if err != nil {
 			return nil, err
 		}
-		s.notificationSender.SendNotification([]string{msg.UserID}, user.Name+" liked your post", "message/like", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{msg.UserID}, user.DisplayName()+" liked your post", "message/like", map[string]interface{}{
 			"user_id":    user.ID,
 			"message_id": msg.ID,
 		})
@@ -769,7 +781,7 @@ func (s *messageService) LikeComment(ctx context.Context, r *rpc.MessageLikeComm
 		if err != nil {
 			return nil, err
 		}
-		s.notificationSender.SendNotification([]string{comment.UserID}, user.Name+" liked your comment", "comment/like", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{comment.UserID}, user.DisplayName()+" liked your comment", "comment/like", map[string]interface{}{
 			"user_id":    user.ID,
 			"message_id": comment.ParentID.String,
 			"comment_id": comment.ID,
@@ -788,9 +800,10 @@ func (s *messageService) MessageLikes(_ context.Context, r *rpc.MessageMessageLi
 	rpcLikes := make([]*rpc.MessageLike, len(likes))
 	for i, like := range likes {
 		rpcLikes[i] = &rpc.MessageLike{
-			UserId:   like.UserID,
-			UserName: like.UserName,
-			LikedAt:  common.TimeToRPCString(like.CreatedAt),
+			UserId:       like.UserID,
+			UserName:     like.UserName,
+			UserFullName: like.UserFullName,
+			LikedAt:      common.TimeToRPCString(like.CreatedAt),
 		}
 	}
 	return &rpc.MessageMessageLikesResponse{
@@ -806,9 +819,10 @@ func (s *messageService) CommentLikes(_ context.Context, r *rpc.MessageCommentLi
 	rpcLikes := make([]*rpc.MessageLike, len(likes))
 	for i, like := range likes {
 		rpcLikes[i] = &rpc.MessageLike{
-			UserId:   like.UserID,
-			UserName: like.UserName,
-			LikedAt:  common.TimeToRPCString(like.CreatedAt),
+			UserId:       like.UserID,
+			UserName:     like.UserName,
+			UserFullName: like.UserFullName,
+			LikedAt:      common.TimeToRPCString(like.CreatedAt),
 		}
 	}
 	return &rpc.MessageCommentLikesResponse{
@@ -930,12 +944,14 @@ func (s *messageService) MessageReports(ctx context.Context, _ *rpc.Empty) (*rpc
 			Id:                  report.ID,
 			ReporterId:          report.ReportedByID,
 			ReporterName:        report.ReportedByName,
+			ReporterFullName:    report.ReportedByFullName,
 			Report:              report.Report,
 			CreatedAt:           common.TimeToRPCString(report.CreatedAt),
 			ResolvedAt:          common.NullTimeToRPCString(report.ResolvedAt),
 			MessageId:           report.MessageID,
 			AuthorId:            report.AuthorID,
 			AuthorName:          report.AuthorName,
+			AuthorFullName:      report.AuthorFullName,
 			Text:                report.Text,
 			AttachmentType:      report.AttachmentType,
 			Attachment:          attachmentLink,

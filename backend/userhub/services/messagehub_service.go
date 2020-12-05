@@ -62,7 +62,7 @@ func (s *messageHubService) Register(ctx context.Context, r *rpc.MessageHubRegis
 			log.Println(err)
 		}
 		if adminUser != nil {
-			s.notificationSender.SendNotification([]string{adminUser.ID}, user.Name+" added a new message hub", "message-hub/add", map[string]interface{}{
+			s.notificationSender.SendNotification([]string{adminUser.ID}, user.DisplayName()+" added a new message hub", "message-hub/add", map[string]interface{}{
 				"user_id": user.ID,
 				"hub_id":  hubID,
 			})
@@ -155,7 +155,7 @@ func (s *messageHubService) Approve(ctx context.Context, r *rpc.MessageHubApprov
 		return nil, err
 	}
 
-	s.notificationSender.SendNotification([]string{hub.AdminID}, user.Name+" approved your message hub", "message-hub/approve", map[string]interface{}{
+	s.notificationSender.SendNotification([]string{hub.AdminID}, user.DisplayName()+" approved your message hub", "message-hub/approve", map[string]interface{}{
 		"user_id": user.ID,
 		"hub_id":  r.HubId,
 	})
@@ -182,7 +182,7 @@ func (s *messageHubService) Remove(ctx context.Context, r *rpc.MessageHubRemoveR
 	}
 
 	if hub.AdminID != user.ID {
-		s.notificationSender.SendNotification([]string{hub.AdminID}, user.Name+" removed your message hub", "message-hub/remove", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{hub.AdminID}, user.DisplayName()+" removed your message hub", "message-hub/remove", map[string]interface{}{
 			"user_id": user.ID,
 			"hub_id":  r.HubId,
 		})
@@ -295,7 +295,7 @@ func (s *messageHubService) ReportMessage(ctx context.Context, r *rpc.MessageHub
 	err = s.mailSender.SendHTMLEmail([]string{hubAdmin.Email}, "Objectional Content Reported",
 		fmt.Sprintf(`<p>User %s just reported objectionable content for user %s: %s<p>
 <p>Please visit <a href="%s" target="_blank">the audit dashboard</a> to review the content.</p>`,
-			reportedBy.Name, author.Name, html.EscapeString(body.Report), s.cfg.FrontendAddress+"/dashboard"))
+			reportedBy.DisplayName(), author.DisplayName(), html.EscapeString(body.Report), s.cfg.FrontendAddress+"/dashboard"))
 	if err != nil {
 		return nil, err
 	}

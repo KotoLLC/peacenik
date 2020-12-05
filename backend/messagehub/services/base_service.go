@@ -18,6 +18,7 @@ const (
 type User struct {
 	ID           string
 	Name         string
+	FullName     string
 	IsHubAdmin   bool
 	IsBlocked    bool
 	BlockedUsers []string
@@ -30,6 +31,13 @@ func (u User) IsBlockedUser(userID string) bool {
 		}
 	}
 	return false
+}
+
+func (u User) DisplayName() string {
+	if u.FullName == "" || u.FullName == u.Name {
+		return u.Name
+	}
+	return u.FullName + " (" + u.Name + ")"
 }
 
 type BaseService struct {

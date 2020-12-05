@@ -24,6 +24,13 @@ type User struct {
 	ConfirmedAt       sql.NullTime `json:"confirmed_at,omitempty" db:"confirmed_at"`
 }
 
+func (u User) DisplayName() string {
+	if u.FullName == "" || u.FullName == u.Name {
+		return u.Name
+	}
+	return u.FullName + " (" + u.Name + ")"
+}
+
 type UserRepo interface {
 	FindUserByIDOrName(value string) (*User, error)
 	FindUserByID(id string) (*User, error)

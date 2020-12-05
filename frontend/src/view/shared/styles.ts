@@ -8,6 +8,8 @@ import Tabs from '@material-ui/core/Tabs'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
 import { Link } from 'react-router-dom'
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos'
 
 export const TooltipStyle = styled(Tooltip)`
   && {
@@ -200,4 +202,20 @@ export const MenuItemWrapper = styled.div`
   text-align: left;
   align-items: center;
   justify-content: flex-start;
+`
+
+export const ArrowForwardIosIconStyled = styled(ArrowForwardIosIcon)`
+  position: absolute;
+  z-index: 1000;
+  right: 5px;
+  top: 65px;
+  opacity: 0.7;
+`
+
+export const ArrowBackIosIconStyled = styled(ArrowBackIosIcon)`
+  position: absolute;
+  z-index: 1000;
+  left: 5px;
+  top: 65px;
+  opacity: 0.7;
 `

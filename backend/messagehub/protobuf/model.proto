@@ -9,30 +9,33 @@ message Empty {
 message User {
     string id = 1;
     string name = 2;
+    string full_name = 3;
 }
 
 message MessageLike {
     string message_id = 1;
     string user_id = 2;
     string user_name = 3;
-    string liked_at = 4;
+    string user_full_name = 4;
+    string liked_at = 5;
 }
 
 message Message {
     string id = 1;
     string user_id = 2;
     string user_name = 3;
-    string text = 4;
-    string attachment = 5;
-    string attachment_type = 6;
-    string attachment_thumbnail = 7;
-    string created_at = 8;
-    string updated_at = 9;
-    int32 likes = 10;
-    bool liked_by_me = 11;
+    string user_full_name = 4;
+    string text = 5;
+    string attachment = 6;
+    string attachment_type = 7;
+    string attachment_thumbnail = 8;
+    string created_at = 9;
+    string updated_at = 10;
+    int32 likes = 11;
+    bool liked_by_me = 12;
 
-    repeated Message comments = 12;
-    repeated MessageLike liked_by = 13;
+    repeated Message comments = 13;
+    repeated MessageLike liked_by = 14;
 }
 
 message Notification {
@@ -48,14 +51,16 @@ message MessageReport {
     string id = 1;
     string reporter_id = 2;
     string reporter_name = 3;
-    string report = 4;
-    string created_at = 5;
-    string resolved_at = 6;
-    string message_id = 7;
-    string author_id = 8;
-    string author_name = 9;
-    string text = 10;
-    string attachment_type = 11;
-    string attachment = 12;
-    string attachment_thumbnail = 13;
+    string reporter_full_name = 4;
+    string report = 5;
+    string created_at = 6;
+    string resolved_at = 7;
+    string message_id = 8;
+    string author_id = 9;
+    string author_name = 10;
+    string author_full_name = 11;
+    string text = 12;
+    string attachment_type = 13;
+    string attachment = 14;
+    string attachment_thumbnail = 15;
 }

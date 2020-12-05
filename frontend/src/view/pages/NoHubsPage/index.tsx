@@ -5,7 +5,11 @@ import Actions from '@store/actions'
 import { WithTopBar } from '@view/shared/WithTopBar'
 import { ContainerStyled, ButtonStyled } from './styles'
 import ReactMarkdown from 'react-markdown'
-import nothingPicture from './../../../assets/images/nothing.jpg'
+import firstPicture from './../../../assets/images/1.nohub.png'
+import secondPicture from './../../../assets/images/2.yourfriend.png'
+import thirdPicture from './../../../assets/images/3.yourhub.png'
+import fourthPicture from './../../../assets/images/4.manual.png'
+import fifthPicture from './../../../assets/images/5.sponsored.png'
 import selectors from '@selectors/index'
 import { StoreTypes, CommonTypes } from 'src/types'
 
@@ -38,29 +42,57 @@ export const NoHubs: React.FC<Props> = (props) => {
       <ContainerStyled maxWidth="md">
         <ReactMarkdown>{`
 
-  ![](${nothingPicture})
+# Welcome to Koto!
 
-  ## Message hubs
+Good news. You joined. You're awesome.
 
-  Message hubs store messages, photos, and videos. Without a hub, you can't
-  post a message.
+Bad news. You need a message hub to post and share messages.
 
-  Your group of friends only needs one hub. You need to either create a hub on your own, or find a friend who has one. 
-  You need to know their email address ahead of time.
+![](${firstPicture})
 
-  `}
+## Getting a hub
+
+### Option A: find a friend
+
+The easiest way is to be friends with someone who has one. Just go to the friends page, click the invite link, and send an invitation. If they accept - you can post and sharing thoughts, pictures, and videos on their hub.
+
+![](${secondPicture})
+`}
         </ReactMarkdown>
-        <a rel="noopener noreferrer" target="_blank" href="https://docs.koto.at/#/install-message-hub" >
-          <ButtonStyled variant="contained" color="primary">Set up a hub (technical!)</ButtonStyled>
-        </a>
         <ButtonStyled
           variant="contained"
           color="primary"
           onClick={onGoToInvites}>
-          Find a friend that has a hub
+          Visit the friends page
         </ButtonStyled>
-      </ContainerStyled>
-    </WithTopBar>
+
+<ReactMarkdown>{`
+
+### Option B: create a hub
+
+Another way is to create your own hub.
+
+![](${thirdPicture})
+
+### Sponsored hubs
+
+If you want someone from the Koto team to create and sponsor your hub, send an email to **admin@koto.at** and we'll get to work. This is the easiest way to get started. For now we're offering this for free but that will inevitably change. Hosting is expensive!
+
+![](${fifthPicture})
+
+### Host it yourself
+
+You can host your own hub on Amazon, Google, Digital Ocean, etc. Of course, this requires some technical skills on your part. Visit the Koto documentation to learn how it works.
+
+`}
+</ReactMarkdown>
+
+<a rel="noopener noreferrer" target="_blank" href="https://docs.koto.at/#/install-message-hub" >
+  <ButtonStyled variant="contained" color="primary">Host a hub</ButtonStyled>
+</a>
+        
+  </ContainerStyled>
+</WithTopBar>
   )
 }
 
