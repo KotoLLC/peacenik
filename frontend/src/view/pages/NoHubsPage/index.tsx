@@ -44,9 +44,13 @@ export const NoHubs: React.FC<Props> = (props) => {
 
 # Welcome to Koto!
 
-Good news. You joined. You're awesome.
+## Good news. 
 
-Bad news. You need a message hub to post and share messages.
+You joined. You're awesome.
+
+## Bad news. 
+
+You need a message hub to post and share messages.
 
 ![](${firstPicture})
 
