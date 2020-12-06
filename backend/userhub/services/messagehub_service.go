@@ -10,11 +10,17 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 	"time"
 
 	"github.com/ansel1/merry"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/twitchtv/twirp"
 
 	"github.com/mreider/koto/backend/common"
@@ -366,6 +372,11 @@ func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateR
 		return nil, err
 	}
 
+	err = s.createS3Bucket()
+	if err != nil {
+		return nil, err
+	}
+
 	hubID, err := s.repos.MessageHubs.AddHub(hubAddress, r.Notes, *owner, 0)
 	if err != nil {
 		return nil, err
@@ -427,4 +438,58 @@ func (s *messageHubService) downloadConfiguration(ctx context.Context) ([]byte, 
 		return nil, merry.Prepend(err, "can't read response body")
 	}
 	return content, nil
+}
+
+func (s *messageHubService) createS3Bucket() error {
+	key := os.Getenv("KOTO_S3_KEY")
+	secret := os.Getenv("KOTO_S3_SECRET")
+	bucketName := os.Getenv("KOTO_S3_BUCKET")
+	endpoint := os.Getenv("KOTO_S3_ENDPOINT")
+	region := ""
+
+	enpointRe := regexp.MustCompile(`https://([^.]+)\.`)
+	match := enpointRe.FindStringSubmatch(endpoint)
+	if match != nil {
+		region = match[1]
+	}
+
+	s3Config := &aws.Config{
+		Credentials: credentials.NewStaticCredentials(key, secret, ""),
+		Endpoint:    aws.String(endpoint),
+		Region:      aws.String(region),
+	}
+
+	newSession, err := session.NewSession(s3Config)
+	if err != nil {
+		return merry.Prepend(err, "can't create S3 session")
+	}
+	client := s3.New(newSession)
+
+	createBucketParams := &s3.CreateBucketInput{
+		Bucket: aws.String(bucketName),
+	}
+	_, err = client.CreateBucket(createBucketParams)
+	if err != nil {
+		return merry.Prepend(err, "can't create S3 bucket")
+	}
+
+	rule := s3.CORSRule{
+		AllowedHeaders: aws.StringSlice([]string{"*"}),                                    // TODO
+		AllowedOrigins: aws.StringSlice([]string{"https://orbits.at", "https://koto.at"}), // TODO
+		MaxAgeSeconds:  aws.Int64(3000),
+		AllowedMethods: aws.StringSlice([]string{http.MethodPost, http.MethodGet}),
+	}
+
+	putCORSParams := s3.PutBucketCorsInput{
+		Bucket: aws.String(bucketName),
+		CORSConfiguration: &s3.CORSConfiguration{
+			CORSRules: []*s3.CORSRule{&rule},
+		},
+	}
+
+	_, err = client.PutBucketCors(&putCORSParams)
+	if err != nil {
+		return merry.Prepend(err, "can't create S3 CORS rules")
+	}
+	return nil
 }
