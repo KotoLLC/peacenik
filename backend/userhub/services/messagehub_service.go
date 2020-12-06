@@ -448,7 +448,7 @@ func (s *messageHubService) createS3Bucket(subdomain string) error {
 	s3Config := &aws.Config{
 		Credentials: credentials.NewStaticCredentials(key, secret, ""),
 		Endpoint:    aws.String(endpoint),
-		Region:      aws.String("us-east-1"),
+		Region:      aws.String("us-east-1"), // https://github.com/aws/aws-sdk-go/issues/2232
 	}
 
 	newSession, err := session.NewSession(s3Config)
