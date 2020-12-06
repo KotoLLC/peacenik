@@ -12,7 +12,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"regexp"
 	"strings"
 	"time"
 
@@ -445,18 +444,11 @@ func (s *messageHubService) createS3Bucket(subdomain string) error {
 	secret := os.Getenv("KOTO_S3_SECRET")
 	endpoint := os.Getenv("KOTO_S3_ENDPOINT")
 	bucketName := "koto-message-hub-" + subdomain + "-staging"
-	region := ""
-
-	enpointRe := regexp.MustCompile(`https://([^.]+)\.`)
-	match := enpointRe.FindStringSubmatch(endpoint)
-	if match != nil {
-		region = match[1]
-	}
 
 	s3Config := &aws.Config{
 		Credentials: credentials.NewStaticCredentials(key, secret, ""),
 		Endpoint:    aws.String(endpoint),
-		Region:      aws.String(region),
+		Region:      aws.String("us-east-1"),
 	}
 
 	newSession, err := session.NewSession(s3Config)
