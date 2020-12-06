@@ -372,7 +372,7 @@ func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateR
 		return nil, err
 	}
 
-	err = s.createS3Bucket()
+	err = s.createS3Bucket(r.Subdomain)
 	if err != nil {
 		return nil, err
 	}
@@ -440,11 +440,11 @@ func (s *messageHubService) downloadConfiguration(ctx context.Context) ([]byte, 
 	return content, nil
 }
 
-func (s *messageHubService) createS3Bucket() error {
+func (s *messageHubService) createS3Bucket(subdomain string) error {
 	key := os.Getenv("KOTO_S3_KEY")
 	secret := os.Getenv("KOTO_S3_SECRET")
-	bucketName := os.Getenv("KOTO_S3_BUCKET")
 	endpoint := os.Getenv("KOTO_S3_ENDPOINT")
+	bucketName := "koto-message-hub-" + subdomain + "-staging"
 	region := ""
 
 	enpointRe := regexp.MustCompile(`https://([^.]+)\.`)
