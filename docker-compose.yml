@@ -80,7 +80,7 @@ services:
       - 3000:3000
 
   db-user-hub:
-    image: postgres:9.6
+    image: postgres:12.5
     ports:
       - "5432:5432"
     environment:
@@ -88,7 +88,7 @@ services:
       POSTGRES_PASSWORD: docker
 
   db-message-hub:
-    image: postgres:9.6
+    image: postgres:12.5
     ports:
       - "5433:5432"
     environment:
