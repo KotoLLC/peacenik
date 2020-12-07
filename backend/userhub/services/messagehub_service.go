@@ -21,6 +21,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/twitchtv/twirp"
+	yptr "github.com/vmware-labs/yaml-jsonpointer"
+	"gopkg.in/yaml.v3"
 
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/userhub/repo"
@@ -353,11 +355,11 @@ func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateR
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid operation")
 	}
 
-	externalDomain, err := common.GetEffectiveTLDPlusOne(s.cfg.ExternalAddress)
+	config, hubAddress, err := s.getNodeConfig(ctx, r.Subdomain, s.cfg.ExternalAddress)
 	if err != nil {
-		return nil, merry.Prepend(err, "can't get GetEffectiveTLDPlusOne")
+		return nil, err
 	}
-	hubAddress := common.CleanPublicURL("https://" + r.Subdomain + "." + externalDomain)
+
 	hubExists, err := s.repos.MessageHubs.HubExists(hubAddress)
 	if err != nil {
 		return nil, err
@@ -366,7 +368,7 @@ func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateR
 		return nil, twirp.NewError(twirp.AlreadyExists, "hub already exists")
 	}
 
-	err = s.applyConfiguration(ctx, r.Subdomain)
+	err = s.applyConfiguration(config)
 	if err != nil {
 		return nil, err
 	}
@@ -389,13 +391,19 @@ func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateR
 	return &rpc.Empty{}, nil
 }
 
-func (s *messageHubService) applyConfiguration(ctx context.Context, subdomain string) error {
+func (s *messageHubService) getNodeConfig(ctx context.Context, subdomain, userHubAddress string) ([]byte, string, error) {
 	config, err := s.downloadConfiguration(ctx)
 	if err != nil {
-		return merry.Wrap(err)
+		return nil, "", merry.Wrap(err)
 	}
-	config = bytes.ReplaceAll(config, []byte("<NAME>"), []byte(subdomain))
+	config, hubAddressAddress, err := s.fixNodeConfiguration(config, subdomain, userHubAddress)
+	if err != nil {
+		return nil, "", merry.Wrap(err)
+	}
+	return config, hubAddressAddress, nil
+}
 
+func (s *messageHubService) applyConfiguration(config []byte) error {
 	cmd := exec.Command("/bin/sh", "-c",
 		"doctl auth init -t $KOTO_DIGITALOCEAN_TOKEN; doctl k8s cluster config show b68876cd-8a1d-4073-bb00-0ac36beacc0c > /root/config")
 	output, err := cmd.CombinedOutput()
@@ -483,5 +491,58 @@ func (s *messageHubService) createS3Bucket(subdomain string) error {
 	if err != nil {
 		return merry.Prepend(err, "can't create S3 CORS rules")
 	}
+	return nil
+}
+
+func (s *messageHubService) fixNodeConfiguration(config []byte, subdomain, userHubAddress string) ([]byte, string, error) {
+	config = bytes.ReplaceAll(config, []byte("<NAME>"), []byte(subdomain))
+
+	docs := make([]yaml.Node, 0, 4)
+	decoder := yaml.NewDecoder(bytes.NewReader(config))
+	for {
+		var doc yaml.Node
+		err := decoder.Decode(&doc)
+		if err != nil {
+			if merry.Is(err, sql.ErrNoRows) {
+				break
+			}
+			return nil, "", merry.Prepend(err, "can't decode yaml")
+		}
+		docs = append(docs, doc)
+	}
+
+	externalAddressPath := "/spec/template/spec/containers/0/env/~{name: KOTO_EXTERNAL_ADDRESS}/value"
+	externalAddressNode, err := yptr.Find(&docs[1], externalAddressPath)
+	if err != nil {
+		return nil, "", merry.Prepend(err, "can't find "+externalAddressPath)
+	}
+	hubAddress := externalAddressNode.Value
+
+	err = s.modifyYAMLValue(&docs[1], "/spec/template/spec/containers/0/env/~{name: KOTO_USER_HUB_ADDRESS}/value", func(value string) string {
+		return userHubAddress
+	})
+	if err != nil {
+		return nil, "", merry.Wrap(err)
+	}
+
+	var b bytes.Buffer
+	b.WriteString("---\n")
+
+	encoder := yaml.NewEncoder(&b)
+	for _, doc := range docs {
+		err := encoder.Encode(&doc)
+		if err != nil {
+			return nil, "", merry.Prepend(err, "can't ecnode yaml")
+		}
+	}
+	return b.Bytes(), hubAddress, nil
+}
+
+func (s *messageHubService) modifyYAMLValue(config *yaml.Node, path string, getNewValue func(value string) string) error {
+	node, err := yptr.Find(config, path)
+	if err != nil {
+		return merry.Prepend(err, "can't find "+path)
+	}
+	node.Value = getNewValue(node.Value)
 	return nil
 }
