@@ -133,6 +133,7 @@ func (s *Server) checkAuth(next http.Handler) http.Handler {
 
 		userID := claims["id"].(string)
 		userName, _ := claims["name"].(string)
+		userFullName, _ := claims["full_name"].(string)
 		var isHubAdmin bool
 		var blockedUsers []string
 		if ownedHubs, ok := claims["owned_hubs"].([]interface{}); ok {
@@ -149,7 +150,7 @@ func (s *Server) checkAuth(next http.Handler) http.Handler {
 			}
 		}
 
-		user, err := s.repos.User.AddUser(userID, userName)
+		user, err := s.repos.User.AddUser(userID, userName, userFullName)
 		if err != nil {
 			log.Println(err)
 		}

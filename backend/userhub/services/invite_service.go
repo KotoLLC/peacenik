@@ -84,7 +84,7 @@ func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) 
 		if err != nil {
 			return nil, err
 		}
-		s.notificationSender.SendNotification([]string{friend.ID}, user.Name+" invited you to be friends", "invite/add", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{friend.ID}, user.DisplayName()+" invited you to be friends", "invite/add", map[string]interface{}{
 			"user_id": user.ID,
 		})
 		err = s.sendInviteLinkToRegisteredUser(user, friend.Email)
@@ -115,7 +115,7 @@ func (s *inviteService) Accept(ctx context.Context, r *rpc.InviteAcceptRequest) 
 		}
 		return nil, err
 	}
-	s.notificationSender.SendNotification([]string{r.InviterId}, user.Name+" accepted your invite!", "invite/accept", map[string]interface{}{
+	s.notificationSender.SendNotification([]string{r.InviterId}, user.DisplayName()+" accepted your invite!", "invite/accept", map[string]interface{}{
 		"user_id": user.ID,
 	})
 	return &rpc.Empty{}, nil
@@ -130,7 +130,7 @@ func (s *inviteService) Reject(ctx context.Context, r *rpc.InviteRejectRequest) 
 		}
 		return nil, err
 	}
-	s.notificationSender.SendNotification([]string{r.InviterId}, user.Name+" rejected your invite", "invite/reject", map[string]interface{}{
+	s.notificationSender.SendNotification([]string{r.InviterId}, user.DisplayName()+" rejected your invite", "invite/reject", map[string]interface{}{
 		"user_id": user.ID,
 	})
 	return &rpc.Empty{}, nil
@@ -215,7 +215,7 @@ func (s *inviteService) sendInviteLinkToUnregisteredUser(inviter repo.User, user
 	}
 
 	link := fmt.Sprintf("%s"+registerFrontendPath, s.cfg.FrontendAddress, url.QueryEscape(userEmail), inviteToken)
-	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviter.Name+" invited you to be friends on KOTO", fmt.Sprintf(inviteUnregisteredUserEmailBody, link))
+	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviter.DisplayName()+" invited you to be friends on KOTO", fmt.Sprintf(inviteUnregisteredUserEmailBody, link))
 }
 
 func (s *inviteService) sendInviteLinkToRegisteredUser(inviter repo.User, userEmail string) error {
@@ -224,5 +224,5 @@ func (s *inviteService) sendInviteLinkToRegisteredUser(inviter repo.User, userEm
 	}
 
 	link := fmt.Sprintf("%s"+invitationsFrontendPath, s.cfg.FrontendAddress)
-	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviter.Name+" invited you to be friends on KOTO", fmt.Sprintf(inviteRegisteredUserEmailBody, link))
+	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviter.DisplayName()+" invited you to be friends on KOTO", fmt.Sprintf(inviteRegisteredUserEmailBody, link))
 }

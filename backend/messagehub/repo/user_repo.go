@@ -12,11 +12,19 @@ import (
 type User struct {
 	ID        string       `json:"id" db:"id"`
 	Name      string       `json:"name" db:"name"`
+	FullName  string       `json:"full_name" db:"full_name"`
 	BlockedAt sql.NullTime `json:"blocked_at" db:"blocked_at"`
 }
 
+func (u User) DisplayName() string {
+	if u.FullName == "" || u.FullName == u.Name {
+		return u.Name
+	}
+	return u.FullName + " (" + u.Name + ")"
+}
+
 type UserRepo interface {
-	AddUser(id, name string) (User, error)
+	AddUser(id, name, fullName string) (User, error)
 	FindUsersByName(names []string) ([]User, error)
 	BlockUser(userID string) error
 }
@@ -31,10 +39,10 @@ func NewUsers(db *sqlx.DB) UserRepo {
 	}
 }
 
-func (r *userRepo) AddUser(id, name string) (User, error) {
+func (r *userRepo) AddUser(id, name, fullName string) (User, error) {
 	var user User
 	err := r.db.Get(&user, `
-		select id, name, blocked_at
+		select id, name, full_name, blocked_at
 		from users
 		where id = $1`,
 		id)
@@ -46,23 +54,29 @@ func (r *userRepo) AddUser(id, name string) (User, error) {
 		user = User{
 			ID:        id,
 			Name:      name,
+			FullName:  fullName,
 			BlockedAt: sql.NullTime{},
 		}
 		_, err := r.db.Exec(`
-			insert into users(id, name, added_at)
-			values($1, $2, $3)
-			on conflict (id) do update set name = excluded.name where users.name <> excluded.name;`,
-			id, name, common.CurrentTimestamp())
+			insert into users(id, name, full_name, added_at)
+			values($1, $2, $3, $4)
+			on conflict (id) do update
+			set name = excluded.name,
+				full_name = excluded.full_name
+			where users.name <> excluded.name or users.full_name <> excluded.full_name;`,
+			id, name, fullName, common.CurrentTimestamp())
 		if err != nil {
 			return User{}, merry.Wrap(err)
 		}
-	} else if user.Name != name {
+	} else if user.Name != name || user.FullName != fullName {
 		user.Name = name
+		user.FullName = fullName
 		_, err := r.db.Exec(`
 			update users
-			set name = $1    
-			where id = $2;`,
-			name, id)
+			set name = $1,
+			    full_name = $2
+			where id = $3;`,
+			name, fullName, id)
 		if err != nil {
 			return User{}, merry.Wrap(err)
 		}
@@ -76,7 +90,7 @@ func (r *userRepo) FindUsersByName(names []string) ([]User, error) {
 	}
 
 	query, args, err := sqlx.In(`
-		select id, name, blocked_at
+		select id, name, full_name, blocked_at
 		from users
 		where name in (?)`, names)
 	if err != nil {

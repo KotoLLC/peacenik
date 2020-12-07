@@ -1,6 +1,6 @@
-# Installing a user hub server
+# Host an entire Koto network
 
-If you would like to run your own network, instead of using koto.at, and the koto mobile apps, you can install everything by yourself using either docker-compose or kubernetes.
+If you would like to run your own network, instead of using koto.at, and the koto mobile apps, you can install everything by yourself using either docker-compose or kubernetes (documentation coming soon).
 
 ## Docker compose
 
@@ -8,11 +8,4 @@ If you would like to run your own network, instead of using koto.at, and the kot
 2. Rename .env.template to .env, modify values of variables.
 3. Run `docker-compose pull`
 4. Run `docker-compose up -d`
-
-## Kubernetes
-
-Note: SSL does not work without some special care and feeding. Since we are using the contour proxy, you can read how to install SSL certificates [here](https://projectcontour.io/guides/cert-manager/). We will gladly take some pull requests if you'd like to incorporate this into our repository.
-
-1. Modify the deployment templates in .k8s/user-hub and ./k8s/frontend
-2. Run kubectl apply ./k8s --recursive
 

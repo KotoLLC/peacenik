@@ -325,7 +325,7 @@ func (s *authService) confirmUser(confirmToken string) error {
 		if err != nil {
 			return merry.Wrap(err)
 		}
-		s.notificationSender.SendNotification([]string{admin.ID}, user.Name+" invited you to be friends", "invite/add", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{admin.ID}, user.DisplayName()+" invited you to be friends", "invite/add", map[string]interface{}{
 			"user_id": user.ID,
 		})
 		err = s.sendInviteLinkToRegisteredUser(*user, admin.Email)
@@ -341,7 +341,7 @@ func (s *authService) confirmUser(confirmToken string) error {
 		if err != nil {
 			return merry.Wrap(err)
 		}
-		s.notificationSender.SendNotification([]string{admin.ID}, user.Name+" is registered and added to your friends!", "invite/accept", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{admin.ID}, user.DisplayName()+" is registered and added to your friends!", "invite/accept", map[string]interface{}{
 			"user_id": user.ID,
 		})
 	}
@@ -369,7 +369,7 @@ func (s *authService) sendInviteLinkToRegisteredUser(inviter repo.User, userEmai
 	}
 
 	link := fmt.Sprintf("%s"+invitationsFrontendPath, s.cfg.FrontendAddress)
-	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviter.Name+" invited you to be friends on KOTO", fmt.Sprintf(inviteRegisteredUserEmailBody, link))
+	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviter.DisplayName()+" invited you to be friends on KOTO", fmt.Sprintf(inviteRegisteredUserEmailBody, link))
 }
 
 func (s *authService) RecallNames(_ context.Context, r *rpc.AuthRecallNamesRequest) (*rpc.Empty, error) {
@@ -387,7 +387,7 @@ func (s *authService) RecallNames(_ context.Context, r *rpc.AuthRecallNamesReque
 
 	userNames := make([]string, len(users))
 	for i, user := range users {
-		userNames[i] = user.Name
+		userNames[i] = user.DisplayName()
 	}
 
 	var message string

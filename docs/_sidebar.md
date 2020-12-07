@@ -16,14 +16,12 @@
 
 - Message hubs
 
-  - [Installation](install-message-hub.md)
-  - [Testing](testing-message-hub.md)
+  - [Hosting](install-message-hub.md)
   - [API](api-message-hub.md)
 
 - User hubs
 
   - [Installation](install-user-hub.md)
-  - [Testing](testing-user-hub.md)
   - [API](api-user-hub.md)
  
 

@@ -1,16 +1,22 @@
-# Creating a message hub
+# Hosting a message hub
 
 ## Intro
 
 The Koto network is made up of different message hubs, each owned and operated by individual members. Message hubs store messages, photos, and videos for groups of friends.
 
-If you don't have any hub-enabled friends on the Koto network, you will see the "No Hub" cat, letting you know there's no message hub in your group, so you can't post messages.
+If you don't have any hub-enabled friends on the Koto network, you will see a welcome page with instructions.
 
-![readme-images/user-guide-no-hubs.jpg](readme-images/user-guide-no-hubs.jpg)
+### Sponsored hubs
 
-If you want to get rid of the cat, for you and your friends, someone in the group needs to create a message hub. Creating a hub is pretty easy. You can do it on any hosting provider or cloud.
+If you want someone from the Koto team to create and sponsor your hub, send an email to **admin@koto.at** and we'll get to work. This is the easiest way to get started. For now we're offering this for free but that will inevitably change. Hosting is expensive!
 
-If you don't understand, or don't want to set up a message hub, just find a friend who does. Again, one friend, with one hub, is all the group needs.
+![](readme-images/5.sponsored.png)
+
+### Host it yourself
+
+You can host also your own hub on Amazon, Google, Digital Ocean, etc. Of course, this requires some technical skills on your part.
+
+![](readme-images/4.manual.png)
 
 The instructions below explain how to get a message hub running on Digital Ocean, which is the least evil of the big clouds, and only costs $5 a month.
 

@@ -7,15 +7,23 @@ import (
 	"encoding/json"
 	"fmt"
 	"html"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"os/exec"
 	"strings"
 	"time"
 
 	"github.com/ansel1/merry"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/twitchtv/twirp"
+	yptr "github.com/vmware-labs/yaml-jsonpointer"
+	"gopkg.in/yaml.v3"
 
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/userhub/repo"
@@ -62,7 +70,7 @@ func (s *messageHubService) Register(ctx context.Context, r *rpc.MessageHubRegis
 			log.Println(err)
 		}
 		if adminUser != nil {
-			s.notificationSender.SendNotification([]string{adminUser.ID}, user.Name+" added a new message hub", "message-hub/add", map[string]interface{}{
+			s.notificationSender.SendNotification([]string{adminUser.ID}, user.DisplayName()+" added a new message hub", "message-hub/add", map[string]interface{}{
 				"user_id": user.ID,
 				"hub_id":  hubID,
 			})
@@ -155,7 +163,7 @@ func (s *messageHubService) Approve(ctx context.Context, r *rpc.MessageHubApprov
 		return nil, err
 	}
 
-	s.notificationSender.SendNotification([]string{hub.AdminID}, user.Name+" approved your message hub", "message-hub/approve", map[string]interface{}{
+	s.notificationSender.SendNotification([]string{hub.AdminID}, user.DisplayName()+" approved your message hub", "message-hub/approve", map[string]interface{}{
 		"user_id": user.ID,
 		"hub_id":  r.HubId,
 	})
@@ -182,7 +190,7 @@ func (s *messageHubService) Remove(ctx context.Context, r *rpc.MessageHubRemoveR
 	}
 
 	if hub.AdminID != user.ID {
-		s.notificationSender.SendNotification([]string{hub.AdminID}, user.Name+" removed your message hub", "message-hub/remove", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{hub.AdminID}, user.DisplayName()+" removed your message hub", "message-hub/remove", map[string]interface{}{
 			"user_id": user.ID,
 			"hub_id":  r.HubId,
 		})
@@ -295,7 +303,7 @@ func (s *messageHubService) ReportMessage(ctx context.Context, r *rpc.MessageHub
 	err = s.mailSender.SendHTMLEmail([]string{hubAdmin.Email}, "Objectional Content Reported",
 		fmt.Sprintf(`<p>User %s just reported objectionable content for user %s: %s<p>
 <p>Please visit <a href="%s" target="_blank">the audit dashboard</a> to review the content.</p>`,
-			reportedBy.Name, author.Name, html.EscapeString(body.Report), s.cfg.FrontendAddress+"/dashboard"))
+			reportedBy.DisplayName(), author.DisplayName(), html.EscapeString(body.Report), s.cfg.FrontendAddress+"/dashboard"))
 	if err != nil {
 		return nil, err
 	}
@@ -324,6 +332,12 @@ func (s *messageHubService) BlockUser(ctx context.Context, r *rpc.MessageHubBloc
 	return &rpc.Empty{}, nil
 }
 
+type nodeConfig struct {
+	Cfg                []byte
+	HubExternalAddress string
+	BucketName         string
+}
+
 func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateRequest) (*rpc.Empty, error) {
 	if !s.isAdmin(ctx) {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
@@ -348,12 +362,12 @@ func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateR
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid operation")
 	}
 
-	externalDomain, err := common.GetEffectiveTLDPlusOne(s.cfg.ExternalAddress)
+	config, err := s.getNodeConfig(ctx, r.Subdomain, s.cfg.ExternalAddress)
 	if err != nil {
-		return nil, merry.Prepend(err, "can't get GetEffectiveTLDPlusOne")
+		return nil, err
 	}
-	hubAddress := common.CleanPublicURL("https://" + r.Subdomain + "." + externalDomain)
-	hubExists, err := s.repos.MessageHubs.HubExists(hubAddress)
+
+	hubExists, err := s.repos.MessageHubs.HubExists(config.HubExternalAddress)
 	if err != nil {
 		return nil, err
 	}
@@ -361,12 +375,17 @@ func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateR
 		return nil, twirp.NewError(twirp.AlreadyExists, "hub already exists")
 	}
 
-	err = s.applyConfiguration(ctx, r.Subdomain)
+	err = s.applyConfiguration(config.Cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	hubID, err := s.repos.MessageHubs.AddHub(hubAddress, r.Notes, *owner, 0)
+	err = s.createS3Bucket(config.BucketName)
+	if err != nil {
+		return nil, err
+	}
+
+	hubID, err := s.repos.MessageHubs.AddHub(config.HubExternalAddress, r.Notes, *owner, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -379,13 +398,19 @@ func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateR
 	return &rpc.Empty{}, nil
 }
 
-func (s *messageHubService) applyConfiguration(ctx context.Context, subdomain string) error {
-	config, err := s.downloadConfiguration(ctx)
+func (s *messageHubService) getNodeConfig(ctx context.Context, subdomain, userHubAddress string) (*nodeConfig, error) {
+	configContent, err := s.downloadConfiguration(ctx)
 	if err != nil {
-		return merry.Wrap(err)
+		return nil, merry.Wrap(err)
 	}
-	config = bytes.ReplaceAll(config, []byte("<NAME>"), []byte(subdomain))
+	config, err := s.fixNodeConfiguration(configContent, subdomain, userHubAddress)
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+	return config, nil
+}
 
+func (s *messageHubService) applyConfiguration(config []byte) error {
 	cmd := exec.Command("/bin/sh", "-c",
 		"doctl auth init -t $KOTO_DIGITALOCEAN_TOKEN; doctl k8s cluster config show b68876cd-8a1d-4073-bb00-0ac36beacc0c > /root/config")
 	output, err := cmd.CombinedOutput()
@@ -427,4 +452,114 @@ func (s *messageHubService) downloadConfiguration(ctx context.Context) ([]byte, 
 		return nil, merry.Prepend(err, "can't read response body")
 	}
 	return content, nil
+}
+
+func (s *messageHubService) createS3Bucket(bucketName string) error {
+	key := os.Getenv("KOTO_S3_KEY")
+	secret := os.Getenv("KOTO_S3_SECRET")
+	endpoint := os.Getenv("KOTO_S3_ENDPOINT")
+
+	s3Config := &aws.Config{
+		Credentials: credentials.NewStaticCredentials(key, secret, ""),
+		Endpoint:    aws.String(endpoint),
+		Region:      aws.String("us-east-1"), // https://github.com/aws/aws-sdk-go/issues/2232
+	}
+
+	newSession, err := session.NewSession(s3Config)
+	if err != nil {
+		return merry.Prepend(err, "can't create S3 session")
+	}
+	client := s3.New(newSession)
+
+	createBucketParams := &s3.CreateBucketInput{
+		Bucket: aws.String(bucketName),
+	}
+	_, err = client.CreateBucket(createBucketParams)
+	if err != nil {
+		return merry.Prepend(err, "can't create S3 bucket")
+	}
+
+	rule := s3.CORSRule{
+		AllowedHeaders: aws.StringSlice([]string{"*"}),                                    // TODO
+		AllowedOrigins: aws.StringSlice([]string{"https://orbits.at", "https://koto.at"}), // TODO
+		MaxAgeSeconds:  aws.Int64(3000),
+		AllowedMethods: aws.StringSlice([]string{http.MethodPost, http.MethodGet}),
+	}
+
+	putCORSParams := s3.PutBucketCorsInput{
+		Bucket: aws.String(bucketName),
+		CORSConfiguration: &s3.CORSConfiguration{
+			CORSRules: []*s3.CORSRule{&rule},
+		},
+	}
+
+	_, err = client.PutBucketCors(&putCORSParams)
+	if err != nil {
+		return merry.Prepend(err, "can't create S3 CORS rules")
+	}
+	return nil
+}
+
+func (s *messageHubService) fixNodeConfiguration(config []byte, subdomain, userHubAddress string) (*nodeConfig, error) {
+	config = bytes.ReplaceAll(config, []byte("<NAME>"), []byte(subdomain))
+
+	docs := make([]yaml.Node, 0, 4)
+	decoder := yaml.NewDecoder(bytes.NewReader(config))
+	for {
+		var doc yaml.Node
+		err := decoder.Decode(&doc)
+		if err != nil {
+			if merry.Is(err, io.EOF) {
+				break
+			}
+			return nil, merry.Prepend(err, "can't decode yaml")
+		}
+		docs = append(docs, doc)
+	}
+
+	externalAddressPath := "/spec/template/spec/containers/0/env/~{name: KOTO_EXTERNAL_ADDRESS}/value"
+	externalAddressNode, err := yptr.Find(&docs[1], externalAddressPath)
+	if err != nil {
+		return nil, merry.Prepend(err, "can't find "+externalAddressPath)
+	}
+	hubAddress := externalAddressNode.Value
+
+	bucketNamePath := "/spec/template/spec/containers/0/env/~{name: KOTO_S3_BUCKET}/value"
+	bucketNameNode, err := yptr.Find(&docs[1], bucketNamePath)
+	if err != nil {
+		return nil, merry.Prepend(err, "can't find "+bucketNamePath)
+	}
+	bucketName := bucketNameNode.Value
+
+	err = s.modifyYAMLValue(&docs[1], "/spec/template/spec/containers/0/env/~{name: KOTO_USER_HUB_ADDRESS}/value", func(value string) string {
+		return userHubAddress
+	})
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+
+	var b bytes.Buffer
+	b.WriteString("---\n")
+
+	encoder := yaml.NewEncoder(&b)
+	for _, doc := range docs {
+		err := encoder.Encode(&doc)
+		if err != nil {
+			return nil, merry.Prepend(err, "can't ecnode yaml")
+		}
+	}
+	return &nodeConfig{
+		Cfg:                b.Bytes(),
+		HubExternalAddress: hubAddress,
+		BucketName:         bucketName,
+	}, nil
+}
+
+func (s *messageHubService) modifyYAMLValue(config *yaml.Node, path string, getNewValue func(value string) string) error {
+	node, err := yptr.Find(config, path)
+	if err != nil {
+		return merry.Prepend(err, "can't find "+path)
+	}
+	node.Value = getNewValue(node.Value)
+	return nil
 }
