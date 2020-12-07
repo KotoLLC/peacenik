@@ -332,6 +332,12 @@ func (s *messageHubService) BlockUser(ctx context.Context, r *rpc.MessageHubBloc
 	return &rpc.Empty{}, nil
 }
 
+type nodeConfig struct {
+	Cfg                []byte
+	HubExternalAddress string
+	BucketName         string
+}
+
 func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateRequest) (*rpc.Empty, error) {
 	if !s.isAdmin(ctx) {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
@@ -356,12 +362,12 @@ func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateR
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid operation")
 	}
 
-	config, hubAddress, err := s.getNodeConfig(ctx, r.Subdomain, s.cfg.ExternalAddress)
+	config, err := s.getNodeConfig(ctx, r.Subdomain, s.cfg.ExternalAddress)
 	if err != nil {
 		return nil, err
 	}
 
-	hubExists, err := s.repos.MessageHubs.HubExists(hubAddress)
+	hubExists, err := s.repos.MessageHubs.HubExists(config.HubExternalAddress)
 	if err != nil {
 		return nil, err
 	}
@@ -369,17 +375,17 @@ func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateR
 		return nil, twirp.NewError(twirp.AlreadyExists, "hub already exists")
 	}
 
-	err = s.applyConfiguration(config)
+	err = s.applyConfiguration(config.Cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	err = s.createS3Bucket(r.Subdomain)
+	err = s.createS3Bucket(config.BucketName)
 	if err != nil {
 		return nil, err
 	}
 
-	hubID, err := s.repos.MessageHubs.AddHub(hubAddress, r.Notes, *owner, 0)
+	hubID, err := s.repos.MessageHubs.AddHub(config.HubExternalAddress, r.Notes, *owner, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -392,16 +398,16 @@ func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateR
 	return &rpc.Empty{}, nil
 }
 
-func (s *messageHubService) getNodeConfig(ctx context.Context, subdomain, userHubAddress string) ([]byte, string, error) {
-	config, err := s.downloadConfiguration(ctx)
+func (s *messageHubService) getNodeConfig(ctx context.Context, subdomain, userHubAddress string) (*nodeConfig, error) {
+	configContent, err := s.downloadConfiguration(ctx)
 	if err != nil {
-		return nil, "", merry.Wrap(err)
+		return nil, merry.Wrap(err)
 	}
-	config, hubAddressAddress, err := s.fixNodeConfiguration(config, subdomain, userHubAddress)
+	config, err := s.fixNodeConfiguration(configContent, subdomain, userHubAddress)
 	if err != nil {
-		return nil, "", merry.Wrap(err)
+		return nil, merry.Wrap(err)
 	}
-	return config, hubAddressAddress, nil
+	return config, nil
 }
 
 func (s *messageHubService) applyConfiguration(config []byte) error {
@@ -448,11 +454,10 @@ func (s *messageHubService) downloadConfiguration(ctx context.Context) ([]byte, 
 	return content, nil
 }
 
-func (s *messageHubService) createS3Bucket(subdomain string) error {
+func (s *messageHubService) createS3Bucket(bucketName string) error {
 	key := os.Getenv("KOTO_S3_KEY")
 	secret := os.Getenv("KOTO_S3_SECRET")
 	endpoint := os.Getenv("KOTO_S3_ENDPOINT")
-	bucketName := "koto-message-hub-" + subdomain + "-staging"
 
 	s3Config := &aws.Config{
 		Credentials: credentials.NewStaticCredentials(key, secret, ""),
@@ -495,7 +500,7 @@ func (s *messageHubService) createS3Bucket(subdomain string) error {
 	return nil
 }
 
-func (s *messageHubService) fixNodeConfiguration(config []byte, subdomain, userHubAddress string) ([]byte, string, error) {
+func (s *messageHubService) fixNodeConfiguration(config []byte, subdomain, userHubAddress string) (*nodeConfig, error) {
 	config = bytes.ReplaceAll(config, []byte("<NAME>"), []byte(subdomain))
 
 	docs := make([]yaml.Node, 0, 4)
@@ -507,7 +512,7 @@ func (s *messageHubService) fixNodeConfiguration(config []byte, subdomain, userH
 			if merry.Is(err, io.EOF) {
 				break
 			}
-			return nil, "", merry.Prepend(err, "can't decode yaml")
+			return nil, merry.Prepend(err, "can't decode yaml")
 		}
 		docs = append(docs, doc)
 	}
@@ -515,15 +520,22 @@ func (s *messageHubService) fixNodeConfiguration(config []byte, subdomain, userH
 	externalAddressPath := "/spec/template/spec/containers/0/env/~{name: KOTO_EXTERNAL_ADDRESS}/value"
 	externalAddressNode, err := yptr.Find(&docs[1], externalAddressPath)
 	if err != nil {
-		return nil, "", merry.Prepend(err, "can't find "+externalAddressPath)
+		return nil, merry.Prepend(err, "can't find "+externalAddressPath)
 	}
 	hubAddress := externalAddressNode.Value
+
+	bucketNamePath := "/spec/template/spec/containers/0/env/~{name: KOTO_S3_BUCKET}/value"
+	bucketNameNode, err := yptr.Find(&docs[1], bucketNamePath)
+	if err != nil {
+		return nil, merry.Prepend(err, "can't find "+bucketNamePath)
+	}
+	bucketName := bucketNameNode.Value
 
 	err = s.modifyYAMLValue(&docs[1], "/spec/template/spec/containers/0/env/~{name: KOTO_USER_HUB_ADDRESS}/value", func(value string) string {
 		return userHubAddress
 	})
 	if err != nil {
-		return nil, "", merry.Wrap(err)
+		return nil, merry.Wrap(err)
 	}
 
 	var b bytes.Buffer
@@ -533,10 +545,14 @@ func (s *messageHubService) fixNodeConfiguration(config []byte, subdomain, userH
 	for _, doc := range docs {
 		err := encoder.Encode(&doc)
 		if err != nil {
-			return nil, "", merry.Prepend(err, "can't ecnode yaml")
+			return nil, merry.Prepend(err, "can't ecnode yaml")
 		}
 	}
-	return b.Bytes(), hubAddress, nil
+	return &nodeConfig{
+		Cfg:                b.Bytes(),
+		HubExternalAddress: hubAddress,
+		BucketName:         bucketName,
+	}, nil
 }
 
 func (s *messageHubService) modifyYAMLValue(config *yaml.Node, path string, getNewValue func(value string) string) error {

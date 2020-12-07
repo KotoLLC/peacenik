@@ -58,7 +58,7 @@ spec:
                 name: message-hub-secrets
                 key: s3_secret
           - name: KOTO_S3_BUCKET
-            value: koto-message-hub-<NAME>-staging
+            value: koto-message-hub-<NAME>
 ---
 apiVersion: v1
 kind: Service
@@ -72,7 +72,7 @@ spec:
   ports:
   - name: http
     port: 12002
-    
+
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
