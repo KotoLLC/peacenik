@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -503,7 +504,7 @@ func (s *messageHubService) fixNodeConfiguration(config []byte, subdomain, userH
 		var doc yaml.Node
 		err := decoder.Decode(&doc)
 		if err != nil {
-			if merry.Is(err, sql.ErrNoRows) {
+			if merry.Is(err, io.EOF) {
 				break
 			}
 			return nil, "", merry.Prepend(err, "can't decode yaml")
