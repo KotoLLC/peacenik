@@ -75,7 +75,6 @@ export const EditorWrapper = styled.div`
 
 export const EditorInMessageWrapper = styled.div`
   margin: 0 20px 15px;
-  
 `
 
 export const TextareaAutosizeStyled = styled(TextareaAutosize)`
@@ -94,7 +93,6 @@ export const TextareaAutosizeStyled = styled(TextareaAutosize)`
 export const EditorButtonsWrapper = styled.div`
   display: flex;
   align-items: center;
-  /* margin-top: 5px; */
   padding-right: 40px;
   position: relative;
 `
@@ -245,6 +243,7 @@ export const EditMessageWrapper = styled.div`
 export const EditMessageField = styled.div`
   display: flex;
   flex-grow: 2;
+  padding-left: 10px;
   align-items: flex-end;
   margin-bottom: 10px;
   border-radius: 22px;

@@ -13,6 +13,8 @@ import Avatar from '@material-ui/core/Avatar'
 import loadImage from 'blueimp-load-image'
 import SendIcon from '@material-ui/icons/Send'
 import { urlify } from '@services/urlify'
+import { MentionsInput, Mention } from 'react-mentions'
+import { friendsToMentionFriends, MentionFriend } from '@services/dataTransforms/friendsToMentionFriends'
 
 import {
   TextareaAutosizeStyled,
@@ -36,6 +38,7 @@ interface Props {
   isMessagePostedSuccess: boolean
   uploadLink: ApiTypes.UploadLink | null
   userId: string
+  friends: ApiTypes.Friends.Friend[]
 
   onMessagePost: (data: ApiTypes.Messages.PostMessage) => void
   onPostMessageSucces: (value: boolean) => void
@@ -48,7 +51,8 @@ const Editor: React.SFC<Props> = (props) => {
   const [isFileUploaded, setUploadedFile] = useState<boolean>(false)
   const [isHubsEmptyMessageShowed, showHubsEmptyMessage] = useState<boolean>(false)
   const [file, setFile] = useState<File | null>(null)
-  const { isMessagePostedSuccess, onPostMessageSucces, uploadLink } = props
+  const [mentionFriends, setMentionFriends] = useState<MentionFriend[]>([])
+  const { isMessagePostedSuccess, onPostMessageSucces, uploadLink, friends } = props
 
   const onMessageSend = () => {
 
@@ -138,6 +142,7 @@ const Editor: React.SFC<Props> = (props) => {
     if (isMessagePostedSuccess) {
       onValueChange('')
     }
+
     onPostMessageSucces(false)
 
     if (props.uploadLink && file && !isFileUploaded) {
@@ -154,9 +159,20 @@ const Editor: React.SFC<Props> = (props) => {
         link: props?.uploadLink.link,
         form_data: data,
       })
-
     }
-  }, [isMessagePostedSuccess, uploadLink, file, isFileUploaded, onPostMessageSucces, props])
+
+    if (!mentionFriends?.length && friends?.length) {
+      setMentionFriends(friendsToMentionFriends(friends))
+    }
+  }, [
+    isMessagePostedSuccess, 
+    uploadLink, 
+    file, 
+    isFileUploaded, 
+    onPostMessageSucces, 
+    props,
+    friends,
+  ])
 
   return (
     <MessageSticky>
@@ -165,10 +181,10 @@ const Editor: React.SFC<Props> = (props) => {
           <AvatarWrapper>
             <Avatar src={getAvatarUrl(props.userId)} />
           </AvatarWrapper>
-          
+
           <EditorWrapper>
             <TextareaTitle className={value.length ? 'active' : ''}>Post a message to your friends</TextareaTitle>
-            <EditMessageField>
+            {/* <EditMessageField>
               <TextareaAutosizeStyled
                 onKeyDown={onComandEnterDown}
                 value={value}
@@ -176,7 +192,27 @@ const Editor: React.SFC<Props> = (props) => {
               <IconButton onClick={onMessageSend}>
                 <SendIcon fontSize="small" />
               </IconButton>
+            </EditMessageField> */} 
+            
+            <EditMessageField>
+              <MentionsInput
+                className="mentions"
+                value={value}
+                onChange={(evant) => onValueChange(evant.target.value)}
+                onKeyDown={onComandEnterDown}
+              >
+                <Mention 
+                  trigger="@" 
+                  data={mentionFriends} 
+                  className={'mentions__mention'} 
+                  markup="@[__display__]"
+                  />
+              </MentionsInput>
+              <IconButton onClick={onMessageSend}>
+                <SendIcon fontSize="small" />
+              </IconButton>
             </EditMessageField>
+
             {renderAttachment()}
             <EditorButtonsWrapper>
               <Tooltip title={`Attach image or video`}>
@@ -210,16 +246,29 @@ const Editor: React.SFC<Props> = (props) => {
   )
 }
 
-type StateProps = Pick<Props, 'authToken' | 'currentHub' | 'isMessagePostedSuccess' | 'uploadLink' | 'userId'>
+type StateProps = Pick<Props, 
+  | 'authToken' 
+  | 'currentHub' 
+  | 'isMessagePostedSuccess' 
+  | 'uploadLink' 
+  | 'userId'
+  | 'friends'
+  >
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   authToken: state.authorization.authToken,
   currentHub: selectors.messages.currentHub(state),
   isMessagePostedSuccess: selectors.messages.isMessagePostedSuccess(state),
   uploadLink: state.messages.uploadLink,
   userId: selectors.profile.userId(state),
+  friends: selectors.friends.friends(state),
 })
 
-type DispatchProps = Pick<Props, 'onMessagePost' | 'onPostMessageSucces' | 'onGetMessageUploadLink' | 'onSetAttachment'>
+type DispatchProps = Pick<Props, 
+  | 'onMessagePost' 
+  | 'onPostMessageSucces' 
+  | 'onGetMessageUploadLink' 
+  | 'onSetAttachment'
+  >
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onMessagePost: (data: ApiTypes.Messages.PostMessage) => dispatch(Actions.messages.postMessageRequest(data)),
   onPostMessageSucces: (value: boolean) => dispatch(Actions.messages.postMessageSucces(value)),

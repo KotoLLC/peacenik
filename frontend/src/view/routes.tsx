@@ -43,7 +43,7 @@ const mapStateToProps = (state: StoreTypes) => ({
 
 const PrivateRoute = connect(mapStateToProps)(Private)
 
-export const Routes = (props) => {
+export const Routes = () => {
   const [swipeType, setSwipeType] = useState('')
 
   const handlers = useSwipeable({

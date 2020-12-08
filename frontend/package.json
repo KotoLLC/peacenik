@@ -39,6 +39,7 @@
 		"react-easy-swipe": "0.0.21",
 		"react-iframe": "^1.8.0",
 		"react-markdown": "^4.3.1",
+		"react-mentions": "^4.0.2",
 		"react-notify-toast": "^0.5.1",
 		"react-pull-to-refresh": "^1.1.2",
 		"react-redux": "^7.2.0",

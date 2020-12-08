@@ -28,7 +28,9 @@ interface Props extends RouteComponentProps {
   isMoreMessagesRequested: boolean
   isMessagesRequested: boolean | null
   isAboutUsViewed: boolean
-
+  friends: ApiTypes.Friends.Friend[]
+  
+  onGetFriends: () => void
   onGetMessages: () => void
   onGetMoreMessages: () => void
   onGetCurrentHub: () => void
@@ -52,11 +54,12 @@ class MessageFeed extends React.Component<Props, State> {
   lastMessageRef = React.createRef<HTMLDivElement>()
 
   componentDidMount() {
-    const { onGetMessages, onGetCurrentHub, authToken } = this.props
+    const { onGetMessages, onGetCurrentHub, authToken, onGetFriends } = this.props
 
     if (authToken) {
       onGetMessages()
       onGetCurrentHub()
+      onGetFriends()
 
       this.timerId = setInterval(() => {
         onGetMessages()
@@ -88,6 +91,11 @@ class MessageFeed extends React.Component<Props, State> {
     if (newProps.authToken !== prevState.authToken) {
       newProps.onGetMessages()
       newProps.onGetCurrentHub()
+
+      if (!newProps.friends.length) {
+        newProps.onGetFriends()
+      }
+      
       return {
         authToken: newProps.authToken
       }
@@ -209,6 +217,7 @@ type StateProps = Pick<Props,
   | 'isMessagesRequested'
   | 'isAboutUsViewed'
   | 'isCurrentHubReqyested'
+  | 'friends'
 >
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   messageTokens: selectors.messages.messageTokens(state),
@@ -220,13 +229,20 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   isMessagesRequested: selectors.messages.isMessagesRequested(state),
   isAboutUsViewed: selectors.common.isAboutUsViewed(state),
   isCurrentHubReqyested: selectors.messages.isCurrentHubRequested(state),
+  friends: selectors.friends.friends(state),
 })
 
-type DispatchProps = Pick<Props, 'onGetMessages' | 'onGetCurrentHub' | 'onGetMoreMessages'>
+type DispatchProps = Pick<Props, 
+  | 'onGetMessages' 
+  | 'onGetCurrentHub' 
+  | 'onGetMoreMessages'
+  | 'onGetFriends'
+  >
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetMessages: () => dispatch(Actions.messages.getMessagesRequest()),
   onGetCurrentHub: () => dispatch(Actions.messages.getCurrentHubRequest()),
   onGetMoreMessages: () => dispatch(Actions.messages.getMoreMessagesRequest()),
+  onGetFriends: () => dispatch(Actions.friends.getFriendsRequest()),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(MessageFeed)
