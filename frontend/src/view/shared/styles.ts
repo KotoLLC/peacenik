@@ -8,8 +8,6 @@ import Tabs from '@material-ui/core/Tabs'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
 import { Link } from 'react-router-dom'
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos'
 
 export const TooltipStyle = styled(Tooltip)`
   && {
@@ -204,18 +202,50 @@ export const MenuItemWrapper = styled.div`
   justify-content: flex-start;
 `
 
-export const ArrowForwardIosIconStyled = styled(ArrowForwardIosIcon)`
-  position: absolute;
+export const ForwardIconWrapper = styled.span`
+  position: fixed;
   z-index: 1000;
-  right: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  right: 2px;
   top: 65px;
-  opacity: 0.7;
+  top: calc(50vh - 20px);
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  background: rgba(0,0,0,.2);
+  opacity: 0;
+  transition: opacity 0.3s;
+
+  &.visible {
+    width: 40px;
+    height: 40px;
+    opacity: 0.7;
+  }
 `
 
-export const ArrowBackIosIconStyled = styled(ArrowBackIosIcon)`
-  position: absolute;
+export const BackIconWrapper = styled.span`
+  position: fixed;
   z-index: 1000;
-  left: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  left: 2px;
   top: 65px;
-  opacity: 0.7;
+  top: calc(50vh - 20px);
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  background: rgba(0,0,0,.2);
+  opacity: 0;
+  transition: opacity 0.3s;
+
+  &.visible {
+    width: 40px;
+    height: 40px;
+    opacity: 0.7;
+  }
 `

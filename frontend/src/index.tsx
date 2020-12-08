@@ -47,11 +47,6 @@ const theme = {
   }
 }
 
-// const handlers = useSwipeable({
-//   onSwiped: (eventData) => console.log("User Swiped!", eventData),
-// });
-
-
 interface Props {
   isLogged: boolean
   isEmailConfirmed: boolean
@@ -87,9 +82,6 @@ class AppComponent extends React.Component<Props, State> {
       }
     }
 
-    // else {
-    //   this.props.onGetAuthToken()
-    // }
   }
 
   static getDerivedStateFromProps(newProps: Props, prevState: State) {

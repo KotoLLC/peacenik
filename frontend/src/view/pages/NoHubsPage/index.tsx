@@ -20,8 +20,7 @@ const ColoredLine = ({ color }) => (
           height: 1
       }}
   />
-);
-
+)
 
 interface Props extends RouteComponentProps {
   messageTokens: CommonTypes.HubTypes.CurrentHub[]
@@ -38,7 +37,7 @@ export const NoHubs: React.FC<Props> = (props) => {
     props.onSetAboutUsViewed()
   } 
 
-  useEffect(()=>{
+  useEffect(() => {
     if (messageTokens?.length || currentHub?.token) {
       props.history.push('/messages')
     }

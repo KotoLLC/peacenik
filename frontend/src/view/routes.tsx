@@ -1,5 +1,5 @@
-import React from 'react'
-import { createBrowserHistory } from 'history'
+import React, { useState } from 'react'
+import { createMemoryHistory } from 'history'
 import { Router, Switch, Route, Redirect } from 'react-router-dom'
 import LoginPage from '@view/pages/LoginPage'
 import { FriendsPage } from '@view/pages/FriendsPage'
@@ -20,7 +20,10 @@ import ResetPasswordPage from '@view/pages/ResetPasswordPage'
 import { DashboardPage } from '@view/pages/DashboardPage'
 import selectors from '@selectors/index'
 import { LastLocationProvider } from 'react-router-last-location'
-import { useSwipeable } from "react-swipeable"
+import { useSwipeable } from 'react-swipeable'
+import { ForwardIconWrapper, BackIconWrapper } from './shared/styles'
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
+import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 
 const Private = ({ component: Component, ...rest }) => {
   return (
@@ -40,23 +43,50 @@ const mapStateToProps = (state: StoreTypes) => ({
 
 const PrivateRoute = connect(mapStateToProps)(Private)
 
-export const Routes = () => {
+export const Routes = (props) => {
+  const [swipeType, setSwipeType] = useState('')
+
   const handlers = useSwipeable({
+    onSwiped: () => {
+      if (swipeType === '') return
+      setSwipeType('')
+    },
+    onTap: () => {
+      if (swipeType === '') return
+      setSwipeType('')
+    },
+    onSwiping: (event) => {
+      if (swipeType === event?.dir) return
+
+      if (event?.dir === 'Left' && history.length !== history.index + 1) {
+        setSwipeType(event?.dir)
+      }
+
+      if (event?.dir === 'Right' && history.length - 1 !== 0) {
+        setSwipeType(event?.dir)
+      }
+    },
     onSwipedLeft: () => {
-      history.goBack()
+      if (history.length !== history.index + 1) {
+        history.goForward()
+      }
     },
     onSwipedRight: () => {
-      history.goForward()
+      if (history.length - 1 !== 0) {
+        history.goBack()
+      }
     },
-    delta: 15,
+    delta: 50,
     // trackMouse: true
     // preventDefaultTouchmoveEvent: true,
-  });
+  })
 
   return (
     <Router history={history}>
       <div {...handlers} >
         <LastLocationProvider>
+          <BackIconWrapper className={swipeType === 'Right' ? 'visible' : ''}><ArrowBackIcon /></BackIconWrapper>
+          <ForwardIconWrapper className={swipeType === 'Left' ? 'visible' : ''}><ArrowForwardIcon /></ForwardIconWrapper>
           <Switch>
             <Route exact path="/" component={LoginPage} />
             <Route path="/login" component={LoginPage} />
@@ -82,4 +112,4 @@ export const Routes = () => {
   )
 }
 
-export const history = createBrowserHistory()
+export const history = createMemoryHistory()
