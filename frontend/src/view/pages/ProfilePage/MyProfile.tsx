@@ -32,6 +32,7 @@ import {
 
 interface Props {
   userName: string
+  userFullName: string
   userEmail: string
   userId: string
   uploadLink: ApiTypes.UploadLink | null
@@ -51,6 +52,7 @@ interface State {
   errorMessage: string
   isFileUploaded: boolean
   file: File | null
+  fullName: string
   currentPassword: string
   newPassword: string
   noValideField: FieldsType
@@ -66,6 +68,7 @@ class MyProfile extends React.PureComponent<Props, State> {
     errorMessage: '',
     isFileUploaded: false,
     file: null,
+    fullName: this.props?.userFullName || '',
     currentPassword: '',
     newPassword: '',
     noValideField: '' as FieldsType,
@@ -76,6 +79,12 @@ class MyProfile extends React.PureComponent<Props, State> {
   onEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       email: event.currentTarget.value.trim(),
+    })
+  }
+
+  onFullNameChange = (event: ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      fullName: event.currentTarget.value,
     })
   }
 
@@ -133,7 +142,8 @@ class MyProfile extends React.PureComponent<Props, State> {
 
   onFormSubmit = (event: FormEvent) => {
     event.preventDefault()
-    const { email, currentPassword, newPassword } = this.state
+    
+    const { email, currentPassword, newPassword, fullName } = this.state
     const { uploadLink, userEmail, onEditProfile } = this.props
 
     if (!this.onValidate()) return
@@ -164,7 +174,7 @@ class MyProfile extends React.PureComponent<Props, State> {
       }
     }
 
-    const data = { ...emailData, ...avatarData, ...passwordData }
+    const data = { ...emailData, ...avatarData, ...passwordData, ...{full_name: fullName} }
     onEditProfile(data)
 
     this.setState({
@@ -291,6 +301,7 @@ class MyProfile extends React.PureComponent<Props, State> {
 
   render() {
     const { userName } = this.props
+    
     const {
       errorMessage,
       email,
@@ -299,12 +310,13 @@ class MyProfile extends React.PureComponent<Props, State> {
       newPassword,
       isCurrentPasswordVisible,
       isNewPasswordVisible,
+      fullName,
     } = this.state
 
     return (
       <ProfileWrapper>
         <Header>
-        <Title>{capitalizeFirstLetter(userName)}</Title>
+          <Title>{capitalizeFirstLetter(userName)}</Title>
         </Header>
         <UserContentWrapper>
           <AvatarWrapper>
@@ -334,6 +346,18 @@ class MyProfile extends React.PureComponent<Props, State> {
                 error={(noValideField === 'email') ? true : false}
                 onChange={this.onEmailChange}
                 labelWidth={40}
+              />
+            </FormControlStyled>
+            <FormControlStyled variant="outlined">
+              <InputLabel
+                htmlFor="fullName"
+              >Full Name</InputLabel>
+              <OutlinedInput
+                id="fullName"
+                type={'text'}
+                value={fullName || ''}
+                onChange={this.onFullNameChange}
+                labelWidth={80}
               />
             </FormControlStyled>
             <FieldNote>To change your password, fill in the fields below</FieldNote>
@@ -396,9 +420,17 @@ class MyProfile extends React.PureComponent<Props, State> {
   }
 }
 
-type StateProps = Pick<Props, 'userName' | 'userEmail' | 'uploadLink' | 'userId' | 'profileErrorMessage'>
+type StateProps = Pick<Props,
+  | 'userName'
+  | 'userFullName'
+  | 'userEmail'
+  | 'uploadLink'
+  | 'userId'
+  | 'profileErrorMessage'
+>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   userName: selectors.profile.userName(state),
+  userFullName: selectors.profile.userFullName(state),
   userEmail: selectors.profile.userEmail(state),
   uploadLink: state.profile.uploadLink,
   userId: selectors.profile.userId(state),

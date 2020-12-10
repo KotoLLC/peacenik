@@ -62,3 +62,7 @@ export const CheckBoxLabel = styled(Link)`
   }
 
 `
+
+export const FieldNote = styled.p`
+  margin: 15px 0 0;
+` 

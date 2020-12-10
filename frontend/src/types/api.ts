@@ -3,6 +3,7 @@ export declare namespace ApiTypes {
 
   export interface RegisterUser {
     name: string
+    full_name: string
     email: string
     password: string
     invite_token?: string
@@ -37,6 +38,7 @@ export declare namespace ApiTypes {
     id: string
     name: string
     email: string
+    full_name: string
     is_confirmed?: boolean
   }
 
@@ -67,6 +69,7 @@ export declare namespace ApiTypes {
       email?: string
       avatar_changed?: boolean
       avatar_id?: string
+      full_name?: string
       password_changed?: boolean,
       current_password?: string,
       new_password?: string,

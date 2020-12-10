@@ -26,6 +26,7 @@ import {
   Logo,
   CheckBoxWrapper,
   CheckBoxLabel,
+  FieldNote,
 } from './styles'
 
 type FieldsType = 'username' | 'password' | 'email' | ''
@@ -47,6 +48,7 @@ export const RegistrationForm: React.SFC<Props> = (props) => {
   const params = queryString.parse(url)
 
   const [username, onNameChange] = useState<string>('')
+  const [userFullName, onFullNameChange] = useState<string>('')
   const [email, onEmailChange] = useState<string>(params?.email as string || '')
   const [password, onPasswordChange] = useState<string>('')
   const [isLicenseChecked, onLicenseCheck] = useState<boolean>(false)
@@ -102,6 +104,7 @@ export const RegistrationForm: React.SFC<Props> = (props) => {
       name: username,
       password,
       email,
+      full_name: userFullName,
       invite_token: params?.invite as string,
     })
   }
@@ -149,6 +152,19 @@ export const RegistrationForm: React.SFC<Props> = (props) => {
             onChange={(event) => onNameChange(event.currentTarget.value.trim())}
             labelWidth={80}
           />
+        </FormControlStyled>
+        <FormControlStyled variant="outlined">
+          <InputLabel
+            htmlFor="fullname"
+          >Full Name</InputLabel>
+          <OutlinedInput
+            id="fullname"
+            type={'text'}
+            value={userFullName}
+            onChange={(event) => onFullNameChange(event.currentTarget.value)}
+            labelWidth={75}
+          />
+          <FieldNote>Entering your real name will help other people identify you if you invite them to be friends.</FieldNote>
         </FormControlStyled>
         <FormControlStyled variant="outlined">
           <InputLabel
