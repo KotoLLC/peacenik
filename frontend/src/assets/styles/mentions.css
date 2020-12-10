@@ -4,9 +4,8 @@
 
 .mentions__input {
   outline: none;
-  resize:none;
+  resize: none;
   border: none;
-  /* padding: 10px 10px; */
   border-radius: 0;
   font-family: 'Arial';
   font-size: 14px;
@@ -16,42 +15,59 @@
 
 .mentions--singleLine .mentions__control {
   display: inline-block;
-  width: 130px;
+  min-width: 130px;
 }
+
 .mentions--singleLine .mentions__highlighter {
   padding: 1px;
   border: 2px inset transparent;
 }
-.mentions--singleLine .mentions__input {
-  /* padding: 1px;
-  border: 2px inset; */
-}
+
+.mentions--singleLine .mentions__input {}
 
 .mentions--multiLine .mentions__control {
-  font-family: 'Arial';
+  /* font-family: 'Arial'; */
   font-size: 14px;
-  line-height: 1.5;
-}
-.mentions--multiLine .mentions__highlighter {
-  /* border: 1px solid transparent; */
-  /* padding: 9px; */
-  min-height: 35px;
-}
-.mentions--multiLine .mentions__input {
-  /* border: 1px solid silver;
-  padding: 9px;
-  outline: 0; */
+  line-height: 1.5; 
 }
 
+.mentions--multiLine .mentions__highlighter {
+  min-height: 35px;
+}
+
+.mentions--multiLine .mentions__input {}
+
 .mentions__suggestions__list {
-  background-color: white;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  font-size: 10pt;
+  color: rgba(0, 0, 0, 0.87);
+  transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0px 5px 5px -3px rgba(0,0,0,0.2), 0px 8px 10px 1px rgba(0,0,0,0.14), 0px 3px 14px 2px rgba(0,0,0,0.12);
 }
 
 .mentions__suggestions__item {
-  padding: 5px 15px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  width: 100%;
+  display: flex;
+  position: relative;
+  box-sizing: border-box;
+  text-align: left;
+  align-items: center;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  justify-content: flex-start;
+  text-decoration: none;
+  padding-left: 16px;
+  padding-right: 16px;
+  font-size: 1rem;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.00938em;
+}
+
+.mentions__suggestions__item:hover {
+  text-decoration: none;
+  background-color: rgba(0, 0, 0, 0.04);
 }
 
 .mentions__suggestions__item--focused {
@@ -62,8 +78,7 @@
   position: relative;
   z-index: 1;
   color: blue;
-  text-shadow: 1px 1px 1px white, 1px -1px 1px white, -1px 1px 1px white,
-    -1px -1px 1px white;
+  text-shadow: 1px 1px 1px white, 1px -1px 1px white, -1px 1px 1px white, -1px -1px 1px white;
   text-decoration: underline;
   pointer-events: none;
 }
