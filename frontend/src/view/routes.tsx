@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { createMemoryHistory } from 'history'
+import { createMemoryHistory, createBrowserHistory } from 'history'
 import { Router, Switch, Route, Redirect } from 'react-router-dom'
 import LoginPage from '@view/pages/LoginPage'
 import { FriendsPage } from '@view/pages/FriendsPage'
@@ -24,6 +24,8 @@ import { useSwipeable } from 'react-swipeable'
 import { ForwardIconWrapper, BackIconWrapper } from './shared/styles'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
+
+export const history = createBrowserHistory()
 
 const Private = ({ component: Component, ...rest }) => {
   return (
@@ -58,16 +60,19 @@ export const Routes = () => {
     onSwiping: (event) => {
       if (swipeType === event?.dir) return
 
-      if (event?.dir === 'Left' && history.length !== history.index + 1) {
+      // if (event?.dir === 'Left' && history.length !== history.index + 1) {
+      if (event?.dir === 'Left') {
         setSwipeType(event?.dir)
       }
 
-      if (event?.dir === 'Right' && history.length - 1 !== 0) {
+      // if (event?.dir === 'Right' && history.length - 1 !== 0) {
+      if (event?.dir === 'Right') {
         setSwipeType(event?.dir)
       }
     },
     onSwipedLeft: () => {
-      if (history.length !== history.index + 1) {
+      // if (history.length !== history.index + 1) {
+      if (history.length) {
         history.goForward()
       }
     },
@@ -112,4 +117,3 @@ export const Routes = () => {
   )
 }
 
-export const history = createMemoryHistory()

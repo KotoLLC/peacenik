@@ -17,7 +17,6 @@ import { MentionsInput, Mention } from 'react-mentions'
 import { friendsToMentionFriends, MentionFriend } from '@services/dataTransforms/friendsToMentionFriends'
 
 import {
-  TextareaAutosizeStyled,
   IconButtonWrapper,
   EditorPaperWrapper,
   TextareaTitle,
@@ -184,16 +183,6 @@ const Editor: React.SFC<Props> = (props) => {
 
           <EditorWrapper>
             <TextareaTitle className={value.length ? 'active' : ''}>Post a message to your friends</TextareaTitle>
-            {/* <EditMessageField>
-              <TextareaAutosizeStyled
-                onKeyDown={onComandEnterDown}
-                value={value}
-                onChange={(evant) => onValueChange(evant.currentTarget.value)} />
-              <IconButton onClick={onMessageSend}>
-                <SendIcon fontSize="small" />
-              </IconButton>
-            </EditMessageField> */} 
-            
             <EditMessageField>
               <MentionsInput
                 className="mentions"
@@ -205,14 +194,13 @@ const Editor: React.SFC<Props> = (props) => {
                   trigger="@" 
                   data={mentionFriends} 
                   className={'mentions__mention'} 
-                  markup="@[__display__]"
+                  // markup="@__display"
                   />
               </MentionsInput>
               <IconButton onClick={onMessageSend}>
                 <SendIcon fontSize="small" />
               </IconButton>
             </EditMessageField>
-
             {renderAttachment()}
             <EditorButtonsWrapper>
               <Tooltip title={`Attach image or video`}>
