@@ -144,13 +144,14 @@ class MyProfile extends React.PureComponent<Props, State> {
     event.preventDefault()
     
     const { email, currentPassword, newPassword, fullName } = this.state
-    const { uploadLink, userEmail, onEditProfile } = this.props
+    const { uploadLink, userEmail, onEditProfile, userFullName } = this.props
 
     if (!this.onValidate()) return
 
     let avatarData = {}
     let emailData = {}
     let passwordData = {}
+    let fullNameData = {}
 
     if (uploadLink?.blob_id) {
       avatarData = {
@@ -165,6 +166,13 @@ class MyProfile extends React.PureComponent<Props, State> {
         email: email,
       }
     }
+    
+    if (fullName !== userFullName) {
+      fullNameData = {
+        full_name_changed: true,
+        full_name: fullName,
+      }
+    }
 
     if (newPassword) {
       passwordData = {
@@ -173,8 +181,8 @@ class MyProfile extends React.PureComponent<Props, State> {
         new_password: newPassword,
       }
     }
-
-    const data = { ...emailData, ...avatarData, ...passwordData, ...{full_name: fullName} }
+    
+    const data = { ...emailData, ...avatarData, ...passwordData, ...fullNameData }
     onEditProfile(data)
 
     this.setState({

@@ -70,6 +70,7 @@ export declare namespace ApiTypes {
       avatar_changed?: boolean
       avatar_id?: string
       full_name?: string
+      full_name_changed?: string
       password_changed?: boolean,
       current_password?: string,
       new_password?: string,
