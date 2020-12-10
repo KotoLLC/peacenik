@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { createMemoryHistory, createBrowserHistory } from 'history'
+import { createBrowserHistory } from 'history'
 import { Router, Switch, Route, Redirect } from 'react-router-dom'
 import LoginPage from '@view/pages/LoginPage'
 import { FriendsPage } from '@view/pages/FriendsPage'
@@ -116,4 +116,3 @@ export const Routes = () => {
     </Router>
   )
 }
-

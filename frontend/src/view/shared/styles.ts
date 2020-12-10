@@ -249,3 +249,17 @@ export const BackIconWrapper = styled.span`
     opacity: 0.7;
   }
 `
+
+export const MentionLink = styled(Link)`
+  font-weight: bold;
+  color: #000;
+  transition: 0.2s;
+
+  &.mention {
+    color: #000;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+`

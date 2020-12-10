@@ -22,6 +22,9 @@ import { NoAuthorButtonsMenu } from './NoAuthorButtonsMenu'
 import PhotoIcon from '@material-ui/icons/Photo'
 import { urlify } from '@services/urlify'
 import { YoutubeFrame } from './YoutubeFrame'
+import { MentionsInput, Mention } from 'react-mentions'
+import { friendsToMentionFriends, MentionFriend } from '@services/dataTransforms/friendsToMentionFriends'
+import { LinkRenderer } from '@view/shared/LinkRenderer'
 import {
   PaperStyled,
   MessageHeader,
@@ -31,7 +34,6 @@ import {
   MessageDate,
   UserNameWrapper,
   MessageContent,
-  TextareaAutosizeStyled,
   EditMessageField,
   CommentsLink,
   ReactionsWrapper,
@@ -48,13 +50,8 @@ import {
   ReactionNavItem,
   EditMessageWrapper,
   EditorInMessageWrapper,
-  IconButtonWrapper,
+  IconButtonWrapper
 } from './styles'
-
-// tslint:disable-next-line
-function LinkRenderer(props) {
-  return <a href={props.href} rel="noopener noreferrer" target="_blank">{props.children}</a>
-}
 
 interface Props extends ApiTypes.Messages.Message {
   isAuthor: boolean
@@ -62,6 +59,7 @@ interface Props extends ApiTypes.Messages.Message {
   currentHub: CommonTypes.HubTypes.CurrentHub
   currentMessageLikes: ApiTypes.Messages.LikesInfoData | null
   isCommentsOpenByDeafult?: boolean
+  friends: ApiTypes.Friends.Friend[]
 
   onMessageEdit: (data: ApiTypes.Messages.EditMessage) => void
   onCommentPost: (data: ApiTypes.Messages.PostComment) => void
@@ -96,6 +94,7 @@ const Message: React.SFC<Props> = (props) => {
     liked_by,
     isCommentsOpenByDeafult,
     callback,
+    friends,
   } = props
 
   const [isEditer, setEditor] = useState<boolean>(false)
@@ -106,6 +105,7 @@ const Message: React.SFC<Props> = (props) => {
   const [file, setFile] = useState<File | null>(null)
   const [isAttacmentDeleted, onAttachmentDelete] = useState<boolean>(false)
   const [isLikesInfoRequested, setLikesInfoRequest] = useState<boolean>(false)
+  const [mentionFriends, setMentionFriends] = useState<MentionFriend[]>([])
 
   const commentEditorRef = useRef<HTMLTextAreaElement>(null)
 
@@ -256,7 +256,7 @@ const Message: React.SFC<Props> = (props) => {
     if (attachment_type && attachment_type.indexOf('image') !== -1) {
       return (
         <AttachmentWrapper>
-          <ImagePreview src={attachment}/>
+          <ImagePreview src={attachment} />
         </AttachmentWrapper>
       )
     }
@@ -383,9 +383,12 @@ const Message: React.SFC<Props> = (props) => {
       setLikesInfoRequest(false)
     }
 
-    callback && callback()
+    if (!mentionFriends?.length && friends?.length) {
+      setMentionFriends(friendsToMentionFriends(friends))
+    }
 
-  }, [props, file, isFileUploaded, id, callback])
+    callback && callback()
+  }, [props, file, isFileUploaded, id, callback, friends])
 
   const renderCommentsButton = () => {
     if (!comments?.length) return null
@@ -418,10 +421,19 @@ const Message: React.SFC<Props> = (props) => {
 
             <EditorInMessageWrapper>
               <EditMessageField>
-                <TextareaAutosizeStyled
-                  onKeyDown={onComandEnterDownInMessage}
+                <MentionsInput
+                  className="mentions"
                   value={message}
-                  onChange={(evant) => onMessageChange(evant.currentTarget.value)} />
+                  onChange={(evant) => onMessageChange(evant.target.value)}
+                  onKeyDown={onComandEnterDownInMessage}
+                >
+                  <Mention
+                    trigger="@"
+                    data={mentionFriends}
+                    className={'mentions__mention'}
+                    markup="[@__display__](/profile/user?id=__id__)"
+                  />
+                </MentionsInput>
                 <IconButton onClick={onMessageSave}>
                   <SendIcon fontSize="small" />
                 </IconButton>
@@ -452,8 +464,8 @@ const Message: React.SFC<Props> = (props) => {
             </EditorInMessageWrapper>
 
             : <MessageContent className="markdown-body">
-              <ReactMarkdown renderers={{link: LinkRenderer}}>{message}</ReactMarkdown>
-              <YoutubeFrame text={message}/>
+              <ReactMarkdown escapeHtml={true} renderers={{ link: LinkRenderer }}>{message}</ReactMarkdown>
+              <YoutubeFrame text={message} />
             </MessageContent>
         }
         {renderAttachment()}
@@ -463,11 +475,19 @@ const Message: React.SFC<Props> = (props) => {
         {mapComments()}
         <EditMessageWrapper>
           <EditMessageField>
-            <TextareaAutosizeStyled
-              ref={commentEditorRef}
-              onKeyDown={onComandEnterDownInComment}
+            <MentionsInput
+              className="mentions"
               value={comment}
-              onChange={(evant) => onCommentChange(evant.currentTarget.value)} />
+              onChange={(evant) => onCommentChange(evant.target.value)}
+              onKeyDown={onComandEnterDownInComment}
+            >
+              <Mention
+                trigger="@"
+                data={mentionFriends}
+                className={'mentions__mention'}
+                markup="[@__display__](/profile/user?id=__id__)"
+              />
+            </MentionsInput>
             <IconButton onClick={onCommentSave}>
               <SendIcon fontSize="small" />
             </IconButton>
@@ -478,11 +498,12 @@ const Message: React.SFC<Props> = (props) => {
   )
 }
 
-type StateProps = Pick<Props, 'uploadLink' | 'currentHub' | 'currentMessageLikes'>
+type StateProps = Pick<Props, 'uploadLink' | 'currentHub' | 'currentMessageLikes' | 'friends'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   uploadLink: state.messages.uploadLink,
   currentHub: selectors.messages.currentHub(state),
   currentMessageLikes: selectors.messages.currentMessageLikes(state),
+  friends: selectors.friends.friends(state),
 })
 
 type DispatchProps = Pick<Props,

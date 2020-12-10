@@ -13,13 +13,14 @@ import { NoAuthorButtonsMenu } from './NoAuthorButtonsMenu'
 import { ApiTypes, StoreTypes } from 'src/types'
 import { LinkRenderer } from '@view/shared/LinkRenderer'
 import ReactMarkdown from 'react-markdown'
+import { MentionsInput, Mention } from 'react-mentions'
+import { friendsToMentionFriends, MentionFriend } from '@services/dataTransforms/friendsToMentionFriends'
 import {
   CommentWrapper,
   UserNameLink,
   CommentReactionsNav,
   CommentTextWrapper,
   AvatarStyled,
-  TextareaAutosizeStyled,
   EditMessageField,
   CircularProgressStyled,
   CommentContent,
@@ -30,6 +31,7 @@ import {
 interface Props extends ApiTypes.Messages.Comment {
   userId: string
   currentCommentLikes: ApiTypes.Messages.LikesInfoData | null
+  friends: ApiTypes.Friends.Friend[]
 
   onCommentEdit: (data: ApiTypes.Messages.EditComment) => void
   onCommentDelete: (data: ApiTypes.Messages.DeleteComment) => void
@@ -51,17 +53,22 @@ const Comment: React.SFC<Props> = (props) => {
     onLikeComment,
     currentCommentLikes,
     getLikesForComment,
+    friends,
   } = props
   const [isEditer, setEditor] = useState<boolean>(false)
   const [comment, onCommentChange] = useState<string>(text)
   const commentRef = React.createRef<HTMLDivElement>()
   const [isLikesInfoRequested, setLikesInfoRequest] = useState<boolean>(false)
+  const [mentionFriends, setMentionFriends] = useState<MentionFriend[]>([])
 
   useEffect(() => {
     if (props.currentCommentLikes?.id === id) {
       setLikesInfoRequest(false)
     }
-  }, [props.currentCommentLikes, id])
+    if (!mentionFriends?.length && friends?.length) {
+      setMentionFriends(friendsToMentionFriends(friends))
+    }
+  }, [props.currentCommentLikes, id, friends])
 
   const onMessageSave = () => {
     setEditor(false)
@@ -145,10 +152,19 @@ const Comment: React.SFC<Props> = (props) => {
       <CommentTextWrapper>{
         isEditer ?
           <EditMessageField>
-            <TextareaAutosizeStyled
-              onKeyDown={onComandEnterDown}
+            <MentionsInput
+              className="mentions"
               value={comment}
-              onChange={(evant) => onCommentChange(evant.currentTarget.value)} />
+              onChange={(evant) => onCommentChange(evant.target.value)}
+              onKeyDown={onComandEnterDown}
+            >
+              <Mention
+                trigger="@"
+                data={mentionFriends}
+                className={'mentions__mention'}
+                markup="[@__display__](/profile/user?id=__id__)"
+              />
+            </MentionsInput>
             <IconButton onClick={onMessageSave}>
               <SendIcon fontSize="small" />
             </IconButton>
@@ -169,10 +185,11 @@ const Comment: React.SFC<Props> = (props) => {
   )
 }
 
-type StateProps = Pick<Props, 'userId' | 'currentCommentLikes'>
+type StateProps = Pick<Props, 'userId' | 'currentCommentLikes' | 'friends'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   userId: selectors.profile.userId(state),
   currentCommentLikes: selectors.messages.currentCommentLikes(state),
+  friends: selectors.friends.friends(state),
 })
 
 type DispatchProps = Pick<Props, 'onCommentEdit' | 'onCommentDelete' | 'onLikeComment' | 'getLikesForComment'>

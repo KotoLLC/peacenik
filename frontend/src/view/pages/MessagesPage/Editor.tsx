@@ -194,7 +194,7 @@ const Editor: React.SFC<Props> = (props) => {
                   trigger="@" 
                   data={mentionFriends} 
                   className={'mentions__mention'} 
-                  // markup="@__display"
+                  markup="[@__display__](/profile/user?id=__id__)"
                   />
               </MentionsInput>
               <IconButton onClick={onMessageSend}>
