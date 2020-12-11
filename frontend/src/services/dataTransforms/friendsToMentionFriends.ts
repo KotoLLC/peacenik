@@ -12,7 +12,7 @@ export const friendsToMentionFriends = (data: ApiTypes.Friends.Friend[]): Mentio
     data.forEach(item => {
       result.push({
         id: item.user.id,
-        display: item.user.name,
+        display: `${item.user.name}${item.user?.full_name ? ' (' + item.user?.full_name + ')' : ''}`,
       })
     })
   }
