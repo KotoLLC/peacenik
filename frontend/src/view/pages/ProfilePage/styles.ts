@@ -21,9 +21,9 @@ export const ProfileWrapper = styled(Paper)`
 `
 
 export const Header = styled.header`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  /* display: flex; */
+  /* justify-content: space-between; */
+  /* align-items: center; */
 `
 
 export const Title = styled.h3`
@@ -124,4 +124,9 @@ export const UserMenuWrapper = styled.div`
 
 export const NoCommonFriendsMessage = styled.p`
   text-align: center;
+`
+
+export const ProfileName = styled.h3`
+  font-size: 16px;
+  margin: 0;
 `

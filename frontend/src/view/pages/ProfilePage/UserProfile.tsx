@@ -33,6 +33,7 @@ import {
   Title,
   UsersWrapper,
   NoCommonFriendsMessage,
+  ProfileName,
 } from './styles'
 
 interface Props extends RouteComponentProps {
@@ -157,7 +158,8 @@ const UserProfile: React.FC<Props> = (props) => {
     <>
       <ProfileWrapper>
         <Header>
-          <Title>{(users[0]?.name) ? capitalizeFirstLetter(users[0]?.name) : ''}</Title>
+          {users[0]?.full_name && <ProfileName>FULL NAME: {users[0]?.full_name}</ProfileName>}
+          {users[0]?.name && <ProfileName>USER NAME: {users[0]?.name}</ProfileName>}
         </Header>
         <UserContentWrapper className="user-profile">
           <AvatarWrapper className="user-profile">
