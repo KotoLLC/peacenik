@@ -303,7 +303,7 @@ func (s *messageHubService) ReportMessage(ctx context.Context, r *rpc.MessageHub
 	err = s.mailSender.SendHTMLEmail([]string{hubAdmin.Email}, "Objectional Content Reported",
 		fmt.Sprintf(`<p>User %s just reported objectionable content for user %s: %s<p>
 <p>Please visit <a href="%s" target="_blank">the audit dashboard</a> to review the content.</p>`,
-			reportedBy.DisplayName(), author.DisplayName(), html.EscapeString(body.Report), s.cfg.FrontendAddress+"/dashboard"))
+			reportedBy.DisplayName(), author.DisplayName(), html.EscapeString(body.Report), s.cfg.FrontendAddress+"/dashboard"), nil)
 	if err != nil {
 		return nil, err
 	}

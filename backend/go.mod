@@ -6,7 +6,7 @@ require (
 	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/ansel1/merry v1.5.1
 	github.com/appleboy/go-fcm v0.1.5
-	github.com/aws/aws-sdk-go v1.36.2
+	github.com/aws/aws-sdk-go v1.36.7
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/disintegration/imaging v1.6.2
 	github.com/docker/distribution v2.7.1+incompatible // indirect
@@ -31,8 +31,8 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/twitchtv/twirp v7.1.0+incompatible
 	github.com/vmware-labs/yaml-jsonpointer v0.1.1
-	github.com/xhit/go-simple-mail/v2 v2.5.1
-	golang.org/x/crypto v0.0.0-20201203163018-be400aefbc4c
+	github.com/xhit/go-simple-mail/v2 v2.6.0
+	golang.org/x/crypto v0.0.0-20201208171446-5f87f3452ae9
 	golang.org/x/net v0.0.0-20201202161906-c7110b5ffcbb // indirect
 	google.golang.org/protobuf v1.24.0
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776

@@ -180,7 +180,7 @@ func (s *authService) Confirm(ctx context.Context, r *rpc.AuthConfirmRequest) (*
 		}
 	}
 
-	err := s.confirmUser(r.Token)
+	err := s.confirmUser(ctx, r.Token)
 	if err != nil {
 		return nil, err
 	}
@@ -218,7 +218,7 @@ func (s *authService) SendResetPasswordLink(_ context.Context, r *rpc.AuthSendRe
 	}
 
 	link := fmt.Sprintf("%s"+resetPasswordFrontendPath, s.cfg.FrontendAddress, url.QueryEscape(r.Name), url.QueryEscape(r.Email), resetToken)
-	err = s.mailSender.SendHTMLEmail([]string{r.Email}, resetPasswordSubject, fmt.Sprintf(resetPasswordEmailBody, link))
+	err = s.mailSender.SendHTMLEmail([]string{r.Email}, resetPasswordSubject, fmt.Sprintf(resetPasswordEmailBody, link), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -280,10 +280,10 @@ func (s *authService) sendConfirmLink(user repo.User) error {
 	}
 
 	link := fmt.Sprintf("%s"+confirmFrontendPath, s.cfg.FrontendAddress, confirmToken)
-	return s.mailSender.SendHTMLEmail([]string{user.Email}, confirmEmailSubject, fmt.Sprintf(confirmEmailBody, link))
+	return s.mailSender.SendHTMLEmail([]string{user.Email}, confirmEmailSubject, fmt.Sprintf(confirmEmailBody, link), nil)
 }
 
-func (s *authService) confirmUser(confirmToken string) error {
+func (s *authService) confirmUser(ctx context.Context, confirmToken string) error {
 	_, claims, err := s.tokenParser.Parse(confirmToken, "user-confirm")
 	if err != nil {
 		return merry.Wrap(err)
@@ -328,7 +328,7 @@ func (s *authService) confirmUser(confirmToken string) error {
 		s.notificationSender.SendNotification([]string{admin.ID}, user.DisplayName()+" invited you to be friends", "invite/add", map[string]interface{}{
 			"user_id": user.ID,
 		})
-		err = s.sendInviteLinkToRegisteredUser(*user, admin.Email)
+		err = s.sendInviteLinkToRegisteredUser(ctx, *user, admin.Email)
 		if err != nil {
 			log.Println("can't invite by email:", err)
 		}
@@ -363,13 +363,17 @@ func (s *authService) confirmInviteToken(user repo.User, confirmToken string) er
 	return err
 }
 
-func (s *authService) sendInviteLinkToRegisteredUser(inviter repo.User, userEmail string) error {
+func (s *authService) sendInviteLinkToRegisteredUser(ctx context.Context, inviter repo.User, userEmail string) error {
 	if !s.mailSender.Enabled() {
 		return nil
 	}
 
+	attachments := s.GetUserAttachments(ctx, inviter)
+
 	link := fmt.Sprintf("%s"+invitationsFrontendPath, s.cfg.FrontendAddress)
-	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviter.DisplayName()+" invited you to be friends on KOTO", fmt.Sprintf(inviteRegisteredUserEmailBody, link))
+	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviter.DisplayName()+" invited you to be friends on KOTO",
+		fmt.Sprintf(inviteRegisteredUserEmailBody, attachments.InlineHTML("avatar"), link),
+		attachments)
 }
 
 func (s *authService) RecallNames(_ context.Context, r *rpc.AuthRecallNamesRequest) (*rpc.Empty, error) {
