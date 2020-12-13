@@ -33,7 +33,7 @@ func NewRepos(db *sqlx.DB) Repos {
 }
 
 func (r Repos) DropDatabase(databaseName string) error {
-	_, err := r.db.Exec(`drop database ` + databaseName)
+	_, err := r.db.Exec(`drop database "` + databaseName + `";`)
 	if err != nil {
 		return merry.Prepend(err, "can't drop database")
 	}
