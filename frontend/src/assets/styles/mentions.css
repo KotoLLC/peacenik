@@ -71,14 +71,18 @@
 }
 
 .mentions__suggestions__item--focused {
-  background-color: #cee4e5;
+  /* background-color: #cee4e5; */
+  background-color: rgba(0, 0, 0, 0.04);
 }
 
 .mentions__mention {
   position: relative;
   z-index: 1;
-  color: blue;
-  text-shadow: 1px 1px 1px white, 1px -1px 1px white, -1px 1px 1px white, -1px -1px 1px white;
+  color: #3f51b5;
   text-decoration: underline;
+  padding: 2px 1px 2px 0;
+  background: #ededed;
+  /* text-shadow: 1px 1px 1px white, 1px -1px 1px white, -1px 1px 1px white, -1px -1px 1px white; */
+  /* text-decoration: underline; */
   pointer-events: none;
 }
