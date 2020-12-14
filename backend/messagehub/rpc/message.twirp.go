@@ -5674,7 +5674,7 @@ func (s *messageServiceServer) serveResolveMessageReportProtobuf(ctx context.Con
 }
 
 func (s *messageServiceServer) ServiceDescriptor() ([]byte, int) {
-	return twirpFileDescriptor2, 0
+	return twirpFileDescriptor3, 0
 }
 
 func (s *messageServiceServer) ProtocGenTwirpVersion() string {
@@ -5688,7 +5688,7 @@ func (s *messageServiceServer) PathPrefix() string {
 	return baseServicePath(s.pathPrefix, "rpc", "MessageService")
 }
 
-var twirpFileDescriptor2 = []byte{
+var twirpFileDescriptor3 = []byte{
 	// 986 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x58, 0xdd, 0x72, 0xdb, 0x44,
 	0x14, 0x1e, 0xe3, 0x38, 0x71, 0x8e, 0x63, 0x86, 0x2e, 0x6e, 0xeb, 0xca, 0x4d, 0xed, 0x6e, 0x19,

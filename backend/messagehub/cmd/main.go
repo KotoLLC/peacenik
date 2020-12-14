@@ -88,7 +88,7 @@ func main() {
 	s3Cleaner := common.NewS3Cleaner(db, s3Storage)
 	go s3Cleaner.Clean(context.Background())
 
-	server := messagehub.NewServer(cfg, repos, tokenParser, s3Storage, tokenGenerator, string(publicKeyPEM))
+	server := messagehub.NewServer(cfg, repos, tokenParser, s3Storage, tokenGenerator, string(publicKeyPEM), db)
 	err = server.Run()
 	if err != nil {
 		log.Fatalln(err)

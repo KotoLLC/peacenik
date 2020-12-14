@@ -21,7 +21,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/twitchtv/twirp"
 	yptr "github.com/vmware-labs/yaml-jsonpointer"
 	"gopkg.in/yaml.v3"
@@ -178,7 +177,7 @@ func (s *messageHubService) Remove(ctx context.Context, r *rpc.MessageHubRemoveR
 	case r.HubId != "":
 		err = s.removeHubByID(ctx, r.HubId)
 	case r.Subdomain != "":
-		messages, err = s.removeHubBySubdomain(ctx, r.Subdomain, r.TestMode)
+		messages, err = s.removeHubBySubdomain(ctx, r.Subdomain)
 	default:
 		err = twirp.NewError(twirp.InvalidArgument, "hub_id should be specified")
 	}
@@ -220,7 +219,7 @@ func (s *messageHubService) removeHubByID(ctx context.Context, hubID string) err
 	return nil
 }
 
-func (s *messageHubService) removeHubBySubdomain(ctx context.Context, subdomain string, testMode bool) (messages []string, err error) {
+func (s *messageHubService) removeHubBySubdomain(ctx context.Context, subdomain string) (messages []string, err error) {
 	user := s.getUser(ctx)
 	if !s.isAdmin(ctx) {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
@@ -239,21 +238,19 @@ func (s *messageHubService) removeHubBySubdomain(ctx context.Context, subdomain 
 		return nil, err
 	}
 
-	if testMode {
-		messages = append(messages, cfg.BucketName, cfg.DatabaseName)
-		return messages, nil
-	}
-
 	err = s.repos.MessageHubs.RemoveHub(hub.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	messages = append(messages, s.deleteS3Bucket(ctx, cfg.BucketName)...)
-
-	err = s.repos.DropDatabase(cfg.DatabaseName)
+	err = s.deleteMessageHubConfiguration(cfg)
 	if err != nil {
-		messages = append(messages, err.Error())
+		messages = append(messages, "can't delete hub: "+err.Error())
+	}
+
+	err = s.destroyMessageHubData(ctx, user, hub.Address)
+	if err != nil {
+		messages = append(messages, "can't send request to destroy hub data: "+err.Error())
 	}
 
 	if hub.AdminID != user.ID {
@@ -403,7 +400,10 @@ type messageHubConfig struct {
 	Cfg                []byte
 	HubExternalAddress string
 	BucketName         string
-	DatabaseName       string
+	Namespace          string
+	DeploymentName     string
+	ServiceName        string
+	IngressName        string
 }
 
 func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateRequest) (*rpc.Empty, error) {
@@ -568,43 +568,6 @@ func (s *messageHubService) createS3Bucket(bucketName string) error {
 	return nil
 }
 
-func (s *messageHubService) deleteS3Bucket(ctx context.Context, bucketName string) (messages []string) {
-	key := os.Getenv("KOTO_S3_KEY")
-	secret := os.Getenv("KOTO_S3_SECRET")
-	endpoint := os.Getenv("KOTO_S3_ENDPOINT")
-
-	s3Config := &aws.Config{
-		Credentials: credentials.NewStaticCredentials(key, secret, ""),
-		Endpoint:    aws.String(endpoint),
-		Region:      aws.String("us-east-1"), // https://github.com/aws/aws-sdk-go/issues/2232
-	}
-
-	newSession, err := session.NewSession(s3Config)
-	if err != nil {
-		messages = append(messages, fmt.Sprintf("can't create S3 session: %s", err))
-		return messages
-	}
-	client := s3.New(newSession)
-
-	iter := s3manager.NewDeleteListIterator(client, &s3.ListObjectsInput{
-		Bucket: aws.String(bucketName),
-	})
-	err = s3manager.NewBatchDeleteWithClient(client).Delete(ctx, iter)
-	if err != nil {
-		messages = append(messages, fmt.Sprintf("can't delete S3 bucket objects: %s", err))
-	}
-
-	deleteBucketParams := &s3.DeleteBucketInput{
-		Bucket: aws.String(bucketName),
-	}
-	_, err = client.DeleteBucket(deleteBucketParams)
-	if err != nil {
-		messages = append(messages, fmt.Sprintf("can't delete S3 bucket: %s", err))
-	}
-
-	return nil
-}
-
 func (s *messageHubService) fixNodeConfiguration(config []byte, subdomain, userHubAddress string) (*messageHubConfig, error) {
 	config = bytes.ReplaceAll(config, []byte("<NAME>"), []byte(subdomain))
 
@@ -636,12 +599,31 @@ func (s *messageHubService) fixNodeConfiguration(config []byte, subdomain, userH
 	}
 	bucketName := bucketNameNode.Value
 
-	databaseNamePath := "/spec/template/spec/containers/0/env/~{name: KOTO_DB_NAME}/value"
-	databaseNameNode, err := yptr.Find(&docs[1], databaseNamePath)
+	namePath := "/metadata/name"
+
+	namespaceNode, err := yptr.Find(&docs[0], namePath)
 	if err != nil {
-		return nil, merry.Prepend(err, "can't find "+databaseNamePath)
+		return nil, merry.Prepend(err, "can't find "+namePath)
 	}
-	databaseName := databaseNameNode.Value
+	namespace := namespaceNode.Value
+
+	deploymentNameNode, err := yptr.Find(&docs[1], namePath)
+	if err != nil {
+		return nil, merry.Prepend(err, "can't find "+namePath)
+	}
+	deploymentName := deploymentNameNode.Value
+
+	serviceNameNode, err := yptr.Find(&docs[2], namePath)
+	if err != nil {
+		return nil, merry.Prepend(err, "can't find "+namePath)
+	}
+	serviceName := serviceNameNode.Value
+
+	ingressNameNode, err := yptr.Find(&docs[3], namePath)
+	if err != nil {
+		return nil, merry.Prepend(err, "can't find "+namePath)
+	}
+	ingressName := ingressNameNode.Value
 
 	err = s.modifyYAMLValue(&docs[1], "/spec/template/spec/containers/0/env/~{name: KOTO_USER_HUB_ADDRESS}/value", func(value string) string {
 		return userHubAddress
@@ -664,7 +646,10 @@ func (s *messageHubService) fixNodeConfiguration(config []byte, subdomain, userH
 		Cfg:                b.Bytes(),
 		HubExternalAddress: hubAddress,
 		BucketName:         bucketName,
-		DatabaseName:       databaseName,
+		Namespace:          namespace,
+		DeploymentName:     deploymentName,
+		ServiceName:        serviceName,
+		IngressName:        ingressName,
 	}, nil
 }
 
@@ -674,5 +659,45 @@ func (s *messageHubService) modifyYAMLValue(config *yaml.Node, path string, getN
 		return merry.Prepend(err, "can't find "+path)
 	}
 	node.Value = getNewValue(node.Value)
+	return nil
+}
+
+func (s *messageHubService) destroyMessageHubData(ctx context.Context, user repo.User, messageHubAddress string) error {
+	claims := map[string]interface{}{
+		"owned_hubs": []string{messageHubAddress},
+	}
+	authToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "auth", time.Now().Add(time.Second*30), claims)
+	if err != nil {
+		return err
+	}
+
+	client := &http.Client{
+		Timeout: time.Second * 30,
+	}
+	r, err := http.NewRequestWithContext(ctx, http.MethodPost,
+		fmt.Sprintf("%s/rpc.AdminService/DestroyData", strings.TrimSuffix(messageHubAddress, "/")),
+		strings.NewReader("{}"))
+	if err != nil {
+		return merry.Wrap(err)
+	}
+	r.Header.Set("Authorization", "Bearer "+authToken)
+	r.Header.Set("Content-Type", "application/json")
+
+	resp, err := client.Do(r)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+	return nil
+}
+
+func (s *messageHubService) deleteMessageHubConfiguration(cfg *messageHubConfig) error {
+	cmd := exec.Command("/bin/sh", "-c",
+		fmt.Sprintf("kubectl delete deployment %s -n %s; kubectl delete ingress %s -n %s; kubectl delete service %s -n %s",
+			cfg.DeploymentName, cfg.Namespace, cfg.IngressName, cfg.Namespace, cfg.ServiceName, cfg.Namespace))
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return merry.Prepend(err, string(output))
+	}
 	return nil
 }

@@ -65,7 +65,6 @@ message MessageHubApproveResponse {
 message MessageHubRemoveRequest {
     string hub_id = 1;
     string subdomain = 2;
-    bool test_mode = 3;
 }
 
 message MessageHubRemoveResponse {

@@ -6,12 +6,22 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
 	"strings"
+	"syscall"
+	"time"
 
 	"github.com/ansel1/merry"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
+	"github.com/jmoiron/sqlx"
 	"github.com/twitchtv/twirp"
 
 	"github.com/mreider/koto/backend/common"
@@ -29,10 +39,11 @@ type Server struct {
 	s3Storage      *common.S3Storage
 	tokenGenerator token.Generator
 	pubKeyPEM      string
+	db             *sqlx.DB
 }
 
 func NewServer(cfg config.Config, repos repo.Repos, tokenParser token.Parser, s3Storage *common.S3Storage,
-	tokenGenerator token.Generator, pubKeyPEM string) *Server {
+	tokenGenerator token.Generator, pubKeyPEM string, db *sqlx.DB) *Server {
 	return &Server{
 		cfg:            cfg,
 		repos:          repos,
@@ -40,10 +51,14 @@ func NewServer(cfg config.Config, repos repo.Repos, tokenParser token.Parser, s3
 		s3Storage:      s3Storage,
 		tokenGenerator: tokenGenerator,
 		pubKeyPEM:      pubKeyPEM,
+		db:             db,
 	}
 }
 
 func (s *Server) Run() error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	r := chi.NewRouter()
 	s.setupMiddlewares(r)
 
@@ -95,8 +110,50 @@ func (s *Server) Run() error {
 	userServiceHandler := rpc.NewUserServiceServer(userService, rpcOptions...)
 	r.Handle(userServiceHandler.PathPrefix()+"*", userServiceHandler)
 
-	log.Println("started on " + s.cfg.ListenAddress)
-	return http.ListenAndServe(s.cfg.ListenAddress, r)
+	destroy := make(chan struct{}, 1)
+	adminService := services.NewAdmin(baseService, destroy)
+	adminServiceHandler := rpc.NewAdminServiceServer(adminService, rpcOptions...)
+	r.Handle(adminServiceHandler.PathPrefix()+"*", s.checkAuth(adminServiceHandler))
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT)
+	signal.Notify(stop, syscall.SIGTERM)
+
+	httpServer := &http.Server{
+		Addr:    s.cfg.ListenAddress,
+		Handler: r,
+	}
+
+	go func() {
+		log.Println("started on " + s.cfg.ListenAddress)
+		if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {
+			log.Fatalln(err)
+		}
+	}()
+
+	needDestroy := false
+	select {
+	case <-stop:
+	case <-destroy:
+		needDestroy = true
+	}
+
+	log.Println("Shutting down...")
+
+	ctxShutdown, cancelShutdown := context.WithTimeout(ctx, 10*time.Second)
+	defer cancelShutdown()
+
+	err := httpServer.Shutdown(ctxShutdown)
+	if err != nil {
+		log.Println("can't shutdown:", err)
+	}
+
+	if needDestroy {
+		s.deleteS3Bucket(ctx)
+		s.dropDatabase(ctx)
+	}
+
+	return nil
 }
 
 func (s *Server) setupMiddlewares(r *chi.Mux) {
@@ -164,4 +221,61 @@ func (s *Server) checkAuth(next http.Handler) http.Handler {
 		})
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func (s *Server) deleteS3Bucket(ctx context.Context) {
+	key := os.Getenv("KOTO_S3_KEY")
+	secret := os.Getenv("KOTO_S3_SECRET")
+	endpoint := os.Getenv("KOTO_S3_ENDPOINT")
+	bucket := os.Getenv("KOTO_S3_BUCKET")
+
+	s3Config := &aws.Config{
+		Credentials: credentials.NewStaticCredentials(key, secret, ""),
+		Endpoint:    aws.String(endpoint),
+		Region:      aws.String("us-east-1"), // https://github.com/aws/aws-sdk-go/issues/2232
+	}
+
+	newSession, err := session.NewSession(s3Config)
+	if err != nil {
+		log.Println("can't create S3 session:", err)
+		return
+	}
+	client := s3.New(newSession)
+
+	iter := s3manager.NewDeleteListIterator(client, &s3.ListObjectsInput{
+		Bucket: aws.String(bucket),
+	})
+	err = s3manager.NewBatchDeleteWithClient(client).Delete(ctx, iter)
+	if err != nil {
+		log.Println("can't delete S3 bucket objects:", err)
+	}
+
+	deleteBucketParams := &s3.DeleteBucketInput{
+		Bucket: aws.String(bucket),
+	}
+	_, err = client.DeleteBucket(deleteBucketParams)
+	if err != nil {
+		log.Println("can't delete S3 bucket:", err)
+	}
+}
+
+func (s *Server) dropDatabase(ctx context.Context) {
+	err := s.db.Close()
+	if err != nil {
+		log.Println("can't close db:", err)
+	}
+
+	cfg := s.cfg.DB
+	dbName := cfg.DBName
+	cfg.DBName = "postgres"
+	db, _, err := common.OpenDatabase(cfg)
+	if err != nil {
+		log.Println("can't open postgres db:", err)
+		return
+	}
+
+	_, err = db.ExecContext(ctx, `drop database "`+dbName+`";`)
+	if err != nil {
+		log.Println("can't drop db:", err)
+	}
 }
