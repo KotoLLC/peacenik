@@ -42,7 +42,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:12.2
+          image: postgres:13.1
           env:
           - name: POSTGRES_DB
             value: koto-message-hub-1
