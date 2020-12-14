@@ -243,14 +243,16 @@ func (s *messageHubService) removeHubBySubdomain(ctx context.Context, subdomain 
 		return nil, err
 	}
 
-	err = s.deleteMessageHubConfiguration(cfg)
-	if err != nil {
-		messages = append(messages, "can't delete hub: "+err.Error())
-	}
-
 	err = s.destroyMessageHubData(ctx, user, hub.Address)
 	if err != nil {
 		messages = append(messages, "can't send request to destroy hub data: "+err.Error())
+	}
+
+	time.Sleep(time.Second * 30)
+
+	err = s.deleteMessageHubConfiguration(cfg)
+	if err != nil {
+		messages = append(messages, "can't delete hub: "+err.Error())
 	}
 
 	if hub.AdminID != user.ID {
@@ -692,10 +694,16 @@ func (s *messageHubService) destroyMessageHubData(ctx context.Context, user repo
 }
 
 func (s *messageHubService) deleteMessageHubConfiguration(cfg *messageHubConfig) error {
-	cmd := exec.Command("/bin/sh", "-c",
+	cmd := exec.Command("/bin/sh", "-c", "doctl auth init -t $KOTO_DIGITALOCEAN_TOKEN")
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return merry.Prepend(err, string(output))
+	}
+
+	cmd = exec.Command("/bin/sh", "-c",
 		fmt.Sprintf("kubectl delete deployment %s -n %s; kubectl delete ingress %s -n %s; kubectl delete service %s -n %s",
 			cfg.DeploymentName, cfg.Namespace, cfg.IngressName, cfg.Namespace, cfg.ServiceName, cfg.Namespace))
-	output, err := cmd.CombinedOutput()
+	output, err = cmd.CombinedOutput()
 	if err != nil {
 		return merry.Prepend(err, string(output))
 	}
