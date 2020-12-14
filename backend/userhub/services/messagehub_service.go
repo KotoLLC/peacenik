@@ -694,14 +694,14 @@ func (s *messageHubService) destroyMessageHubData(ctx context.Context, user repo
 }
 
 func (s *messageHubService) deleteMessageHubConfiguration(cfg *messageHubConfig) error {
-	cmd := exec.Command("/bin/sh", "-c", "doctl auth init -t $KOTO_DIGITALOCEAN_TOKEN")
+	cmd := exec.Command("/bin/sh", "-c", "doctl auth init -t $KOTO_DIGITALOCEAN_TOKEN; doctl k8s cluster config show b68876cd-8a1d-4073-bb00-0ac36beacc0c > /root/config")
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return merry.Prepend(err, string(output))
 	}
 
 	cmd = exec.Command("/bin/sh", "-c",
-		fmt.Sprintf("kubectl delete deployment %s -n %s; kubectl delete ingress %s -n %s; kubectl delete service %s -n %s",
+		fmt.Sprintf("kubectl delete deployment %s -n %s --kubeconfig=/root/config; kubectl delete ingress %s -n %s --kubeconfig=/root/config; kubectl delete service %s -n %s --kubeconfig=/root/config",
 			cfg.DeploymentName, cfg.Namespace, cfg.IngressName, cfg.Namespace, cfg.ServiceName, cfg.Namespace))
 	output, err = cmd.CombinedOutput()
 	if err != nil {
