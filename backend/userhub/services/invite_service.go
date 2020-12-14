@@ -18,11 +18,13 @@ import (
 
 const (
 	registerFrontendPath            = "/registration?email=%s&invite=%s"
-	inviteUnregisteredUserEmailBody = `<p>To accept the invitation, click on the link below, register, and visit the friends page:</p>
+	inviteUnregisteredUserEmailBody = `%s
+<p>To accept the invitation, click on the link below, register, and visit the friends page:</p>
 <p><a href="%s" target="_blank">Click here</a>.</p><p>Thanks!</p>`
 
 	invitationsFrontendPath       = "/friends/invitations"
-	inviteRegisteredUserEmailBody = `<p>To accept the invitation, click on the link below, log in, and visit the friends page:</p>
+	inviteRegisteredUserEmailBody = `%s
+<p>To accept the invitation, click on the link below, log in, and visit the friends page:</p>
 <p><a href="%s" target="_blank">Click here</a>.</p><p>Thanks!</p>`
 )
 
@@ -87,7 +89,7 @@ func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) 
 		s.notificationSender.SendNotification([]string{friend.ID}, user.DisplayName()+" invited you to be friends", "invite/add", map[string]interface{}{
 			"user_id": user.ID,
 		})
-		err = s.sendInviteLinkToRegisteredUser(user, friend.Email)
+		err = s.sendInviteLinkToRegisteredUser(ctx, user, friend.Email)
 		if err != nil {
 			log.Println("can't invite by email:", err)
 		}
@@ -97,7 +99,7 @@ func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) 
 			return nil, err
 		}
 
-		err = s.sendInviteLinkToUnregisteredUser(user, r.Friend)
+		err = s.sendInviteLinkToUnregisteredUser(ctx, user, r.Friend)
 		if err != nil {
 			log.Println("can't invite by email:", err)
 		}
@@ -200,7 +202,7 @@ func (s *inviteService) ForMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFor
 	}, nil
 }
 
-func (s *inviteService) sendInviteLinkToUnregisteredUser(inviter repo.User, userEmail string) error {
+func (s *inviteService) sendInviteLinkToUnregisteredUser(ctx context.Context, inviter repo.User, userEmail string) error {
 	if !s.mailSender.Enabled() {
 		return nil
 	}
@@ -214,15 +216,23 @@ func (s *inviteService) sendInviteLinkToUnregisteredUser(inviter repo.User, user
 		return merry.Wrap(err)
 	}
 
+	attachments := s.GetUserAttachments(ctx, inviter)
+
 	link := fmt.Sprintf("%s"+registerFrontendPath, s.cfg.FrontendAddress, url.QueryEscape(userEmail), inviteToken)
-	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviter.DisplayName()+" invited you to be friends on KOTO", fmt.Sprintf(inviteUnregisteredUserEmailBody, link))
+	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviter.DisplayName()+" invited you to be friends on KOTO",
+		fmt.Sprintf(inviteUnregisteredUserEmailBody, attachments.InlineHTML("avatar"), link),
+		attachments)
 }
 
-func (s *inviteService) sendInviteLinkToRegisteredUser(inviter repo.User, userEmail string) error {
+func (s *inviteService) sendInviteLinkToRegisteredUser(ctx context.Context, inviter repo.User, userEmail string) error {
 	if !s.mailSender.Enabled() {
 		return nil
 	}
 
+	attachments := s.GetUserAttachments(ctx, inviter)
+
 	link := fmt.Sprintf("%s"+invitationsFrontendPath, s.cfg.FrontendAddress)
-	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviter.DisplayName()+" invited you to be friends on KOTO", fmt.Sprintf(inviteRegisteredUserEmailBody, link))
+	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviter.DisplayName()+" invited you to be friends on KOTO",
+		fmt.Sprintf(inviteRegisteredUserEmailBody, attachments.InlineHTML("avatar"), link),
+		attachments)
 }

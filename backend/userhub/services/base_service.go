@@ -1,13 +1,17 @@
 package services
 
 import (
+	"bytes"
 	"context"
+	"log"
 	"time"
 
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/token"
 	"github.com/mreider/koto/backend/userhub/config"
 	"github.com/mreider/koto/backend/userhub/repo"
+
+	"github.com/h2non/filetype"
 )
 
 type BaseService struct {
@@ -52,4 +56,36 @@ func (s *BaseService) createBlobLink(ctx context.Context, blobID string) (string
 		return "", nil
 	}
 	return s.s3Storage.CreateLink(ctx, blobID, time.Hour*24)
+}
+
+func (s *BaseService) GetUserAttachments(ctx context.Context, user repo.User) common.MailAttachmentList {
+	if user.AvatarThumbnailID == "" {
+		return nil
+	}
+
+	var b bytes.Buffer
+	err := s.s3Storage.Read(ctx, user.AvatarThumbnailID, &b)
+	if err != nil {
+		log.Println("can't read user avatar:", err)
+		return nil
+	}
+
+	mimeType := ""
+	fileName := "avatar"
+	t, _ := filetype.Match(b.Bytes())
+	if t != filetype.Unknown {
+		mimeType = t.MIME.Value
+		if t.Extension != "" {
+			fileName += "." + t.Extension
+		}
+	}
+
+	return common.MailAttachmentList{
+		"avatar": {
+			Inline:   true,
+			Data:     b.Bytes(),
+			FileName: fileName,
+			MIMEType: mimeType,
+		},
+	}
 }

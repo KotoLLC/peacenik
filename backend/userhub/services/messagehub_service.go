@@ -21,6 +21,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/twitchtv/twirp"
 	yptr "github.com/vmware-labs/yaml-jsonpointer"
 	"gopkg.in/yaml.v3"
@@ -170,9 +171,67 @@ func (s *messageHubService) Approve(ctx context.Context, r *rpc.MessageHubApprov
 	return &rpc.MessageHubApproveResponse{}, nil
 }
 
-func (s *messageHubService) Remove(ctx context.Context, r *rpc.MessageHubRemoveRequest) (*rpc.Empty, error) {
+func (s *messageHubService) Remove(ctx context.Context, r *rpc.MessageHubRemoveRequest) (*rpc.MessageHubRemoveResponse, error) {
+	var messages []string
+	var err error
+	switch {
+	case r.HubId != "":
+		err = s.removeHubByID(ctx, r.HubId)
+	case r.Subdomain != "":
+		messages, err = s.removeHubBySubdomain(ctx, r.Subdomain, r.TestMode)
+	default:
+		err = twirp.NewError(twirp.InvalidArgument, "hub_id should be specified")
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	return &rpc.MessageHubRemoveResponse{
+		Messages: messages,
+	}, nil
+}
+
+func (s *messageHubService) removeHubByID(ctx context.Context, hubID string) error {
 	user := s.getUser(ctx)
-	hub, err := s.repos.MessageHubs.HubByID(r.HubId)
+	hub, err := s.repos.MessageHubs.HubByID(hubID)
+	if err != nil {
+		if merry.Is(err, repo.ErrHubNotFound) {
+			return twirp.NotFoundError(err.Error())
+		}
+		return err
+	}
+
+	if !s.isAdmin(ctx) && hub.AdminID != user.ID {
+		return twirp.NotFoundError(repo.ErrHubNotFound.Error())
+	}
+
+	err = s.repos.MessageHubs.RemoveHub(hubID)
+	if err != nil {
+		return err
+	}
+
+	if hub.AdminID != user.ID {
+		s.notificationSender.SendNotification([]string{hub.AdminID}, user.DisplayName()+" removed your message hub", "message-hub/remove", map[string]interface{}{
+			"user_id": user.ID,
+			"hub_id":  hubID,
+		})
+	}
+
+	return nil
+}
+
+func (s *messageHubService) removeHubBySubdomain(ctx context.Context, subdomain string, testMode bool) (messages []string, err error) {
+	user := s.getUser(ctx)
+	if !s.isAdmin(ctx) {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
+	}
+
+	cfg, err := s.getMessageHubConfig(ctx, subdomain, s.cfg.ExternalAddress)
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+
+	hub, err := s.repos.MessageHubs.HubByIDOrAddress(cfg.HubExternalAddress)
 	if err != nil {
 		if merry.Is(err, repo.ErrHubNotFound) {
 			return nil, twirp.NotFoundError(err.Error())
@@ -180,23 +239,31 @@ func (s *messageHubService) Remove(ctx context.Context, r *rpc.MessageHubRemoveR
 		return nil, err
 	}
 
-	if !s.isAdmin(ctx) && hub.AdminID != user.ID {
-		return nil, twirp.NotFoundError(repo.ErrHubNotFound.Error())
+	if testMode {
+		messages = append(messages, cfg.BucketName, cfg.DatabaseName)
+		return messages, nil
 	}
 
-	err = s.repos.MessageHubs.RemoveHub(r.HubId)
+	err = s.repos.MessageHubs.RemoveHub(hub.ID)
 	if err != nil {
 		return nil, err
+	}
+
+	messages = append(messages, s.deleteS3Bucket(ctx, cfg.BucketName)...)
+
+	err = s.repos.DropDatabase(cfg.DatabaseName)
+	if err != nil {
+		messages = append(messages, err.Error())
 	}
 
 	if hub.AdminID != user.ID {
 		s.notificationSender.SendNotification([]string{hub.AdminID}, user.DisplayName()+" removed your message hub", "message-hub/remove", map[string]interface{}{
 			"user_id": user.ID,
-			"hub_id":  r.HubId,
+			"hub_id":  hub.ID,
 		})
 	}
 
-	return &rpc.Empty{}, nil
+	return messages, nil
 }
 
 func (s *messageHubService) SetPostLimit(ctx context.Context, r *rpc.MessageHubSetPostLimitRequest) (*rpc.Empty, error) {
@@ -303,7 +370,7 @@ func (s *messageHubService) ReportMessage(ctx context.Context, r *rpc.MessageHub
 	err = s.mailSender.SendHTMLEmail([]string{hubAdmin.Email}, "Objectional Content Reported",
 		fmt.Sprintf(`<p>User %s just reported objectionable content for user %s: %s<p>
 <p>Please visit <a href="%s" target="_blank">the audit dashboard</a> to review the content.</p>`,
-			reportedBy.DisplayName(), author.DisplayName(), html.EscapeString(body.Report), s.cfg.FrontendAddress+"/dashboard"))
+			reportedBy.DisplayName(), author.DisplayName(), html.EscapeString(body.Report), s.cfg.FrontendAddress+"/dashboard"), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -332,10 +399,11 @@ func (s *messageHubService) BlockUser(ctx context.Context, r *rpc.MessageHubBloc
 	return &rpc.Empty{}, nil
 }
 
-type nodeConfig struct {
+type messageHubConfig struct {
 	Cfg                []byte
 	HubExternalAddress string
 	BucketName         string
+	DatabaseName       string
 }
 
 func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateRequest) (*rpc.Empty, error) {
@@ -362,7 +430,7 @@ func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateR
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid operation")
 	}
 
-	config, err := s.getNodeConfig(ctx, r.Subdomain, s.cfg.ExternalAddress)
+	config, err := s.getMessageHubConfig(ctx, r.Subdomain, s.cfg.ExternalAddress)
 	if err != nil {
 		return nil, err
 	}
@@ -375,7 +443,7 @@ func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateR
 		return nil, twirp.NewError(twirp.AlreadyExists, "hub already exists")
 	}
 
-	err = s.applyConfiguration(config.Cfg)
+	err = s.applyMessageHubConfiguration(config.Cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -398,8 +466,8 @@ func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateR
 	return &rpc.Empty{}, nil
 }
 
-func (s *messageHubService) getNodeConfig(ctx context.Context, subdomain, userHubAddress string) (*nodeConfig, error) {
-	configContent, err := s.downloadConfiguration(ctx)
+func (s *messageHubService) getMessageHubConfig(ctx context.Context, subdomain, userHubAddress string) (*messageHubConfig, error) {
+	configContent, err := s.downloadMessageHubConfiguration(ctx)
 	if err != nil {
 		return nil, merry.Wrap(err)
 	}
@@ -410,7 +478,7 @@ func (s *messageHubService) getNodeConfig(ctx context.Context, subdomain, userHu
 	return config, nil
 }
 
-func (s *messageHubService) applyConfiguration(config []byte) error {
+func (s *messageHubService) applyMessageHubConfiguration(config []byte) error {
 	cmd := exec.Command("/bin/sh", "-c",
 		"doctl auth init -t $KOTO_DIGITALOCEAN_TOKEN; doctl k8s cluster config show b68876cd-8a1d-4073-bb00-0ac36beacc0c > /root/config")
 	output, err := cmd.CombinedOutput()
@@ -428,7 +496,7 @@ func (s *messageHubService) applyConfiguration(config []byte) error {
 	return nil
 }
 
-func (s *messageHubService) downloadConfiguration(ctx context.Context) ([]byte, error) {
+func (s *messageHubService) downloadMessageHubConfiguration(ctx context.Context) ([]byte, error) {
 	client := &http.Client{
 		Timeout: time.Second * 20,
 	}
@@ -500,7 +568,44 @@ func (s *messageHubService) createS3Bucket(bucketName string) error {
 	return nil
 }
 
-func (s *messageHubService) fixNodeConfiguration(config []byte, subdomain, userHubAddress string) (*nodeConfig, error) {
+func (s *messageHubService) deleteS3Bucket(ctx context.Context, bucketName string) (messages []string) {
+	key := os.Getenv("KOTO_S3_KEY")
+	secret := os.Getenv("KOTO_S3_SECRET")
+	endpoint := os.Getenv("KOTO_S3_ENDPOINT")
+
+	s3Config := &aws.Config{
+		Credentials: credentials.NewStaticCredentials(key, secret, ""),
+		Endpoint:    aws.String(endpoint),
+		Region:      aws.String("us-east-1"), // https://github.com/aws/aws-sdk-go/issues/2232
+	}
+
+	newSession, err := session.NewSession(s3Config)
+	if err != nil {
+		messages = append(messages, fmt.Sprintf("can't create S3 session: %s", err))
+		return messages
+	}
+	client := s3.New(newSession)
+
+	iter := s3manager.NewDeleteListIterator(client, &s3.ListObjectsInput{
+		Bucket: aws.String(bucketName),
+	})
+	err = s3manager.NewBatchDeleteWithClient(client).Delete(ctx, iter)
+	if err != nil {
+		messages = append(messages, fmt.Sprintf("can't delete S3 bucket objects: %s", err))
+	}
+
+	deleteBucketParams := &s3.DeleteBucketInput{
+		Bucket: aws.String(bucketName),
+	}
+	_, err = client.DeleteBucket(deleteBucketParams)
+	if err != nil {
+		messages = append(messages, fmt.Sprintf("can't delete S3 bucket: %s", err))
+	}
+
+	return nil
+}
+
+func (s *messageHubService) fixNodeConfiguration(config []byte, subdomain, userHubAddress string) (*messageHubConfig, error) {
 	config = bytes.ReplaceAll(config, []byte("<NAME>"), []byte(subdomain))
 
 	docs := make([]yaml.Node, 0, 4)
@@ -531,6 +636,13 @@ func (s *messageHubService) fixNodeConfiguration(config []byte, subdomain, userH
 	}
 	bucketName := bucketNameNode.Value
 
+	databaseNamePath := "/spec/template/spec/containers/0/env/~{name: KOTO_DB_NAME}/value"
+	databaseNameNode, err := yptr.Find(&docs[1], databaseNamePath)
+	if err != nil {
+		return nil, merry.Prepend(err, "can't find "+databaseNamePath)
+	}
+	databaseName := databaseNameNode.Value
+
 	err = s.modifyYAMLValue(&docs[1], "/spec/template/spec/containers/0/env/~{name: KOTO_USER_HUB_ADDRESS}/value", func(value string) string {
 		return userHubAddress
 	})
@@ -548,10 +660,11 @@ func (s *messageHubService) fixNodeConfiguration(config []byte, subdomain, userH
 			return nil, merry.Prepend(err, "can't ecnode yaml")
 		}
 	}
-	return &nodeConfig{
+	return &messageHubConfig{
 		Cfg:                b.Bytes(),
 		HubExternalAddress: hubAddress,
 		BucketName:         bucketName,
+		DatabaseName:       databaseName,
 	}, nil
 }
 

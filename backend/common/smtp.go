@@ -1,6 +1,7 @@
 package common
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/ansel1/merry"
@@ -17,6 +18,26 @@ type SMTPConfig struct {
 
 type MailSender struct {
 	cfg SMTPConfig
+}
+
+type MailAttachment struct {
+	Inline   bool
+	Data     []byte
+	FileName string
+	MIMEType string
+}
+
+func (ma MailAttachment) InlineHTML() string {
+	return fmt.Sprintf(`<img src="cid:%s" alt="%s" />`, ma.FileName, ma.FileName)
+}
+
+type MailAttachmentList map[string]MailAttachment
+
+func (ma MailAttachmentList) InlineHTML(key string) string {
+	if a, ok := ma[key]; ok {
+		return a.InlineHTML()
+	}
+	return ""
 }
 
 func NewMailSender(cfg SMTPConfig) *MailSender {
@@ -51,14 +72,14 @@ func (m *MailSender) Enabled() bool {
 }
 
 func (m *MailSender) SendTextEmail(recipients []string, subject string, message string) error {
-	return m.sendEmail(recipients, subject, false, message)
+	return m.sendEmail(recipients, subject, false, message, nil)
 }
 
-func (m *MailSender) SendHTMLEmail(recipients []string, subject string, message string) error {
-	return m.sendEmail(recipients, subject, true, message)
+func (m *MailSender) SendHTMLEmail(recipients []string, subject string, message string, attachments MailAttachmentList) error {
+	return m.sendEmail(recipients, subject, true, message, attachments)
 }
 
-func (m *MailSender) sendEmail(recipients []string, subject string, isHTML bool, message string) error {
+func (m *MailSender) sendEmail(recipients []string, subject string, isHTML bool, message string, attachments MailAttachmentList) error {
 	from := m.cfg.From
 	if from == "" {
 		from = m.cfg.User
@@ -69,6 +90,13 @@ func (m *MailSender) sendEmail(recipients []string, subject string, isHTML bool,
 
 	if isHTML {
 		msg.SetBody(mail.TextHTML, message)
+		for _, attachment := range attachments {
+			if attachment.Inline {
+				msg.AddInlineData(attachment.Data, attachment.FileName, attachment.MIMEType)
+			} else {
+				msg.AddAttachmentData(attachment.Data, attachment.FileName, attachment.MIMEType)
+			}
+		}
 	} else {
 		msg.SetBody(mail.TextPlain, message)
 	}

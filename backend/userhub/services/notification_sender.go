@@ -1,7 +1,9 @@
 package services
 
 import (
+	"context"
 	"fmt"
+	"html"
 	"log"
 
 	"github.com/appleboy/go-fcm"
@@ -14,13 +16,15 @@ type NotificationSender interface {
 	Start()
 	SendNotification(userIDs []string, text, messageType string, data map[string]interface{})
 	SendExternalNotifications(notifications []Notification)
+	SetGetUserAttachments(getUserAttachments func(ctx context.Context, user repo.User) common.MailAttachmentList)
 }
 
 type notificationSender struct {
-	repos          repo.Repos
-	firebaseClient *fcm.Client
-	mailSender     *common.MailSender
-	notifications  chan []Notification
+	repos              repo.Repos
+	firebaseClient     *fcm.Client
+	mailSender         *common.MailSender
+	notifications      chan []Notification
+	getUserAttachments func(ctx context.Context, user repo.User) common.MailAttachmentList
 }
 
 type Notification struct {
@@ -112,15 +116,38 @@ func (s *notificationSender) sendEmailNotifications(n Notification) {
 		return
 	}
 
+	var userAttachments common.MailAttachmentList
+	userID, ok := n.Data["user_id"].(string)
+	if ok {
+		user, err := s.repos.User.FindUserByID(userID)
+		if err == nil {
+			log.Printf("can't find user by ID '%s': %v", userID, err)
+		}
+		if user != nil && s.getUserAttachments != nil {
+			userAttachments = s.getUserAttachments(context.TODO(), *user)
+		}
+	}
+
 	for _, userID := range n.UserIDs {
 		user, err := s.repos.User.FindUserByID(userID)
 		if err != nil {
 			log.Printf("can't find user by ID '%s': %v", userID, err)
 			continue
 		}
-		err = s.mailSender.SendHTMLEmail([]string{user.Email}, "KOTO notification", n.Text)
+		if user == nil {
+			continue
+		}
+		const body = `%s
+<p>%s</p>`
+		err = s.mailSender.SendHTMLEmail([]string{user.Email}, "KOTO notification",
+			fmt.Sprintf(body, userAttachments.InlineHTML("avatar"), html.EscapeString(n.Text)),
+			userAttachments)
 		if err != nil {
 			log.Printf("can't send email to '%s': %v", user.Email, err)
 		}
 	}
+}
+
+func (s *notificationSender) SetGetUserAttachments(getUserAttachments func(ctx context.Context, user repo.User) common.MailAttachmentList) {
+	s.getUserAttachments = getUserAttachments
 }

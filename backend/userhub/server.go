@@ -103,6 +103,7 @@ func (s *Server) Run() error {
 	notificationSender.Start()
 	baseService := services.NewBase(s.repos, s.s3Storage, s.tokenGenerator, s.tokenParser, mailSender,
 		s.cfg, notificationSender)
+	notificationSender.SetGetUserAttachments(baseService.GetUserAttachments)
 
 	passwordHash := bcrypt.NewPasswordHash()
 
