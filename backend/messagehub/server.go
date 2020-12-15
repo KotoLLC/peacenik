@@ -274,7 +274,7 @@ func (s *Server) dropDatabase(ctx context.Context) {
 		return
 	}
 
-	_, err = db.ExecContext(ctx, `drop database "`+dbName+`";`)
+	_, err = db.ExecContext(ctx, `drop database "`+dbName+`" with (force);`)
 	if err != nil {
 		log.Println("can't drop db:", err)
 	}
