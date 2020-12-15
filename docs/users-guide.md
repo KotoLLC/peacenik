@@ -5,32 +5,28 @@
 ## Register an account
 
 1. Visit [https://koto.at](https://koto.at) and click **Register**.
-2. Enter a user name, email, and password
+2. Enter a user name, real name, email, and password
 3. Check your inbox for a confirmation email and click on the link
 4. Login using the information you provided
 
-##  No hubs
+##  Getting started
 
-If you see the **No Hubs** kitty it means there is no place to store messages. Koto is an ad-free, distributed social network, and unlike Facebook we don't make any money. So everyone needs their own hub.
-
-![no hubs](readme-images/user-guide-no-hubs.jpg)
+After signing in - you will see a **Welcome to Koto** page explaining that you need a message hub. Koto is an ad-free, distributed social network, and unlike Facebook we don't make any money. So everyone needs their own hub to store messages.
 
 You have two choices for getting a message hub:
 
-1. Connect with a hub runner friend
+1. Connect with a friend who has a hub
 2. Create your own hub
 
-### Connect with a hub runner friend
+### Connect with a friend
 
-Email your friends and see if they have a message hub. If they do, click the Invite Friends button and send them an invitation. Hopefully, next time you visit Koto, you will see some messages, instead of the No Hubs kitty.
+Go to the friends page and click **Invite Friends** to send someone an request. If your friend has a message hub, you will see messages instead of the welcome page.
 
 ![invite](readme-images/user-guide-invite-friends.png)
 
 ### Create a hub
 
 Creating a hub requires some technical expertise and a cloud account on Digital Ocean, Google, Amazon, or wherever. First, install the hub using [these instructions](install-message-hub.md). Then register the hub [here](message-hub-registration.md).
-
-**Note:** In this alpha phase you can use my hub - so just send me a friend request (type 'matt' instead of an email) Or, create your own if you want to experiment.
 
 ## Inviting friends
 

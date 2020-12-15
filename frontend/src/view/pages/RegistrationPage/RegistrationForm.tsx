@@ -143,7 +143,7 @@ export const RegistrationForm: React.SFC<Props> = (props) => {
           <InputLabel
             htmlFor="username"
             color={(noValideField === 'username') ? 'secondary' : 'primary'}
-          >User Name</InputLabel>
+          >User Name (jsmith)</InputLabel>
           <OutlinedInput
             id="username"
             type={'text'}
@@ -154,9 +154,10 @@ export const RegistrationForm: React.SFC<Props> = (props) => {
           />
         </FormControlStyled>
         <FormControlStyled variant="outlined">
+        <FieldNote>Providing a real name lets friends identify you more easily.</FieldNote>
           <InputLabel
             htmlFor="fullname"
-          >Full Name</InputLabel>
+          >Full Name (John Smith)</InputLabel>
           <OutlinedInput
             id="fullname"
             type={'text'}
@@ -164,7 +165,6 @@ export const RegistrationForm: React.SFC<Props> = (props) => {
             onChange={(event) => onFullNameChange(event.currentTarget.value)}
             labelWidth={75}
           />
-          <FieldNote>Entering your real name will help other people identify you if you invite them to be friends.</FieldNote>
         </FormControlStyled>
         <FormControlStyled variant="outlined">
           <InputLabel

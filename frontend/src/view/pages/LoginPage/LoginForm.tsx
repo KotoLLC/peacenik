@@ -188,7 +188,7 @@ export const LoginForm = (props) => {
           to: '/forgot-password'
         },
         {
-          title: 'I forgot my username',
+          title: 'Forgotten username',
           to: '/forgot-username'
         },
         {
