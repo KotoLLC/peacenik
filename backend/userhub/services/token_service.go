@@ -80,13 +80,22 @@ func (s *tokenService) PostMessage(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 		if hubs[i].MinDistance < hubs[j].MinDistance {
 			return true
 		}
+		if hubs[j].MinDistance < hubs[i].MinDistance {
+			return false
+		}
 
 		if hubs[i].Count < hubs[j].Count {
 			return true
 		}
+		if hubs[j].Count < hubs[i].Count {
+			return false
+		}
 
 		if hubs[j].Hub.ApprovedAt.Time.Before(hubs[i].Hub.ApprovedAt.Time) {
 			return true
+		}
+		if hubs[i].Hub.ApprovedAt.Time.Before(hubs[j].Hub.ApprovedAt.Time) {
+			return false
 		}
 
 		return hubs[i].Hub.Address < hubs[j].Hub.Address
