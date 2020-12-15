@@ -1,6 +1,6 @@
 # User's guide
 
-**Aug 2020 update**: Koto is in alpha. If you find a bug, file it [here](https://github.com/mreider/koto/issues). Also, please donate [here](https://gf.me/u/x738p6)! I've raised $2k, spent $4k, and my wife is grumpy (and lovely).
+**Dec 2020 - Feb 2021 update**: Koto is in alpha. When we launch, all pics and messages will be destroyed as we'll start anew. You can contact [me](admin@koto.at) if you want a .zip of your images. If you find a bug, file it [here](https://github.com/mreider/koto/issues). Also, please donate [here](https://gf.me/u/x738p6)! I've raised $2k, spent $5k, and my wife is grumpy (and lovely).
 
 ## Register an account
 
@@ -16,19 +16,9 @@ After signing in - you will see a **Welcome to Koto** page explaining that you n
 You have two choices for getting a message hub:
 
 1. Connect with a friend who has a hub
-2. Create your own hub
+2. [Create your own hub](install-message-hub.md)
 
-### Connect with a friend
-
-Go to the friends page and click **Invite Friends** to send someone an request. If your friend has a message hub, you will see messages instead of the welcome page.
-
-![invite](readme-images/user-guide-invite-friends.png)
-
-### Create a hub
-
-Creating a hub requires some technical expertise and a cloud account on Digital Ocean, Google, Amazon, or wherever. First, install the hub using [these instructions](install-message-hub.md). Then register the hub [here](message-hub-registration.md).
-
-## Inviting friends
+## Connecting with friends
 
 1. Go to the menu and choose **friends**
 2. Choose the **invite friend** button

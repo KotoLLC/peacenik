@@ -10,7 +10,7 @@ Koto is an ad-free distributed Facebook alternative
 
 - User's reference
 
-[Overview](README.md) | [User's guide](users-guide.md) | [Run a hub](message-hub-registration.md)
+[Overview](README.md) | [User's guide](users-guide.md)
 
 - About the project
 
@@ -18,11 +18,8 @@ Koto is an ad-free distributed Facebook alternative
 
 - Message hubs
 
-[Host your own hub](install-message-hub.md) | [API](api-message-hub.md)
+[Host your own hub](install-message-hub.md)
 
-- User hubs
-
-[Host an entire Koto network](install-user-hub.md) | [API](api-user-hub.md)
 
 ## Introduction
 
