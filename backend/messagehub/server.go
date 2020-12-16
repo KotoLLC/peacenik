@@ -110,8 +110,8 @@ func (s *Server) Run() error {
 	userServiceHandler := rpc.NewUserServiceServer(userService, rpcOptions...)
 	r.Handle(userServiceHandler.PathPrefix()+"*", userServiceHandler)
 
-	destroy := make(chan struct{}, 1)
-	adminService := services.NewAdmin(baseService, destroy)
+	destroy := false
+	adminService := services.NewAdmin(baseService, &destroy)
 	adminServiceHandler := rpc.NewAdminServiceServer(adminService, rpcOptions...)
 	r.Handle(adminServiceHandler.PathPrefix()+"*", s.checkAuth(adminServiceHandler))
 
@@ -131,16 +131,11 @@ func (s *Server) Run() error {
 		}
 	}()
 
-	needDestroy := false
-	select {
-	case <-stop:
-	case <-destroy:
-		needDestroy = true
-	}
+	<-stop
 
 	log.Println("Shutting down...")
 
-	ctxShutdown, cancelShutdown := context.WithTimeout(ctx, 10*time.Second)
+	ctxShutdown, cancelShutdown := context.WithTimeout(ctx, 20*time.Second)
 	defer cancelShutdown()
 
 	err := httpServer.Shutdown(ctxShutdown)
@@ -148,7 +143,7 @@ func (s *Server) Run() error {
 		log.Println("can't shutdown:", err)
 	}
 
-	if needDestroy {
+	if destroy {
 		s.deleteS3Bucket(ctx)
 		s.dropDatabase(ctx)
 	}

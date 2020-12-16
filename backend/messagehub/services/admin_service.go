@@ -8,7 +8,7 @@ import (
 	"github.com/mreider/koto/backend/messagehub/rpc"
 )
 
-func NewAdmin(base *BaseService, destroy chan<- struct{}) rpc.AdminService {
+func NewAdmin(base *BaseService, destroy *bool) rpc.AdminService {
 	return &adminService{
 		BaseService: base,
 		destroy:     destroy,
@@ -17,7 +17,7 @@ func NewAdmin(base *BaseService, destroy chan<- struct{}) rpc.AdminService {
 
 type adminService struct {
 	*BaseService
-	destroy chan<- struct{}
+	destroy *bool
 }
 
 func (s *adminService) DestroyData(ctx context.Context, _ *rpc.Empty) (*rpc.Empty, error) {
@@ -25,6 +25,6 @@ func (s *adminService) DestroyData(ctx context.Context, _ *rpc.Empty) (*rpc.Empt
 	if !user.IsHubAdmin {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
-	s.destroy <- struct{}{}
+	*s.destroy = true
 	return &rpc.Empty{}, nil
 }
