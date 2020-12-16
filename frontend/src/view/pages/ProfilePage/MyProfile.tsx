@@ -308,7 +308,7 @@ class MyProfile extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { userName } = this.props
+    const { userName, userFullName } = this.props
     
     const {
       errorMessage,
@@ -324,7 +324,7 @@ class MyProfile extends React.PureComponent<Props, State> {
     return (
       <ProfileWrapper>
         <Header>
-          <Title>{capitalizeFirstLetter(userName)}</Title>
+          <Title>{ userFullName || userName }</Title>
         </Header>
         <UserContentWrapper>
           <AvatarWrapper>

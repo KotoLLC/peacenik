@@ -118,7 +118,7 @@ const UserProfile: React.FC<Props> = (props) => {
                   <AvatarStyled src={getAvatarUrl(user.id)} />
                 </Link>
               </ListItemAvatar>
-              <ListItemText primary={<UserNameLink to={`/profile/user?id=${user.id}`}>{user.name}</UserNameLink>} />
+              <ListItemText primary={<UserNameLink to={`/profile/user?id=${user.id}`}>{user.full_name || user.name}</UserNameLink>} />
               {checkCurrentIcon(user, invite_status)}
             </ListItem>
             <Divider variant="inset" />
@@ -145,7 +145,7 @@ const UserProfile: React.FC<Props> = (props) => {
             <ListItemAvatar>
               <AvatarStyled className="no-link" alt={user.name} src={getAvatarUrl(user.id)} />
             </ListItemAvatar>
-            <ListItemText primary={<UserName className="no-link">{user.name}</UserName>} />
+            <ListItemText primary={<UserName className="no-link">{user.full_name || user.name}</UserName>} />
             {checkCurrentIcon(user, invite_status)}
           </ListItem>
           <Divider variant="inset" />
@@ -158,8 +158,7 @@ const UserProfile: React.FC<Props> = (props) => {
     <>
       <ProfileWrapper>
         <Header>
-          {users[0]?.full_name && <ProfileName>FULL NAME: {users[0]?.full_name}</ProfileName>}
-          {users[0]?.name && <ProfileName>USER NAME: {users[0]?.name}</ProfileName>}
+          <ProfileName>{users[0]?.full_name || users[0]?.name}</ProfileName>
         </Header>
         <UserContentWrapper className="user-profile">
           <AvatarWrapper className="user-profile">

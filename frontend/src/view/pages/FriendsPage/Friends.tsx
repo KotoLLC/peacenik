@@ -70,7 +70,9 @@ class Friends extends React.Component<Props, State> {
             </AvatarWrapperLink>
           </ListItemAvatar>
           <ListItemText
-            primary={<UserNameLink to={`/profile/user?id=${item.user.id}`}>{item.user.name}</UserNameLink>} />
+            primary={
+              <UserNameLink to={`/profile/user?id=${item.user.id}`}>{item.user.full_name || item.user.name}
+              </UserNameLink>} />
         </ListItem>
         <Divider variant="inset" component="li" />
       </ListItemWrapper>

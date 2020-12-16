@@ -43,6 +43,7 @@ const Comment: React.SFC<Props> = (props) => {
   const {
     text,
     user_name,
+    user_full_name,
     created_at,
     id,
     user_id,
@@ -110,8 +111,9 @@ const Comment: React.SFC<Props> = (props) => {
       currentCommentLikes.likes.length && currentCommentLikes.likes.forEach((item, counter) => {
 
         if (counter < 15) {
+          const likedUserName = item.user_full_name || item.user_name
           const comma = ((currentCommentLikes.likes.length - 1) === counter) ? '' : ', '
-          usersLikes += `${item.user_name}${comma}`
+          usersLikes += `${likedUserName}${comma}`
         }
 
         if (counter === 15) {
@@ -171,7 +173,7 @@ const Comment: React.SFC<Props> = (props) => {
           </EditMessageField>
           :
           <CommentContent className="markdown-body">
-            <UserNameLink to={`/profile/user?id=${user_id}`}>{user_name}</UserNameLink>
+            <UserNameLink to={`/profile/user?id=${user_id}`}>{user_full_name || user_name}</UserNameLink>
             <ReactMarkdown renderers={{ link: LinkRenderer }}>{comment}</ReactMarkdown>
           </CommentContent>
       }

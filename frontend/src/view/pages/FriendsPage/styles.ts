@@ -108,12 +108,12 @@ export const UserNoteUnderlined = styled.span`
   cursor: pointer;
 `
 export const UserName = styled.span`
-  text-transform: capitalize;
+  /* text-transform: capitalize; */
 `
 
 export const UserNameLink = styled(Link)`
   cursor: pointer;
-  text-transform: capitalize;
+  /* text-transform: capitalize; */
   color: #000;
 
   &:hover {

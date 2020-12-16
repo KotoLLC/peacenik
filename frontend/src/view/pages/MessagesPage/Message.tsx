@@ -75,6 +75,7 @@ const Message: React.SFC<Props> = (props) => {
   const {
     text,
     user_name,
+    user_full_name,
     created_at,
     isAuthor,
     id,
@@ -106,6 +107,7 @@ const Message: React.SFC<Props> = (props) => {
   const [isAttacmentDeleted, onAttachmentDelete] = useState<boolean>(false)
   const [isLikesInfoRequested, setLikesInfoRequest] = useState<boolean>(false)
   const [mentionFriends, setMentionFriends] = useState<MentionFriend[]>([])
+  const userName = user_full_name || user_name
 
   const commentEditorRef = useRef<HTMLTextAreaElement>(null)
 
@@ -167,8 +169,9 @@ const Message: React.SFC<Props> = (props) => {
       currentMessageLikes.likes.length && currentMessageLikes.likes.forEach((item, counter) => {
 
         if (counter < 15) {
+          const likedByUserName = item.user_full_name || item.user_name
           const comma = ((currentMessageLikes.likes.length - 1) === counter) ? '' : ', '
-          usersLikes += `${item.user_name}${comma}`
+          usersLikes += `${likedByUserName}${comma}`
         }
 
         if (counter === 15) {
@@ -283,7 +286,8 @@ const Message: React.SFC<Props> = (props) => {
             <LikesNamesList>
               {
                 liked_by?.length && liked_by.map((item, counter) => {
-                  return (counter === (liked_by.length - 1)) ? item.user_name : `${item.user_name}, `
+                  const likedByUserName = item.user_full_name || item.user_name
+                  return (counter === (liked_by.length - 1)) ? likedByUserName : `${likedByUserName}, `
                 })
               }
             </LikesNamesList>
@@ -407,7 +411,7 @@ const Message: React.SFC<Props> = (props) => {
               <Avatar src={getAvatarUrl(user_id)} />
             </AvatarWrapperLink>
             <UserNameWrapper>
-              <UserNameLink to={`/profile/user?id=${user_id}`}>{user_name}</UserNameLink>
+              <UserNameLink to={`/profile/user?id=${user_id}`}>{userName}</UserNameLink>
               <MessageDate>{moment(created_at).fromNow()}</MessageDate>
             </UserNameWrapper>
           </UserInfo>

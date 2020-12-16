@@ -239,6 +239,7 @@ export declare namespace ApiTypes {
       text: string
       user_id: string
       user_name: string
+      user_full_name: string
       created_at: string
       updated_at: string
       comments?: Comment[]
@@ -256,6 +257,7 @@ export declare namespace ApiTypes {
       text: string
       user_id: string
       user_name: string
+      user_full_name: string
       created_at: string
       updated_at: string
       likes?: number
@@ -287,6 +289,7 @@ export declare namespace ApiTypes {
     export interface LikeInfo {
       user_id: string
       user_name: string
+      user_full_name: string
       liked_at: string
     }
 
