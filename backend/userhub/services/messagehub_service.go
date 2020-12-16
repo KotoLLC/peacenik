@@ -250,10 +250,10 @@ func (s *messageHubService) removeHubBySubdomain(ctx context.Context, subdomain 
 
 	time.Sleep(time.Second * 30)
 
-	err = s.deleteMessageHubConfiguration(cfg)
-	if err != nil {
-		messages = append(messages, "can't delete hub: "+err.Error())
-	}
+	//err = s.deleteMessageHubConfiguration(cfg)
+	//if err != nil {
+	//	messages = append(messages, "can't delete hub: "+err.Error())
+	//}
 
 	if hub.AdminID != user.ID {
 		s.notificationSender.SendNotification([]string{hub.AdminID}, user.DisplayName()+" removed your message hub", "message-hub/remove", map[string]interface{}{
