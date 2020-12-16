@@ -690,6 +690,9 @@ func (s *messageHubService) destroyMessageHubData(ctx context.Context, user repo
 		return merry.Wrap(err)
 	}
 	defer func() { _ = resp.Body.Close() }()
+	if resp.StatusCode >= 300 {
+		return merry.Errorf("unexpected status code: %s", resp.Status)
+	}
 	return nil
 }
 
