@@ -18,14 +18,22 @@ export function* watchHubCreate(action: { type: string, payload: ApiTypes.Hubs.C
 }
 
 export function* watchGetHubs() {
-  const response = yield API.hubs.getHubs()
+  
+  try {
+    const response = yield API.hubs.getHubs()
 
-  if (response.status === 200) {
-    yield put(Actions.hubs.getHubsSuccess(hubsListBack2Front(response?.data?.hubs)))
-  } else if (response.error.response.status === 401) {
-    localStorage.clear()
-    window.location.reload()
+    if (response.status === 200) {
+      yield put(Actions.hubs.getHubsSuccess(hubsListBack2Front(response?.data?.hubs)))
+    } else if (response.error.response.status === 401) {
+      localStorage.clear()
+      window.location.reload()
+    }
+  } catch (error) {
+    if (!error.response) {
+      yield put(Actions.common.setConnectionError(true))
+    }
   }
+  
 }
 
 export function* watchApproveHub(action: { type: string, payload: ApiTypes.Hubs.ApproveHub }) {

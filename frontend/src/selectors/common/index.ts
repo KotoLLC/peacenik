@@ -6,6 +6,7 @@ export const selector = createSelector((s: StoreTypes) => s, s => s)
 
 const common = createSelector(selector, data => data.common)
 const isAboutUsViewed = createSelector(common, data => data.isAboutUsViewed)
+const isConnectionError = createSelector(common, data => data.isConnectionError)
 
 export const deepEqualSelector = createSelectorCreator(
     defaultMemoize,
@@ -14,4 +15,5 @@ export const deepEqualSelector = createSelectorCreator(
 
 export default {
     isAboutUsViewed,
+    isConnectionError,
 }

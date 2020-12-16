@@ -4,6 +4,7 @@ export interface State {
   errorMessage: string
   successMessage: string
   isAboutUsViewed: boolean
+  isConnectionError: boolean
 }
 
 const kotoIsAboutUsViewed = localStorage.getItem('kotoIsAboutUsViewed')
@@ -12,6 +13,7 @@ const initialState: State = {
   errorMessage: '',
   successMessage: '',
   isAboutUsViewed: (kotoIsAboutUsViewed) ? JSON.parse(kotoIsAboutUsViewed) : false,
+  isConnectionError: false,
 }
 
 const reducer = (state = initialState, action) => {
@@ -34,6 +36,13 @@ const reducer = (state = initialState, action) => {
       return {
         ...state, ...{
           isAboutUsViewed: true,
+        }
+      }
+    }
+    case Types.SET_CONNECTION_ERROR: {
+      return {
+        ...state, ...{
+          isConnectionError: action.payload,
         }
       }
     }

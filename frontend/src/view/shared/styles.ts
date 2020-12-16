@@ -263,3 +263,34 @@ export const MentionLink = styled(Link)`
     text-decoration: underline;
   }
 `
+
+export const ConnectionErrorWrapper = styled.div`
+  width: 80%;
+  height: calc(80vh - 56px);
+  max-width: 800px;
+  background: #fff;
+  position: fixed;
+  padding: 15px;
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  z-index: 100;
+  left: 50%;
+  top: calc(50% + 28px);
+  transform: translate(-50%, -50%);
+  border-radius: 8px;
+  box-shadow:  0px 5px 5px -3px rgba(0,0,0,0.2), 0px 8px 10px 1px rgba(0,0,0,0.14), 0px 3px 14px 2px rgba(0,0,0,0.12);
+`
+
+export const RefreshButtonWrapper = styled.div`
+  text-align: center;
+  margin-top: 10px;
+  width: 100%;
+`
+
+export const ConnectionErorrTitle = styled.h3`
+  width: 100%;
+`

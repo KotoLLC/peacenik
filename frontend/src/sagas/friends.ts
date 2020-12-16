@@ -4,25 +4,41 @@ import { API } from '@services/api'
 import { ApiTypes } from 'src/types'
 
 export function* watchGetFriends() { 
-  const response = yield API.friends.getFriends()
 
-  if (response.status === 200) {
-    yield put(Actions.friends.getFriendsSucces(response.data.friends || []))
-  } else if (response.error.response.status === 401) {
-    localStorage.clear()
-    window.location.reload()
+  try {
+    const response = yield API.friends.getFriends()
+
+    if (response.status === 200) {
+      yield put(Actions.friends.getFriendsSucces(response.data.friends || []))
+    } else if (response.error.response.status === 401) {
+      localStorage.clear()
+      window.location.reload()
+    }
+  } catch (error) {
+    if (!error.response) {
+      yield put(Actions.common.setConnectionError(true))
+    }
   }
+  
 }
 
 export function* watchGetFriendsOfFriends() {
-  const response = yield API.friends.getFriendsOfFriends()
 
-  if (response.status === 200) {
-    yield put(Actions.friends.getFriendsOfFriendsSucces(response.data.friends || []))
-  } else if (response.error.response.status === 401) {
-    localStorage.clear()
-    window.location.reload()
+  try {
+    const response = yield API.friends.getFriendsOfFriends()
+
+    if (response.status === 200) {
+      yield put(Actions.friends.getFriendsOfFriendsSucces(response.data.friends || []))
+    } else if (response.error.response.status === 401) {
+      localStorage.clear()
+      window.location.reload()
+    }
+  } catch (error) {
+    if (!error.response) {
+      yield put(Actions.common.setConnectionError(true))
+    }
   }
+  
 }
 
 export function* watchAddFriend(action: { type: string, payload: ApiTypes.Friends.Request }) {
@@ -40,14 +56,22 @@ export function* watchAddFriend(action: { type: string, payload: ApiTypes.Friend
 }
 
 export function* watchGetInvitations() {
-  const response = yield API.friends.getInvitations()
+  
+  try {
+    const response = yield API.friends.getInvitations()
 
-  if (response.status === 200) {
-    yield put(Actions.friends.getInvitationsSuccess(response.data.invites))
-  } else if (response.error.response.status === 401) {
-    localStorage.clear()
-    window.location.reload()
+    if (response.status === 200) {
+      yield put(Actions.friends.getInvitationsSuccess(response.data.invites))
+    } else if (response.error.response.status === 401) {
+      localStorage.clear()
+      window.location.reload()
+    }
+  } catch (error) {
+    if (!error.response) {
+      yield put(Actions.common.setConnectionError(true))
+    }
   }
+  
 }
 
 export function* watchAcceptInvitation(action: { type: string, payload: ApiTypes.Friends.InvitationAccept }) {

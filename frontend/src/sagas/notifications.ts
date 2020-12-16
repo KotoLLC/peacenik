@@ -23,30 +23,38 @@ export function* watchGetNotifications() {
 }
 
 export function* watchGetNotificationsFromHub(action: { type: string, payload: CommonTypes.HubTypes.CurrentHub }) {
-  const response = yield API.notifications.getNotificationsFromHub(action.payload.host)
 
-  if (response.status === 200) {
-    const notifications = response.data?.notifications || []
+  try {
+    const response = yield API.notifications.getNotificationsFromHub(action.payload.host)
 
-    if (notifications.length) {
-      let resultData = []
+    if (response.status === 200) {
+      const notifications = response.data?.notifications || []
+  
       if (notifications.length) {
-        resultData = response.data?.notifications.map(item => {
-          item.sourceHost = action.payload.host
-          item.messageToken = action.payload.token
-          return item
+        let resultData = []
+        if (notifications.length) {
+          resultData = response.data?.notifications.map(item => {
+            item.sourceHost = action.payload.host
+            item.messageToken = action.payload.token
+            return item
+          })
+        }
+        yield put(Actions.notifications.getNotificationsFromHubSuccess(resultData))
+        yield put(Actions.notifications.setLastKnownIdFromMessageHub({
+          host: action.payload.host,
+          id: notifications[notifications.length - 1].id
         })
+        )
       }
-      yield put(Actions.notifications.getNotificationsFromHubSuccess(resultData))
-      yield put(Actions.notifications.setLastKnownIdFromMessageHub({
-        host: action.payload.host,
-        id: notifications[notifications.length - 1].id
-      })
-      )
+    } else {
+      if (response.error.response.status === 400) {
+        yield put(Actions.authorization.getAuthTokenRequest())
+      }
     }
-  } else {
-    if (response.error.response.status === 400) {
-      yield put(Actions.authorization.getAuthTokenRequest())
+
+  } catch (error) {
+    if (!error.response) {
+      yield put(Actions.common.setConnectionError(true))
     }
   }
 }

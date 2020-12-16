@@ -8,52 +8,60 @@ import { Types as MessagesTypes } from '@store/messages/actions'
 import selectors from '@selectors/index'
 
 export function* watchGetMessages() {
-  const response = yield API.messages.getMessages()
+  try {
 
-  if (response.status === 200) {
-    const messageTokens = hubsForMessagesBack2Front(response.data?.tokens)
-    yield put(Actions.messages.getMessagesSuccess(messageTokens))
+    const response = yield API.messages.getMessages()
 
-    const kotoMessageTokens = {
-      tokens: messageTokens
-    }
-    localStorage.setItem('kotoMessageTokens', JSON.stringify(kotoMessageTokens))
-
-    const state = yield select()
-    const hubsWithMessages = selectors.messages.hubsWithMessages(state)
-
-    if (!messageTokens.length) {
-      yield put(Actions.messages.getMessagesFromHubFailed())
-    }
-
-    if (messageTokens.length) {
-      yield all(messageTokens.map(item => {
-
-        let count
-
-        if (hubsWithMessages.get(item.host)) {
-          const currentHub = hubsWithMessages.get(item.host)
-          if (currentHub?.messages?.length) {
-            count = currentHub.messages.length
-          }
-        }
-
-        return call(watchGetMessagesFromHub, {
-          type: MessagesTypes.GET_MESSAGES_FROM_HUB_REQUEST,
-          payload: {
-            host: item.host,
-            body: {
-              token: item.token,
-              count,
-            }
-          },
-        })
+    if (response.status === 200) {
+      const messageTokens = hubsForMessagesBack2Front(response.data?.tokens)
+      yield put(Actions.messages.getMessagesSuccess(messageTokens))
+  
+      const kotoMessageTokens = {
+        tokens: messageTokens
       }
-      ))
+      localStorage.setItem('kotoMessageTokens', JSON.stringify(kotoMessageTokens))
+  
+      const state = yield select()
+      const hubsWithMessages = selectors.messages.hubsWithMessages(state)
+  
+      if (!messageTokens.length) {
+        yield put(Actions.messages.getMessagesFromHubFailed())
+      }
+  
+      if (messageTokens.length) {
+        yield all(messageTokens.map(item => {
+  
+          let count
+  
+          if (hubsWithMessages.get(item.host)) {
+            const currentHub = hubsWithMessages.get(item.host)
+            if (currentHub?.messages?.length) {
+              count = currentHub.messages.length
+            }
+          }
+  
+          return call(watchGetMessagesFromHub, {
+            type: MessagesTypes.GET_MESSAGES_FROM_HUB_REQUEST,
+            payload: {
+              host: item.host,
+              body: {
+                token: item.token,
+                count,
+              }
+            },
+          })
+        }
+        ))
+      }
+    } else if (response.error.response.status === 401) {
+      localStorage.clear()
+      window.location.reload()
     }
-  } else if (response.error.response.status === 401) {
-    localStorage.clear()
-    window.location.reload()
+
+  } catch (error) {
+    if (!error.response) {
+      yield put(Actions.common.setConnectionError(true))
+    }
   }
 }
 
@@ -129,26 +137,34 @@ export function* watchGetMoreMessagesFromHub(action: { type: string, payload: Ap
 }
 
 export function* watchGetMessagesFromHub(action: { type: string, payload: ApiTypes.Messages.MessagesFromHub }) {
-  const response = yield API.messages.getMessagesFromHub(action.payload)
+  
+  try {
+    const response = yield API.messages.getMessagesFromHub(action.payload)
 
-  if (response.status === 200) {
-    let resultData = []
-    if (response.data?.messages?.length) {
-      resultData = response.data?.messages.map(item => {
-        item.sourceHost = action.payload.host
-        item.messageToken = action.payload.body.token
-        return item
-      })
+    if (response.status === 200) {
+      let resultData = []
+      if (response.data?.messages?.length) {
+        resultData = response.data?.messages.map(item => {
+          item.sourceHost = action.payload.host
+          item.messageToken = action.payload.body.token
+          return item
+        })
+      }
+  
+      yield put(Actions.messages.getMessagesFromHubSuccess({
+        hub: action.payload.host,
+        messages: resultData
+      }))
+    } else {
+      if (response.error.response.status === 400) {
+        yield put(Actions.authorization.getAuthTokenRequest())
+        yield put(Actions.messages.getMessagesRequest())
+      }
     }
-
-    yield put(Actions.messages.getMessagesFromHubSuccess({
-      hub: action.payload.host,
-      messages: resultData
-    }))
-  } else {
-    if (response.error.response.status === 400) {
-      yield put(Actions.authorization.getAuthTokenRequest())
-      yield put(Actions.messages.getMessagesRequest())
+    
+  } catch (error) {
+    if (!error.response) {
+      yield put(Actions.common.setConnectionError(true))
     }
   }
 

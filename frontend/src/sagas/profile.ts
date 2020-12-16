@@ -4,20 +4,28 @@ import { API } from '@services/api'
 import { ApiTypes } from 'src/types'
 
 export function* watchGetProfile() {
-  const response = yield API.profile.getProfile()
+  
+  try {
+    const response = yield API.profile.getProfile()
 
-  if (response.status === 200 && response.data) {
-    if (response.data?.user?.is_confirmed) {
-      yield put(Actions.authorization.getAuthTokenRequest())
+    if (response.status === 200 && response.data) {
+      if (response.data?.user?.is_confirmed) {
+        yield put(Actions.authorization.getAuthTokenRequest())
+      }
+  
+      yield put(Actions.profile.getProfileSucces(response.data))
+      const user = Object.assign({}, response.data.user)
+      delete user.email
+      localStorage.setItem('kotoProfile', JSON.stringify({user}))
+    } else if (response.error.response.status === 401) {
+      localStorage.clear()
+      window.location.reload()
     }
-
-    yield put(Actions.profile.getProfileSucces(response.data))
-    const user = Object.assign({}, response.data.user)
-    delete user.email
-    localStorage.setItem('kotoProfile', JSON.stringify({user}))
-  } else if (response.error.response.status === 401) {
-    localStorage.clear()
-    window.location.reload()
+    
+  } catch (error) {
+    if (!error.response) {
+      yield put(Actions.common.setConnectionError(true))
+    }
   }
 }
 
