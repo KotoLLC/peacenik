@@ -468,7 +468,7 @@ func (s *messageHubNotificationServiceServer) servePostNotificationsProtobuf(ctx
 }
 
 func (s *messageHubNotificationServiceServer) ServiceDescriptor() ([]byte, int) {
-	return twirpFileDescriptor4, 0
+	return twirpFileDescriptor5, 0
 }
 
 func (s *messageHubNotificationServiceServer) ProtocGenTwirpVersion() string {
@@ -482,7 +482,7 @@ func (s *messageHubNotificationServiceServer) PathPrefix() string {
 	return baseServicePath(s.pathPrefix, "rpc", "MessageHubNotificationService")
 }
 
-var twirpFileDescriptor4 = []byte{
+var twirpFileDescriptor5 = []byte{
 	// 188 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0xcd, 0x4d, 0x2d, 0x2e,
 	0x4e, 0x4c, 0x4f, 0xcd, 0x28, 0x4d, 0x8a, 0xcf, 0xcb, 0x2f, 0xc9, 0x4c, 0xcb, 0x4c, 0x4e, 0x2c,

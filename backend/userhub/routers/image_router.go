@@ -14,19 +14,20 @@ import (
 	"github.com/mreider/koto/backend/userhub/repo"
 )
 
-func Image(userRepo repo.UserRepo, s3Storage *common.S3Storage, staticFS http.FileSystem) http.Handler {
+func Image(repos repo.Repos, s3Storage *common.S3Storage, staticFS http.FileSystem) http.Handler {
 	h := &imageRouter{
-		userRepo:  userRepo,
+		repos:     repos,
 		s3Storage: s3Storage,
 		staticFS:  staticFS,
 	}
 	r := chi.NewRouter()
 	r.Get("/avatar/{userID}", h.UserAvatar)
+	r.Get("/group/{groupID}", h.GroupAvatar)
 	return r
 }
 
 type imageRouter struct {
-	userRepo  repo.UserRepo
+	repos     repo.Repos
 	s3Storage *common.S3Storage
 	staticFS  http.FileSystem
 
@@ -42,7 +43,7 @@ func (ir *imageRouter) UserAvatar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := ir.userRepo.FindUserByID(userID)
+	user, err := ir.repos.User.FindUserByID(userID)
 	if err != nil {
 		log.Println("can't find user: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -60,6 +61,41 @@ func (ir *imageRouter) UserAvatar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	link, err := ir.s3Storage.CreateLink(r.Context(), user.AvatarThumbnailID, time.Hour*24)
+	if err != nil {
+		log.Println("can't create s3 link: ", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "")
+	w.Header().Set("Cache-Control", "max-age=60")
+	http.Redirect(w, r, link, http.StatusMovedPermanently)
+}
+
+func (ir *imageRouter) GroupAvatar(w http.ResponseWriter, r *http.Request) {
+	groupID := chi.URLParam(r, "groupID")
+	if groupID == "" {
+		http.NotFound(w, r)
+		return
+	}
+
+	group, err := ir.repos.Group.FindGroupByID(groupID)
+	if err != nil {
+		log.Println("can't find group: ", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if group == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	if group.AvatarThumbnailID == "" {
+		ir.loadNoAvatarImage()
+		w.Header().Set("Cache-Control", "max-age=60")
+		http.ServeContent(w, r, "no-avatar.png", ir.noAvatarModTime, bytes.NewReader(ir.noAvatarImage))
+		return
+	}
+	link, err := ir.s3Storage.CreateLink(r.Context(), group.AvatarThumbnailID, time.Hour*24)
 	if err != nil {
 		log.Println("can't create s3 link: ", err)
 		w.WriteHeader(http.StatusInternalServerError)

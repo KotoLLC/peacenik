@@ -1564,7 +1564,7 @@ func (s *inviteServiceServer) serveForMeProtobuf(ctx context.Context, resp http.
 }
 
 func (s *inviteServiceServer) ServiceDescriptor() ([]byte, int) {
-	return twirpFileDescriptor3, 0
+	return twirpFileDescriptor4, 0
 }
 
 func (s *inviteServiceServer) ProtocGenTwirpVersion() string {
@@ -1578,7 +1578,7 @@ func (s *inviteServiceServer) PathPrefix() string {
 	return baseServicePath(s.pathPrefix, "rpc", "InviteService")
 }
 
-var twirpFileDescriptor3 = []byte{
+var twirpFileDescriptor4 = []byte{
 	// 385 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x93, 0xcf, 0x4f, 0xe2, 0x40,
 	0x14, 0xc7, 0x53, 0x58, 0x0a, 0x3c, 0x60, 0xb3, 0x99, 0xdd, 0xec, 0x76, 0xd9, 0x6c, 0x24, 0xf5,

@@ -8,6 +8,7 @@ This code was generated with github.com/twitchtv/twirp/protoc-gen-twirp v7.1.0.
 It is generated from these files:
 	auth.proto
 	blob.proto
+	group.proto
 	info.proto
 	invite.proto
 	messagehub_notification.proto

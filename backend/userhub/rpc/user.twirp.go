@@ -2386,7 +2386,7 @@ func (s *userServiceServer) serveBlockUserProtobuf(ctx context.Context, resp htt
 }
 
 func (s *userServiceServer) ServiceDescriptor() ([]byte, int) {
-	return twirpFileDescriptor8, 0
+	return twirpFileDescriptor9, 0
 }
 
 func (s *userServiceServer) ProtocGenTwirpVersion() string {
@@ -2400,7 +2400,7 @@ func (s *userServiceServer) PathPrefix() string {
 	return baseServicePath(s.pathPrefix, "rpc", "UserService")
 }
 
-var twirpFileDescriptor8 = []byte{
+var twirpFileDescriptor9 = []byte{
 	// 722 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x55, 0xdd, 0x52, 0xd3, 0x40,
 	0x14, 0x9e, 0xb6, 0xb4, 0x4d, 0x4e, 0xf9, 0x29, 0x4b, 0xc1, 0xb4, 0x88, 0x96, 0x30, 0x8c, 0xe0,

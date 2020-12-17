@@ -14,6 +14,7 @@ type Repos struct {
 	Notification common.NotificationRepo
 	FCMToken     FCMTokenRepo
 	Setting      common.SettingRepo
+	Group        GroupRepo
 }
 
 func NewRepos(db *sqlx.DB) Repos {
@@ -25,5 +26,6 @@ func NewRepos(db *sqlx.DB) Repos {
 		Notification: common.NewNotifications(db),
 		FCMToken:     NewFCMToken(db),
 		Setting:      common.NewSettings(db),
+		Group:        NewGroups(db),
 	}
 }

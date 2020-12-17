@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package rpc;
+option go_package = "../rpc";
+
+import "model.proto";
+
+service GroupService {
+    rpc AddGroup (GroupAddGroupRequest) returns (GroupAddGroupResponse);
+    rpc EditGroup (GroupEditGroupRequest) returns (Empty);
+}
+
+message GroupAddGroupRequest {
+    string name = 1;
+    string description = 2;
+    string avatar_id = 3;
+    bool is_public = 4;
+}
+
+message GroupAddGroupResponse {
+    Group group = 1;
+}
+
+message GroupEditGroupRequest {
+    string group_id = 1;
+    bool description_changed = 2;
+    string description = 3;
+    bool avatar_changed = 4;
+    string avatar_id = 5;
+    bool is_public_changed = 6;
+    bool is_public = 7;
+}

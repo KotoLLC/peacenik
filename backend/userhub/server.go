@@ -66,7 +66,7 @@ func (s *Server) Run() error {
 	r := chi.NewRouter()
 	s.setupMiddlewares(r)
 
-	r.Mount("/image", routers.Image(s.repos.User, s.s3Storage, s.staticFS))
+	r.Mount("/image", routers.Image(s.repos, s.s3Storage, s.staticFS))
 
 	rpcOptions := []interface{}{
 		&twirp.ServerHooks{
@@ -142,6 +142,10 @@ func (s *Server) Run() error {
 	messageHubNotificationService := services.NewMessageHubNotification(baseService)
 	messageHubNotificationServiceHandler := rpc.NewMessageHubNotificationServiceServer(messageHubNotificationService, rpcOptions...)
 	r.Handle(messageHubNotificationServiceHandler.PathPrefix()+"*", messageHubNotificationServiceHandler)
+
+	groupService := services.NewGroup(baseService)
+	groupServiceHandler := rpc.NewGroupServiceServer(groupService, rpcOptions...)
+	r.Handle(groupServiceHandler.PathPrefix()+"*", s.checkAuth(groupServiceHandler))
 
 	log.Println("started on " + s.cfg.ListenAddress)
 	return http.ListenAndServe(s.cfg.ListenAddress, r)

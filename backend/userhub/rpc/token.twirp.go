@@ -1016,7 +1016,7 @@ func (s *tokenServiceServer) serveGetMessagesProtobuf(ctx context.Context, resp 
 }
 
 func (s *tokenServiceServer) ServiceDescriptor() ([]byte, int) {
-	return twirpFileDescriptor7, 0
+	return twirpFileDescriptor8, 0
 }
 
 func (s *tokenServiceServer) ProtocGenTwirpVersion() string {
@@ -1030,7 +1030,7 @@ func (s *tokenServiceServer) PathPrefix() string {
 	return baseServicePath(s.pathPrefix, "rpc", "TokenService")
 }
 
-var twirpFileDescriptor7 = []byte{
+var twirpFileDescriptor8 = []byte{
 	// 259 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x2e, 0xc9, 0xcf, 0x4e,
 	0xcd, 0xd3, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x2e, 0x2a, 0x48, 0x96, 0xe2, 0xce, 0xcd,

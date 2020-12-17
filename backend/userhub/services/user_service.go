@@ -1,18 +1,13 @@
 package services
 
 import (
-	"bytes"
 	"context"
-	"path/filepath"
 	"sort"
 	"strings"
 
 	"github.com/ansel1/merry"
-	"github.com/disintegration/imaging"
-	"github.com/h2non/filetype"
 	"github.com/twitchtv/twirp"
 
-	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/userhub/repo"
 	"github.com/mreider/koto/backend/userhub/rpc"
 )
@@ -228,34 +223,7 @@ func (s *userService) setAvatar(ctx context.Context, user repo.User, avatarID st
 		return nil
 	}
 
-	var buf bytes.Buffer
-	err = s.s3Storage.Read(ctx, avatarID, &buf)
-	if err != nil {
-		return merry.Wrap(err)
-	}
-	dataType, err := filetype.Match(buf.Bytes())
-	if err != nil {
-		return merry.Wrap(err)
-	}
-	if dataType.MIME.Type != "image" {
-		return twirp.NewError(twirp.InvalidArgument, "not image")
-	}
-
-	orientation := common.GetImageOrientation(bytes.NewReader(buf.Bytes()))
-	original, err := common.DecodeImageAndFixOrientation(bytes.NewReader(buf.Bytes()), orientation)
-	if err != nil {
-		return merry.Wrap(err)
-	}
-	thumbnail := imaging.Thumbnail(original, avatarThumbnailWidth, avatarThumbnailHeight, imaging.Lanczos)
-	buf.Reset()
-	err = imaging.Encode(&buf, thumbnail, imaging.JPEG)
-	if err != nil {
-		return merry.Wrap(err)
-	}
-
-	ext := filepath.Ext(avatarID)
-	thumbnailID := strings.TrimSuffix(avatarID, ext) + "-thumbnail.jpg"
-	err = s.s3Storage.PutObject(ctx, thumbnailID, buf.Bytes(), "image/jpeg")
+	thumbnailID, err := s.saveThumbnail(ctx, avatarID)
 	if err != nil {
 		return merry.Wrap(err)
 	}

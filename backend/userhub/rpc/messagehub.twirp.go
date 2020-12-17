@@ -2660,7 +2660,7 @@ func (s *messageHubServiceServer) serveBlockUserProtobuf(ctx context.Context, re
 }
 
 func (s *messageHubServiceServer) ServiceDescriptor() ([]byte, int) {
-	return twirpFileDescriptor5, 0
+	return twirpFileDescriptor6, 0
 }
 
 func (s *messageHubServiceServer) ProtocGenTwirpVersion() string {
@@ -2674,7 +2674,7 @@ func (s *messageHubServiceServer) PathPrefix() string {
 	return baseServicePath(s.pathPrefix, "rpc", "MessageHubService")
 }
 
-var twirpFileDescriptor5 = []byte{
+var twirpFileDescriptor6 = []byte{
 	// 674 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x55, 0xcd, 0x4e, 0xdb, 0x4c,
 	0x14, 0x55, 0x42, 0xe2, 0xc4, 0x37, 0xdf, 0x57, 0xb5, 0x23, 0x28, 0xc6, 0x10, 0xa8, 0xdc, 0x0d,
