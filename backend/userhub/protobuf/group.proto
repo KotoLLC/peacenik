@@ -8,6 +8,12 @@ import "model.proto";
 service GroupService {
     rpc AddGroup (GroupAddGroupRequest) returns (GroupAddGroupResponse);
     rpc EditGroup (GroupEditGroupRequest) returns (Empty);
+
+    rpc CreateInvite (GroupCreateInviteRequest) returns (Empty);
+    rpc AcceptInvite (GroupAcceptInviteRequest) returns (Empty);
+    rpc RejectInvite (GroupRejectInviteRequest) returns (Empty);
+    rpc InvitesFromMe (Empty) returns (GroupInvitesFromMeResponse);
+    rpc InvitesForMe (Empty) returns (GroupInvitesForMeResponse);
 }
 
 message GroupAddGroupRequest {
@@ -30,3 +36,39 @@ message GroupEditGroupRequest {
     bool is_public_changed = 6;
     bool is_public = 7;
 }
+
+message GroupCreateInviteRequest {
+    string group_id = 1;
+    string invited = 2;
+}
+
+message GroupAcceptInviteRequest {
+    string group_id = 1;
+    string inviter_id = 2;
+}
+
+message GroupRejectInviteRequest {
+    string group_id = 1;
+    string inviter_id = 2;
+}
+
+message GroupInvite {
+    string group_id = 1;
+    string group_name = 2;
+    string group_description = 3;
+    string user_id = 4;
+    string user_name = 5;
+    string user_full_name = 6;
+    string created_at = 7;
+    string accepted_at = 8;
+    string rejected_at = 9;
+}
+
+message GroupInvitesFromMeResponse {
+    repeated GroupInvite invites = 1;
+}
+
+message GroupInvitesForMeResponse {
+    repeated GroupInvite invites = 1;
+}
+

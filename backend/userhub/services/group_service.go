@@ -143,3 +143,198 @@ func (s *groupService) setAvatar(ctx context.Context, group repo.Group, avatarID
 	}
 	return nil
 }
+
+func (s *groupService) CreateInvite(ctx context.Context, r *rpc.GroupCreateInviteRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+
+	if r.GroupId == "" {
+		return nil, twirp.NewError(twirp.InvalidArgument, "group_id")
+	}
+	if r.Invited == "" || r.Invited == user.ID || r.Invited == user.Name || r.Invited == user.Email {
+		return nil, twirp.NewError(twirp.InvalidArgument, "invited")
+	}
+
+	group, err := s.repos.Group.FindGroupByID(r.GroupId)
+	if err != nil {
+		return nil, err
+	}
+	if group == nil {
+		return nil, twirp.NotFoundError("group not found")
+	}
+
+	isGroupMember, err := s.repos.Group.IsGroupMember(group.ID, user.ID)
+	if err != nil {
+		return nil, err
+	}
+	if !isGroupMember {
+		return nil, twirp.NewError(twirp.PermissionDenied, "mot a group member")
+	}
+
+	invitedUser, err := s.repos.User.FindUserByIDOrName(r.Invited)
+	if err != nil {
+		return nil, err
+	}
+
+	if invitedUser == nil {
+		if strings.Contains(r.Invited, "@") && strings.Contains(r.Invited, ".") {
+			friends, err := s.repos.User.FindUsersByEmail(r.Invited)
+			if err != nil {
+				return nil, err
+			}
+			if len(friends) == 1 {
+				invitedUser = &friends[0]
+			} else if len(friends) > 1 {
+				return nil, twirp.NewError(twirp.AlreadyExists, "Email belongs to more than one account. Invite by username instead.")
+			}
+		} else {
+			return nil, twirp.NotFoundError("user not found")
+		}
+	}
+
+	if invitedUser != nil {
+		areBlocked, err := s.repos.User.AreBlocked(user.ID, invitedUser.ID)
+		if err != nil {
+			return nil, err
+		}
+		if areBlocked {
+			return nil, twirp.NotFoundError("user not found")
+		}
+
+		isGroupMember, err := s.repos.Group.IsGroupMember(group.ID, invitedUser.ID)
+		if err != nil {
+			return nil, err
+		}
+		if isGroupMember {
+			return nil, twirp.NewError(twirp.AlreadyExists, "already in the group.")
+		}
+
+		err = s.repos.Group.AddInvite(group.ID, user.ID, invitedUser.ID)
+		if err != nil {
+			return nil, err
+		}
+		s.notificationSender.SendNotification([]string{invitedUser.ID}, user.DisplayName()+" invited you to the group "+group.Name+"", "group-invite/add", map[string]interface{}{
+			"group_id": group.ID,
+			"user_id":  user.ID,
+		})
+		// TODO:
+		//err = s.sendInviteLinkToRegisteredUser(ctx, user, invitedUser.Email)
+		//if err != nil {
+		//	log.Println("can't invite by email:", err)
+		//}
+	} else {
+		err = s.repos.Group.AddInviteByEmail(group.ID, user.ID, r.Invited)
+		if err != nil {
+			return nil, err
+		}
+
+		// TODO
+		//err = s.sendInviteLinkToUnregisteredUser(ctx, user, r.Invited)
+		//if err != nil {
+		//	log.Println("can't invite by email:", err)
+		//}
+	}
+
+	return &rpc.Empty{}, nil
+}
+
+func (s *groupService) AcceptInvite(ctx context.Context, r *rpc.GroupAcceptInviteRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+
+	if r.GroupId == "" {
+		return nil, twirp.NewError(twirp.InvalidArgument, "group_id")
+	}
+
+	err := s.repos.Group.AcceptInvite(r.GroupId, r.InviterId, user.ID, false)
+	if err != nil {
+		if merry.Is(err, repo.ErrInviteNotFound) {
+			return nil, twirp.NotFoundError(err.Error())
+		}
+		return nil, err
+	}
+	// TODO
+	s.notificationSender.SendNotification([]string{r.InviterId}, user.DisplayName()+" accepted your invite!", "group-invite/accept", map[string]interface{}{
+		"group_id": r.GroupId,
+		"user_id":  user.ID,
+	})
+	return &rpc.Empty{}, nil
+}
+
+func (s *groupService) RejectInvite(ctx context.Context, r *rpc.GroupRejectInviteRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+
+	if r.GroupId == "" {
+		return nil, twirp.NewError(twirp.InvalidArgument, "group_id")
+	}
+
+	err := s.repos.Group.RejectInvite(r.GroupId, r.InviterId, user.ID)
+	if err != nil {
+		if merry.Is(err, repo.ErrInviteNotFound) {
+			return nil, twirp.NotFoundError(err.Error())
+		}
+		return nil, err
+	}
+	// TODO
+	s.notificationSender.SendNotification([]string{r.InviterId}, user.DisplayName()+" rejected your invite", "group-invite/reject", map[string]interface{}{
+		"group_id": r.GroupId,
+		"user_id":  user.ID,
+	})
+	return &rpc.Empty{}, nil
+}
+
+func (s *groupService) InvitesFromMe(ctx context.Context, _ *rpc.Empty) (*rpc.GroupInvitesFromMeResponse, error) {
+	user := s.getUser(ctx)
+	invites, err := s.repos.Group.InvitesFromMe(user)
+	if err != nil {
+		return nil, err
+	}
+	rpcInvites := make([]*rpc.GroupInvite, len(invites))
+	for i, invite := range invites {
+		invitedName, invitedFullName := invite.InvitedName, invite.InvitedFullName
+		if invite.InvitedID == "" {
+			invitedName = invite.InvitedEmail
+			invitedFullName = ""
+		}
+
+		rpcInvites[i] = &rpc.GroupInvite{
+			GroupId:          invite.GroupID,
+			GroupName:        invite.GroupName,
+			GroupDescription: invite.GroupDescription,
+			UserId:           invite.InvitedID,
+			UserName:         invitedName,
+			UserFullName:     invitedFullName,
+			CreatedAt:        common.TimeToRPCString(invite.CreatedAt),
+			AcceptedAt:       common.NullTimeToRPCString(invite.AcceptedAt),
+			RejectedAt:       common.NullTimeToRPCString(invite.RejectedAt),
+		}
+	}
+
+	return &rpc.GroupInvitesFromMeResponse{
+		Invites: rpcInvites,
+	}, nil
+}
+
+func (s *groupService) InvitesForMe(ctx context.Context, _ *rpc.Empty) (*rpc.GroupInvitesForMeResponse, error) {
+	user := s.getUser(ctx)
+	invites, err := s.repos.Group.InvitesForMe(user)
+	if err != nil {
+		return nil, err
+	}
+	rpcInvites := make([]*rpc.GroupInvite, len(invites))
+	for i, invite := range invites {
+		rpcInvites[i] = &rpc.GroupInvite{
+			GroupId:          invite.GroupID,
+			GroupName:        invite.GroupName,
+			GroupDescription: invite.GroupDescription,
+			UserId:           invite.InviterID,
+			UserName:         invite.InviterName,
+			UserFullName:     invite.InviterFullName,
+			CreatedAt:        common.TimeToRPCString(invite.CreatedAt),
+			AcceptedAt:       common.NullTimeToRPCString(invite.AcceptedAt),
+			RejectedAt:       common.NullTimeToRPCString(invite.RejectedAt),
+		}
+	}
+
+	return &rpc.GroupInvitesForMeResponse{
+		Invites: rpcInvites,
+	}, nil
+}

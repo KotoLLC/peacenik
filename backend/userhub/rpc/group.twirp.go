@@ -30,6 +30,16 @@ type GroupService interface {
 	AddGroup(context.Context, *GroupAddGroupRequest) (*GroupAddGroupResponse, error)
 
 	EditGroup(context.Context, *GroupEditGroupRequest) (*Empty, error)
+
+	CreateInvite(context.Context, *GroupCreateInviteRequest) (*Empty, error)
+
+	AcceptInvite(context.Context, *GroupAcceptInviteRequest) (*Empty, error)
+
+	RejectInvite(context.Context, *GroupRejectInviteRequest) (*Empty, error)
+
+	InvitesFromMe(context.Context, *Empty) (*GroupInvitesFromMeResponse, error)
+
+	InvitesForMe(context.Context, *Empty) (*GroupInvitesForMeResponse, error)
 }
 
 // ============================
@@ -38,7 +48,7 @@ type GroupService interface {
 
 type groupServiceProtobufClient struct {
 	client      HTTPClient
-	urls        [2]string
+	urls        [7]string
 	interceptor twirp.Interceptor
 	opts        twirp.ClientOptions
 }
@@ -58,9 +68,14 @@ func NewGroupServiceProtobufClient(baseURL string, client HTTPClient, opts ...tw
 	// Build method URLs: <baseURL>[<prefix>]/<package>.<Service>/<Method>
 	serviceURL := sanitizeBaseURL(baseURL)
 	serviceURL += baseServicePath(clientOpts.PathPrefix(), "rpc", "GroupService")
-	urls := [2]string{
+	urls := [7]string{
 		serviceURL + "AddGroup",
 		serviceURL + "EditGroup",
+		serviceURL + "CreateInvite",
+		serviceURL + "AcceptInvite",
+		serviceURL + "RejectInvite",
+		serviceURL + "InvitesFromMe",
+		serviceURL + "InvitesForMe",
 	}
 
 	return &groupServiceProtobufClient{
@@ -163,13 +178,243 @@ func (c *groupServiceProtobufClient) callEditGroup(ctx context.Context, in *Grou
 	return out, nil
 }
 
+func (c *groupServiceProtobufClient) CreateInvite(ctx context.Context, in *GroupCreateInviteRequest) (*Empty, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "GroupService")
+	ctx = ctxsetters.WithMethodName(ctx, "CreateInvite")
+	caller := c.callCreateInvite
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *GroupCreateInviteRequest) (*Empty, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*GroupCreateInviteRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*GroupCreateInviteRequest) when calling interceptor")
+					}
+					return c.callCreateInvite(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*Empty)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*Empty) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *groupServiceProtobufClient) callCreateInvite(ctx context.Context, in *GroupCreateInviteRequest) (*Empty, error) {
+	out := new(Empty)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[2], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *groupServiceProtobufClient) AcceptInvite(ctx context.Context, in *GroupAcceptInviteRequest) (*Empty, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "GroupService")
+	ctx = ctxsetters.WithMethodName(ctx, "AcceptInvite")
+	caller := c.callAcceptInvite
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *GroupAcceptInviteRequest) (*Empty, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*GroupAcceptInviteRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*GroupAcceptInviteRequest) when calling interceptor")
+					}
+					return c.callAcceptInvite(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*Empty)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*Empty) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *groupServiceProtobufClient) callAcceptInvite(ctx context.Context, in *GroupAcceptInviteRequest) (*Empty, error) {
+	out := new(Empty)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[3], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *groupServiceProtobufClient) RejectInvite(ctx context.Context, in *GroupRejectInviteRequest) (*Empty, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "GroupService")
+	ctx = ctxsetters.WithMethodName(ctx, "RejectInvite")
+	caller := c.callRejectInvite
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *GroupRejectInviteRequest) (*Empty, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*GroupRejectInviteRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*GroupRejectInviteRequest) when calling interceptor")
+					}
+					return c.callRejectInvite(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*Empty)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*Empty) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *groupServiceProtobufClient) callRejectInvite(ctx context.Context, in *GroupRejectInviteRequest) (*Empty, error) {
+	out := new(Empty)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[4], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *groupServiceProtobufClient) InvitesFromMe(ctx context.Context, in *Empty) (*GroupInvitesFromMeResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "GroupService")
+	ctx = ctxsetters.WithMethodName(ctx, "InvitesFromMe")
+	caller := c.callInvitesFromMe
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *Empty) (*GroupInvitesFromMeResponse, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*Empty)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*Empty) when calling interceptor")
+					}
+					return c.callInvitesFromMe(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*GroupInvitesFromMeResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*GroupInvitesFromMeResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *groupServiceProtobufClient) callInvitesFromMe(ctx context.Context, in *Empty) (*GroupInvitesFromMeResponse, error) {
+	out := new(GroupInvitesFromMeResponse)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[5], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *groupServiceProtobufClient) InvitesForMe(ctx context.Context, in *Empty) (*GroupInvitesForMeResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "GroupService")
+	ctx = ctxsetters.WithMethodName(ctx, "InvitesForMe")
+	caller := c.callInvitesForMe
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *Empty) (*GroupInvitesForMeResponse, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*Empty)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*Empty) when calling interceptor")
+					}
+					return c.callInvitesForMe(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*GroupInvitesForMeResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*GroupInvitesForMeResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *groupServiceProtobufClient) callInvitesForMe(ctx context.Context, in *Empty) (*GroupInvitesForMeResponse, error) {
+	out := new(GroupInvitesForMeResponse)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[6], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
 // ========================
 // GroupService JSON Client
 // ========================
 
 type groupServiceJSONClient struct {
 	client      HTTPClient
-	urls        [2]string
+	urls        [7]string
 	interceptor twirp.Interceptor
 	opts        twirp.ClientOptions
 }
@@ -189,9 +434,14 @@ func NewGroupServiceJSONClient(baseURL string, client HTTPClient, opts ...twirp.
 	// Build method URLs: <baseURL>[<prefix>]/<package>.<Service>/<Method>
 	serviceURL := sanitizeBaseURL(baseURL)
 	serviceURL += baseServicePath(clientOpts.PathPrefix(), "rpc", "GroupService")
-	urls := [2]string{
+	urls := [7]string{
 		serviceURL + "AddGroup",
 		serviceURL + "EditGroup",
+		serviceURL + "CreateInvite",
+		serviceURL + "AcceptInvite",
+		serviceURL + "RejectInvite",
+		serviceURL + "InvitesFromMe",
+		serviceURL + "InvitesForMe",
 	}
 
 	return &groupServiceJSONClient{
@@ -280,6 +530,236 @@ func (c *groupServiceJSONClient) EditGroup(ctx context.Context, in *GroupEditGro
 func (c *groupServiceJSONClient) callEditGroup(ctx context.Context, in *GroupEditGroupRequest) (*Empty, error) {
 	out := new(Empty)
 	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[1], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *groupServiceJSONClient) CreateInvite(ctx context.Context, in *GroupCreateInviteRequest) (*Empty, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "GroupService")
+	ctx = ctxsetters.WithMethodName(ctx, "CreateInvite")
+	caller := c.callCreateInvite
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *GroupCreateInviteRequest) (*Empty, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*GroupCreateInviteRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*GroupCreateInviteRequest) when calling interceptor")
+					}
+					return c.callCreateInvite(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*Empty)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*Empty) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *groupServiceJSONClient) callCreateInvite(ctx context.Context, in *GroupCreateInviteRequest) (*Empty, error) {
+	out := new(Empty)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[2], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *groupServiceJSONClient) AcceptInvite(ctx context.Context, in *GroupAcceptInviteRequest) (*Empty, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "GroupService")
+	ctx = ctxsetters.WithMethodName(ctx, "AcceptInvite")
+	caller := c.callAcceptInvite
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *GroupAcceptInviteRequest) (*Empty, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*GroupAcceptInviteRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*GroupAcceptInviteRequest) when calling interceptor")
+					}
+					return c.callAcceptInvite(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*Empty)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*Empty) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *groupServiceJSONClient) callAcceptInvite(ctx context.Context, in *GroupAcceptInviteRequest) (*Empty, error) {
+	out := new(Empty)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[3], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *groupServiceJSONClient) RejectInvite(ctx context.Context, in *GroupRejectInviteRequest) (*Empty, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "GroupService")
+	ctx = ctxsetters.WithMethodName(ctx, "RejectInvite")
+	caller := c.callRejectInvite
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *GroupRejectInviteRequest) (*Empty, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*GroupRejectInviteRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*GroupRejectInviteRequest) when calling interceptor")
+					}
+					return c.callRejectInvite(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*Empty)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*Empty) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *groupServiceJSONClient) callRejectInvite(ctx context.Context, in *GroupRejectInviteRequest) (*Empty, error) {
+	out := new(Empty)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[4], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *groupServiceJSONClient) InvitesFromMe(ctx context.Context, in *Empty) (*GroupInvitesFromMeResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "GroupService")
+	ctx = ctxsetters.WithMethodName(ctx, "InvitesFromMe")
+	caller := c.callInvitesFromMe
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *Empty) (*GroupInvitesFromMeResponse, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*Empty)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*Empty) when calling interceptor")
+					}
+					return c.callInvitesFromMe(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*GroupInvitesFromMeResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*GroupInvitesFromMeResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *groupServiceJSONClient) callInvitesFromMe(ctx context.Context, in *Empty) (*GroupInvitesFromMeResponse, error) {
+	out := new(GroupInvitesFromMeResponse)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[5], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *groupServiceJSONClient) InvitesForMe(ctx context.Context, in *Empty) (*GroupInvitesForMeResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "GroupService")
+	ctx = ctxsetters.WithMethodName(ctx, "InvitesForMe")
+	caller := c.callInvitesForMe
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *Empty) (*GroupInvitesForMeResponse, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*Empty)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*Empty) when calling interceptor")
+					}
+					return c.callInvitesForMe(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*GroupInvitesForMeResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*GroupInvitesForMeResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *groupServiceJSONClient) callInvitesForMe(ctx context.Context, in *Empty) (*GroupInvitesForMeResponse, error) {
+	out := new(GroupInvitesForMeResponse)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[6], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -383,6 +863,21 @@ func (s *groupServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reque
 		return
 	case "EditGroup":
 		s.serveEditGroup(ctx, resp, req)
+		return
+	case "CreateInvite":
+		s.serveCreateInvite(ctx, resp, req)
+		return
+	case "AcceptInvite":
+		s.serveAcceptInvite(ctx, resp, req)
+		return
+	case "RejectInvite":
+		s.serveRejectInvite(ctx, resp, req)
+		return
+	case "InvitesFromMe":
+		s.serveInvitesFromMe(ctx, resp, req)
+		return
+	case "InvitesForMe":
+		s.serveInvitesForMe(ctx, resp, req)
 		return
 	default:
 		msg := fmt.Sprintf("no handler for path %q", req.URL.Path)
@@ -741,6 +1236,881 @@ func (s *groupServiceServer) serveEditGroupProtobuf(ctx context.Context, resp ht
 	callResponseSent(ctx, s.hooks)
 }
 
+func (s *groupServiceServer) serveCreateInvite(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveCreateInviteJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveCreateInviteProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *groupServiceServer) serveCreateInviteJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CreateInvite")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(GroupCreateInviteRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	handler := s.GroupService.CreateInvite
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *GroupCreateInviteRequest) (*Empty, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*GroupCreateInviteRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*GroupCreateInviteRequest) when calling interceptor")
+					}
+					return s.GroupService.CreateInvite(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*Empty)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*Empty) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *Empty
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *Empty and nil error while calling CreateInvite. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: !s.jsonSkipDefaults}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *groupServiceServer) serveCreateInviteProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CreateInvite")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(GroupCreateInviteRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	handler := s.GroupService.CreateInvite
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *GroupCreateInviteRequest) (*Empty, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*GroupCreateInviteRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*GroupCreateInviteRequest) when calling interceptor")
+					}
+					return s.GroupService.CreateInvite(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*Empty)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*Empty) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *Empty
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *Empty and nil error while calling CreateInvite. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *groupServiceServer) serveAcceptInvite(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveAcceptInviteJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveAcceptInviteProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *groupServiceServer) serveAcceptInviteJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "AcceptInvite")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(GroupAcceptInviteRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	handler := s.GroupService.AcceptInvite
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *GroupAcceptInviteRequest) (*Empty, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*GroupAcceptInviteRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*GroupAcceptInviteRequest) when calling interceptor")
+					}
+					return s.GroupService.AcceptInvite(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*Empty)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*Empty) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *Empty
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *Empty and nil error while calling AcceptInvite. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: !s.jsonSkipDefaults}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *groupServiceServer) serveAcceptInviteProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "AcceptInvite")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(GroupAcceptInviteRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	handler := s.GroupService.AcceptInvite
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *GroupAcceptInviteRequest) (*Empty, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*GroupAcceptInviteRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*GroupAcceptInviteRequest) when calling interceptor")
+					}
+					return s.GroupService.AcceptInvite(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*Empty)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*Empty) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *Empty
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *Empty and nil error while calling AcceptInvite. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *groupServiceServer) serveRejectInvite(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveRejectInviteJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveRejectInviteProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *groupServiceServer) serveRejectInviteJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "RejectInvite")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(GroupRejectInviteRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	handler := s.GroupService.RejectInvite
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *GroupRejectInviteRequest) (*Empty, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*GroupRejectInviteRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*GroupRejectInviteRequest) when calling interceptor")
+					}
+					return s.GroupService.RejectInvite(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*Empty)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*Empty) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *Empty
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *Empty and nil error while calling RejectInvite. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: !s.jsonSkipDefaults}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *groupServiceServer) serveRejectInviteProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "RejectInvite")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(GroupRejectInviteRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	handler := s.GroupService.RejectInvite
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *GroupRejectInviteRequest) (*Empty, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*GroupRejectInviteRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*GroupRejectInviteRequest) when calling interceptor")
+					}
+					return s.GroupService.RejectInvite(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*Empty)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*Empty) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *Empty
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *Empty and nil error while calling RejectInvite. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *groupServiceServer) serveInvitesFromMe(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveInvitesFromMeJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveInvitesFromMeProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *groupServiceServer) serveInvitesFromMeJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "InvitesFromMe")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(Empty)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	handler := s.GroupService.InvitesFromMe
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *Empty) (*GroupInvitesFromMeResponse, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*Empty)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*Empty) when calling interceptor")
+					}
+					return s.GroupService.InvitesFromMe(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*GroupInvitesFromMeResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*GroupInvitesFromMeResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *GroupInvitesFromMeResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *GroupInvitesFromMeResponse and nil error while calling InvitesFromMe. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: !s.jsonSkipDefaults}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *groupServiceServer) serveInvitesFromMeProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "InvitesFromMe")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(Empty)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	handler := s.GroupService.InvitesFromMe
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *Empty) (*GroupInvitesFromMeResponse, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*Empty)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*Empty) when calling interceptor")
+					}
+					return s.GroupService.InvitesFromMe(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*GroupInvitesFromMeResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*GroupInvitesFromMeResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *GroupInvitesFromMeResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *GroupInvitesFromMeResponse and nil error while calling InvitesFromMe. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *groupServiceServer) serveInvitesForMe(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveInvitesForMeJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveInvitesForMeProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *groupServiceServer) serveInvitesForMeJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "InvitesForMe")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(Empty)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	handler := s.GroupService.InvitesForMe
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *Empty) (*GroupInvitesForMeResponse, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*Empty)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*Empty) when calling interceptor")
+					}
+					return s.GroupService.InvitesForMe(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*GroupInvitesForMeResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*GroupInvitesForMeResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *GroupInvitesForMeResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *GroupInvitesForMeResponse and nil error while calling InvitesForMe. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: !s.jsonSkipDefaults}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *groupServiceServer) serveInvitesForMeProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "InvitesForMe")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(Empty)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	handler := s.GroupService.InvitesForMe
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *Empty) (*GroupInvitesForMeResponse, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*Empty)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*Empty) when calling interceptor")
+					}
+					return s.GroupService.InvitesForMe(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*GroupInvitesForMeResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*GroupInvitesForMeResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *GroupInvitesForMeResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *GroupInvitesForMeResponse and nil error while calling InvitesForMe. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
 func (s *groupServiceServer) ServiceDescriptor() ([]byte, int) {
 	return twirpFileDescriptor2, 0
 }
@@ -757,27 +2127,44 @@ func (s *groupServiceServer) PathPrefix() string {
 }
 
 var twirpFileDescriptor2 = []byte{
-	// 340 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x92, 0x4f, 0x4f, 0xf2, 0x40,
-	0x10, 0xc6, 0x53, 0xfe, 0x2e, 0xd3, 0xf7, 0xd5, 0xb8, 0x6a, 0x52, 0xea, 0x85, 0x90, 0x98, 0x10,
-	0x0f, 0x25, 0x81, 0x93, 0x47, 0x34, 0xc4, 0x70, 0x33, 0xf5, 0xe6, 0x85, 0x94, 0xdd, 0x0d, 0x6e,
-	0x02, 0xed, 0xba, 0xbb, 0x90, 0xf8, 0x05, 0xf8, 0x00, 0x7e, 0x62, 0xd3, 0x59, 0x0a, 0x6d, 0xf5,
-	0xd4, 0xee, 0x3c, 0xd3, 0xa7, 0xf3, 0xfc, 0x66, 0xc1, 0x5f, 0xeb, 0x6c, 0xa7, 0x22, 0xa5, 0x33,
-	0x9b, 0xd1, 0xa6, 0x56, 0x2c, 0xf4, 0xb7, 0x19, 0x17, 0x1b, 0x57, 0x19, 0x1e, 0x3c, 0xb8, 0x79,
-	0xc9, 0x3b, 0x66, 0x9c, 0xe3, 0x33, 0x16, 0x9f, 0x3b, 0x61, 0x2c, 0xa5, 0xd0, 0x4a, 0x93, 0xad,
-	0x08, 0xbc, 0x81, 0x37, 0xea, 0xc5, 0xf8, 0x4e, 0x07, 0xe0, 0x73, 0x61, 0x98, 0x96, 0xca, 0xca,
-	0x2c, 0x0d, 0x1a, 0x28, 0x95, 0x4b, 0xf4, 0x0e, 0x7a, 0xc9, 0x3e, 0xb1, 0x89, 0x5e, 0x4a, 0x1e,
-	0x34, 0x51, 0x27, 0xae, 0xb0, 0xe0, 0xb9, 0x28, 0xcd, 0x52, 0xed, 0x56, 0x1b, 0xc9, 0x82, 0xd6,
-	0xc0, 0x1b, 0x91, 0x98, 0x48, 0xf3, 0x8a, 0xe7, 0xe1, 0x23, 0xdc, 0xd6, 0xe6, 0x30, 0x2a, 0x4b,
-	0x4d, 0xfe, 0xd3, 0x36, 0x46, 0xc0, 0x49, 0xfc, 0x09, 0x44, 0x5a, 0xb1, 0xc8, 0xb5, 0x38, 0x61,
-	0xf8, 0xdd, 0x38, 0x7e, 0x3b, 0xe7, 0xd2, 0x56, 0x42, 0xf4, 0x81, 0x60, 0x4b, 0x3e, 0x8d, 0x0b,
-	0xd2, 0xc5, 0xf3, 0x82, 0xd3, 0x31, 0x5c, 0x97, 0x06, 0x5f, 0xb2, 0x8f, 0x24, 0x5d, 0x0b, 0x8e,
-	0x99, 0x48, 0x4c, 0x4b, 0xd2, 0xb3, 0x53, 0xea, 0xe1, 0x9b, 0xbf, 0xc3, 0xdf, 0xc3, 0xc5, 0x31,
-	0x7c, 0xe1, 0xe6, 0x42, 0xfe, 0x77, 0xd5, 0xc2, 0xa8, 0xc2, 0xa8, 0x5d, 0x63, 0xf4, 0x00, 0x57,
-	0x27, 0x46, 0x27, 0x9b, 0x0e, 0xda, 0x5c, 0x16, 0xac, 0x4a, 0x46, 0x67, 0x9e, 0xdd, 0x2a, 0xcf,
-	0xc9, 0xc1, 0x83, 0x7f, 0xc8, 0xe2, 0x4d, 0xe8, 0xbd, 0x64, 0x82, 0xce, 0x80, 0x14, 0x6c, 0x69,
-	0xff, 0x0c, 0xb1, 0xb6, 0xf7, 0x30, 0xfc, 0x4b, 0x3a, 0xae, 0x62, 0x0a, 0xbd, 0x13, 0x62, 0x5a,
-	0x6a, 0xac, 0x73, 0x0f, 0xdd, 0x92, 0xe6, 0x5b, 0x65, 0xbf, 0x9e, 0xc8, 0x7b, 0x27, 0x8a, 0xc6,
-	0x5a, 0xb1, 0x55, 0x07, 0xaf, 0xdc, 0xf4, 0x27, 0x00, 0x00, 0xff, 0xff, 0xad, 0x6e, 0x53, 0xef,
-	0x93, 0x02, 0x00, 0x00,
+	// 615 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x55, 0xdd, 0x6e, 0xd3, 0x4c,
+	0x10, 0x55, 0x7e, 0x9a, 0xd8, 0xe3, 0xb4, 0x5f, 0xbb, 0x1f, 0x08, 0xc7, 0x28, 0x34, 0xb2, 0x40,
+	0x8a, 0x8a, 0x94, 0x4a, 0xe9, 0x55, 0x11, 0x37, 0xa1, 0xb4, 0x25, 0x17, 0xfc, 0xc8, 0x70, 0xc5,
+	0x4d, 0xe4, 0x7a, 0x97, 0x62, 0xe4, 0xc4, 0x66, 0xbd, 0x8e, 0xc4, 0x0b, 0xf0, 0x00, 0xbc, 0x49,
+	0xdf, 0x10, 0x79, 0xc6, 0x4e, 0xd6, 0x4e, 0x24, 0x2a, 0xc4, 0x55, 0xb2, 0x73, 0xce, 0x9c, 0xdd,
+	0x99, 0xb3, 0xb3, 0x06, 0xeb, 0x56, 0xc6, 0x59, 0x32, 0x4e, 0x64, 0xac, 0x62, 0xd6, 0x92, 0x49,
+	0xe0, 0x58, 0x8b, 0x98, 0x8b, 0x88, 0x22, 0xee, 0xcf, 0x06, 0x3c, 0xb8, 0xce, 0x19, 0x53, 0xce,
+	0xf1, 0xd7, 0x13, 0xdf, 0x33, 0x91, 0x2a, 0xc6, 0xa0, 0xbd, 0xf4, 0x17, 0xc2, 0x6e, 0x0c, 0x1b,
+	0x23, 0xd3, 0xc3, 0xff, 0x6c, 0x08, 0x16, 0x17, 0x69, 0x20, 0xc3, 0x44, 0x85, 0xf1, 0xd2, 0x6e,
+	0x22, 0xa4, 0x87, 0xd8, 0x63, 0x30, 0xfd, 0x95, 0xaf, 0x7c, 0x39, 0x0f, 0xb9, 0xdd, 0x42, 0xdc,
+	0xa0, 0xc0, 0x8c, 0xe7, 0x60, 0x98, 0xce, 0x93, 0xec, 0x26, 0x0a, 0x03, 0xbb, 0x3d, 0x6c, 0x8c,
+	0x0c, 0xcf, 0x08, 0xd3, 0x0f, 0xb8, 0x76, 0xcf, 0xe1, 0x61, 0xed, 0x1c, 0x69, 0x12, 0x2f, 0xd3,
+	0x7c, 0xd3, 0x3d, 0x2c, 0x01, 0x4f, 0x62, 0x4d, 0x60, 0x2c, 0x93, 0x60, 0x4c, 0x14, 0x02, 0xdc,
+	0x5f, 0xcd, 0x22, 0xf7, 0x92, 0x87, 0xaa, 0x52, 0x44, 0x1f, 0x0c, 0xa4, 0xe4, 0xa7, 0xa1, 0x42,
+	0xba, 0xb8, 0x9e, 0x71, 0x76, 0x0a, 0xff, 0x6b, 0x07, 0x9f, 0x07, 0x5f, 0xfd, 0xe5, 0xad, 0xe0,
+	0x58, 0x93, 0xe1, 0x31, 0x0d, 0xba, 0x20, 0xa4, 0x5e, 0x7c, 0x6b, 0xbb, 0xf8, 0x67, 0x70, 0x50,
+	0x14, 0x5f, 0xaa, 0x51, 0x91, 0xfb, 0x14, 0x2d, 0x85, 0x2a, 0x3d, 0xda, 0xab, 0xf5, 0xe8, 0x04,
+	0x8e, 0xd6, 0x3d, 0x5a, 0xcb, 0x74, 0x50, 0xe6, 0xbf, 0xb2, 0x57, 0x9a, 0xd0, 0xa6, 0x9f, 0xdd,
+	0x5a, 0x3f, 0xdf, 0x83, 0x8d, 0xad, 0xb8, 0x90, 0xc2, 0x57, 0x62, 0xb6, 0x5c, 0x85, 0x4a, 0xdc,
+	0xa3, 0x2d, 0x36, 0x74, 0x43, 0xe4, 0xf2, 0xc2, 0xde, 0x72, 0xe9, 0x7e, 0x2a, 0x04, 0xa7, 0x41,
+	0x20, 0x12, 0x75, 0x6f, 0xc1, 0x01, 0x00, 0x29, 0x60, 0xb9, 0xa4, 0x69, 0x16, 0x91, 0xd9, 0x46,
+	0xd5, 0x13, 0xdf, 0x44, 0xf0, 0xcf, 0x54, 0xef, 0x9a, 0x60, 0xa1, 0x2c, 0x09, 0xfe, 0x41, 0x89,
+	0x20, 0xbc, 0xed, 0x85, 0x12, 0x46, 0xde, 0xe5, 0x57, 0xfe, 0x39, 0x1c, 0x11, 0xbc, 0xed, 0xfd,
+	0x21, 0x02, 0xaf, 0xb5, 0x0b, 0xf0, 0x08, 0xba, 0x59, 0x4a, 0x47, 0x6a, 0x23, 0xa5, 0x93, 0x2f,
+	0xe9, 0xe6, 0x23, 0x80, 0x7b, 0x14, 0x96, 0xe7, 0x01, 0xdc, 0xe2, 0x29, 0x1c, 0x20, 0xf8, 0x25,
+	0x8b, 0x22, 0x62, 0x74, 0x90, 0xd1, 0xcb, 0xa3, 0x57, 0x59, 0x14, 0x21, 0x6b, 0x00, 0x10, 0xa0,
+	0x95, 0x7c, 0xee, 0x2b, 0x74, 0xdb, 0xf4, 0xcc, 0x22, 0x32, 0x55, 0xec, 0x18, 0x2c, 0x1f, 0x8d,
+	0x21, 0xdc, 0x40, 0x1c, 0xca, 0x10, 0x11, 0x24, 0xf6, 0x98, 0x08, 0x26, 0x11, 0xca, 0xd0, 0x54,
+	0xb9, 0x6f, 0xc0, 0xd1, 0x5a, 0x96, 0x5e, 0xc9, 0x78, 0xf1, 0x56, 0xac, 0xa7, 0xf0, 0xa4, 0xbc,
+	0x17, 0xa9, 0xdd, 0x18, 0xb6, 0x46, 0xd6, 0xe4, 0x70, 0x33, 0x87, 0x85, 0x6b, 0x25, 0xc1, 0xbd,
+	0x86, 0x7e, 0x45, 0x29, 0x96, 0x7f, 0x27, 0x34, 0xb9, 0x6b, 0x41, 0x0f, 0x81, 0x8f, 0x42, 0xae,
+	0xc2, 0x40, 0xb0, 0x29, 0x18, 0xe5, 0xfb, 0xc0, 0xfa, 0x9b, 0xbc, 0xda, 0xdb, 0xe5, 0x38, 0xbb,
+	0xa0, 0x62, 0xff, 0x33, 0x30, 0xd7, 0xcf, 0x04, 0xd3, 0x88, 0xf5, 0xb7, 0xc3, 0xa1, 0x87, 0xe6,
+	0x72, 0x91, 0xa8, 0x1f, 0xec, 0x1c, 0x7a, 0xfa, 0x1c, 0xb1, 0xc1, 0x26, 0x6f, 0xc7, 0x7c, 0xd5,
+	0x53, 0xf5, 0x89, 0xd1, 0x53, 0x77, 0x4c, 0x52, 0x3d, 0x55, 0x1f, 0x0b, 0x3d, 0x75, 0xc7, 0xb8,
+	0x54, 0x52, 0x5f, 0xc2, 0x7e, 0xc5, 0x47, 0xa6, 0x81, 0xce, 0x71, 0xbd, 0xe3, 0x75, 0xb3, 0x5f,
+	0x40, 0x4f, 0xf7, 0xae, 0x92, 0xfc, 0x64, 0x3b, 0x59, 0xf7, 0xf7, 0x95, 0xf1, 0xb9, 0x33, 0x1e,
+	0x9f, 0xca, 0x24, 0xb8, 0xe9, 0xe0, 0x17, 0xe6, 0xec, 0x77, 0x00, 0x00, 0x00, 0xff, 0xff, 0x73,
+	0xd0, 0x68, 0xdf, 0x82, 0x06, 0x00, 0x00,
 }
