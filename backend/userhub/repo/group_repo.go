@@ -60,6 +60,7 @@ type GroupRepo interface {
 	RejectInvite(groupID, inviterID, invitedID string) error
 	InvitesFromMe(user User) ([]GroupInvite, error)
 	InvitesForMe(user User) ([]GroupInvite, error)
+	LeaveGroup(groupID, userID string) error
 }
 
 func NewGroups(db *sqlx.DB) GroupRepo {
@@ -341,4 +342,15 @@ func (r *groupRepo) InvitesForMe(user User) ([]GroupInvite, error) {
 		return nil, merry.Wrap(err)
 	}
 	return invites, nil
+}
+
+func (r *groupRepo) LeaveGroup(groupID, userID string) error {
+	_, err := r.db.Exec(`
+		delete from group_users
+		where group_id = $1 and user_id = $2;`,
+		groupID, userID)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+	return nil
 }

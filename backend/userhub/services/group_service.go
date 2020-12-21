@@ -338,3 +338,24 @@ func (s *groupService) InvitesForMe(ctx context.Context, _ *rpc.Empty) (*rpc.Gro
 		Invites: rpcInvites,
 	}, nil
 }
+
+func (s *groupService) LeaveGroup(ctx context.Context, r *rpc.GroupLeaveGroupRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+
+	group, err := s.repos.Group.FindGroupByID(r.GroupId)
+	if err != nil {
+		return nil, err
+	}
+	if group == nil {
+		return nil, twirp.NotFoundError("group not found")
+	}
+	if group.AdminID == user.ID {
+		return nil, twirp.NewError(twirp.InvalidArgument, "admin can't leave the group")
+	}
+
+	err = s.repos.Group.LeaveGroup(r.GroupId, user.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &rpc.Empty{}, nil
+}
