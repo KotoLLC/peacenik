@@ -16,6 +16,7 @@ service GroupService {
     rpc InvitesForMe (Empty) returns (GroupInvitesForMeResponse);
 
     rpc LeaveGroup(GroupLeaveGroupRequest) returns (Empty);
+    rpc RemoveUser(GroupRemoveUserRequest) returns (Empty);
 }
 
 message GroupAddGroupRequest {
@@ -78,3 +79,7 @@ message GroupLeaveGroupRequest {
     string group_id = 1;
 }
 
+message GroupRemoveUserRequest {
+    string group_id = 1;
+    string user_id = 2;
+}

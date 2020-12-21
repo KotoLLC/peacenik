@@ -60,7 +60,8 @@ type GroupRepo interface {
 	RejectInvite(groupID, inviterID, invitedID string) error
 	InvitesFromMe(user User) ([]GroupInvite, error)
 	InvitesForMe(user User) ([]GroupInvite, error)
-	LeaveGroup(groupID, userID string) error
+	RemoveUserFromGroup(groupID, userID string) error
+	GroupMembers(groupID string) ([]User, error)
 }
 
 func NewGroups(db *sqlx.DB) GroupRepo {
@@ -304,8 +305,8 @@ func (r *groupRepo) RejectInvite(groupID, inviterID, invitedID string) error {
 func (r *groupRepo) InvitesFromMe(user User) ([]GroupInvite, error) {
 	var invites []GroupInvite
 	err := r.db.Select(&invites, `
-		select i.id, g.id group_id, g.name group_name, g.description group_description,
-		       i.inviter_id, coalesce(u.id, '') invited_id, coalesce(u.name, '') invited_name, coalesce(u.full_name, '') invited_full_name, coalesce(u.email, i.invited_email) invited_email,
+		select i.id, g.id as group_id, g.name group_name, g.description group_description,
+		       i.inviter_id, coalesce(u.id, '') as invited_id, coalesce(u.name, '') invited_name, coalesce(u.full_name, '') invited_full_name, coalesce(u.email, i.invited_email) as invited_email,
 		       coalesce(u.avatar_thumbnail_id, '') invited_avatar_id,
 		       i.created_at, i.accepted_at, i.rejected_at
 		from group_invites i
@@ -326,7 +327,7 @@ func (r *groupRepo) InvitesFromMe(user User) ([]GroupInvite, error) {
 func (r *groupRepo) InvitesForMe(user User) ([]GroupInvite, error) {
 	var invites []GroupInvite
 	err := r.db.Select(&invites, `
-		select i.id, g.id group_id, g.name group_name, g.description group_description,
+		select i.id, g.id as group_id, g.name group_name, g.description group_description,
 		       i.inviter_id, u.name inviter_name, u.full_name inviter_full_name, u.email inviter_email, u.avatar_thumbnail_id inviter_avatar_id,
 		       i.created_at, i.accepted_at, i.rejected_at
 		from group_invites i
@@ -344,7 +345,7 @@ func (r *groupRepo) InvitesForMe(user User) ([]GroupInvite, error) {
 	return invites, nil
 }
 
-func (r *groupRepo) LeaveGroup(groupID, userID string) error {
+func (r *groupRepo) RemoveUserFromGroup(groupID, userID string) error {
 	_, err := r.db.Exec(`
 		delete from group_users
 		where group_id = $1 and user_id = $2;`,
@@ -353,4 +354,17 @@ func (r *groupRepo) LeaveGroup(groupID, userID string) error {
 		return merry.Wrap(err)
 	}
 	return nil
+}
+
+func (r *groupRepo) GroupMembers(groupID string) ([]User, error) {
+	var users []User
+	err := r.db.Select(&users, `
+		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
+		from users
+		where id in (select user_id from group_users where group_id = $1)`,
+		groupID)
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+	return users, nil
 }

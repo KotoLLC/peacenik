@@ -77,16 +77,14 @@ func (s *groupService) AddGroup(ctx context.Context, r *rpc.GroupAddGroupRequest
 }
 
 func (s *groupService) EditGroup(ctx context.Context, r *rpc.GroupEditGroupRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
-
-	group, err := s.repos.Group.FindGroupByID(r.GroupId)
+	group, isGroupAdmin, err := s.getGroup(ctx, r.GroupId)
 	if err != nil {
 		return nil, err
 	}
 	if group == nil {
 		return nil, twirp.NotFoundError("group not found")
 	}
-	if group.AdminID != user.ID {
+	if !isGroupAdmin {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 
@@ -94,7 +92,7 @@ func (s *groupService) EditGroup(ctx context.Context, r *rpc.GroupEditGroupReque
 		if r.Description == "" {
 			return nil, twirp.InvalidArgumentError("description", "is empty")
 		}
-		if r.Description != user.Email {
+		if r.Description != group.Description {
 			err := s.repos.Group.SetDescription(group.ID, r.Description)
 			if err != nil {
 				return nil, err
@@ -167,7 +165,7 @@ func (s *groupService) CreateInvite(ctx context.Context, r *rpc.GroupCreateInvit
 		return nil, err
 	}
 	if !isGroupMember {
-		return nil, twirp.NewError(twirp.PermissionDenied, "mot a group member")
+		return nil, twirp.NewError(twirp.PermissionDenied, "not a group member")
 	}
 
 	invitedUser, err := s.repos.User.FindUserByIDOrName(r.Invited)
@@ -251,6 +249,7 @@ func (s *groupService) AcceptInvite(ctx context.Context, r *rpc.GroupAcceptInvit
 		}
 		return nil, err
 	}
+
 	// TODO
 	s.notificationSender.SendNotification([]string{r.InviterId}, user.DisplayName()+" accepted your invite!", "group-invite/accept", map[string]interface{}{
 		"group_id": r.GroupId,
@@ -342,18 +341,37 @@ func (s *groupService) InvitesForMe(ctx context.Context, _ *rpc.Empty) (*rpc.Gro
 func (s *groupService) LeaveGroup(ctx context.Context, r *rpc.GroupLeaveGroupRequest) (*rpc.Empty, error) {
 	user := s.getUser(ctx)
 
-	group, err := s.repos.Group.FindGroupByID(r.GroupId)
+	group, isGroupAdmin, err := s.getGroup(ctx, r.GroupId)
 	if err != nil {
 		return nil, err
 	}
 	if group == nil {
 		return nil, twirp.NotFoundError("group not found")
 	}
-	if group.AdminID == user.ID {
+	if isGroupAdmin {
 		return nil, twirp.NewError(twirp.InvalidArgument, "admin can't leave the group")
 	}
 
-	err = s.repos.Group.LeaveGroup(r.GroupId, user.ID)
+	err = s.repos.Group.RemoveUserFromGroup(r.GroupId, user.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &rpc.Empty{}, nil
+}
+
+func (s *groupService) RemoveUser(ctx context.Context, r *rpc.GroupRemoveUserRequest) (*rpc.Empty, error) {
+	group, isGroupAdmin, err := s.getGroup(ctx, r.GroupId)
+	if err != nil {
+		return nil, err
+	}
+	if group == nil {
+		return nil, twirp.NotFoundError("group not found")
+	}
+	if !isGroupAdmin {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
+	}
+
+	err = s.repos.Group.RemoveUserFromGroup(r.GroupId, r.UserId)
 	if err != nil {
 		return nil, err
 	}
