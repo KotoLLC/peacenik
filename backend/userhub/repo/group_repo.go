@@ -24,23 +24,24 @@ type Group struct {
 }
 
 type GroupInvite struct {
-	ID               int          `db:"id"`
-	GroupID          string       `db:"group_id"`
-	GroupName        string       `db:"group_name"`
-	GroupDescription string       `db:"group_description"`
-	InviterID        string       `db:"inviter_id"`
-	InviterName      string       `db:"inviter_name"`
-	InviterFullName  string       `db:"inviter_full_name"`
-	InviterEmail     string       `db:"inviter_email"`
-	InviterAvatarID  string       `db:"inviter_avatar_id"`
-	InvitedID        string       `db:"invited_id"`
-	InvitedName      string       `db:"invited_name"`
-	InvitedFullName  string       `db:"invited_full_name"`
-	InvitedEmail     string       `db:"invited_email"`
-	InvitedAvatarID  string       `db:"invited_avatar_id"`
-	CreatedAt        time.Time    `db:"created_at"`
-	AcceptedAt       sql.NullTime `db:"accepted_at"`
-	RejectedAt       sql.NullTime `db:"rejected_at"`
+	ID                int          `db:"id"`
+	GroupID           string       `db:"group_id"`
+	GroupName         string       `db:"group_name"`
+	GroupDescription  string       `db:"group_description"`
+	InviterID         string       `db:"inviter_id"`
+	InviterName       string       `db:"inviter_name"`
+	InviterFullName   string       `db:"inviter_full_name"`
+	InviterEmail      string       `db:"inviter_email"`
+	InviterAvatarID   string       `db:"inviter_avatar_id"`
+	InvitedID         string       `db:"invited_id"`
+	InvitedName       string       `db:"invited_name"`
+	InvitedFullName   string       `db:"invited_full_name"`
+	InvitedEmail      string       `db:"invited_email"`
+	InvitedAvatarID   string       `db:"invited_avatar_id"`
+	CreatedAt         time.Time    `db:"created_at"`
+	AcceptedAt        sql.NullTime `db:"accepted_at"`
+	RejectedAt        sql.NullTime `db:"rejected_at"`
+	AcceptedByAdminAt sql.NullTime `db:"accepted_by_admin_at"`
 }
 
 type GroupRepo interface {
@@ -56,7 +57,7 @@ type GroupRepo interface {
 	IsGroupMember(groupID, userID string) (bool, error)
 	AddInvite(groupID, inviterID, invitedID string) error
 	AddInviteByEmail(groupID, inviterID, invitedEmail string) error
-	AcceptInvite(groupID, inviterID, invitedID string, autoAccepted bool) error
+	AcceptInvite(groupID, inviterID, invitedID string) error
 	RejectInvite(groupID, inviterID, invitedID string) error
 	InvitesFromMe(user User) ([]GroupInvite, error)
 	InvitesForMe(user User) ([]GroupInvite, error)
@@ -200,9 +201,9 @@ func (r *groupRepo) SetIsPublic(groupID string, isPublic bool) error {
 
 func (r *groupRepo) AddUserToGroup(groupID, userID string) error {
 	_, err := r.db.Exec(`
-			insert into group_users(group_id, user_id, created_at, updated_at)
-			select $1, $2, $3, $3
-			where not exists(select * from group_users where group_id = $1 and user_id = $2);`,
+		insert into group_users(group_id, user_id, created_at, updated_at)
+		select $1, $2, $3, $3
+		where not exists(select * from group_users where group_id = $1 and user_id = $2);`,
 		groupID, userID, common.CurrentTimestamp())
 	if err != nil {
 		return merry.Wrap(err)
@@ -250,15 +251,25 @@ func (r *groupRepo) AddInviteByEmail(groupID, inviterID, invitedEmail string) er
 	return merry.Wrap(err)
 }
 
-func (r *groupRepo) AcceptInvite(groupID, inviterID, invitedID string, autoAccepted bool) error {
+func (r *groupRepo) AcceptInvite(groupID, inviterID, invitedID string) error {
 	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+		var adminID string
+		err := tx.Get(&adminID, `select admin_id from groups where id = $1`, groupID)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+
 		now := common.CurrentTimestamp()
 
 		res, err := tx.Exec(`
 		update group_invites
-		set accepted_at = $1, auto_accepted = $2
+		set accepted_at = $1,
+		    accepted_by_admin_at = case
+		        when inviter_id = $2 then $1
+		        else accepted_by_admin_at
+		        end
 		where group_id = $3 and inviter_id = $4 and invited_id = $5 and rejected_at is null`,
-			now, autoAccepted, groupID, inviterID, invitedID)
+			now, adminID, groupID, inviterID, invitedID)
 		if err != nil {
 			return merry.Wrap(err)
 		}
@@ -270,15 +281,16 @@ func (r *groupRepo) AcceptInvite(groupID, inviterID, invitedID string, autoAccep
 			return ErrInviteNotFound.Here()
 		}
 
-		_, err = tx.Exec(`
+		if adminID == inviterID {
+			_, err = tx.Exec(`
 			insert into group_users(group_id, user_id, created_at, updated_at) 
 			select $1, $2, $3, $3
 			where not exists(select * from group_users where group_id = $1 and user_id = $2)`,
-			groupID, invitedID, now)
-		if err != nil {
-			return merry.Wrap(err)
+				groupID, invitedID, now)
+			if err != nil {
+				return merry.Wrap(err)
+			}
 		}
-
 		return nil
 	})
 }
@@ -286,8 +298,8 @@ func (r *groupRepo) AcceptInvite(groupID, inviterID, invitedID string, autoAccep
 func (r *groupRepo) RejectInvite(groupID, inviterID, invitedID string) error {
 	res, err := r.db.Exec(`
 		update group_invites
-		set rejected_at = $1, accepted_at = null
-		where group_id = $2 and invited_id = $3 and invited_id = $4 and rejected_at is null`,
+		set rejected_at = $1, accepted_at = null, accepted_by_admin_at = null
+		where group_id = $2 and inviter_id = $3 and invited_id = $4 and rejected_at is null`,
 		common.CurrentTimestamp(), groupID, inviterID, invitedID)
 	if err != nil {
 		return merry.Wrap(err)
@@ -308,7 +320,7 @@ func (r *groupRepo) InvitesFromMe(user User) ([]GroupInvite, error) {
 		select i.id, g.id as group_id, g.name group_name, g.description group_description,
 		       i.inviter_id, coalesce(u.id, '') as invited_id, coalesce(u.name, '') invited_name, coalesce(u.full_name, '') invited_full_name, coalesce(u.email, i.invited_email) as invited_email,
 		       coalesce(u.avatar_thumbnail_id, '') invited_avatar_id,
-		       i.created_at, i.accepted_at, i.rejected_at
+		       i.created_at, i.accepted_at, i.rejected_at, i.accepted_by_admin_at
 		from group_invites i
 		    inner join groups g on g.id = i.group_id
 			left join users u on u.id = i.invited_id 
@@ -329,7 +341,7 @@ func (r *groupRepo) InvitesForMe(user User) ([]GroupInvite, error) {
 	err := r.db.Select(&invites, `
 		select i.id, g.id as group_id, g.name group_name, g.description group_description,
 		       i.inviter_id, u.name inviter_name, u.full_name inviter_full_name, u.email inviter_email, u.avatar_thumbnail_id inviter_avatar_id,
-		       i.created_at, i.accepted_at, i.rejected_at
+		       i.created_at, i.accepted_at, i.rejected_at, i.accepted_by_admin_at
 		from group_invites i
 		    inner join groups g on g.id = i.group_id
 			inner join users u on u.id = i.inviter_id

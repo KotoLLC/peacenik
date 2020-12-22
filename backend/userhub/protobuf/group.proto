@@ -65,6 +65,7 @@ message GroupInvite {
     string created_at = 7;
     string accepted_at = 8;
     string rejected_at = 9;
+    string accepted_by_admin_at = 10;
 }
 
 message GroupInvitesFromMeResponse {

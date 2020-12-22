@@ -210,10 +210,12 @@ func (s *groupService) CreateInvite(ctx context.Context, r *rpc.GroupCreateInvit
 		if err != nil {
 			return nil, err
 		}
-		s.notificationSender.SendNotification([]string{invitedUser.ID}, user.DisplayName()+" invited you to the group "+group.Name+"", "group-invite/add", map[string]interface{}{
-			"group_id": group.ID,
-			"user_id":  user.ID,
-		})
+		if s.notificationSender != nil {
+			s.notificationSender.SendNotification([]string{invitedUser.ID}, user.DisplayName()+" invited you to the group "+group.Name+"", "group-invite/add", map[string]interface{}{
+				"group_id": group.ID,
+				"user_id":  user.ID,
+			})
+		}
 		// TODO:
 		//err = s.sendInviteLinkToRegisteredUser(ctx, user, invitedUser.Email)
 		//if err != nil {
@@ -242,7 +244,7 @@ func (s *groupService) AcceptInvite(ctx context.Context, r *rpc.GroupAcceptInvit
 		return nil, twirp.NewError(twirp.InvalidArgument, "group_id")
 	}
 
-	err := s.repos.Group.AcceptInvite(r.GroupId, r.InviterId, user.ID, false)
+	err := s.repos.Group.AcceptInvite(r.GroupId, r.InviterId, user.ID)
 	if err != nil {
 		if merry.Is(err, repo.ErrInviteNotFound) {
 			return nil, twirp.NotFoundError(err.Error())
@@ -251,10 +253,12 @@ func (s *groupService) AcceptInvite(ctx context.Context, r *rpc.GroupAcceptInvit
 	}
 
 	// TODO
-	s.notificationSender.SendNotification([]string{r.InviterId}, user.DisplayName()+" accepted your invite!", "group-invite/accept", map[string]interface{}{
-		"group_id": r.GroupId,
-		"user_id":  user.ID,
-	})
+	if s.notificationSender != nil {
+		s.notificationSender.SendNotification([]string{r.InviterId}, user.DisplayName()+" accepted your invite!", "group-invite/accept", map[string]interface{}{
+			"group_id": r.GroupId,
+			"user_id":  user.ID,
+		})
+	}
 	return &rpc.Empty{}, nil
 }
 
@@ -273,10 +277,12 @@ func (s *groupService) RejectInvite(ctx context.Context, r *rpc.GroupRejectInvit
 		return nil, err
 	}
 	// TODO
-	s.notificationSender.SendNotification([]string{r.InviterId}, user.DisplayName()+" rejected your invite", "group-invite/reject", map[string]interface{}{
-		"group_id": r.GroupId,
-		"user_id":  user.ID,
-	})
+	if s.notificationSender != nil {
+		s.notificationSender.SendNotification([]string{r.InviterId}, user.DisplayName()+" rejected your invite", "group-invite/reject", map[string]interface{}{
+			"group_id": r.GroupId,
+			"user_id":  user.ID,
+		})
+	}
 	return &rpc.Empty{}, nil
 }
 
@@ -295,15 +301,16 @@ func (s *groupService) InvitesFromMe(ctx context.Context, _ *rpc.Empty) (*rpc.Gr
 		}
 
 		rpcInvites[i] = &rpc.GroupInvite{
-			GroupId:          invite.GroupID,
-			GroupName:        invite.GroupName,
-			GroupDescription: invite.GroupDescription,
-			UserId:           invite.InvitedID,
-			UserName:         invitedName,
-			UserFullName:     invitedFullName,
-			CreatedAt:        common.TimeToRPCString(invite.CreatedAt),
-			AcceptedAt:       common.NullTimeToRPCString(invite.AcceptedAt),
-			RejectedAt:       common.NullTimeToRPCString(invite.RejectedAt),
+			GroupId:           invite.GroupID,
+			GroupName:         invite.GroupName,
+			GroupDescription:  invite.GroupDescription,
+			UserId:            invite.InvitedID,
+			UserName:          invitedName,
+			UserFullName:      invitedFullName,
+			CreatedAt:         common.TimeToRPCString(invite.CreatedAt),
+			AcceptedAt:        common.NullTimeToRPCString(invite.AcceptedAt),
+			RejectedAt:        common.NullTimeToRPCString(invite.RejectedAt),
+			AcceptedByAdminAt: common.NullTimeToRPCString(invite.AcceptedByAdminAt),
 		}
 	}
 
@@ -321,15 +328,16 @@ func (s *groupService) InvitesForMe(ctx context.Context, _ *rpc.Empty) (*rpc.Gro
 	rpcInvites := make([]*rpc.GroupInvite, len(invites))
 	for i, invite := range invites {
 		rpcInvites[i] = &rpc.GroupInvite{
-			GroupId:          invite.GroupID,
-			GroupName:        invite.GroupName,
-			GroupDescription: invite.GroupDescription,
-			UserId:           invite.InviterID,
-			UserName:         invite.InviterName,
-			UserFullName:     invite.InviterFullName,
-			CreatedAt:        common.TimeToRPCString(invite.CreatedAt),
-			AcceptedAt:       common.NullTimeToRPCString(invite.AcceptedAt),
-			RejectedAt:       common.NullTimeToRPCString(invite.RejectedAt),
+			GroupId:           invite.GroupID,
+			GroupName:         invite.GroupName,
+			GroupDescription:  invite.GroupDescription,
+			UserId:            invite.InviterID,
+			UserName:          invite.InviterName,
+			UserFullName:      invite.InviterFullName,
+			CreatedAt:         common.TimeToRPCString(invite.CreatedAt),
+			AcceptedAt:        common.NullTimeToRPCString(invite.AcceptedAt),
+			RejectedAt:        common.NullTimeToRPCString(invite.RejectedAt),
+			AcceptedByAdminAt: common.NullTimeToRPCString(invite.AcceptedByAdminAt),
 		}
 	}
 
