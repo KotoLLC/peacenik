@@ -304,9 +304,9 @@ func (s *groupService) InvitesFromMe(ctx context.Context, _ *rpc.Empty) (*rpc.Gr
 			GroupId:           invite.GroupID,
 			GroupName:         invite.GroupName,
 			GroupDescription:  invite.GroupDescription,
-			UserId:            invite.InvitedID,
-			UserName:          invitedName,
-			UserFullName:      invitedFullName,
+			InvitedId:         invite.InvitedID,
+			InvitedName:       invitedName,
+			InvitedFullName:   invitedFullName,
 			CreatedAt:         common.TimeToRPCString(invite.CreatedAt),
 			AcceptedAt:        common.NullTimeToRPCString(invite.AcceptedAt),
 			RejectedAt:        common.NullTimeToRPCString(invite.RejectedAt),
@@ -331,9 +331,9 @@ func (s *groupService) InvitesForMe(ctx context.Context, _ *rpc.Empty) (*rpc.Gro
 			GroupId:           invite.GroupID,
 			GroupName:         invite.GroupName,
 			GroupDescription:  invite.GroupDescription,
-			UserId:            invite.InviterID,
-			UserName:          invite.InviterName,
-			UserFullName:      invite.InviterFullName,
+			InviterId:         invite.InviterID,
+			InviterName:       invite.InviterName,
+			InviterFullName:   invite.InviterFullName,
 			CreatedAt:         common.TimeToRPCString(invite.CreatedAt),
 			AcceptedAt:        common.NullTimeToRPCString(invite.AcceptedAt),
 			RejectedAt:        common.NullTimeToRPCString(invite.RejectedAt),
@@ -368,6 +368,29 @@ func (s *groupService) LeaveGroup(ctx context.Context, r *rpc.GroupLeaveGroupReq
 }
 
 func (s *groupService) RemoveUser(ctx context.Context, r *rpc.GroupRemoveUserRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+	group, isGroupAdmin, err := s.getGroup(ctx, r.GroupId)
+	if err != nil {
+		return nil, err
+	}
+	if group == nil {
+		return nil, twirp.NotFoundError("group not found")
+	}
+	if !isGroupAdmin {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
+	}
+	if user.ID == r.UserId {
+		return nil, twirp.NewError(twirp.InvalidArgument, "can't delete himself")
+	}
+
+	err = s.repos.Group.RemoveUserFromGroup(r.GroupId, r.UserId)
+	if err != nil {
+		return nil, err
+	}
+	return &rpc.Empty{}, nil
+}
+
+func (s *groupService) ConfirmInvite(ctx context.Context, r *rpc.GroupConfirmInviteRequest) (*rpc.Empty, error) {
 	group, isGroupAdmin, err := s.getGroup(ctx, r.GroupId)
 	if err != nil {
 		return nil, err
@@ -379,9 +402,54 @@ func (s *groupService) RemoveUser(ctx context.Context, r *rpc.GroupRemoveUserReq
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 
-	err = s.repos.Group.RemoveUserFromGroup(r.GroupId, r.UserId)
+	err = s.repos.Group.ConfirmInvite(r.GroupId, r.InviterId, r.InvitedId)
 	if err != nil {
 		return nil, err
 	}
 	return &rpc.Empty{}, nil
+}
+
+func (s *groupService) InvitesToConfirm(ctx context.Context, _ *rpc.Empty) (*rpc.GroupInvitesToConfirmResponse, error) {
+	user := s.getUser(ctx)
+	invites, err := s.repos.Group.InvitesToConfirm(user.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	groupSet := make(map[string]*rpc.GroupInvites)
+	var groups []*rpc.GroupInvites
+	for _, invite := range invites {
+		rpcInvite := &rpc.GroupInvite{
+			InviterId:         invite.InviterID,
+			InviterName:       invite.InviterName,
+			InviterFullName:   invite.InviterFullName,
+			InvitedId:         invite.InvitedID,
+			InvitedName:       invite.InvitedName,
+			InvitedFullName:   invite.InvitedFullName,
+			CreatedAt:         common.TimeToRPCString(invite.CreatedAt),
+			AcceptedAt:        common.NullTimeToRPCString(invite.AcceptedAt),
+			RejectedAt:        common.NullTimeToRPCString(invite.RejectedAt),
+			AcceptedByAdminAt: common.NullTimeToRPCString(invite.AcceptedByAdminAt),
+		}
+
+		if _, ok := groupSet[invite.GroupID]; !ok {
+			gi := &rpc.GroupInvites{
+				Group: &rpc.Group{
+					Id:          invite.GroupID,
+					Name:        invite.GroupName,
+					Description: invite.GroupDescription,
+					IsPublic:    invite.GroupIsPublic,
+				},
+				Invites: []*rpc.GroupInvite{rpcInvite},
+			}
+			groupSet[invite.GroupID] = gi
+			groups = append(groups, gi)
+		} else {
+			groupSet[invite.GroupID].Invites = append(groupSet[invite.GroupID].Invites, rpcInvite)
+		}
+	}
+
+	return &rpc.GroupInvitesToConfirmResponse{
+		Groups: groups,
+	}, nil
 }

@@ -231,9 +231,9 @@ func (s *GroupServiceTestSuite) Test_CreateInvite() {
 	s.Equal(groupID, respFromUser2.Invites[0].GroupId)
 	s.Equal("group-1", respFromUser2.Invites[0].GroupName)
 	s.Equal("group-1 description", respFromUser2.Invites[0].GroupDescription)
-	s.Equal("user-3", respFromUser2.Invites[0].UserId)
-	s.Equal("user-3-name", respFromUser2.Invites[0].UserName)
-	s.Equal("user-3 user-3", respFromUser2.Invites[0].UserFullName)
+	s.Equal("user-3", respFromUser2.Invites[0].InvitedId)
+	s.Equal("user-3-name", respFromUser2.Invites[0].InvitedName)
+	s.Equal("user-3 user-3", respFromUser2.Invites[0].InvitedFullName)
 	s.NotEmpty(respFromUser2.Invites[0].CreatedAt)
 	s.Empty(respFromUser2.Invites[0].AcceptedAt)
 	s.Empty(respFromUser2.Invites[0].RejectedAt)
@@ -246,9 +246,9 @@ func (s *GroupServiceTestSuite) Test_CreateInvite() {
 	s.Equal(groupID, respForUser3.Invites[0].GroupId)
 	s.Equal("group-1", respForUser3.Invites[0].GroupName)
 	s.Equal("group-1 description", respForUser3.Invites[0].GroupDescription)
-	s.Equal("user-2", respForUser3.Invites[0].UserId)
-	s.Equal("user-2-name", respForUser3.Invites[0].UserName)
-	s.Equal("user-2 user-2", respForUser3.Invites[0].UserFullName)
+	s.Equal("user-2", respForUser3.Invites[0].InviterId)
+	s.Equal("user-2-name", respForUser3.Invites[0].InviterName)
+	s.Equal("user-2 user-2", respForUser3.Invites[0].InviterFullName)
 	s.NotEmpty(respForUser3.Invites[0].CreatedAt)
 	s.Empty(respForUser3.Invites[0].AcceptedAt)
 	s.Empty(respForUser3.Invites[0].RejectedAt)
@@ -285,9 +285,9 @@ func (s *GroupServiceTestSuite) Test_CreateInvite_GroupAdmin() {
 	s.Equal(groupID, respFromUser2.Invites[0].GroupId)
 	s.Equal("group-1", respFromUser2.Invites[0].GroupName)
 	s.Equal("group-1 description", respFromUser2.Invites[0].GroupDescription)
-	s.Equal("user-3", respFromUser2.Invites[0].UserId)
-	s.Equal("user-3-name", respFromUser2.Invites[0].UserName)
-	s.Equal("user-3 user-3", respFromUser2.Invites[0].UserFullName)
+	s.Equal("user-3", respFromUser2.Invites[0].InvitedId)
+	s.Equal("user-3-name", respFromUser2.Invites[0].InvitedName)
+	s.Equal("user-3 user-3", respFromUser2.Invites[0].InvitedFullName)
 	s.NotEmpty(respFromUser2.Invites[0].CreatedAt)
 	s.Empty(respFromUser2.Invites[0].AcceptedAt)
 	s.Empty(respFromUser2.Invites[0].RejectedAt)
@@ -300,9 +300,9 @@ func (s *GroupServiceTestSuite) Test_CreateInvite_GroupAdmin() {
 	s.Equal(groupID, respForUser3.Invites[0].GroupId)
 	s.Equal("group-1", respForUser3.Invites[0].GroupName)
 	s.Equal("group-1 description", respForUser3.Invites[0].GroupDescription)
-	s.Equal("user-2", respForUser3.Invites[0].UserId)
-	s.Equal("user-2-name", respForUser3.Invites[0].UserName)
-	s.Equal("user-2 user-2", respForUser3.Invites[0].UserFullName)
+	s.Equal("user-2", respForUser3.Invites[0].InviterId)
+	s.Equal("user-2-name", respForUser3.Invites[0].InviterName)
+	s.Equal("user-2 user-2", respForUser3.Invites[0].InviterFullName)
 	s.NotEmpty(respForUser3.Invites[0].CreatedAt)
 	s.Empty(respForUser3.Invites[0].AcceptedAt)
 	s.Empty(respForUser3.Invites[0].RejectedAt)
@@ -341,9 +341,9 @@ func (s *GroupServiceTestSuite) Test_CreateInvite_ByEmail() {
 	s.Equal(groupID, respFromUser2.Invites[0].GroupId)
 	s.Equal("group-1", respFromUser2.Invites[0].GroupName)
 	s.Equal("group-1 description", respFromUser2.Invites[0].GroupDescription)
-	s.Equal("user-3", respFromUser2.Invites[0].UserId)
-	s.Equal("user-3-name", respFromUser2.Invites[0].UserName)
-	s.Equal("user-3 user-3", respFromUser2.Invites[0].UserFullName)
+	s.Equal("user-3", respFromUser2.Invites[0].InvitedId)
+	s.Equal("user-3-name", respFromUser2.Invites[0].InvitedName)
+	s.Equal("user-3 user-3", respFromUser2.Invites[0].InvitedFullName)
 	s.NotEmpty(respFromUser2.Invites[0].CreatedAt)
 	s.Empty(respFromUser2.Invites[0].AcceptedAt)
 	s.Empty(respFromUser2.Invites[0].RejectedAt)
@@ -356,9 +356,9 @@ func (s *GroupServiceTestSuite) Test_CreateInvite_ByEmail() {
 	s.Equal(groupID, respForUser3.Invites[0].GroupId)
 	s.Equal("group-1", respForUser3.Invites[0].GroupName)
 	s.Equal("group-1 description", respForUser3.Invites[0].GroupDescription)
-	s.Equal("user-2", respForUser3.Invites[0].UserId)
-	s.Equal("user-2-name", respForUser3.Invites[0].UserName)
-	s.Equal("user-2 user-2", respForUser3.Invites[0].UserFullName)
+	s.Equal("user-2", respForUser3.Invites[0].InviterId)
+	s.Equal("user-2-name", respForUser3.Invites[0].InviterName)
+	s.Equal("user-2 user-2", respForUser3.Invites[0].InviterFullName)
 	s.NotEmpty(respForUser3.Invites[0].CreatedAt)
 	s.Empty(respForUser3.Invites[0].AcceptedAt)
 	s.Empty(respForUser3.Invites[0].RejectedAt)
@@ -396,9 +396,9 @@ func (s *GroupServiceTestSuite) Test_CreateInvite_UnregisteredUser() {
 	s.Equal(groupID, respFromUser2.Invites[0].GroupId)
 	s.Equal("group-1", respFromUser2.Invites[0].GroupName)
 	s.Equal("group-1 description", respFromUser2.Invites[0].GroupDescription)
-	s.Equal("", respFromUser2.Invites[0].UserId)
-	s.Equal("user-3@mail.org", respFromUser2.Invites[0].UserName)
-	s.Equal("", respFromUser2.Invites[0].UserFullName)
+	s.Equal("", respFromUser2.Invites[0].InvitedId)
+	s.Equal("user-3@mail.org", respFromUser2.Invites[0].InvitedName)
+	s.Equal("", respFromUser2.Invites[0].InvitedFullName)
 	s.NotEmpty(respFromUser2.Invites[0].CreatedAt)
 	s.Empty(respFromUser2.Invites[0].AcceptedAt)
 	s.Empty(respFromUser2.Invites[0].RejectedAt)
@@ -431,9 +431,9 @@ func (s *GroupServiceTestSuite) Test_AcceptInvite() {
 	s.Equal(groupID, respForUser3.Invites[0].GroupId)
 	s.Equal("group-1", respForUser3.Invites[0].GroupName)
 	s.Equal("group-1 description", respForUser3.Invites[0].GroupDescription)
-	s.Equal("user-2", respForUser3.Invites[0].UserId)
-	s.Equal("user-2-name", respForUser3.Invites[0].UserName)
-	s.Equal("user-2 user-2", respForUser3.Invites[0].UserFullName)
+	s.Equal("user-2", respForUser3.Invites[0].InviterId)
+	s.Equal("user-2-name", respForUser3.Invites[0].InviterName)
+	s.Equal("user-2 user-2", respForUser3.Invites[0].InviterFullName)
 	s.NotEmpty(respForUser3.Invites[0].CreatedAt)
 	s.NotEmpty(respForUser3.Invites[0].AcceptedAt)
 	s.Empty(respForUser3.Invites[0].RejectedAt)
@@ -468,9 +468,9 @@ func (s *GroupServiceTestSuite) Test_AcceptInvite_FromGroupAdmin() {
 	s.Equal(groupID, respForUser3.Invites[0].GroupId)
 	s.Equal("group-1", respForUser3.Invites[0].GroupName)
 	s.Equal("group-1 description", respForUser3.Invites[0].GroupDescription)
-	s.Equal("user-2", respForUser3.Invites[0].UserId)
-	s.Equal("user-2-name", respForUser3.Invites[0].UserName)
-	s.Equal("user-2 user-2", respForUser3.Invites[0].UserFullName)
+	s.Equal("user-2", respForUser3.Invites[0].InviterId)
+	s.Equal("user-2-name", respForUser3.Invites[0].InviterName)
+	s.Equal("user-2 user-2", respForUser3.Invites[0].InviterFullName)
 	s.NotEmpty(respForUser3.Invites[0].CreatedAt)
 	s.NotEmpty(respForUser3.Invites[0].AcceptedAt)
 	s.Empty(respForUser3.Invites[0].RejectedAt)
@@ -507,15 +507,155 @@ func (s *GroupServiceTestSuite) Test_RejectInvite() {
 	s.Equal(groupID, respForUser3.Invites[0].GroupId)
 	s.Equal("group-1", respForUser3.Invites[0].GroupName)
 	s.Equal("group-1 description", respForUser3.Invites[0].GroupDescription)
-	s.Equal("user-2", respForUser3.Invites[0].UserId)
-	s.Equal("user-2-name", respForUser3.Invites[0].UserName)
-	s.Equal("user-2 user-2", respForUser3.Invites[0].UserFullName)
+	s.Equal("user-2", respForUser3.Invites[0].InviterId)
+	s.Equal("user-2-name", respForUser3.Invites[0].InviterName)
+	s.Equal("user-2 user-2", respForUser3.Invites[0].InviterFullName)
 	s.NotEmpty(respForUser3.Invites[0].CreatedAt)
 	s.Empty(respForUser3.Invites[0].AcceptedAt)
 	s.NotEmpty(respForUser3.Invites[0].RejectedAt)
 	s.Empty(respForUser3.Invites[0].AcceptedByAdminAt)
 
 	isMember, err := s.repos.Group.IsGroupMember(groupID, "user-3")
+	s.Nil(err)
+	s.False(isMember)
+}
+
+func (s *GroupServiceTestSuite) Test_ConfirmInvite() {
+	groupID := s.addGroup("group-1", "user-1")
+	s.addUser("user-2")
+	s.addUser("user-3")
+	s.addGroupUser(groupID, "user-2")
+
+	ctx := s.userContext("user-2")
+	_, err := s.service.CreateInvite(ctx, &rpc.GroupCreateInviteRequest{
+		GroupId: groupID,
+		Invited: "user-3",
+	})
+	s.Require().Nil(err)
+
+	ctx = s.userContext("user-3")
+	_, err = s.service.AcceptInvite(ctx, &rpc.GroupAcceptInviteRequest{
+		GroupId:   groupID,
+		InviterId: "user-2",
+	})
+	s.Require().Nil(err)
+
+	isMember, err := s.repos.Group.IsGroupMember(groupID, "user-3")
+	s.Nil(err)
+	s.False(isMember)
+
+	_, err = s.service.ConfirmInvite(ctx, &rpc.GroupConfirmInviteRequest{
+		GroupId:   groupID,
+		InviterId: "user-2",
+		InvitedId: "user-3",
+	})
+	s.EqualError(err, "twirp error permission_denied: ")
+
+	ctx = s.userContext("user-1")
+
+	resp, err := s.service.InvitesToConfirm(ctx, &rpc.Empty{})
+	s.Nil(err)
+	s.Equal(1, len(resp.Groups))
+	s.Equal(groupID, resp.Groups[0].Group.Id)
+	s.Equal("group-1", resp.Groups[0].Group.Name)
+	s.Equal("group-1 description", resp.Groups[0].Group.Description)
+	s.Equal(true, resp.Groups[0].Group.IsPublic)
+	s.Equal(1, len(resp.Groups[0].Invites))
+	s.Equal("user-2", resp.Groups[0].Invites[0].InviterId)
+	s.Equal("user-2-name", resp.Groups[0].Invites[0].InviterName)
+	s.Equal("user-2 user-2", resp.Groups[0].Invites[0].InviterFullName)
+	s.Equal("user-3", resp.Groups[0].Invites[0].InvitedId)
+	s.Equal("user-3-name", resp.Groups[0].Invites[0].InvitedName)
+	s.Equal("user-3 user-3", resp.Groups[0].Invites[0].InvitedFullName)
+	s.NotEmpty(resp.Groups[0].Invites[0].CreatedAt)
+	s.NotEmpty(resp.Groups[0].Invites[0].AcceptedAt)
+	s.Empty(resp.Groups[0].Invites[0].RejectedAt)
+	s.Empty(resp.Groups[0].Invites[0].AcceptedByAdminAt)
+
+	_, err = s.service.ConfirmInvite(ctx, &rpc.GroupConfirmInviteRequest{
+		GroupId:   groupID,
+		InviterId: "user-2",
+		InvitedId: "user-3",
+	})
+	s.Nil(err)
+
+	isMember, err = s.repos.Group.IsGroupMember(groupID, "user-3")
+	s.Nil(err)
+	s.True(isMember)
+
+	resp, err = s.service.InvitesToConfirm(ctx, &rpc.Empty{})
+	s.Nil(err)
+	s.Empty(len(resp.Groups))
+}
+
+func (s *GroupServiceTestSuite) Test_RemoveUser() {
+	groupID := s.addGroup("group-1", "user-1")
+	s.addUser("user-2")
+	s.addUser("user-3")
+	s.addGroupUser(groupID, "user-2")
+
+	ctx := s.userContext("user-2")
+	_, err := s.service.RemoveUser(ctx, &rpc.GroupRemoveUserRequest{
+		GroupId: groupID,
+		UserId:  "user-1",
+	})
+	s.EqualError(err, "twirp error permission_denied: ")
+
+	isMember, err := s.repos.Group.IsGroupMember(groupID, "user-2")
+	s.Nil(err)
+	s.True(isMember)
+
+	ctx = s.userContext("user-1")
+	_, err = s.service.RemoveUser(ctx, &rpc.GroupRemoveUserRequest{
+		GroupId: groupID,
+		UserId:  "user-1",
+	})
+	s.EqualError(err, "twirp error invalid_argument: can't delete himself")
+	_, err = s.service.RemoveUser(ctx, &rpc.GroupRemoveUserRequest{
+		GroupId: groupID,
+		UserId:  "user-3",
+	})
+	s.Nil(err)
+	_, err = s.service.RemoveUser(ctx, &rpc.GroupRemoveUserRequest{
+		GroupId: groupID,
+		UserId:  "user-2",
+	})
+	s.Nil(err)
+
+	isMember, err = s.repos.Group.IsGroupMember(groupID, "user-2")
+	s.Nil(err)
+	s.False(isMember)
+}
+
+func (s *GroupServiceTestSuite) Test_LeaveGroup() {
+	groupID := s.addGroup("group-1", "user-1")
+	s.addUser("user-2")
+	s.addUser("user-3")
+	s.addGroupUser(groupID, "user-2")
+
+	ctx := s.userContext("user-3")
+	_, err := s.service.LeaveGroup(ctx, &rpc.GroupLeaveGroupRequest{
+		GroupId: groupID,
+	})
+	s.Nil(err)
+
+	ctx = s.userContext("user-1")
+	_, err = s.service.LeaveGroup(ctx, &rpc.GroupLeaveGroupRequest{
+		GroupId: groupID,
+	})
+	s.EqualError(err, "twirp error invalid_argument: admin can't leave the group")
+
+	isMember, err := s.repos.Group.IsGroupMember(groupID, "user-2")
+	s.Nil(err)
+	s.True(isMember)
+
+	ctx = s.userContext("user-2")
+	_, err = s.service.LeaveGroup(ctx, &rpc.GroupLeaveGroupRequest{
+		GroupId: groupID,
+	})
+	s.Nil(err)
+
+	isMember, err = s.repos.Group.IsGroupMember(groupID, "user-2")
 	s.Nil(err)
 	s.False(isMember)
 }

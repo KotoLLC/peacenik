@@ -12,11 +12,15 @@ service GroupService {
     rpc CreateInvite (GroupCreateInviteRequest) returns (Empty);
     rpc AcceptInvite (GroupAcceptInviteRequest) returns (Empty);
     rpc RejectInvite (GroupRejectInviteRequest) returns (Empty);
+
+    rpc ConfirmInvite (GroupConfirmInviteRequest) returns (Empty);
+
     rpc InvitesFromMe (Empty) returns (GroupInvitesFromMeResponse);
     rpc InvitesForMe (Empty) returns (GroupInvitesForMeResponse);
+    rpc InvitesToConfirm (Empty) returns (GroupInvitesToConfirmResponse);
 
-    rpc LeaveGroup(GroupLeaveGroupRequest) returns (Empty);
-    rpc RemoveUser(GroupRemoveUserRequest) returns (Empty);
+    rpc LeaveGroup (GroupLeaveGroupRequest) returns (Empty);
+    rpc RemoveUser (GroupRemoveUserRequest) returns (Empty);
 }
 
 message GroupAddGroupRequest {
@@ -55,17 +59,31 @@ message GroupRejectInviteRequest {
     string inviter_id = 2;
 }
 
+message GroupConfirmInviteRequest {
+    string group_id = 1;
+    string inviter_id = 2;
+    string invited_id = 3;
+}
+
 message GroupInvite {
     string group_id = 1;
     string group_name = 2;
     string group_description = 3;
-    string user_id = 4;
-    string user_name = 5;
-    string user_full_name = 6;
-    string created_at = 7;
-    string accepted_at = 8;
-    string rejected_at = 9;
-    string accepted_by_admin_at = 10;
+    string inviter_id = 4;
+    string inviter_name = 5;
+    string inviter_full_name = 6;
+    string invited_id = 7;
+    string invited_name = 8;
+    string invited_full_name = 9;
+    string created_at = 10;
+    string accepted_at = 11;
+    string rejected_at = 12;
+    string accepted_by_admin_at = 13;
+}
+
+message GroupInvites {
+    Group group = 1;
+    repeated GroupInvite invites = 4;
 }
 
 message GroupInvitesFromMeResponse {
@@ -74,6 +92,10 @@ message GroupInvitesFromMeResponse {
 
 message GroupInvitesForMeResponse {
     repeated GroupInvite invites = 1;
+}
+
+message GroupInvitesToConfirmResponse {
+    repeated GroupInvites groups = 1;
 }
 
 message GroupLeaveGroupRequest {

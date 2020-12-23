@@ -28,6 +28,7 @@ type GroupInvite struct {
 	GroupID           string       `db:"group_id"`
 	GroupName         string       `db:"group_name"`
 	GroupDescription  string       `db:"group_description"`
+	GroupIsPublic     bool         `db:"group_is_public"`
 	InviterID         string       `db:"inviter_id"`
 	InviterName       string       `db:"inviter_name"`
 	InviterFullName   string       `db:"inviter_full_name"`
@@ -63,6 +64,9 @@ type GroupRepo interface {
 	InvitesForMe(user User) ([]GroupInvite, error)
 	RemoveUserFromGroup(groupID, userID string) error
 	GroupMembers(groupID string) ([]User, error)
+	ManagedGroups(adminID string) ([]Group, error)
+	ConfirmInvite(groupID, inviterID, invitedID string) error
+	InvitesToConfirm(adminID string) ([]GroupInvite, error)
 }
 
 func NewGroups(db *sqlx.DB) GroupRepo {
@@ -317,7 +321,7 @@ func (r *groupRepo) RejectInvite(groupID, inviterID, invitedID string) error {
 func (r *groupRepo) InvitesFromMe(user User) ([]GroupInvite, error) {
 	var invites []GroupInvite
 	err := r.db.Select(&invites, `
-		select i.id, g.id as group_id, g.name group_name, g.description group_description,
+		select i.id, g.id as group_id, g.name group_name, g.description group_description, g.is_public group_is_public,
 		       i.inviter_id, coalesce(u.id, '') as invited_id, coalesce(u.name, '') invited_name, coalesce(u.full_name, '') invited_full_name, coalesce(u.email, i.invited_email) as invited_email,
 		       coalesce(u.avatar_thumbnail_id, '') invited_avatar_id,
 		       i.created_at, i.accepted_at, i.rejected_at, i.accepted_by_admin_at
@@ -339,7 +343,7 @@ func (r *groupRepo) InvitesFromMe(user User) ([]GroupInvite, error) {
 func (r *groupRepo) InvitesForMe(user User) ([]GroupInvite, error) {
 	var invites []GroupInvite
 	err := r.db.Select(&invites, `
-		select i.id, g.id as group_id, g.name group_name, g.description group_description,
+		select i.id, g.id as group_id, g.name group_name, g.description group_description, g.is_public group_is_public,
 		       i.inviter_id, u.name inviter_name, u.full_name inviter_full_name, u.email inviter_email, u.avatar_thumbnail_id inviter_avatar_id,
 		       i.created_at, i.accepted_at, i.rejected_at, i.accepted_by_admin_at
 		from group_invites i
@@ -379,4 +383,62 @@ func (r *groupRepo) GroupMembers(groupID string) ([]User, error) {
 		return nil, merry.Wrap(err)
 	}
 	return users, nil
+}
+
+func (r *groupRepo) ManagedGroups(adminID string) ([]Group, error) {
+	var groups []Group
+	err := r.db.Select(&groups, `
+		select id, name, description, admin_id, avatar_original_id, avatar_thumbnail_id, is_public, created_at, updated_at
+		from groups
+		where admin_id = $1
+		order by name;`,
+		adminID)
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+	return groups, nil
+}
+
+func (r *groupRepo) ConfirmInvite(groupID, inviterID, invitedID string) error {
+	res, err := r.db.Exec(`
+		update group_invites
+		set accepted_by_admin_at = $1
+		where group_id = $2 and inviter_id = $3 and invited_id = $4
+		  and accepted_by_admin_at is null and accepted_at is not null and rejected_at is null;`,
+		common.CurrentTimestamp(), groupID, inviterID, invitedID,
+	)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return merry.Wrap(err)
+	}
+	if rowsAffected > 0 {
+		err := r.AddUserToGroup(groupID, invitedID)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+	}
+	return nil
+}
+
+func (r *groupRepo) InvitesToConfirm(adminID string) ([]GroupInvite, error) {
+	var invites []GroupInvite
+	err := r.db.Select(&invites, `
+		select i.id, g.id as group_id, g.name group_name, g.description group_description, g.is_public group_is_public,
+		       i.inviter_id, ur.name inviter_name, ur.full_name inviter_full_name, ur.avatar_thumbnail_id inviter_avatar_id,
+		       i.invited_id, ud.name invited_name, ud.full_name invited_full_name, ud.avatar_thumbnail_id inviter_avatar_id,
+		       i.created_at, i.accepted_at, i.rejected_at, i.accepted_by_admin_at
+		from group_invites i
+		    inner join groups g on g.id = i.group_id
+			inner join users ur on ur.id = i.inviter_id
+			inner join users ud on ud.id = i.invited_id
+		where g.admin_id = $1 and i.accepted_by_admin_at is null
+		order by g.name, i.created_at desc;`,
+		adminID)
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+	return invites, nil
 }
