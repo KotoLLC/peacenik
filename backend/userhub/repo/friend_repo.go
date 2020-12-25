@@ -1,15 +1,14 @@
 package repo
 
 import (
-	"github.com/ansel1/merry"
 	"github.com/jmoiron/sqlx"
 )
 
 type FriendRepo interface {
-	Friends(user User) ([]User, error)
-	FriendsWithSubFriends(user User) (map[User][]User, error)
-	FriendsOfFriends(user User) (map[User][]User, error)
-	AreFriends(user1, user2 User) (bool, error)
+	Friends(user User) []User
+	FriendsWithSubFriends(user User) map[User][]User
+	FriendsOfFriends(user User) map[User][]User
+	AreFriends(userID1, userID2 string) bool
 }
 
 type friendRepo struct {
@@ -22,7 +21,7 @@ func NewFriends(db *sqlx.DB) FriendRepo {
 	}
 }
 
-func (r *friendRepo) Friends(user User) ([]User, error) {
+func (r *friendRepo) Friends(user User) []User {
 	var friends []User
 	err := r.db.Select(&friends, `
 		select id, name, full_name, avatar_thumbnail_id
@@ -33,12 +32,12 @@ func (r *friendRepo) Friends(user User) ([]User, error) {
 			where user_id = $1)`,
 		user.ID)
 	if err != nil {
-		return nil, merry.Wrap(err)
+		panic(err)
 	}
-	return friends, nil
+	return friends
 }
 
-func (r *friendRepo) FriendsWithSubFriends(user User) (map[User][]User, error) {
+func (r *friendRepo) FriendsWithSubFriends(user User) map[User][]User {
 	result := make(map[User][]User)
 
 	var items []struct {
@@ -52,8 +51,8 @@ func (r *friendRepo) FriendsWithSubFriends(user User) (map[User][]User, error) {
 		FriendAvatarID string `db:"friend_avatar_id"`
 	}
 	err := r.db.Select(&items, `
-		select f.user_id user_id, uu.name user_name, uu.full_name user_full_name, uu.avatar_thumbnail_id user_avatar_id,
-			f.friend_id friend_id, uf.name friend_name, uf.full_name friend_full_name, uf.avatar_thumbnail_id friend_avatar_id
+		select f.user_id as user_id, uu.name user_name, uu.full_name user_full_name, uu.avatar_thumbnail_id user_avatar_id,
+			f.friend_id as friend_id, uf.name friend_name, uf.full_name friend_full_name, uf.avatar_thumbnail_id friend_avatar_id
 		from friends f
         	inner join users uu on uu.id = f.user_id
         	inner join users uf on uf.id = f.friend_id
@@ -66,7 +65,7 @@ func (r *friendRepo) FriendsWithSubFriends(user User) (map[User][]User, error) {
 `,
 		user.ID)
 	if err != nil {
-		return nil, merry.Wrap(err)
+		panic(err)
 	}
 
 	for _, item := range items {
@@ -84,10 +83,10 @@ func (r *friendRepo) FriendsWithSubFriends(user User) (map[User][]User, error) {
 		})
 	}
 
-	return result, nil
+	return result
 }
 
-func (r *friendRepo) FriendsOfFriends(user User) (map[User][]User, error) {
+func (r *friendRepo) FriendsOfFriends(user User) map[User][]User {
 	result := make(map[User][]User)
 
 	var items []struct {
@@ -101,8 +100,8 @@ func (r *friendRepo) FriendsOfFriends(user User) (map[User][]User, error) {
 		FriendAvatarID string `db:"friend_avatar_id"`
 	}
 	err := r.db.Select(&items, `
-		select f.friend_id user_id, uf.name user_name, uf.full_name user_full_name, uf.avatar_thumbnail_id user_avatar_id,
-		       f.user_id friend_id, uu.name friend_name, uu.full_name friend_full_name, uu.avatar_thumbnail_id friend_avatar_id 
+		select f.friend_id as user_id, uf.name user_name, uf.full_name user_full_name, uf.avatar_thumbnail_id user_avatar_id,
+		       f.user_id as friend_id, uu.name friend_name, uu.full_name friend_full_name, uu.avatar_thumbnail_id friend_avatar_id 
 		from friends f
 			inner join users uu on uu.id = f.user_id
 			inner join users uf on uf.id = f.friend_id
@@ -116,7 +115,7 @@ func (r *friendRepo) FriendsOfFriends(user User) (map[User][]User, error) {
 			and f.friend_id <> $1`,
 		user.ID)
 	if err != nil {
-		return nil, merry.Wrap(err)
+		panic(err)
 	}
 
 	for _, item := range items {
@@ -134,16 +133,16 @@ func (r *friendRepo) FriendsOfFriends(user User) (map[User][]User, error) {
 		})
 	}
 
-	return result, nil
+	return result
 }
 
-func (r *friendRepo) AreFriends(user1, user2 User) (bool, error) {
+func (r *friendRepo) AreFriends(userID1, userID2 string) bool {
 	var areFriends bool
 	err := r.db.Get(&areFriends, `
 		select case when exists(select * from friends where user_id = $1 and friend_id = $2) then true else false end
-		`, user1.ID, user2.ID)
+		`, userID1, userID2)
 	if err != nil {
-		return false, merry.Wrap(err)
+		panic(err)
 	}
-	return areFriends, nil
+	return areFriends
 }

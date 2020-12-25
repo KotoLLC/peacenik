@@ -3,13 +3,11 @@ package services
 import (
 	"bytes"
 	"context"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"html"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -46,29 +44,20 @@ func (s *messageHubService) Register(ctx context.Context, r *rpc.MessageHubRegis
 	user := s.getUser(ctx)
 
 	r.Address = common.CleanPublicURL(r.Address)
-	hubExists, err := s.repos.MessageHubs.HubExists(r.Address)
-	if err != nil {
-		return nil, err
-	}
+	hubExists := s.repos.MessageHubs.HubExists(r.Address)
 	if hubExists {
 		return nil, twirp.NewError(twirp.AlreadyExists, "hub already exists")
 	}
 
-	_, err = loadNodePublicKey(ctx, r.Address)
+	_, err := loadNodePublicKey(ctx, r.Address)
 	if err != nil {
 		return nil, twirp.NewError(twirp.InvalidArgument, err.Error())
 	}
 
-	hubID, err := s.repos.MessageHubs.AddHub(r.Address, r.Details, user, int(r.PostLimit))
-	if err != nil {
-		return nil, err
-	}
+	hubID := s.repos.MessageHubs.AddHub(r.Address, r.Details, user, int(r.PostLimit))
 
 	for _, admin := range s.admins {
-		adminUser, err := s.repos.User.FindUserByName(admin)
-		if err != nil && !merry.Is(err, sql.ErrNoRows) {
-			log.Println(err)
-		}
+		adminUser := s.repos.User.FindUserByName(admin)
 		if adminUser != nil {
 			s.notificationSender.SendNotification([]string{adminUser.ID}, user.DisplayName()+" added a new message hub", "message-hub/add", map[string]interface{}{
 				"user_id": user.ID,
@@ -83,14 +72,10 @@ func (s *messageHubService) Hubs(ctx context.Context, _ *rpc.Empty) (*rpc.Messag
 	user := s.getUser(ctx)
 
 	var hubs []repo.MessageHub
-	var err error
 	if s.isAdmin(ctx) {
-		hubs, err = s.repos.MessageHubs.AllHubs()
+		hubs = s.repos.MessageHubs.AllHubs()
 	} else {
-		hubs, err = s.repos.MessageHubs.Hubs(user)
-	}
-	if err != nil {
-		return nil, err
+		hubs = s.repos.MessageHubs.Hubs(user)
 	}
 
 	rpcHubs := make([]*rpc.MessageHubHubsResponseHub, len(hubs))
@@ -118,17 +103,14 @@ func (s *messageHubService) Hubs(ctx context.Context, _ *rpc.Empty) (*rpc.Messag
 
 func (s *messageHubService) Verify(ctx context.Context, r *rpc.MessageHubVerifyRequest) (*rpc.MessageHubVerifyResponse, error) {
 	var hubAddress string
-	hub, err := s.repos.MessageHubs.HubByID(r.HubId)
-	if err != nil {
-		if !merry.Is(err, repo.ErrHubNotFound) {
-			return nil, err
-		}
+	hub := s.repos.MessageHubs.HubByID(r.HubId)
+	if hub == nil {
 		hubAddress = common.CleanPublicURL(r.HubId)
 	} else {
 		hubAddress = hub.Address
 	}
 
-	_, err = loadNodePublicKey(ctx, hubAddress)
+	_, err := loadNodePublicKey(ctx, hubAddress)
 	if err != nil {
 		return &rpc.MessageHubVerifyResponse{
 			Error: err.Error(),
@@ -153,15 +135,9 @@ func (s *messageHubService) Approve(ctx context.Context, r *rpc.MessageHubApprov
 		}, nil
 	}
 
-	err = s.repos.MessageHubs.ApproveHub(r.HubId)
-	if err != nil {
-		return nil, err
-	}
+	s.repos.MessageHubs.ApproveHub(r.HubId)
 
-	hub, err := s.repos.MessageHubs.HubByID(r.HubId)
-	if err != nil {
-		return nil, err
-	}
+	hub := s.repos.MessageHubs.HubByID(r.HubId)
 
 	s.notificationSender.SendNotification([]string{hub.AdminID}, user.DisplayName()+" approved your message hub", "message-hub/approve", map[string]interface{}{
 		"user_id": user.ID,
@@ -192,22 +168,16 @@ func (s *messageHubService) Remove(ctx context.Context, r *rpc.MessageHubRemoveR
 
 func (s *messageHubService) removeHubByID(ctx context.Context, hubID string) error {
 	user := s.getUser(ctx)
-	hub, err := s.repos.MessageHubs.HubByID(hubID)
-	if err != nil {
-		if merry.Is(err, repo.ErrHubNotFound) {
-			return twirp.NotFoundError(err.Error())
-		}
-		return err
+	hub := s.repos.MessageHubs.HubByID(hubID)
+	if hub == nil {
+		return twirp.NotFoundError("hub not found")
 	}
 
 	if !s.isAdmin(ctx) && hub.AdminID != user.ID {
-		return twirp.NotFoundError(repo.ErrHubNotFound.Error())
+		return twirp.NotFoundError("hub not found")
 	}
 
-	err = s.repos.MessageHubs.RemoveHub(hubID)
-	if err != nil {
-		return err
-	}
+	s.repos.MessageHubs.RemoveHub(hubID)
 
 	if hub.AdminID != user.ID {
 		s.notificationSender.SendNotification([]string{hub.AdminID}, user.DisplayName()+" removed your message hub", "message-hub/remove", map[string]interface{}{
@@ -230,18 +200,12 @@ func (s *messageHubService) removeHubBySubdomain(ctx context.Context, subdomain 
 		return nil, merry.Wrap(err)
 	}
 
-	hub, err := s.repos.MessageHubs.HubByIDOrAddress(cfg.HubExternalAddress)
-	if err != nil {
-		if merry.Is(err, repo.ErrHubNotFound) {
-			return nil, twirp.NotFoundError(err.Error())
-		}
-		return nil, err
+	hub := s.repos.MessageHubs.HubByIDOrAddress(cfg.HubExternalAddress)
+	if hub == nil {
+		return nil, twirp.NotFoundError("hub not found")
 	}
 
-	err = s.repos.MessageHubs.RemoveHub(hub.ID)
-	if err != nil {
-		return nil, err
-	}
+	s.repos.MessageHubs.RemoveHub(hub.ID)
 
 	err = s.destroyMessageHubData(ctx, user, hub.Address)
 	if err != nil {
@@ -265,22 +229,16 @@ func (s *messageHubService) removeHubBySubdomain(ctx context.Context, subdomain 
 
 func (s *messageHubService) SetPostLimit(ctx context.Context, r *rpc.MessageHubSetPostLimitRequest) (*rpc.Empty, error) {
 	user := s.getUser(ctx)
-	hub, err := s.repos.MessageHubs.HubByID(r.HubId)
-	if err != nil {
-		if merry.Is(err, repo.ErrHubNotFound) {
-			return nil, twirp.NotFoundError(err.Error())
-		}
-		return nil, err
+	hub := s.repos.MessageHubs.HubByID(r.HubId)
+	if hub == nil {
+		return nil, twirp.NotFoundError("hub not found")
 	}
 
 	if hub.AdminID != user.ID {
-		return nil, twirp.NotFoundError(repo.ErrHubNotFound.Error())
+		return nil, twirp.NotFoundError("hub not found")
 	}
 
-	err = s.repos.MessageHubs.SetHubPostLimit(user.ID, r.HubId, int(r.PostLimit))
-	if err != nil {
-		return nil, err
-	}
+	s.repos.MessageHubs.SetHubPostLimit(user.ID, r.HubId, int(r.PostLimit))
 
 	return &rpc.Empty{}, nil
 }
@@ -288,18 +246,12 @@ func (s *messageHubService) SetPostLimit(ctx context.Context, r *rpc.MessageHubS
 func (s *messageHubService) ReportMessage(ctx context.Context, r *rpc.MessageHubReportMessageRequest) (*rpc.Empty, error) {
 	user := s.getUser(ctx)
 
-	hub, err := s.repos.MessageHubs.HubByIDOrAddress(r.HubId)
-	if err != nil {
-		if merry.Is(err, repo.ErrHubNotFound) {
-			return nil, twirp.NotFoundError(err.Error())
-		}
-		return nil, err
+	hub := s.repos.MessageHubs.HubByIDOrAddress(r.HubId)
+	if hub == nil {
+		return nil, twirp.NotFoundError("hub not found")
 	}
 
-	hubAdmin, err := s.repos.User.FindUserByID(hub.AdminID)
-	if err != nil {
-		return nil, err
-	}
+	hubAdmin := s.repos.User.FindUserByID(hub.AdminID)
 	if hubAdmin == nil {
 		return nil, twirp.NotFoundError("hub admin not found")
 	}
@@ -344,10 +296,7 @@ func (s *messageHubService) ReportMessage(ctx context.Context, r *rpc.MessageHub
 		return nil, err
 	}
 
-	reportedBy, err := s.repos.User.FindUserByID(body.ReportedBy)
-	if err != nil {
-		return nil, err
-	}
+	reportedBy := s.repos.User.FindUserByID(body.ReportedBy)
 	if reportedBy == nil {
 		return nil, twirp.NotFoundError("reported user not found")
 	}
@@ -356,10 +305,7 @@ func (s *messageHubService) ReportMessage(ctx context.Context, r *rpc.MessageHub
 		return nil, twirp.InvalidArgumentError("user", "not valid")
 	}
 
-	author, err := s.repos.User.FindUserByID(body.AuthorID)
-	if err != nil {
-		return nil, err
-	}
+	author := s.repos.User.FindUserByID(body.AuthorID)
 	if author == nil {
 		return nil, twirp.NotFoundError("message author not found")
 	}
@@ -377,22 +323,16 @@ func (s *messageHubService) ReportMessage(ctx context.Context, r *rpc.MessageHub
 func (s *messageHubService) BlockUser(ctx context.Context, r *rpc.MessageHubBlockUserRequest) (*rpc.Empty, error) {
 	user := s.getUser(ctx)
 
-	hub, err := s.repos.MessageHubs.HubByIDOrAddress(r.HubId)
-	if err != nil {
-		if merry.Is(err, repo.ErrHubNotFound) {
-			return nil, twirp.NotFoundError(err.Error())
-		}
-		return nil, err
+	hub := s.repos.MessageHubs.HubByIDOrAddress(r.HubId)
+	if hub == nil {
+		return nil, twirp.NotFoundError("hub not found")
 	}
 
 	if hub.AdminID != user.ID {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 
-	err = s.repos.MessageHubs.BlockUser(r.UserId, hub.ID)
-	if err != nil {
-		return nil, err
-	}
+	s.repos.MessageHubs.BlockUser(r.UserId, hub.ID)
 	return &rpc.Empty{}, nil
 }
 
@@ -418,10 +358,7 @@ func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateR
 	}
 	r.Subdomain = strings.ToLower(r.Subdomain)
 
-	owner, err := s.repos.User.FindUserByIDOrName(r.Owner)
-	if err != nil {
-		return nil, err
-	}
+	owner := s.repos.User.FindUserByIDOrName(r.Owner)
 	if owner == nil {
 		return nil, twirp.InvalidArgumentError("owner", "is invalid")
 	}
@@ -435,10 +372,7 @@ func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateR
 		return nil, err
 	}
 
-	hubExists, err := s.repos.MessageHubs.HubExists(config.HubExternalAddress)
-	if err != nil {
-		return nil, err
-	}
+	hubExists := s.repos.MessageHubs.HubExists(config.HubExternalAddress)
 	if hubExists {
 		return nil, twirp.NewError(twirp.AlreadyExists, "hub already exists")
 	}
@@ -453,15 +387,8 @@ func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateR
 		return nil, err
 	}
 
-	hubID, err := s.repos.MessageHubs.AddHub(config.HubExternalAddress, r.Notes, *owner, 0)
-	if err != nil {
-		return nil, err
-	}
-
-	err = s.repos.MessageHubs.ApproveHub(hubID)
-	if err != nil {
-		return nil, err
-	}
+	hubID := s.repos.MessageHubs.AddHub(config.HubExternalAddress, r.Notes, *owner, 0)
+	s.repos.MessageHubs.ApproveHub(hubID)
 
 	return &rpc.Empty{}, nil
 }

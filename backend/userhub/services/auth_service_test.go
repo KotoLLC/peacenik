@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"github.com/twitchtv/twirp"
 
 	"github.com/mreider/koto/backend/userhub/config"
@@ -81,13 +80,12 @@ func TestAuthService_Register_Duplicated(t *testing.T) {
 	repos := repo.Repos{
 		User: repo.NewUsers(te.db),
 	}
-	err := repos.User.AddUser("1", "user1", "user1@mail.org", "user 1", "password1")
-	require.Nil(t, err)
+	repos.User.AddUser("1", "user1", "user1@mail.org", "user 1", "password1")
 
 	base := services.NewBase(repos, nil, nil, nil, nil, config.Config{}, services.NewNotificationSender(repos, nil, nil))
 	s := services.NewAuth(base, "session-user-key", "session-user-password-hash-key", &passwordHash{}, false, nil, "")
 
-	_, err = s.Register(te.ctx, &rpc.AuthRegisterRequest{
+	_, err := s.Register(te.ctx, &rpc.AuthRegisterRequest{
 		Name:     "user1",
 		Email:    "user2@mail.org",
 		FullName: "user 2",
@@ -113,15 +111,13 @@ func TestAuthService_Register(t *testing.T) {
 	repos := repo.Repos{
 		User: repo.NewUsers(te.db),
 	}
-	err := repos.User.AddUser("1", "user1", "user1@mail.org", "user 1", "password1")
-	require.Nil(t, err)
-	userCount, err := repos.User.UserCount()
-	require.Nil(t, err)
+	repos.User.AddUser("1", "user1", "user1@mail.org", "user 1", "password1")
+	userCount := repos.User.UserCount()
 
 	base := services.NewBase(repos, nil, nil, nil, nil, config.Config{}, services.NewNotificationSender(repos, nil, nil))
 	s := services.NewAuth(base, "session-user-key", "session-user-password-hash-key", &passwordHash{}, false, nil, "")
 
-	_, err = s.Register(te.ctx, &rpc.AuthRegisterRequest{
+	_, err := s.Register(te.ctx, &rpc.AuthRegisterRequest{
 		Name:     "user2",
 		Email:    "user2@mail.org",
 		FullName: "user 1",
@@ -129,8 +125,7 @@ func TestAuthService_Register(t *testing.T) {
 	})
 	assert.Nil(t, err)
 
-	user2, err := repos.User.FindUserByName("user2")
-	assert.Nil(t, err)
+	user2 := repos.User.FindUserByName("user2")
 	assert.NotEmpty(t, user2.ID)
 	assert.Equal(t, "user2", user2.Name)
 	assert.Equal(t, "user2@mail.org", user2.Email)
@@ -139,12 +134,10 @@ func TestAuthService_Register(t *testing.T) {
 	assert.NotEmpty(t, user2.CreatedAt)
 	assert.NotEmpty(t, user2.UpdatedAt)
 
-	users, err := repos.User.FindUsersByEmail("user2@mail.org")
-	assert.Nil(t, err)
+	users := repos.User.FindUsersByEmail("user2@mail.org")
 	assert.Equal(t, 1, len(users))
 
-	newUserCount, err := repos.User.UserCount()
-	assert.Nil(t, err)
+	newUserCount := repos.User.UserCount()
 	assert.Equal(t, userCount+1, newUserCount)
 
 	_, err = s.Register(te.ctx, &rpc.AuthRegisterRequest{
@@ -154,12 +147,10 @@ func TestAuthService_Register(t *testing.T) {
 	})
 	assert.Nil(t, err)
 
-	users, err = repos.User.FindUsersByEmail("user2@mail.org")
-	assert.Nil(t, err)
+	users = repos.User.FindUsersByEmail("user2@mail.org")
 	assert.Equal(t, 2, len(users))
 
-	newUserCount, err = repos.User.UserCount()
-	assert.Nil(t, err)
+	newUserCount = repos.User.UserCount()
 	assert.Equal(t, userCount+2, newUserCount)
 }
 
@@ -170,18 +161,20 @@ func TestAuthService_Login(t *testing.T) {
 	repos := repo.Repos{
 		User: repo.NewUsers(te.db),
 	}
-	err := repos.User.AddUser("1", "user1", "user1@mail.org", "user 1", "password1-hash")
-	require.Nil(t, err)
-	err = repos.User.AddUser("11", "User1", "User1@mail.org", "User 1", "password11-hash")
-	require.NotNil(t, err)
-	assert.Contains(t, err.Error(), `duplicate key value violates unique constraint`)
-	err = repos.User.AddUser("2", "User2", "User2@mail.org", "User 2", "pass2-hash")
-	require.Nil(t, err)
+	repos.User.AddUser("1", "user1", "user1@mail.org", "user 1", "password1-hash")
+	func() {
+		defer func() {
+			r := recover()
+			assert.Contains(t, r.(error).Error(), `duplicate key value violates unique constraint`)
+		}()
+		repos.User.AddUser("11", "User1", "User1@mail.org", "User 1", "password11-hash")
+	}()
+	repos.User.AddUser("2", "User2", "User2@mail.org", "User 2", "pass2-hash")
 
 	base := services.NewBase(repos, nil, nil, nil, nil, config.Config{}, services.NewNotificationSender(repos, nil, nil))
 	s := services.NewAuth(base, "session-user-key", "session-user-password-hash-key", &passwordHash{}, false, nil, "")
 
-	_, err = s.Login(te.ctx, &rpc.AuthLoginRequest{
+	_, err := s.Login(te.ctx, &rpc.AuthLoginRequest{
 		Name:     "user1",
 		Password: "password2",
 	})

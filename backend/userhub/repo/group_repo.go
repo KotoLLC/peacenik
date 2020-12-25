@@ -46,27 +46,27 @@ type GroupInvite struct {
 }
 
 type GroupRepo interface {
-	FindGroupByIDOrName(value string) (*Group, error)
-	FindGroupByID(id string) (*Group, error)
-	FindGroupByName(name string) (*Group, error)
-	AddGroup(id, name, description, adminID string, isPublic bool) error
-	SetAvatar(groupID, avatarOriginalID, avatarThumbnailID string) error
-	SetDescription(groupID, description string) error
-	SetIsPublic(groupID string, isPublic bool) error
-	AddUserToGroup(groupID, userID string) error
-	DeleteGroup(groupID string) error
-	IsGroupMember(groupID, userID string) (bool, error)
-	AddInvite(groupID, inviterID, invitedID string) error
-	AddInviteByEmail(groupID, inviterID, invitedEmail string) error
-	AcceptInvite(groupID, inviterID, invitedID string) error
-	RejectInvite(groupID, inviterID, invitedID string) error
-	InvitesFromMe(user User) ([]GroupInvite, error)
-	InvitesForMe(user User) ([]GroupInvite, error)
-	RemoveUserFromGroup(groupID, userID string) error
-	GroupMembers(groupID string) ([]User, error)
-	ManagedGroups(adminID string) ([]Group, error)
-	ConfirmInvite(groupID, inviterID, invitedID string) error
-	InvitesToConfirm(adminID string) ([]GroupInvite, error)
+	FindGroupByIDOrName(value string) *Group
+	FindGroupByID(id string) *Group
+	FindGroupByName(name string) *Group
+	AddGroup(id, name, description, adminID string, isPublic bool)
+	SetAvatar(groupID, avatarOriginalID, avatarThumbnailID string)
+	SetDescription(groupID, description string)
+	SetIsPublic(groupID string, isPublic bool)
+	AddUserToGroup(groupID, userID string)
+	DeleteGroup(groupID string)
+	IsGroupMember(groupID, userID string) bool
+	AddInvite(groupID, inviterID, invitedID string)
+	AddInviteByEmail(groupID, inviterID, invitedEmail string)
+	AcceptInvite(groupID, inviterID, invitedID string) bool
+	RejectInvite(groupID, inviterID, invitedID string) bool
+	InvitesFromMe(user User) []GroupInvite
+	InvitesForMe(user User) []GroupInvite
+	RemoveUserFromGroup(groupID, userID string)
+	GroupMembers(groupID string) []User
+	ManagedGroups(adminID string) []Group
+	ConfirmInvite(groupID, inviterID, invitedID string)
+	InvitesToConfirm(adminID string) []GroupInvite
 }
 
 func NewGroups(db *sqlx.DB) GroupRepo {
@@ -79,7 +79,7 @@ type groupRepo struct {
 	db *sqlx.DB
 }
 
-func (r *groupRepo) FindGroupByIDOrName(value string) (*Group, error) {
+func (r *groupRepo) FindGroupByIDOrName(value string) *Group {
 	var group Group
 	err := r.db.Get(&group, `
 		select id, name, description, admin_id, avatar_original_id, avatar_thumbnail_id, is_public, created_at, updated_at
@@ -88,14 +88,14 @@ func (r *groupRepo) FindGroupByIDOrName(value string) (*Group, error) {
 		value, strings.ToLower(value))
 	if err != nil {
 		if merry.Is(err, sql.ErrNoRows) {
-			return nil, nil
+			return nil
 		}
-		return nil, merry.Wrap(err)
+		panic(err)
 	}
-	return &group, nil
+	return &group
 }
 
-func (r *groupRepo) FindGroupByID(id string) (*Group, error) {
+func (r *groupRepo) FindGroupByID(id string) *Group {
 	var group Group
 	err := r.db.Get(&group, `
 		select id, name, description, admin_id, avatar_original_id, avatar_thumbnail_id, is_public, created_at, updated_at
@@ -103,14 +103,14 @@ func (r *groupRepo) FindGroupByID(id string) (*Group, error) {
 		where id = $1`, id)
 	if err != nil {
 		if merry.Is(err, sql.ErrNoRows) {
-			return nil, nil
+			return nil
 		}
-		return nil, merry.Wrap(err)
+		panic(err)
 	}
-	return &group, nil
+	return &group
 }
 
-func (r *groupRepo) FindGroupByName(name string) (*Group, error) {
+func (r *groupRepo) FindGroupByName(name string) *Group {
 	var group Group
 	err := r.db.Get(&group, `
 		select id, name, description, admin_id, avatar_original_id, avatar_thumbnail_id, is_public, created_at, updated_at
@@ -119,15 +119,15 @@ func (r *groupRepo) FindGroupByName(name string) (*Group, error) {
 		strings.ToLower(name))
 	if err != nil {
 		if merry.Is(err, sql.ErrNoRows) {
-			return nil, nil
+			return nil
 		}
-		return nil, merry.Wrap(err)
+		panic(err)
 	}
-	return &group, nil
+	return &group
 }
 
-func (r *groupRepo) AddGroup(id, name, description, adminID string, isPublic bool) error {
-	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+func (r *groupRepo) AddGroup(id, name, description, adminID string, isPublic bool) {
+	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
 		now := common.CurrentTimestamp()
 		_, err := tx.Exec(`
 			insert into groups(id, name, description, admin_id, is_public, created_at, updated_at)
@@ -147,10 +147,13 @@ func (r *groupRepo) AddGroup(id, name, description, adminID string, isPublic boo
 
 		return nil
 	})
+	if err != nil {
+		panic(err)
+	}
 }
 
-func (r *groupRepo) SetAvatar(groupID, avatarOriginalID, avatarThumbnailID string) error {
-	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+func (r *groupRepo) SetAvatar(groupID, avatarOriginalID, avatarThumbnailID string) {
+	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
 		var group Group
 		err := tx.Get(&group, "select avatar_original_id, avatar_thumbnail_id from groups where id = $1", groupID)
 		if err != nil {
@@ -183,40 +186,46 @@ func (r *groupRepo) SetAvatar(groupID, avatarOriginalID, avatarThumbnailID strin
 			avatarOriginalID, avatarThumbnailID, now, groupID)
 		return merry.Wrap(err)
 	})
+	if err != nil {
+		panic(err)
+	}
 }
 
-func (r *groupRepo) SetDescription(groupID, description string) error {
+func (r *groupRepo) SetDescription(groupID, description string) {
 	_, err := r.db.Exec(`
 		update groups
 		set description = $1, updated_at = $2
 		where id = $3;`,
 		description, common.CurrentTimestamp(), groupID)
-	return merry.Wrap(err)
+	if err != nil {
+		panic(err)
+	}
 }
 
-func (r *groupRepo) SetIsPublic(groupID string, isPublic bool) error {
+func (r *groupRepo) SetIsPublic(groupID string, isPublic bool) {
 	_, err := r.db.Exec(`
 		update groups
 		set is_public = $1, updated_at = $2
 		where id = $3;`,
 		isPublic, common.CurrentTimestamp(), groupID)
-	return merry.Wrap(err)
+	if err != nil {
+		panic(err)
+	}
 }
 
-func (r *groupRepo) AddUserToGroup(groupID, userID string) error {
+func (r *groupRepo) AddUserToGroup(groupID, userID string) {
 	_, err := r.db.Exec(`
 		insert into group_users(group_id, user_id, created_at, updated_at)
 		select $1, $2, $3, $3
 		where not exists(select * from group_users where group_id = $1 and user_id = $2);`,
 		groupID, userID, common.CurrentTimestamp())
 	if err != nil {
-		return merry.Wrap(err)
+		panic(err)
 	}
-	return nil
 }
 
-func (r *groupRepo) DeleteGroup(groupID string) error {
-	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+func (r *groupRepo) DeleteGroup(groupID string) {
+	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
 		_, err := tx.Exec(`
 			delete from group_users
 			where group_id = $1;`,
@@ -243,39 +252,47 @@ func (r *groupRepo) DeleteGroup(groupID string) error {
 
 		return nil
 	})
+	if err != nil {
+		panic(err)
+	}
 }
 
-func (r *groupRepo) IsGroupMember(groupID, userID string) (bool, error) {
+func (r *groupRepo) IsGroupMember(groupID, userID string) bool {
 	var isMember bool
 	err := r.db.Get(&isMember, `
 		select case when exists(select * from group_users where group_id = $1 and user_id = $2) then true else false end`,
 		groupID, userID)
 	if err != nil {
-		return false, merry.Wrap(err)
+		panic(err)
 	}
-	return isMember, nil
+	return isMember
 }
 
-func (r *groupRepo) AddInvite(groupID, inviterID, invitedID string) error {
+func (r *groupRepo) AddInvite(groupID, inviterID, invitedID string) {
 	_, err := r.db.Exec(`
 		insert into group_invites(group_id, inviter_id, invited_id, created_at)
 		select $1, $2, $3, $4
 		where not exists(select * from group_invites where group_id = $1 and inviter_id = $2 and invited_id = $3 and rejected_at is null)`,
 		groupID, inviterID, invitedID, common.CurrentTimestamp())
-	return merry.Wrap(err)
+	if err != nil {
+		panic(err)
+	}
 }
 
-func (r *groupRepo) AddInviteByEmail(groupID, inviterID, invitedEmail string) error {
+func (r *groupRepo) AddInviteByEmail(groupID, inviterID, invitedEmail string) {
 	_, err := r.db.Exec(`
 		insert into group_invites(group_id, inviter_id, invited_email, created_at)
 		select $1, $2, $3, $4
 		where not exists(select * from group_invites where group_id = $1 and inviter_id = $2 and invited_email = $3 and rejected_at is null);`,
 		groupID, inviterID, invitedEmail, common.CurrentTimestamp())
-	return merry.Wrap(err)
+	if err != nil {
+		panic(err)
+	}
 }
 
-func (r *groupRepo) AcceptInvite(groupID, inviterID, invitedID string) error {
-	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+func (r *groupRepo) AcceptInvite(groupID, inviterID, invitedID string) bool {
+	accepted := false
+	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
 		var adminID string
 		err := tx.Get(&adminID, `select admin_id from groups where id = $1`, groupID)
 		if err != nil {
@@ -301,7 +318,7 @@ func (r *groupRepo) AcceptInvite(groupID, inviterID, invitedID string) error {
 			return merry.Wrap(err)
 		}
 		if rowsAffected == 0 {
-			return ErrInviteNotFound.Here()
+			return nil
 		}
 
 		if adminID == inviterID {
@@ -314,30 +331,35 @@ func (r *groupRepo) AcceptInvite(groupID, inviterID, invitedID string) error {
 				return merry.Wrap(err)
 			}
 		}
+		accepted = true
 		return nil
 	})
+	if err != nil {
+		panic(err)
+	}
+	return accepted
 }
 
-func (r *groupRepo) RejectInvite(groupID, inviterID, invitedID string) error {
+func (r *groupRepo) RejectInvite(groupID, inviterID, invitedID string) bool {
 	res, err := r.db.Exec(`
 		update group_invites
 		set rejected_at = $1, accepted_at = null, accepted_by_admin_at = null
 		where group_id = $2 and inviter_id = $3 and invited_id = $4 and rejected_at is null`,
 		common.CurrentTimestamp(), groupID, inviterID, invitedID)
 	if err != nil {
-		return merry.Wrap(err)
+		panic(err)
 	}
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return merry.Wrap(err)
+		panic(err)
 	}
 	if rowsAffected == 0 {
-		return ErrInviteNotFound.Here()
+		return false
 	}
-	return nil
+	return true
 }
 
-func (r *groupRepo) InvitesFromMe(user User) ([]GroupInvite, error) {
+func (r *groupRepo) InvitesFromMe(user User) []GroupInvite {
 	var invites []GroupInvite
 	err := r.db.Select(&invites, `
 		select i.id, g.id as group_id, g.name group_name, g.description group_description, g.is_public group_is_public,
@@ -354,12 +376,12 @@ func (r *groupRepo) InvitesFromMe(user User) ([]GroupInvite, error) {
 		order by i.created_at desc;`,
 		user.ID)
 	if err != nil {
-		return nil, merry.Wrap(err)
+		panic(err)
 	}
-	return invites, nil
+	return invites
 }
 
-func (r *groupRepo) InvitesForMe(user User) ([]GroupInvite, error) {
+func (r *groupRepo) InvitesForMe(user User) []GroupInvite {
 	var invites []GroupInvite
 	err := r.db.Select(&invites, `
 		select i.id, g.id as group_id, g.name group_name, g.description group_description, g.is_public group_is_public,
@@ -375,23 +397,22 @@ func (r *groupRepo) InvitesForMe(user User) ([]GroupInvite, error) {
 		order by i.created_at desc;`,
 		user.ID)
 	if err != nil {
-		return nil, merry.Wrap(err)
+		panic(err)
 	}
-	return invites, nil
+	return invites
 }
 
-func (r *groupRepo) RemoveUserFromGroup(groupID, userID string) error {
+func (r *groupRepo) RemoveUserFromGroup(groupID, userID string) {
 	_, err := r.db.Exec(`
 		delete from group_users
 		where group_id = $1 and user_id = $2;`,
 		groupID, userID)
 	if err != nil {
-		return merry.Wrap(err)
+		panic(err)
 	}
-	return nil
 }
 
-func (r *groupRepo) GroupMembers(groupID string) ([]User, error) {
+func (r *groupRepo) GroupMembers(groupID string) []User {
 	var users []User
 	err := r.db.Select(&users, `
 		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
@@ -399,12 +420,12 @@ func (r *groupRepo) GroupMembers(groupID string) ([]User, error) {
 		where id in (select user_id from group_users where group_id = $1)`,
 		groupID)
 	if err != nil {
-		return nil, merry.Wrap(err)
+		panic(err)
 	}
-	return users, nil
+	return users
 }
 
-func (r *groupRepo) ManagedGroups(adminID string) ([]Group, error) {
+func (r *groupRepo) ManagedGroups(adminID string) []Group {
 	var groups []Group
 	err := r.db.Select(&groups, `
 		select id, name, description, admin_id, avatar_original_id, avatar_thumbnail_id, is_public, created_at, updated_at
@@ -413,12 +434,12 @@ func (r *groupRepo) ManagedGroups(adminID string) ([]Group, error) {
 		order by name;`,
 		adminID)
 	if err != nil {
-		return nil, merry.Wrap(err)
+		panic(err)
 	}
-	return groups, nil
+	return groups
 }
 
-func (r *groupRepo) ConfirmInvite(groupID, inviterID, invitedID string) error {
+func (r *groupRepo) ConfirmInvite(groupID, inviterID, invitedID string) {
 	res, err := r.db.Exec(`
 		update group_invites
 		set accepted_by_admin_at = $1
@@ -427,22 +448,18 @@ func (r *groupRepo) ConfirmInvite(groupID, inviterID, invitedID string) error {
 		common.CurrentTimestamp(), groupID, inviterID, invitedID,
 	)
 	if err != nil {
-		return merry.Wrap(err)
+		panic(err)
 	}
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return merry.Wrap(err)
+		panic(err)
 	}
 	if rowsAffected > 0 {
-		err := r.AddUserToGroup(groupID, invitedID)
-		if err != nil {
-			return merry.Wrap(err)
-		}
+		r.AddUserToGroup(groupID, invitedID)
 	}
-	return nil
 }
 
-func (r *groupRepo) InvitesToConfirm(adminID string) ([]GroupInvite, error) {
+func (r *groupRepo) InvitesToConfirm(adminID string) []GroupInvite {
 	var invites []GroupInvite
 	err := r.db.Select(&invites, `
 		select i.id, g.id as group_id, g.name group_name, g.description group_description, g.is_public group_is_public,
@@ -457,7 +474,7 @@ func (r *groupRepo) InvitesToConfirm(adminID string) ([]GroupInvite, error) {
 		order by g.name, i.created_at desc;`,
 		adminID)
 	if err != nil {
-		return nil, merry.Wrap(err)
+		panic(err)
 	}
-	return invites, nil
+	return invites
 }

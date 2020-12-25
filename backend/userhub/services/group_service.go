@@ -24,10 +24,7 @@ type groupService struct {
 
 func (s *groupService) ManagedGroup(ctx context.Context, _ *rpc.Empty) (*rpc.GroupManagedGroupsResponse, error) {
 	user := s.getUser(ctx)
-	groups, err := s.repos.Group.ManagedGroups(user.ID)
-	if err != nil {
-		return nil, err
-	}
+	groups := s.repos.Group.ManagedGroups(user.ID)
 	rpcGroups := make([]*rpc.Group, len(groups))
 	for i, group := range groups {
 		rpcGroups[i] = &rpc.Group{
@@ -57,25 +54,16 @@ func (s *groupService) AddGroup(ctx context.Context, r *rpc.GroupAddGroupRequest
 		return nil, twirp.InvalidArgumentError("name", "is invalid")
 	}
 
-	group, err := s.repos.Group.FindGroupByName(r.Name)
-	if err != nil {
-		return nil, err
-	}
+	group := s.repos.Group.FindGroupByName(r.Name)
 	if group != nil {
 		return nil, twirp.NewError(twirp.AlreadyExists, "group already exists")
 	}
 
 	groupID := common.GenerateUUID()
 
-	err = s.repos.Group.AddGroup(groupID, r.Name, r.Description, user.ID, r.IsPublic)
-	if err != nil {
-		return nil, merry.Wrap(err)
-	}
+	s.repos.Group.AddGroup(groupID, r.Name, r.Description, user.ID, r.IsPublic)
 
-	group, err = s.repos.Group.FindGroupByID(groupID)
-	if err != nil {
-		return nil, merry.Wrap(err)
-	}
+	group = s.repos.Group.FindGroupByID(groupID)
 	if group == nil {
 		return nil, twirp.NotFoundError("group not found")
 	}
@@ -98,10 +86,7 @@ func (s *groupService) AddGroup(ctx context.Context, r *rpc.GroupAddGroupRequest
 }
 
 func (s *groupService) EditGroup(ctx context.Context, r *rpc.GroupEditGroupRequest) (*rpc.Empty, error) {
-	group, isGroupAdmin, err := s.getGroup(ctx, r.GroupId)
-	if err != nil {
-		return nil, err
-	}
+	group, isGroupAdmin := s.getGroup(ctx, r.GroupId)
 	if group == nil {
 		return nil, twirp.NotFoundError("group not found")
 	}
@@ -114,18 +99,12 @@ func (s *groupService) EditGroup(ctx context.Context, r *rpc.GroupEditGroupReque
 			return nil, twirp.InvalidArgumentError("description", "is empty")
 		}
 		if r.Description != group.Description {
-			err := s.repos.Group.SetDescription(group.ID, r.Description)
-			if err != nil {
-				return nil, err
-			}
+			s.repos.Group.SetDescription(group.ID, r.Description)
 		}
 	}
 
 	if r.IsPublicChanged {
-		err = s.repos.Group.SetIsPublic(group.ID, r.IsPublic)
-		if err != nil {
-			return nil, err
-		}
+		s.repos.Group.SetIsPublic(group.ID, r.IsPublic)
 	}
 
 	if r.AvatarChanged {
@@ -139,10 +118,7 @@ func (s *groupService) EditGroup(ctx context.Context, r *rpc.GroupEditGroupReque
 }
 
 func (s *groupService) DeleteGroup(ctx context.Context, r *rpc.GroupDeleteGroupRequest) (*rpc.Empty, error) {
-	group, isGroupAdmin, err := s.getGroup(ctx, r.GroupId)
-	if err != nil {
-		return nil, err
-	}
+	group, isGroupAdmin := s.getGroup(ctx, r.GroupId)
 	if group == nil {
 		return nil, twirp.NotFoundError("group not found")
 	}
@@ -150,10 +126,7 @@ func (s *groupService) DeleteGroup(ctx context.Context, r *rpc.GroupDeleteGroupR
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 
-	err = s.repos.Group.DeleteGroup(r.GroupId)
-	if err != nil {
-		return nil, err
-	}
+	s.repos.Group.DeleteGroup(r.GroupId)
 	return &rpc.Empty{}, nil
 }
 
@@ -163,10 +136,7 @@ func (s *groupService) setAvatar(ctx context.Context, group repo.Group, avatarID
 	}
 
 	if avatarID == "" {
-		err := s.repos.Group.SetAvatar(group.ID, "", "")
-		if err != nil {
-			return merry.Wrap(err)
-		}
+		s.repos.Group.SetAvatar(group.ID, "", "")
 		return nil
 	}
 
@@ -175,11 +145,46 @@ func (s *groupService) setAvatar(ctx context.Context, group repo.Group, avatarID
 		return merry.Wrap(err)
 	}
 
-	err = s.repos.Group.SetAvatar(group.ID, avatarID, thumbnailID)
-	if err != nil {
-		return merry.Wrap(err)
-	}
+	s.repos.Group.SetAvatar(group.ID, avatarID, thumbnailID)
 	return nil
+}
+
+func (s *groupService) AddUser(ctx context.Context, r *rpc.GroupAddUserRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+	if user.ID == r.UserId {
+		return nil, twirp.InvalidArgumentError("user_id", "")
+	}
+
+	group, isGroupAdmin := s.getGroup(ctx, r.GroupId)
+	if group == nil || !isGroupAdmin {
+		return nil, twirp.NotFoundError("group not found")
+	}
+
+	if s.repos.Group.IsGroupMember(r.GroupId, r.UserId) {
+		return nil, twirp.NewError(twirp.AlreadyExists, "already in the group.")
+	}
+
+	if s.repos.Friend.AreFriends(user.ID, r.UserId) {
+		s.repos.Group.AddUserToGroup(r.GroupId, r.UserId)
+	} else {
+		_, err := s.CreateInvite(ctx, &rpc.GroupCreateInviteRequest{
+			GroupId: r.GroupId,
+			Invited: user.ID,
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &rpc.Empty{}, nil
+}
+
+func (s *groupService) RequestJoin(ctx context.Context, r *rpc.GroupRequestJoinRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+	return s.CreateInvite(ctx, &rpc.GroupCreateInviteRequest{
+		GroupId: r.GroupId,
+		Invited: user.ID,
+	})
 }
 
 func (s *groupService) CreateInvite(ctx context.Context, r *rpc.GroupCreateInviteRequest) (*rpc.Empty, error) {
@@ -188,37 +193,23 @@ func (s *groupService) CreateInvite(ctx context.Context, r *rpc.GroupCreateInvit
 	if r.GroupId == "" {
 		return nil, twirp.NewError(twirp.InvalidArgument, "group_id")
 	}
-	if r.Invited == "" || r.Invited == user.ID || r.Invited == user.Name || r.Invited == user.Email {
+	if r.Invited == "" {
 		return nil, twirp.NewError(twirp.InvalidArgument, "invited")
 	}
 
-	group, err := s.repos.Group.FindGroupByID(r.GroupId)
-	if err != nil {
-		return nil, err
-	}
+	group := s.repos.Group.FindGroupByID(r.GroupId)
 	if group == nil {
 		return nil, twirp.NotFoundError("group not found")
 	}
 
-	isGroupMember, err := s.repos.Group.IsGroupMember(group.ID, user.ID)
-	if err != nil {
-		return nil, err
-	}
-	if !isGroupMember {
+	if user.ID != r.Invited && !s.repos.Group.IsGroupMember(group.ID, user.ID) {
 		return nil, twirp.NewError(twirp.PermissionDenied, "not a group member")
 	}
 
-	invitedUser, err := s.repos.User.FindUserByIDOrName(r.Invited)
-	if err != nil {
-		return nil, err
-	}
-
+	invitedUser := s.repos.User.FindUserByIDOrName(r.Invited)
 	if invitedUser == nil {
 		if strings.Contains(r.Invited, "@") && strings.Contains(r.Invited, ".") {
-			friends, err := s.repos.User.FindUsersByEmail(r.Invited)
-			if err != nil {
-				return nil, err
-			}
+			friends := s.repos.User.FindUsersByEmail(r.Invited)
 			if len(friends) == 1 {
 				invitedUser = &friends[0]
 			} else if len(friends) > 1 {
@@ -230,26 +221,16 @@ func (s *groupService) CreateInvite(ctx context.Context, r *rpc.GroupCreateInvit
 	}
 
 	if invitedUser != nil {
-		areBlocked, err := s.repos.User.AreBlocked(user.ID, invitedUser.ID)
-		if err != nil {
-			return nil, err
-		}
+		areBlocked := s.repos.User.AreBlocked(user.ID, invitedUser.ID)
 		if areBlocked {
 			return nil, twirp.NotFoundError("user not found")
 		}
 
-		isGroupMember, err := s.repos.Group.IsGroupMember(group.ID, invitedUser.ID)
-		if err != nil {
-			return nil, err
-		}
-		if isGroupMember {
-			return nil, twirp.NewError(twirp.AlreadyExists, "already in the group.")
+		if s.repos.Group.IsGroupMember(group.ID, invitedUser.ID) {
+			return nil, twirp.NewError(twirp.AlreadyExists, "already in the group")
 		}
 
-		err = s.repos.Group.AddInvite(group.ID, user.ID, invitedUser.ID)
-		if err != nil {
-			return nil, err
-		}
+		s.repos.Group.AddInvite(group.ID, user.ID, invitedUser.ID)
 		if s.notificationSender != nil {
 			s.notificationSender.SendNotification([]string{invitedUser.ID}, user.DisplayName()+" invited you to the group "+group.Name+"", "group-invite/add", map[string]interface{}{
 				"group_id": group.ID,
@@ -262,10 +243,7 @@ func (s *groupService) CreateInvite(ctx context.Context, r *rpc.GroupCreateInvit
 		//	log.Println("can't invite by email:", err)
 		//}
 	} else {
-		err = s.repos.Group.AddInviteByEmail(group.ID, user.ID, r.Invited)
-		if err != nil {
-			return nil, err
-		}
+		s.repos.Group.AddInviteByEmail(group.ID, user.ID, r.Invited)
 
 		// TODO
 		//err = s.sendInviteLinkToUnregisteredUser(ctx, user, r.Invited)
@@ -284,12 +262,8 @@ func (s *groupService) AcceptInvite(ctx context.Context, r *rpc.GroupAcceptInvit
 		return nil, twirp.NewError(twirp.InvalidArgument, "group_id")
 	}
 
-	err := s.repos.Group.AcceptInvite(r.GroupId, r.InviterId, user.ID)
-	if err != nil {
-		if merry.Is(err, repo.ErrInviteNotFound) {
-			return nil, twirp.NotFoundError(err.Error())
-		}
-		return nil, err
+	if !s.repos.Group.AcceptInvite(r.GroupId, r.InviterId, user.ID) {
+		return nil, twirp.NotFoundError("invie not found")
 	}
 
 	// TODO
@@ -309,12 +283,8 @@ func (s *groupService) RejectInvite(ctx context.Context, r *rpc.GroupRejectInvit
 		return nil, twirp.NewError(twirp.InvalidArgument, "group_id")
 	}
 
-	err := s.repos.Group.RejectInvite(r.GroupId, r.InviterId, user.ID)
-	if err != nil {
-		if merry.Is(err, repo.ErrInviteNotFound) {
-			return nil, twirp.NotFoundError(err.Error())
-		}
-		return nil, err
+	if !s.repos.Group.RejectInvite(r.GroupId, r.InviterId, user.ID) {
+		return nil, twirp.NotFoundError("invite not found")
 	}
 	// TODO
 	if s.notificationSender != nil {
@@ -328,10 +298,7 @@ func (s *groupService) RejectInvite(ctx context.Context, r *rpc.GroupRejectInvit
 
 func (s *groupService) InvitesFromMe(ctx context.Context, _ *rpc.Empty) (*rpc.GroupInvitesFromMeResponse, error) {
 	user := s.getUser(ctx)
-	invites, err := s.repos.Group.InvitesFromMe(user)
-	if err != nil {
-		return nil, err
-	}
+	invites := s.repos.Group.InvitesFromMe(user)
 	rpcInvites := make([]*rpc.GroupInvite, len(invites))
 	for i, invite := range invites {
 		invitedName, invitedFullName := invite.InvitedName, invite.InvitedFullName
@@ -361,10 +328,7 @@ func (s *groupService) InvitesFromMe(ctx context.Context, _ *rpc.Empty) (*rpc.Gr
 
 func (s *groupService) InvitesForMe(ctx context.Context, _ *rpc.Empty) (*rpc.GroupInvitesForMeResponse, error) {
 	user := s.getUser(ctx)
-	invites, err := s.repos.Group.InvitesForMe(user)
-	if err != nil {
-		return nil, err
-	}
+	invites := s.repos.Group.InvitesForMe(user)
 	rpcInvites := make([]*rpc.GroupInvite, len(invites))
 	for i, invite := range invites {
 		rpcInvites[i] = &rpc.GroupInvite{
@@ -389,10 +353,7 @@ func (s *groupService) InvitesForMe(ctx context.Context, _ *rpc.Empty) (*rpc.Gro
 func (s *groupService) LeaveGroup(ctx context.Context, r *rpc.GroupLeaveGroupRequest) (*rpc.Empty, error) {
 	user := s.getUser(ctx)
 
-	group, isGroupAdmin, err := s.getGroup(ctx, r.GroupId)
-	if err != nil {
-		return nil, err
-	}
+	group, isGroupAdmin := s.getGroup(ctx, r.GroupId)
 	if group == nil {
 		return nil, twirp.NotFoundError("group not found")
 	}
@@ -400,19 +361,13 @@ func (s *groupService) LeaveGroup(ctx context.Context, r *rpc.GroupLeaveGroupReq
 		return nil, twirp.NewError(twirp.InvalidArgument, "admin can't leave the group")
 	}
 
-	err = s.repos.Group.RemoveUserFromGroup(r.GroupId, user.ID)
-	if err != nil {
-		return nil, err
-	}
+	s.repos.Group.RemoveUserFromGroup(r.GroupId, user.ID)
 	return &rpc.Empty{}, nil
 }
 
 func (s *groupService) RemoveUser(ctx context.Context, r *rpc.GroupRemoveUserRequest) (*rpc.Empty, error) {
 	user := s.getUser(ctx)
-	group, isGroupAdmin, err := s.getGroup(ctx, r.GroupId)
-	if err != nil {
-		return nil, err
-	}
+	group, isGroupAdmin := s.getGroup(ctx, r.GroupId)
 	if group == nil {
 		return nil, twirp.NotFoundError("group not found")
 	}
@@ -423,18 +378,12 @@ func (s *groupService) RemoveUser(ctx context.Context, r *rpc.GroupRemoveUserReq
 		return nil, twirp.NewError(twirp.InvalidArgument, "can't delete himself")
 	}
 
-	err = s.repos.Group.RemoveUserFromGroup(r.GroupId, r.UserId)
-	if err != nil {
-		return nil, err
-	}
+	s.repos.Group.RemoveUserFromGroup(r.GroupId, r.UserId)
 	return &rpc.Empty{}, nil
 }
 
 func (s *groupService) ConfirmInvite(ctx context.Context, r *rpc.GroupConfirmInviteRequest) (*rpc.Empty, error) {
-	group, isGroupAdmin, err := s.getGroup(ctx, r.GroupId)
-	if err != nil {
-		return nil, err
-	}
+	group, isGroupAdmin := s.getGroup(ctx, r.GroupId)
 	if group == nil {
 		return nil, twirp.NotFoundError("group not found")
 	}
@@ -442,19 +391,13 @@ func (s *groupService) ConfirmInvite(ctx context.Context, r *rpc.GroupConfirmInv
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 
-	err = s.repos.Group.ConfirmInvite(r.GroupId, r.InviterId, r.InvitedId)
-	if err != nil {
-		return nil, err
-	}
+	s.repos.Group.ConfirmInvite(r.GroupId, r.InviterId, r.InvitedId)
 	return &rpc.Empty{}, nil
 }
 
 func (s *groupService) InvitesToConfirm(ctx context.Context, _ *rpc.Empty) (*rpc.GroupInvitesToConfirmResponse, error) {
 	user := s.getUser(ctx)
-	invites, err := s.repos.Group.InvitesToConfirm(user.ID)
-	if err != nil {
-		return nil, err
-	}
+	invites := s.repos.Group.InvitesToConfirm(user.ID)
 
 	groupSet := make(map[string]*rpc.GroupInvites)
 	var groups []*rpc.GroupInvites

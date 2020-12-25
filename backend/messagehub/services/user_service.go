@@ -23,9 +23,6 @@ func (s *userService) BlockUser(ctx context.Context, r *rpc.UserBlockRequest) (*
 	if !user.IsHubAdmin {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
-	err := s.repos.User.BlockUser(r.UserId)
-	if err != nil {
-		return nil, err
-	}
+	s.repos.User.BlockUser(r.UserId)
 	return &rpc.Empty{}, nil
 }

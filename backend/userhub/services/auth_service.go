@@ -82,10 +82,7 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 
 	r.FullName = strings.Join(strings.Fields(r.FullName), " ")
 
-	user, err := s.repos.User.FindUserByName(r.Name)
-	if err != nil {
-		return nil, err
-	}
+	user := s.repos.User.FindUserByName(r.Name)
 	if user != nil {
 		return nil, twirp.NewError(twirp.AlreadyExists, "user already exists")
 	}
@@ -96,15 +93,9 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 		return nil, merry.Wrap(err)
 	}
 
-	err = s.repos.User.AddUser(userID, r.Name, r.Email, r.FullName, passwordHash)
-	if err != nil {
-		return nil, merry.Wrap(err)
-	}
+	s.repos.User.AddUser(userID, r.Name, r.Email, r.FullName, passwordHash)
 
-	user, err = s.repos.User.FindUserByID(userID)
-	if err != nil {
-		return nil, merry.Wrap(err)
-	}
+	user = s.repos.User.FindUserByID(userID)
 	if user == nil {
 		return nil, twirp.NotFoundError("user not found")
 	}
@@ -123,10 +114,7 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 }
 
 func (s *authService) Login(ctx context.Context, r *rpc.AuthLoginRequest) (*rpc.Empty, error) {
-	user, err := s.repos.User.FindUserByName(r.Name)
-	if err != nil {
-		return nil, err
-	}
+	user := s.repos.User.FindUserByName(r.Name)
 	if user == nil {
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid username or password")
 	}
@@ -142,7 +130,7 @@ func (s *authService) Login(ctx context.Context, r *rpc.AuthLoginRequest) (*rpc.
 	session := s.getAuthSession(ctx)
 	session.SetValue(s.sessionUserKey, user.ID)
 	session.SetValue(s.sessionUserPasswordHashKey, user.PasswordHash[len(user.PasswordHash)-len(user.PasswordHash)/3:])
-	err = session.Save(sessionSaveOptions)
+	err := session.Save(sessionSaveOptions)
 	if err != nil {
 		return nil, err
 	}
@@ -167,15 +155,9 @@ func (s *authService) getAuthSession(ctx context.Context) Session {
 func (s *authService) Confirm(ctx context.Context, r *rpc.AuthConfirmRequest) (*rpc.Empty, error) {
 	if s.testMode {
 		if s.isAdmin(ctx) {
-			user, err := s.repos.User.FindUserByIDOrName(r.Token)
-			if err != nil {
-				return nil, err
-			}
+			user := s.repos.User.FindUserByIDOrName(r.Token)
 			if user != nil {
-				_, err = s.repos.User.ConfirmUser(user.ID)
-				if err != nil {
-					return nil, err
-				}
+				s.repos.User.ConfirmUser(user.ID)
 				return &rpc.Empty{}, nil
 			}
 		}
@@ -201,10 +183,7 @@ func (s *authService) SendConfirmLink(ctx context.Context, _ *rpc.Empty) (*rpc.E
 }
 
 func (s *authService) SendResetPasswordLink(_ context.Context, r *rpc.AuthSendResetPasswordLinkRequest) (*rpc.Empty, error) {
-	user, err := s.repos.User.FindUserByName(r.Name)
-	if err != nil {
-		return nil, err
-	}
+	user := s.repos.User.FindUserByName(r.Name)
 	if user == nil || user.Email != r.Email {
 		return nil, twirp.NotFoundError("user not found")
 	}
@@ -241,11 +220,7 @@ func (s *authService) ResetPassword(_ context.Context, r *rpc.AuthResetPasswordR
 		return nil, token.ErrInvalidToken.Here()
 	}
 
-	user, err := s.repos.User.FindUserByName(userName)
-	if err != nil {
-		return nil, err
-	}
-
+	user := s.repos.User.FindUserByName(userName)
 	if user == nil {
 		return nil, twirp.NotFoundError("user not found")
 	}
@@ -255,10 +230,7 @@ func (s *authService) ResetPassword(_ context.Context, r *rpc.AuthResetPasswordR
 		return nil, err
 	}
 
-	err = s.repos.User.SetPassword(user.ID, passwordHash)
-	if err != nil {
-		return nil, err
-	}
+	s.repos.User.SetPassword(user.ID, passwordHash)
 
 	return &rpc.Empty{}, nil
 }
@@ -295,10 +267,7 @@ func (s *authService) confirmUser(ctx context.Context, confirmToken string) erro
 		return token.ErrInvalidToken.Here()
 	}
 
-	ok, err = s.repos.User.ConfirmUser(userID)
-	if err != nil {
-		return merry.Wrap(err)
-	}
+	ok = s.repos.User.ConfirmUser(userID)
 	if !ok {
 		return nil
 	}
@@ -307,25 +276,15 @@ func (s *authService) confirmUser(ctx context.Context, confirmToken string) erro
 		return nil
 	}
 
-	user, err := s.repos.User.FindUserByID(userID)
-	if err != nil {
-		return merry.Wrap(err)
-	}
-
-	admin, err := s.repos.User.FindUserByName(s.adminList[0])
-	if err != nil {
-		return merry.Wrap(err)
-	}
+	user := s.repos.User.FindUserByID(userID)
+	admin := s.repos.User.FindUserByName(s.adminList[0])
 	if admin == nil {
 		return nil
 	}
 
 	switch s.adminFriendship {
 	case "invite":
-		err = s.repos.Invite.AddInvite(user.ID, admin.ID)
-		if err != nil {
-			return merry.Wrap(err)
-		}
+		s.repos.Invite.AddInvite(user.ID, admin.ID)
 		s.notificationSender.SendNotification([]string{admin.ID}, user.DisplayName()+" invited you to be friends", "invite/add", map[string]interface{}{
 			"user_id": user.ID,
 		})
@@ -334,13 +293,9 @@ func (s *authService) confirmUser(ctx context.Context, confirmToken string) erro
 			log.Println("can't invite by email:", err)
 		}
 	case "accept":
-		err = s.repos.Invite.AddInvite(userID, admin.ID)
-		if err != nil {
-			return merry.Wrap(err)
-		}
-		err = s.repos.Invite.AcceptInvite(userID, admin.ID, true)
-		if err != nil {
-			return merry.Wrap(err)
+		s.repos.Invite.AddInvite(userID, admin.ID)
+		if !s.repos.Invite.AcceptInvite(userID, admin.ID, true) {
+			return twirp.NotFoundError("invite not found")
 		}
 		s.notificationSender.SendNotification([]string{admin.ID}, user.DisplayName()+" is registered and added to your friends!", "invite/accept", map[string]interface{}{
 			"user_id": user.ID,
@@ -360,8 +315,8 @@ func (s *authService) confirmInviteToken(user repo.User, confirmToken string) er
 		return token.ErrInvalidToken.Here()
 	}
 
-	_, err = s.repos.User.ConfirmUser(user.ID)
-	return err
+	s.repos.User.ConfirmUser(user.ID)
+	return nil
 }
 
 func (s *authService) sendInviteLinkToRegisteredUser(ctx context.Context, inviter repo.User, userEmail string) error {
@@ -382,10 +337,7 @@ func (s *authService) RecallNames(_ context.Context, r *rpc.AuthRecallNamesReque
 		return &rpc.Empty{}, nil
 	}
 
-	users, err := s.repos.User.FindUsersByEmail(r.Email)
-	if err != nil {
-		return nil, err
-	}
+	users := s.repos.User.FindUsersByEmail(r.Email)
 	if len(users) == 0 {
 		return &rpc.Empty{}, nil
 	}
@@ -405,7 +357,7 @@ func (s *authService) RecallNames(_ context.Context, r *rpc.AuthRecallNamesReque
 		message = "Your email is associated with more than one username:\n" + strings.Join(userNames, "\n")
 	}
 
-	err = s.mailSender.SendTextEmail([]string{r.Email}, "Koto username reminder", message)
+	err := s.mailSender.SendTextEmail([]string{r.Email}, "Koto username reminder", message)
 	if err != nil {
 		return nil, err
 	}

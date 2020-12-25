@@ -10,10 +10,6 @@ import (
 	"github.com/mreider/koto/backend/common"
 )
 
-var (
-	ErrInviteNotFound = common.ErrNotFound.WithMessage("invite not found")
-)
-
 type Invite struct {
 	ID             int          `db:"id"`
 	UserID         string       `db:"user_id"`
@@ -32,13 +28,13 @@ type Invite struct {
 }
 
 type InviteRepo interface {
-	AddInvite(userID, friendID string) error
-	AddInviteByEmail(userID, friendEmail string) error
-	AcceptInvite(inviterID, friendID string, autoAccepted bool) error
-	RejectInvite(inviterID, friendID string) error
-	InvitesFromMe(user User) ([]Invite, error)
-	InvitesForMe(user User) ([]Invite, error)
-	InviteStatuses(user User) (map[string]string, error)
+	AddInvite(userID, friendID string)
+	AddInviteByEmail(userID, friendEmail string)
+	AcceptInvite(inviterID, friendID string, autoAccepted bool) bool
+	RejectInvite(inviterID, friendID string) bool
+	InvitesFromMe(user User) []Invite
+	InvitesForMe(user User) []Invite
+	InviteStatuses(user User) map[string]string
 }
 
 type inviteRepo struct {
@@ -51,26 +47,31 @@ func NewInvites(db *sqlx.DB) InviteRepo {
 	}
 }
 
-func (r *inviteRepo) AddInvite(inviterID, friendID string) error {
+func (r *inviteRepo) AddInvite(inviterID, friendID string) {
 	_, err := r.db.Exec(`
 		insert into invites(user_id, friend_id, friend_email, created_at)
 		select $1, $2, '', $3
 		where not exists(select * from invites where user_id = $1 and friend_id = $2 and rejected_at is null)`,
 		inviterID, friendID, common.CurrentTimestamp())
-	return merry.Wrap(err)
+	if err != nil {
+		panic(err)
+	}
 }
 
-func (r *inviteRepo) AddInviteByEmail(inviterID, friendEmail string) error {
+func (r *inviteRepo) AddInviteByEmail(inviterID, friendEmail string) {
 	_, err := r.db.Exec(`
 		insert into invites(user_id, friend_email, created_at)
 		select $1, $2, $3
 		where not exists(select * from invites where user_id = $1 and friend_email = $2 and rejected_at is null)`,
 		inviterID, friendEmail, common.CurrentTimestamp())
-	return merry.Wrap(err)
+	if err != nil {
+		panic(err)
+	}
 }
 
-func (r *inviteRepo) AcceptInvite(inviterID, friendID string, autoAccepted bool) error {
-	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+func (r *inviteRepo) AcceptInvite(inviterID, friendID string, autoAccepted bool) bool {
+	accepted := false
+	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
 		res, err := tx.Exec(`
 		update invites
 		set accepted_at = $1, auto_accepted = $2
@@ -84,7 +85,7 @@ func (r *inviteRepo) AcceptInvite(inviterID, friendID string, autoAccepted bool)
 			return merry.Wrap(err)
 		}
 		if rowsAffected == 0 {
-			return ErrInviteNotFound.Here()
+			return nil
 		}
 
 		_, err = tx.Exec(`
@@ -105,12 +106,18 @@ func (r *inviteRepo) AcceptInvite(inviterID, friendID string, autoAccepted bool)
 			return merry.Wrap(err)
 		}
 
+		accepted = true
 		return nil
 	})
+	if err != nil {
+		panic(err)
+	}
+	return accepted
 }
 
-func (r *inviteRepo) RejectInvite(inviterID, friendID string) error {
-	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+func (r *inviteRepo) RejectInvite(inviterID, friendID string) bool {
+	rejected := false
+	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
 		res, err := tx.Exec(`
 		update invites
 		set rejected_at = $1, accepted_at = null
@@ -124,7 +131,7 @@ func (r *inviteRepo) RejectInvite(inviterID, friendID string) error {
 			return merry.Wrap(err)
 		}
 		if rowsAffected == 0 {
-			return ErrInviteNotFound.Here()
+			return nil
 		}
 
 		_, err = tx.Exec(`
@@ -135,14 +142,19 @@ func (r *inviteRepo) RejectInvite(inviterID, friendID string) error {
 			return merry.Wrap(err)
 		}
 
+		rejected = true
 		return nil
 	})
+	if err != nil {
+		panic(err)
+	}
+	return rejected
 }
 
-func (r *inviteRepo) InvitesFromMe(user User) ([]Invite, error) {
+func (r *inviteRepo) InvitesFromMe(user User) []Invite {
 	var invites []Invite
 	err := r.db.Select(&invites, `
-		select i.id, i.user_id, coalesce(u.id, '') friend_id, coalesce(u.name, '') friend_name, coalesce(u.full_name, '') friend_full_name, coalesce(u.email, i.friend_email) friend_email,
+		select i.id, i.user_id, coalesce(u.id, '') as friend_id, coalesce(u.name, '') friend_name, coalesce(u.full_name, '') friend_full_name, coalesce(u.email, i.friend_email) as friend_email,
 		       coalesce(u.avatar_thumbnail_id, '') friend_avatar_id,
 		       i.created_at, i.accepted_at, i.rejected_at
 		from invites i
@@ -154,12 +166,12 @@ func (r *inviteRepo) InvitesFromMe(user User) ([]Invite, error) {
 		order by i.created_at desc;`,
 		user.ID)
 	if err != nil {
-		return nil, merry.Wrap(err)
+		panic(err)
 	}
-	return invites, nil
+	return invites
 }
 
-func (r *inviteRepo) InvitesForMe(user User) ([]Invite, error) {
+func (r *inviteRepo) InvitesForMe(user User) []Invite {
 	var invites []Invite
 	err := r.db.Select(&invites, `
 		select i.id, i.user_id, u.name user_name, u.full_name user_full_name, u.email user_email, u.avatar_thumbnail_id user_avatar_id,
@@ -173,12 +185,12 @@ func (r *inviteRepo) InvitesForMe(user User) ([]Invite, error) {
 		order by i.created_at desc;`,
 		user.ID)
 	if err != nil {
-		return nil, merry.Wrap(err)
+		panic(err)
 	}
-	return invites, nil
+	return invites
 }
 
-func (r *inviteRepo) InviteStatuses(user User) (map[string]string, error) {
+func (r *inviteRepo) InviteStatuses(user User) map[string]string {
 	var items []struct {
 		UserID string `db:"user_id"`
 		Status string `db:"status"`
@@ -204,7 +216,7 @@ from t
 where rn = 1;
 `, user.ID)
 	if err != nil {
-		return nil, merry.Wrap(err)
+		panic(err)
 	}
 
 	result := make(map[string]string)
@@ -231,7 +243,7 @@ from t
 where rn = 1
 `, user.ID)
 	if err != nil {
-		return nil, merry.Wrap(err)
+		panic(err)
 	}
 
 	for _, item := range items {
@@ -246,5 +258,5 @@ where rn = 1
 		}
 	}
 
-	return result, nil
+	return result
 }

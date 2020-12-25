@@ -202,10 +202,7 @@ func (s *Server) checkAuth(next http.Handler) http.Handler {
 			}
 		}
 
-		user, err := s.repos.User.AddUser(userID, userName, userFullName)
-		if err != nil {
-			log.Println(err)
-		}
+		user := s.repos.User.AddUser(userID, userName, userFullName)
 
 		ctx := context.WithValue(r.Context(), services.ContextUserKey, services.User{
 			ID:           userID,

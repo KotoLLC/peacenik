@@ -32,28 +32,24 @@ type ConnectedMessageHub struct {
 }
 
 type MessageHubRepo interface {
-	HubExists(address string) (bool, error)
-	AddHub(address, details string, hubAdmin User, postLimit int) (string, error)
-	AllHubs() ([]MessageHub, error)
-	Hubs(user User) ([]MessageHub, error)
-	HubByID(hubID string) (*MessageHub, error)
-	HubByIDOrAddress(hubID string) (*MessageHub, error)
-	ApproveHub(hubID string) error
-	RemoveHub(hubID string) error
-	ConnectedHubs(user User) ([]ConnectedMessageHub, error)
-	SetHubPostLimit(hubAdminID, hubID string, postLimit int) error
-	AssignUserToHub(userID, hubID string) error
-	UserHubs(userIDs []string) (map[string][]string, error)
-	BlockUser(userID, hubID string) error
+	HubExists(address string) bool
+	AddHub(address, details string, hubAdmin User, postLimit int) string
+	AllHubs() []MessageHub
+	Hubs(user User) []MessageHub
+	HubByID(hubID string) *MessageHub
+	HubByIDOrAddress(hubID string) *MessageHub
+	ApproveHub(hubID string)
+	RemoveHub(hubID string)
+	ConnectedHubs(user User) []ConnectedMessageHub
+	SetHubPostLimit(hubAdminID, hubID string, postLimit int)
+	AssignUserToHub(userID, hubID string)
+	UserHubs(userIDs []string) map[string][]string
+	BlockUser(userID, hubID string)
 }
 
 type messageHubRepo struct {
 	db *sqlx.DB
 }
-
-var (
-	ErrHubNotFound = common.ErrNotFound.WithMessage("hub not found")
-)
 
 func NewMessageHubs(db *sqlx.DB) MessageHubRepo {
 	return &messageHubRepo{
@@ -61,20 +57,20 @@ func NewMessageHubs(db *sqlx.DB) MessageHubRepo {
 	}
 }
 
-func (r *messageHubRepo) HubExists(address string) (bool, error) {
+func (r *messageHubRepo) HubExists(address string) bool {
 	var hubID string
 	err := r.db.Get(&hubID, `select id from message_hubs where address = $1`,
 		address)
 	if err != nil {
 		if merry.Is(err, sql.ErrNoRows) {
-			return false, nil
+			return false
 		}
-		return false, merry.Wrap(err)
+		panic(err)
 	}
-	return true, nil
+	return true
 }
 
-func (r *messageHubRepo) AddHub(address, details string, hubAdmin User, postLimit int) (string, error) {
+func (r *messageHubRepo) AddHub(address, details string, hubAdmin User, postLimit int) string {
 	hubID := common.GenerateUUID()
 	if postLimit < 0 {
 		postLimit = 0
@@ -85,25 +81,28 @@ func (r *messageHubRepo) AddHub(address, details string, hubAdmin User, postLimi
 		VALUES ($1, $2, $3, $4, $5, $6)`,
 		hubID, address, hubAdmin.ID, common.CurrentTimestamp(), details, postLimit)
 	if err != nil {
-		return "", merry.Wrap(err)
+		panic(err)
 	}
-	return hubID, nil
+	return hubID
 }
 
-func (r *messageHubRepo) AllHubs() ([]MessageHub, error) {
+func (r *messageHubRepo) AllHubs() []MessageHub {
 	var hubs []MessageHub
 	err := r.db.Select(&hubs, `
 			select h.id, h.address, h.admin_id, h.created_at, h.approved_at, h.disabled_at, h.details,
 				   u.name admin_name, u.full_name admin_full_name, u.avatar_thumbnail_id admin_avatar_id, post_limit
 			from message_hubs h
 				inner join users u on u.id = h.admin_id`)
+	if err != nil {
+		panic(err)
+	}
 	for i := range hubs {
 		hubs[i].Address = common.CleanPublicURL(hubs[i].Address)
 	}
-	return hubs, merry.Wrap(err)
+	return hubs
 }
 
-func (r *messageHubRepo) Hubs(user User) ([]MessageHub, error) {
+func (r *messageHubRepo) Hubs(user User) []MessageHub {
 	var hubs []MessageHub
 	err := r.db.Select(&hubs, `
 		select h.id, h.address, h.admin_id, h.created_at, h.approved_at, h.disabled_at, h.details,
@@ -111,13 +110,16 @@ func (r *messageHubRepo) Hubs(user User) ([]MessageHub, error) {
 		from message_hubs h
 			inner join users u on u.id = h.admin_id
 		where h.admin_id = $1`, user.ID)
+	if err != nil {
+		panic(err)
+	}
 	for i := range hubs {
 		hubs[i].Address = common.CleanPublicURL(hubs[i].Address)
 	}
-	return hubs, merry.Wrap(err)
+	return hubs
 }
 
-func (r *messageHubRepo) HubByID(hubID string) (*MessageHub, error) {
+func (r *messageHubRepo) HubByID(hubID string) *MessageHub {
 	var hub MessageHub
 	err := r.db.Get(&hub, `
 		select id, address, admin_id, created_at, approved_at, disabled_at, details, post_limit
@@ -125,16 +127,16 @@ func (r *messageHubRepo) HubByID(hubID string) (*MessageHub, error) {
 		where id = $1`, hubID)
 	if err != nil {
 		if merry.Is(err, sql.ErrNoRows) {
-			return nil, ErrHubNotFound.Here()
+			return nil
 		}
-		return nil, merry.Wrap(err)
+		panic(err)
 	}
 
 	hub.Address = common.CleanPublicURL(hub.Address)
-	return &hub, nil
+	return &hub
 }
 
-func (r *messageHubRepo) HubByIDOrAddress(hubID string) (*MessageHub, error) {
+func (r *messageHubRepo) HubByIDOrAddress(hubID string) *MessageHub {
 	var hub MessageHub
 	err := r.db.Get(&hub, `
 		select id, address, admin_id, created_at, approved_at, disabled_at, details, post_limit
@@ -142,26 +144,28 @@ func (r *messageHubRepo) HubByIDOrAddress(hubID string) (*MessageHub, error) {
 		where id = $1 or address = $1`, hubID)
 	if err != nil {
 		if merry.Is(err, sql.ErrNoRows) {
-			return nil, ErrHubNotFound.Here()
+			return nil
 		}
-		return nil, merry.Wrap(err)
+		panic(err)
 	}
 
 	hub.Address = common.CleanPublicURL(hub.Address)
-	return &hub, nil
+	return &hub
 }
 
-func (r *messageHubRepo) ApproveHub(hubID string) error {
+func (r *messageHubRepo) ApproveHub(hubID string) {
 	_, err := r.db.Exec(`
 		update message_hubs
 		set approved_at = $1
 		where id = $2`,
 		common.CurrentTimestamp(), hubID)
-	return merry.Wrap(err)
+	if err != nil {
+		panic(err)
+	}
 }
 
-func (r *messageHubRepo) RemoveHub(hubID string) error {
-	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+func (r *messageHubRepo) RemoveHub(hubID string) {
+	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
 		_, err := tx.Exec(`
 			delete from user_message_hubs
 			where hub_id = $1`,
@@ -176,9 +180,12 @@ func (r *messageHubRepo) RemoveHub(hubID string) error {
 			hubID)
 		return merry.Wrap(err)
 	})
+	if err != nil {
+		panic(err)
+	}
 }
 
-func (r *messageHubRepo) ConnectedHubs(user User) (connectedHubs []ConnectedMessageHub, err error) {
+func (r *messageHubRepo) ConnectedHubs(user User) []ConnectedMessageHub {
 	type friend struct {
 		MinDistance int
 		Count       int
@@ -201,12 +208,12 @@ func (r *messageHubRepo) ConnectedHubs(user User) (connectedHubs []ConnectedMess
 			where user_id in (?)`,
 			currentLevel)
 		if err != nil {
-			return nil, merry.Wrap(err)
+			panic(err)
 		}
 		query = r.db.Rebind(query)
 		err = r.db.Select(&nextPairs, query, args...)
 		if err != nil {
-			return nil, merry.Wrap(err)
+			panic(err)
 		}
 
 		currentLevel = currentLevel[:0]
@@ -228,17 +235,17 @@ func (r *messageHubRepo) ConnectedHubs(user User) (connectedHubs []ConnectedMess
 	}
 
 	var hubs []MessageHub
-	err = r.db.Select(&hubs, `
+	err := r.db.Select(&hubs, `
 		select id, address, admin_id, created_at, approved_at, disabled_at, details, post_limit
 		from message_hubs mh
 		where approved_at is not null and disabled_at is null
 		  and not exists(select * from user_message_hubs where hub_id = mh.id and user_id = $1 and blocked_at is not null);`,
 		user.ID)
 	if err != nil {
-		return nil, merry.Wrap(err)
+		panic(err)
 	}
 
-	connectedHubs = make([]ConnectedMessageHub, 0, 10)
+	connectedHubs := make([]ConnectedMessageHub, 0, 10)
 	for _, hub := range hubs {
 		if friend, ok := friends[hub.AdminID]; ok && (hub.PostLimit <= 0 || friend.MinDistance < hub.PostLimit) {
 			hub.Address = common.CleanPublicURL(hub.Address)
@@ -249,11 +256,10 @@ func (r *messageHubRepo) ConnectedHubs(user User) (connectedHubs []ConnectedMess
 			})
 		}
 	}
-
-	return connectedHubs, nil
+	return connectedHubs
 }
 
-func (r *messageHubRepo) SetHubPostLimit(hubAdminID, hubID string, postLimit int) error {
+func (r *messageHubRepo) SetHubPostLimit(hubAdminID, hubID string, postLimit int) {
 	if postLimit < 0 {
 		postLimit = 1
 	}
@@ -263,10 +269,12 @@ func (r *messageHubRepo) SetHubPostLimit(hubAdminID, hubID string, postLimit int
 		set post_limit = $1
 		where id = $2 and admin_id = $3`,
 		postLimit, hubID, hubAdminID)
-	return merry.Wrap(err)
+	if err != nil {
+		panic(err)
+	}
 }
 
-func (r *messageHubRepo) AssignUserToHub(userID, hubID string) error {
+func (r *messageHubRepo) AssignUserToHub(userID, hubID string) {
 	now := common.CurrentTimestamp()
 	_, err := r.db.Exec(`
 			insert into user_message_hubs(user_id, hub_id, created_at, updated_at)
@@ -274,14 +282,13 @@ func (r *messageHubRepo) AssignUserToHub(userID, hubID string) error {
 			on conflict (user_id, hub_id) do update set updated_at = $4;`,
 		userID, hubID, now, now)
 	if err != nil {
-		return merry.Wrap(err)
+		panic(err)
 	}
-	return nil
 }
 
-func (r *messageHubRepo) UserHubs(userIDs []string) (map[string][]string, error) {
+func (r *messageHubRepo) UserHubs(userIDs []string) map[string][]string {
 	if len(userIDs) == 0 {
-		return nil, nil
+		return nil
 	}
 
 	query, args, err := sqlx.In(`
@@ -290,7 +297,7 @@ func (r *messageHubRepo) UserHubs(userIDs []string) (map[string][]string, error)
 			inner join message_hubs h on h.id = umh.hub_id
 		where umh.user_id in (?)`, userIDs)
 	if err != nil {
-		return nil, merry.Wrap(err)
+		panic(err)
 	}
 	query = r.db.Rebind(query)
 	var hubs []struct {
@@ -299,7 +306,7 @@ func (r *messageHubRepo) UserHubs(userIDs []string) (map[string][]string, error)
 	}
 	err = r.db.Select(&hubs, query, args...)
 	if err != nil {
-		return nil, merry.Wrap(err)
+		panic(err)
 	}
 	result := make(map[string][]string)
 	for _, hub := range hubs {
@@ -311,16 +318,16 @@ func (r *messageHubRepo) UserHubs(userIDs []string) (map[string][]string, error)
 			return habUserIDs[i] < habUserIDs[j]
 		})
 	}
-	return result, nil
+	return result
 }
 
-func (r *messageHubRepo) BlockUser(userID, hubID string) error {
+func (r *messageHubRepo) BlockUser(userID, hubID string) {
 	now := common.CurrentTimestamp()
 	var blockedAt sql.NullString
 	err := r.db.Get(&blockedAt, `select blocked_at from user_message_hubs where hub_id = $1 and user_id = $2`,
 		hubID, userID)
 	if err != nil && !merry.Is(err, sql.ErrNoRows) {
-		return merry.Wrap(err)
+		panic(err)
 	}
 	if merry.Is(err, sql.ErrNoRows) {
 		_, err := r.db.Exec(`
@@ -329,7 +336,7 @@ func (r *messageHubRepo) BlockUser(userID, hubID string) error {
 			on conflict (user_id, hub_id) do update set blocked_at = $3;`,
 			userID, hubID, now)
 		if err != nil {
-			return merry.Wrap(err)
+			panic(err)
 		}
 	} else if !blockedAt.Valid {
 		_, err := r.db.Exec(`
@@ -338,8 +345,7 @@ func (r *messageHubRepo) BlockUser(userID, hubID string) error {
 			where hub_id = $2 and user_id = $3;`,
 			now, hubID, userID)
 		if err != nil {
-			return merry.Wrap(err)
+			panic(err)
 		}
 	}
-	return nil
 }

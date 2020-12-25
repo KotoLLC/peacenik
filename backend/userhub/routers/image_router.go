@@ -43,12 +43,7 @@ func (ir *imageRouter) UserAvatar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := ir.repos.User.FindUserByID(userID)
-	if err != nil {
-		log.Println("can't find user: ", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+	user := ir.repos.User.FindUserByID(userID)
 	if user == nil {
 		http.NotFound(w, r)
 		return
@@ -78,12 +73,7 @@ func (ir *imageRouter) GroupAvatar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	group, err := ir.repos.Group.FindGroupByID(groupID)
-	if err != nil {
-		log.Println("can't find group: ", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+	group := ir.repos.Group.FindGroupByID(groupID)
 	if group == nil {
 		http.NotFound(w, r)
 		return

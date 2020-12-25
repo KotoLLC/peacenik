@@ -181,11 +181,7 @@ func (s *Server) findSessionUser(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
-		user, err := s.repos.User.FindUserByID(userID)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		user := s.repos.User.FindUserByID(userID)
 		if user == nil {
 			next.ServeHTTP(w, r)
 			return

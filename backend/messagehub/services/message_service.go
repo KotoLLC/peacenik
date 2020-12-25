@@ -78,21 +78,14 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		CreatedAt:             now,
 		UpdatedAt:             now,
 	}
-	err = s.repos.Message.AddMessage("", msg)
-	if err != nil {
-		return nil, err
-	}
-
+	s.repos.Message.AddMessage("", msg)
 	s.notificationSender.SendNotification(friends, user.DisplayName()+" posted a new message", "message/post", map[string]interface{}{
 		"user_id":    msg.UserID,
 		"message_id": msg.ID,
 	})
 
 	userTags := message.FindUserTags(msg.Text)
-	users, err := s.repos.User.FindUsersByName(userTags)
-	if err != nil {
-		return nil, err
-	}
+	users := s.repos.User.FindUsersByName(userTags)
 	notifyUsers := make([]string, 0, len(users))
 	for _, u := range users {
 		if u.ID != msg.UserID && !user.IsBlockedUser(u.ID) {
@@ -162,11 +155,7 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 		}
 	}
 
-	messages, err := s.repos.Message.Messages(user.ID, userIDs, from, int(r.Count))
-	if err != nil {
-		return nil, err
-	}
-
+	messages := s.repos.Message.Messages(user.ID, userIDs, from, int(r.Count))
 	messageIDs := make([]string, len(messages))
 	rpcMessages := make([]*rpc.Message, len(messages))
 	rpcMessageMap := make(map[string]*rpc.Message, len(messages))
@@ -198,10 +187,7 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 		rpcMessageMap[msg.ID] = rpcMessages[i]
 	}
 
-	allLikes, err := s.repos.Message.MessagesLikes(messageIDs)
-	if err != nil {
-		return nil, err
-	}
+	allLikes := s.repos.Message.MessagesLikes(messageIDs)
 	for msgID, likes := range allLikes {
 		rpcLikes := make([]*rpc.MessageLike, len(likes))
 		for i, like := range likes {
@@ -215,10 +201,7 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 		rpcMessageMap[msgID].LikedBy = rpcLikes
 	}
 
-	comments, err := s.repos.Message.Comments(user.ID, messageIDs)
-	if err != nil {
-		return nil, err
-	}
+	comments := s.repos.Message.Comments(user.ID, messageIDs)
 	for messageID, messageComments := range comments {
 		rpcComments := make([]*rpc.Message, 0, len(messageComments))
 		for _, comment := range messageComments {
@@ -281,12 +264,9 @@ func (s *messageService) Message(ctx context.Context, r *rpc.MessageMessageReque
 		userIDs[rawUserID.(string)] = true
 	}
 
-	msg, err := s.repos.Message.Message(user.ID, r.MessageId)
-	if err != nil {
-		if merry.Is(err, repo.ErrMessageNotFound) {
-			return nil, twirp.NotFoundError("message not found")
-		}
-		return nil, err
+	msg := s.repos.Message.Message(user.ID, r.MessageId)
+	if msg == nil {
+		return nil, twirp.NotFoundError("message not found")
 	}
 
 	if !userIDs[msg.UserID] {
@@ -317,10 +297,7 @@ func (s *messageService) Message(ctx context.Context, r *rpc.MessageMessageReque
 		LikedByMe:           msg.LikedByMe,
 	}
 
-	allLikes, err := s.repos.Message.MessagesLikes([]string{msg.ID})
-	if err != nil {
-		return nil, err
-	}
+	allLikes := s.repos.Message.MessagesLikes([]string{msg.ID})
 	for _, likes := range allLikes {
 		rpcLikes := make([]*rpc.MessageLike, len(likes))
 		for i, like := range likes {
@@ -334,10 +311,7 @@ func (s *messageService) Message(ctx context.Context, r *rpc.MessageMessageReque
 		rpcMessage.LikedBy = rpcLikes
 	}
 
-	comments, err := s.repos.Message.Comments(user.ID, []string{msg.ID})
-	if err != nil {
-		return nil, err
-	}
+	comments := s.repos.Message.Comments(user.ID, []string{msg.ID})
 	for _, messageComments := range comments {
 		rpcComments := make([]*rpc.Message, 0, len(messageComments))
 		for _, comment := range messageComments {
@@ -386,12 +360,8 @@ func (s *messageService) Edit(ctx context.Context, r *rpc.MessageEditRequest) (*
 
 	now := common.CurrentTimestamp()
 	if r.TextChanged {
-		err := s.repos.Message.EditMessageText(user.ID, r.MessageId, r.Text, now)
-		if err != nil {
-			if merry.Is(err, repo.ErrMessageNotFound) {
-				return nil, twirp.NotFoundError(err.Error())
-			}
-			return nil, err
+		if !s.repos.Message.EditMessageText(user.ID, r.MessageId, r.Text, now) {
+			return nil, twirp.NotFoundError("not found")
 		}
 	}
 	if r.AttachmentChanged {
@@ -400,21 +370,14 @@ func (s *messageService) Edit(ctx context.Context, r *rpc.MessageEditRequest) (*
 			return nil, err
 		}
 
-		err = s.repos.Message.EditMessageAttachment(user.ID, r.MessageId, r.AttachmentId, attachmentType, attachmentThumbnailID, now)
-		if err != nil {
-			if merry.Is(err, repo.ErrMessageNotFound) {
-				return nil, twirp.NotFoundError(err.Error())
-			}
-			return nil, err
+		if !s.repos.Message.EditMessageAttachment(user.ID, r.MessageId, r.AttachmentId, attachmentType, attachmentThumbnailID, now) {
+			return nil, twirp.NotFoundError("not found")
 		}
 	}
 
-	msg, err := s.repos.Message.Message(user.ID, r.MessageId)
-	if err != nil {
-		if merry.Is(err, repo.ErrMessageNotFound) {
-			return nil, twirp.NotFoundError(err.Error())
-		}
-		return nil, err
+	msg := s.repos.Message.Message(user.ID, r.MessageId)
+	if msg == nil {
+		return nil, twirp.NotFoundError("not found")
 	}
 
 	attachmentLink, err := s.createBlobLink(ctx, msg.AttachmentID)
@@ -446,13 +409,8 @@ func (s *messageService) Edit(ctx context.Context, r *rpc.MessageEditRequest) (*
 
 func (s *messageService) Delete(ctx context.Context, r *rpc.MessageDeleteRequest) (_ *rpc.Empty, err error) {
 	user := s.getUser(ctx)
-
-	err = s.repos.Message.DeleteMessage(user.ID, r.MessageId)
-	if err != nil {
-		if merry.Is(err, repo.ErrMessageNotFound) {
-			return nil, twirp.NotFoundError(err.Error())
-		}
-		return nil, err
+	if !s.repos.Message.DeleteMessage(user.ID, r.MessageId) {
+		return nil, twirp.NotFoundError("not found")
 	}
 	return &rpc.Empty{}, nil
 }
@@ -476,12 +434,9 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
 	}
 
-	msg, err := s.repos.Message.Message(user.ID, r.MessageId)
-	if err != nil {
-		if merry.Is(err, repo.ErrMessageNotFound) {
-			return nil, twirp.NotFoundError(err.Error())
-		}
-		return nil, err
+	msg := s.repos.Message.Message(user.ID, r.MessageId)
+	if msg == nil {
+		return nil, twirp.NotFoundError("not found")
 	}
 
 	rawUserIDs := claims["users"].([]interface{})
@@ -495,7 +450,7 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 	}
 
 	if !found {
-		return nil, twirp.NotFoundError(repo.ErrMessageNotFound.Error())
+		return nil, twirp.NotFoundError("not found")
 	}
 
 	commentID := common.GenerateUUID()
@@ -517,10 +472,7 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 		CreatedAt:             now,
 		UpdatedAt:             now,
 	}
-	err = s.repos.Message.AddMessage(r.MessageId, comment)
-	if err != nil {
-		return nil, err
-	}
+	s.repos.Message.AddMessage(r.MessageId, comment)
 
 	if user.ID != msg.UserID {
 		s.notificationSender.SendNotification([]string{msg.UserID}, user.DisplayName()+" posted a new comment", "comment/post", map[string]interface{}{
@@ -531,11 +483,7 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 	}
 
 	userTags := message.FindUserTags(comment.Text)
-	users, err := s.repos.User.FindUsersByName(userTags)
-	if err != nil {
-		return nil, err
-	}
-
+	users := s.repos.User.FindUsersByName(userTags)
 	notifyUsers := make([]string, 0, len(users))
 	for _, u := range users {
 		if u.ID != comment.UserID && !user.IsBlockedUser(u.ID) {
@@ -583,12 +531,8 @@ func (s *messageService) EditComment(ctx context.Context, r *rpc.MessageEditComm
 	}
 	now := common.CurrentTimestamp()
 	if r.TextChanged {
-		err := s.repos.Message.EditMessageText(user.ID, r.CommentId, r.Text, now)
-		if err != nil {
-			if merry.Is(err, repo.ErrMessageNotFound) {
-				return nil, twirp.NotFoundError("comment not found")
-			}
-			return nil, err
+		if !s.repos.Message.EditMessageText(user.ID, r.CommentId, r.Text, now) {
+			return nil, twirp.NotFoundError("not found")
 		}
 	}
 	if r.AttachmentChanged {
@@ -597,21 +541,14 @@ func (s *messageService) EditComment(ctx context.Context, r *rpc.MessageEditComm
 			return nil, err
 		}
 
-		err = s.repos.Message.EditMessageAttachment(user.ID, r.CommentId, r.AttachmentId, attachmentType, attachmentThumbnailID, now)
-		if err != nil {
-			if merry.Is(err, repo.ErrMessageNotFound) {
-				return nil, twirp.NotFoundError(err.Error())
-			}
-			return nil, err
+		if !s.repos.Message.EditMessageAttachment(user.ID, r.CommentId, r.AttachmentId, attachmentType, attachmentThumbnailID, now) {
+			return nil, twirp.NotFoundError("not found")
 		}
 	}
 
-	comment, err := s.repos.Message.Message(user.ID, r.CommentId)
-	if err != nil {
-		if merry.Is(err, repo.ErrMessageNotFound) {
-			return nil, twirp.NotFoundError("comment not found")
-		}
-		return nil, err
+	comment := s.repos.Message.Message(user.ID, r.CommentId)
+	if comment == nil {
+		return nil, twirp.NotFoundError("not found")
 	}
 
 	attachmentLink, err := s.createBlobLink(ctx, comment.AttachmentID)
@@ -644,12 +581,8 @@ func (s *messageService) EditComment(ctx context.Context, r *rpc.MessageEditComm
 
 func (s *messageService) DeleteComment(ctx context.Context, r *rpc.MessageDeleteCommentRequest) (_ *rpc.Empty, err error) {
 	user := s.getUser(ctx)
-	err = s.repos.Message.DeleteMessage(user.ID, r.CommentId)
-	if err != nil {
-		if merry.Is(err, repo.ErrMessageNotFound) {
-			return nil, twirp.NotFoundError("comment not found")
-		}
-		return nil, err
+	if !s.repos.Message.DeleteMessage(user.ID, r.CommentId) {
+		return nil, twirp.NotFoundError("not found")
 	}
 	return &rpc.Empty{}, nil
 }
@@ -706,11 +639,8 @@ func (s *messageService) LikeMessage(ctx context.Context, r *rpc.MessageLikeMess
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 
-	msg, err := s.repos.Message.Message(user.ID, r.MessageId)
-	if err != nil {
-		if !merry.Is(err, repo.ErrMessageNotFound) {
-			return nil, err
-		}
+	msg := s.repos.Message.Message(user.ID, r.MessageId)
+	if msg == nil {
 		return &rpc.MessageLikeMessageResponse{
 			Likes: -1,
 		}, nil
@@ -726,15 +656,9 @@ func (s *messageService) LikeMessage(ctx context.Context, r *rpc.MessageLikeMess
 
 	var newLikeCount int
 	if r.Unlike {
-		newLikeCount, err = s.repos.Message.UnlikeMessage(user.ID, msg.ID)
-		if err != nil {
-			return nil, err
-		}
+		newLikeCount = s.repos.Message.UnlikeMessage(user.ID, msg.ID)
 	} else {
-		newLikeCount, err = s.repos.Message.LikeMessage(user.ID, msg.ID)
-		if err != nil {
-			return nil, err
-		}
+		newLikeCount = s.repos.Message.LikeMessage(user.ID, msg.ID)
 		s.notificationSender.SendNotification([]string{msg.UserID}, user.DisplayName()+" liked your post", "message/like", map[string]interface{}{
 			"user_id":    user.ID,
 			"message_id": msg.ID,
@@ -752,11 +676,8 @@ func (s *messageService) LikeComment(ctx context.Context, r *rpc.MessageLikeComm
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 
-	comment, err := s.repos.Message.Message(user.ID, r.CommentId)
-	if err != nil {
-		if !merry.Is(err, repo.ErrMessageNotFound) {
-			return nil, err
-		}
+	comment := s.repos.Message.Message(user.ID, r.CommentId)
+	if comment == nil {
 		return &rpc.MessageLikeCommentResponse{
 			Likes: -1,
 		}, nil
@@ -772,15 +693,9 @@ func (s *messageService) LikeComment(ctx context.Context, r *rpc.MessageLikeComm
 
 	var newLikeCount int
 	if r.Unlike {
-		newLikeCount, err = s.repos.Message.UnlikeMessage(user.ID, comment.ID)
-		if err != nil {
-			return nil, err
-		}
+		newLikeCount = s.repos.Message.UnlikeMessage(user.ID, comment.ID)
 	} else {
-		newLikeCount, err = s.repos.Message.LikeMessage(user.ID, comment.ID)
-		if err != nil {
-			return nil, err
-		}
+		newLikeCount = s.repos.Message.LikeMessage(user.ID, comment.ID)
 		s.notificationSender.SendNotification([]string{comment.UserID}, user.DisplayName()+" liked your comment", "comment/like", map[string]interface{}{
 			"user_id":    user.ID,
 			"message_id": comment.ParentID.String,
@@ -793,10 +708,7 @@ func (s *messageService) LikeComment(ctx context.Context, r *rpc.MessageLikeComm
 }
 
 func (s *messageService) MessageLikes(_ context.Context, r *rpc.MessageMessageLikesRequest) (*rpc.MessageMessageLikesResponse, error) {
-	likes, err := s.repos.Message.MessageLikes(r.MessageId)
-	if err != nil {
-		return nil, err
-	}
+	likes := s.repos.Message.MessageLikes(r.MessageId)
 	rpcLikes := make([]*rpc.MessageLike, len(likes))
 	for i, like := range likes {
 		rpcLikes[i] = &rpc.MessageLike{
@@ -812,10 +724,7 @@ func (s *messageService) MessageLikes(_ context.Context, r *rpc.MessageMessageLi
 }
 
 func (s *messageService) CommentLikes(_ context.Context, r *rpc.MessageCommentLikesRequest) (*rpc.MessageCommentLikesResponse, error) {
-	likes, err := s.repos.Message.MessageLikes(r.CommentId)
-	if err != nil {
-		return nil, err
-	}
+	likes := s.repos.Message.MessageLikes(r.CommentId)
 	rpcLikes := make([]*rpc.MessageLike, len(likes))
 	for i, like := range likes {
 		rpcLikes[i] = &rpc.MessageLike{
@@ -867,19 +776,13 @@ func (s *messageService) processAttachment(ctx context.Context, attachmentID str
 
 func (s *messageService) SetMessageVisibility(ctx context.Context, r *rpc.MessageSetMessageVisibilityRequest) (*rpc.Empty, error) {
 	user := s.getUser(ctx)
-	err := s.repos.Message.SetMessageVisibility(user.ID, r.MessageId, r.Visibility)
-	if err != nil {
-		return nil, err
-	}
+	s.repos.Message.SetMessageVisibility(user.ID, r.MessageId, r.Visibility)
 	return &rpc.Empty{}, nil
 }
 
 func (s *messageService) SetCommentVisibility(ctx context.Context, r *rpc.MessageSetCommentVisibilityRequest) (*rpc.Empty, error) {
 	user := s.getUser(ctx)
-	err := s.repos.Message.SetMessageVisibility(user.ID, r.CommentId, r.Visibility)
-	if err != nil {
-		return nil, err
-	}
+	s.repos.Message.SetMessageVisibility(user.ID, r.CommentId, r.Visibility)
 	return &rpc.Empty{}, nil
 }
 
@@ -889,10 +792,7 @@ func (s *messageService) ReportMessage(ctx context.Context, r *rpc.MessageReport
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 
-	reportID, err := s.repos.Message.ReportMessage(user.ID, r.MessageId, r.Report)
-	if err != nil {
-		return nil, err
-	}
+	reportID := s.repos.Message.ReportMessage(user.ID, r.MessageId, r.Report)
 	return &rpc.MessageReportMessageResponse{
 		ReportId: reportID,
 	}, nil
@@ -904,12 +804,9 @@ func (s *messageService) MessageReport(ctx context.Context, r *rpc.MessageMessag
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 
-	report, err := s.repos.Message.MessageReport(r.ReportId)
-	if err != nil {
-		if merry.Is(err, repo.ErrMessageReportNotFound) {
-			return nil, twirp.NotFoundError(err.Error())
-		}
-		return nil, err
+	report := s.repos.Message.MessageReport(r.ReportId)
+	if report == nil {
+		return nil, twirp.NotFoundError("not found")
 	}
 
 	return &rpc.MessageMessageReportResponse{
@@ -924,11 +821,7 @@ func (s *messageService) MessageReports(ctx context.Context, _ *rpc.Empty) (*rpc
 	if !user.IsHubAdmin {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
-	reports, err := s.repos.Message.MessageReports()
-	if err != nil {
-		return nil, err
-	}
-
+	reports := s.repos.Message.MessageReports()
 	rpcReports := make([]*rpc.MessageReport, len(reports))
 	for i, report := range reports {
 		attachmentLink, err := s.createBlobLink(ctx, report.AttachmentID)
@@ -969,12 +862,8 @@ func (s *messageService) DeleteReportedMessage(ctx context.Context, r *rpc.Messa
 	if !user.IsHubAdmin {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
-	err := s.repos.Message.DeleteReportedMessage(r.ReportId)
-	if err != nil {
-		if merry.Is(err, repo.ErrMessageReportNotFound) {
-			return nil, twirp.NotFoundError(err.Error())
-		}
-		return nil, err
+	if !s.repos.Message.DeleteReportedMessage(r.ReportId) {
+		return nil, twirp.NotFoundError("not found")
 	}
 	return &rpc.Empty{}, nil
 }
@@ -984,12 +873,8 @@ func (s *messageService) BlockReportedUser(ctx context.Context, r *rpc.MessageBl
 	if !user.IsHubAdmin {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
-	err := s.repos.Message.BlockReportedUser(r.ReportId)
-	if err != nil {
-		if merry.Is(err, repo.ErrMessageReportNotFound) {
-			return nil, twirp.NotFoundError(err.Error())
-		}
-		return nil, err
+	if !s.repos.Message.BlockReportedUser(r.ReportId) {
+		return nil, twirp.NotFoundError("not found")
 	}
 	return &rpc.Empty{}, nil
 }
@@ -999,12 +884,8 @@ func (s *messageService) ResolveMessageReport(ctx context.Context, r *rpc.Messag
 	if !user.IsHubAdmin {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
-	err := s.repos.Message.ResolveMessageReport(r.ReportId)
-	if err != nil {
-		if merry.Is(err, repo.ErrMessageReportNotFound) {
-			return nil, twirp.NotFoundError(err.Error())
-		}
-		return nil, err
+	if !s.repos.Message.ResolveMessageReport(r.ReportId) {
+		return nil, twirp.NotFoundError("not found")
 	}
 	return &rpc.Empty{}, nil
 }

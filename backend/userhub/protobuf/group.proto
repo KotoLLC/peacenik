@@ -11,6 +11,9 @@ service GroupService {
     rpc DeleteGroup (GroupDeleteGroupRequest) returns (Empty);
     rpc ManagedGroup (Empty) returns (GroupManagedGroupsResponse);
 
+    rpc AddUser(GroupAddUserRequest) returns (Empty);
+    rpc RequestJoin (GroupRequestJoinRequest) returns (Empty);
+
     rpc CreateInvite (GroupCreateInviteRequest) returns (Empty);
     rpc AcceptInvite (GroupAcceptInviteRequest) returns (Empty);
     rpc RejectInvite (GroupRejectInviteRequest) returns (Empty);
@@ -52,6 +55,15 @@ message GroupDeleteGroupRequest {
 
 message GroupManagedGroupsResponse {
     repeated Group groups = 1;
+}
+
+message GroupAddUserRequest {
+    string group_id = 1;
+    string user_id = 2;
+}
+
+message GroupRequestJoinRequest {
+    string group_id = 1;
 }
 
 message GroupCreateInviteRequest {

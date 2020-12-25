@@ -28,20 +28,13 @@ func NewToken(base *BaseService, tokenGenerator token.Generator, tokenDuration t
 func (s *tokenService) Auth(ctx context.Context, _ *rpc.Empty) (*rpc.TokenAuthResponse, error) {
 	user := s.getUser(ctx)
 
-	ownedHubs, err := s.repos.MessageHubs.Hubs(user)
-	if err != nil {
-		return nil, err
-	}
-
+	ownedHubs := s.repos.MessageHubs.Hubs(user)
 	ownedHubAddresses := make([]string, len(ownedHubs))
 	for i, hub := range ownedHubs {
 		ownedHubAddresses[i] = hub.Address
 	}
 
-	blockedUserIDs, err := s.repos.User.BlockedUserIDs(user.ID)
-	if err != nil {
-		return nil, err
-	}
+	blockedUserIDs := s.repos.User.BlockedUserIDs(user.ID)
 	if blockedUserIDs == nil {
 		blockedUserIDs = []string{}
 	}
@@ -65,11 +58,7 @@ func (s *tokenService) Auth(ctx context.Context, _ *rpc.Empty) (*rpc.TokenAuthRe
 func (s *tokenService) PostMessage(ctx context.Context, _ *rpc.Empty) (*rpc.TokenPostMessageResponse, error) {
 	user := s.getUser(ctx)
 
-	hubs, err := s.repos.MessageHubs.ConnectedHubs(user)
-	if err != nil {
-		return nil, err
-	}
-
+	hubs := s.repos.MessageHubs.ConnectedHubs(user)
 	if len(hubs) == 0 {
 		return &rpc.TokenPostMessageResponse{
 			Tokens: nil,
@@ -102,15 +91,9 @@ func (s *tokenService) PostMessage(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 	})
 
 	hubs = hubs[:1]
-	err = s.repos.MessageHubs.AssignUserToHub(user.ID, hubs[0].Hub.ID)
-	if err != nil {
-		return nil, err
-	}
+	s.repos.MessageHubs.AssignUserToHub(user.ID, hubs[0].Hub.ID)
 
-	friends, err := s.repos.Friend.Friends(user)
-	if err != nil {
-		return nil, err
-	}
+	friends := s.repos.Friend.Friends(user)
 	friendIDs := make([]string, len(friends))
 	for i, friend := range friends {
 		friendIDs[i] = friend.ID
@@ -142,19 +125,13 @@ func (s *tokenService) GetMessages(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 	tokens := make(map[string]string)
 	exp := time.Now().Add(s.tokenDuration)
 
-	friends, err := s.repos.Friend.Friends(user)
-	if err != nil {
-		return nil, err
-	}
+	friends := s.repos.Friend.Friends(user)
 	userIDs := make([]string, len(friends)+1)
 	userIDs[0] = user.ID
 	for i, u := range friends {
 		userIDs[i+1] = u.ID
 	}
-	userHubs, err := s.repos.MessageHubs.UserHubs(userIDs)
-	if err != nil {
-		return nil, err
-	}
+	userHubs := s.repos.MessageHubs.UserHubs(userIDs)
 
 	for hubAddress, hubUserIDs := range userHubs {
 		claims := map[string]interface{}{

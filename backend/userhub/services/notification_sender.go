@@ -84,10 +84,7 @@ func (s *notificationSender) sendFCMNotifications(n Notification) {
 		return
 	}
 
-	fcmTokens, err := s.repos.FCMToken.UsersTokens(n.UserIDs)
-	if err != nil {
-		log.Println("can't load user fcm tokens:", err)
-	}
+	fcmTokens := s.repos.FCMToken.UsersTokens(n.UserIDs)
 	// TODO remove debug messages
 	fmt.Println("Users:", n.UserIDs)
 	fmt.Println("FCM Tokens:", fcmTokens)
@@ -119,27 +116,20 @@ func (s *notificationSender) sendEmailNotifications(n Notification) {
 	var userAttachments common.MailAttachmentList
 	userID, ok := n.Data["user_id"].(string)
 	if ok {
-		user, err := s.repos.User.FindUserByID(userID)
-		if err == nil {
-			log.Printf("can't find user by ID '%s': %v", userID, err)
-		}
+		user := s.repos.User.FindUserByID(userID)
 		if user != nil && s.getUserAttachments != nil {
 			userAttachments = s.getUserAttachments(context.TODO(), *user)
 		}
 	}
 
 	for _, userID := range n.UserIDs {
-		user, err := s.repos.User.FindUserByID(userID)
-		if err != nil {
-			log.Printf("can't find user by ID '%s': %v", userID, err)
-			continue
-		}
+		user := s.repos.User.FindUserByID(userID)
 		if user == nil {
 			continue
 		}
 		const body = `%s
 <p>%s</p>`
-		err = s.mailSender.SendHTMLEmail([]string{user.Email}, "KOTO notification",
+		err := s.mailSender.SendHTMLEmail([]string{user.Email}, "KOTO notification",
 			fmt.Sprintf(body, userAttachments.InlineHTML("avatar"), html.EscapeString(n.Text)),
 			userAttachments)
 		if err != nil {

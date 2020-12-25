@@ -24,9 +24,9 @@ func (u User) DisplayName() string {
 }
 
 type UserRepo interface {
-	AddUser(id, name, fullName string) (User, error)
-	FindUsersByName(names []string) ([]User, error)
-	BlockUser(userID string) error
+	AddUser(id, name, fullName string) User
+	FindUsersByName(names []string) []User
+	BlockUser(userID string)
 }
 
 type userRepo struct {
@@ -39,7 +39,7 @@ func NewUsers(db *sqlx.DB) UserRepo {
 	}
 }
 
-func (r *userRepo) AddUser(id, name, fullName string) (User, error) {
+func (r *userRepo) AddUser(id, name, fullName string) User {
 	var user User
 	err := r.db.Get(&user, `
 		select id, name, full_name, blocked_at
@@ -47,7 +47,7 @@ func (r *userRepo) AddUser(id, name, fullName string) (User, error) {
 		where id = $1`,
 		id)
 	if err != nil && !merry.Is(err, sql.ErrNoRows) {
-		return User{}, merry.Wrap(err)
+		panic(err)
 	}
 
 	if merry.Is(err, sql.ErrNoRows) {
@@ -66,7 +66,7 @@ func (r *userRepo) AddUser(id, name, fullName string) (User, error) {
 			where users.name <> excluded.name or users.full_name <> excluded.full_name;`,
 			id, name, fullName, common.CurrentTimestamp())
 		if err != nil {
-			return User{}, merry.Wrap(err)
+			panic(err)
 		}
 	} else if user.Name != name || user.FullName != fullName {
 		user.Name = name
@@ -78,15 +78,15 @@ func (r *userRepo) AddUser(id, name, fullName string) (User, error) {
 			where id = $3;`,
 			name, fullName, id)
 		if err != nil {
-			return User{}, merry.Wrap(err)
+			panic(err)
 		}
 	}
-	return user, nil
+	return user
 }
 
-func (r *userRepo) FindUsersByName(names []string) ([]User, error) {
+func (r *userRepo) FindUsersByName(names []string) []User {
 	if len(names) == 0 {
-		return nil, nil
+		return nil
 	}
 
 	query, args, err := sqlx.In(`
@@ -94,25 +94,24 @@ func (r *userRepo) FindUsersByName(names []string) ([]User, error) {
 		from users
 		where name in (?)`, names)
 	if err != nil {
-		return nil, merry.Wrap(err)
+		panic(err)
 	}
 	query = r.db.Rebind(query)
 	var users []User
 	err = r.db.Select(&users, query, args...)
 	if err != nil {
-		return nil, merry.Wrap(err)
+		panic(err)
 	}
-	return users, nil
+	return users
 }
 
-func (r *userRepo) BlockUser(userID string) error {
+func (r *userRepo) BlockUser(userID string) {
 	_, err := r.db.Exec(`
 		update users
 		set blocked_at = $1
 		where id = $2 and blocked_at is null;`,
 		common.CurrentTimestamp(), userID)
 	if err != nil {
-		return merry.Wrap(err)
+		panic(err)
 	}
-	return nil
 }

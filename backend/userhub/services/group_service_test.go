@@ -83,12 +83,10 @@ func (s *GroupServiceTestSuite) Test_AddPrivateGroup() {
 	s.Equal(false, resp.Group.IsPublic)
 	s.Equal("", resp.Group.AvatarOriginal)
 
-	isGroupMember, err := s.repos.Group.IsGroupMember(resp.Group.Id, "user-1")
-	s.Nil(err)
+	isGroupMember := s.repos.Group.IsGroupMember(resp.Group.Id, "user-1")
 	s.True(isGroupMember)
 
-	members, err := s.repos.Group.GroupMembers(resp.Group.Id)
-	s.Nil(err)
+	members := s.repos.Group.GroupMembers(resp.Group.Id)
 	s.Equal(1, len(members))
 	s.Equal("user-1", members[0].ID)
 }
@@ -108,12 +106,10 @@ func (s *GroupServiceTestSuite) Test_AddPublicGroup() {
 	s.Equal(true, resp.Group.IsPublic)
 	s.Equal("", resp.Group.AvatarOriginal)
 
-	isGroupMember, err := s.repos.Group.IsGroupMember(resp.Group.Id, "user-1")
-	s.Nil(err)
+	isGroupMember := s.repos.Group.IsGroupMember(resp.Group.Id, "user-1")
 	s.True(isGroupMember)
 
-	members, err := s.repos.Group.GroupMembers(resp.Group.Id)
-	s.Nil(err)
+	members := s.repos.Group.GroupMembers(resp.Group.Id)
 	s.Equal(1, len(members))
 	s.Equal("user-1", members[0].ID)
 }
@@ -157,8 +153,7 @@ func (s *GroupServiceTestSuite) Test_EditGroup_Admin() {
 	})
 	s.Nil(err)
 
-	group, err := s.repos.Group.FindGroupByID(groupID)
-	s.Nil(err)
+	group := s.repos.Group.FindGroupByID(groupID)
 	s.Equal(groupID, group.ID)
 	s.Equal("new description", group.Description)
 	s.Equal(false, group.IsPublic)
@@ -178,7 +173,7 @@ func (s *GroupServiceTestSuite) Test_EditGroup_NonAdmin() {
 	s.EqualError(err, "twirp error permission_denied: ")
 }
 
-func (s *GroupServiceTestSuite) Test_CreateInvite_SameUser() {
+func (s *GroupServiceTestSuite) Test_CreateInvite_SameUser_NotMember() {
 	groupID := s.addGroup("group-1", "user-1")
 	s.addUser("user-2")
 
@@ -187,7 +182,20 @@ func (s *GroupServiceTestSuite) Test_CreateInvite_SameUser() {
 		GroupId: groupID,
 		Invited: "user-2",
 	})
-	s.EqualError(err, "twirp error invalid_argument: invited")
+	s.Nil(err)
+}
+
+func (s *GroupServiceTestSuite) Test_CreateInvite_SameUser_AlreadyMember() {
+	groupID := s.addGroup("group-1", "user-1")
+	s.addUser("user-2")
+	s.addGroupUser(groupID, "user-2")
+
+	ctx := s.userContext("user-2")
+	_, err := s.service.CreateInvite(ctx, &rpc.GroupCreateInviteRequest{
+		GroupId: groupID,
+		Invited: "user-2",
+	})
+	s.EqualError(err, "twirp error already_exists: already in the group")
 }
 
 func (s *GroupServiceTestSuite) Test_CreateInvite_NotGroupMember() {
@@ -215,11 +223,9 @@ func (s *GroupServiceTestSuite) Test_CreateInvite() {
 		Invited: "user-3",
 	})
 	s.Nil(err)
-	isMember, err := s.repos.Group.IsGroupMember(groupID, "user-2")
-	s.Nil(err)
+	isMember := s.repos.Group.IsGroupMember(groupID, "user-2")
 	s.True(isMember)
-	isMember, err = s.repos.Group.IsGroupMember(groupID, "user-3")
-	s.Nil(err)
+	isMember = s.repos.Group.IsGroupMember(groupID, "user-3")
 	s.False(isMember)
 
 	respForUser2, err := s.service.InvitesForMe(ctx, &rpc.Empty{})
@@ -269,11 +275,9 @@ func (s *GroupServiceTestSuite) Test_CreateInvite_GroupAdmin() {
 		Invited: "user-3",
 	})
 	s.Nil(err)
-	isMember, err := s.repos.Group.IsGroupMember(groupID, "user-2")
-	s.Nil(err)
+	isMember := s.repos.Group.IsGroupMember(groupID, "user-2")
 	s.True(isMember)
-	isMember, err = s.repos.Group.IsGroupMember(groupID, "user-3")
-	s.Nil(err)
+	isMember = s.repos.Group.IsGroupMember(groupID, "user-3")
 	s.False(isMember)
 
 	respForUser2, err := s.service.InvitesForMe(ctx, &rpc.Empty{})
@@ -325,11 +329,9 @@ func (s *GroupServiceTestSuite) Test_CreateInvite_ByEmail() {
 		Invited: "user-3@mail.org",
 	})
 	s.Nil(err)
-	isMember, err := s.repos.Group.IsGroupMember(groupID, "user-2")
-	s.Nil(err)
+	isMember := s.repos.Group.IsGroupMember(groupID, "user-2")
 	s.True(isMember)
-	isMember, err = s.repos.Group.IsGroupMember(groupID, "user-3")
-	s.Nil(err)
+	isMember = s.repos.Group.IsGroupMember(groupID, "user-3")
 	s.False(isMember)
 
 	respForUser2, err := s.service.InvitesForMe(ctx, &rpc.Empty{})
@@ -380,11 +382,9 @@ func (s *GroupServiceTestSuite) Test_CreateInvite_UnregisteredUser() {
 		Invited: "user-3@mail.org",
 	})
 	s.Nil(err)
-	isMember, err := s.repos.Group.IsGroupMember(groupID, "user-2")
-	s.Nil(err)
+	isMember := s.repos.Group.IsGroupMember(groupID, "user-2")
 	s.True(isMember)
-	isMember, err = s.repos.Group.IsGroupMember(groupID, "user-3")
-	s.Nil(err)
+	isMember = s.repos.Group.IsGroupMember(groupID, "user-3")
 	s.False(isMember)
 
 	respForUser2, err := s.service.InvitesForMe(ctx, &rpc.Empty{})
@@ -439,8 +439,7 @@ func (s *GroupServiceTestSuite) Test_AcceptInvite() {
 	s.Empty(respForUser3.Invites[0].RejectedAt)
 	s.Empty(respForUser3.Invites[0].AcceptedByAdminAt)
 
-	isMember, err := s.repos.Group.IsGroupMember(groupID, "user-3")
-	s.Nil(err)
+	isMember := s.repos.Group.IsGroupMember(groupID, "user-3")
 	s.False(isMember)
 }
 
@@ -476,8 +475,7 @@ func (s *GroupServiceTestSuite) Test_AcceptInvite_FromGroupAdmin() {
 	s.Empty(respForUser3.Invites[0].RejectedAt)
 	s.NotEmpty(respForUser3.Invites[0].AcceptedByAdminAt)
 
-	isMember, err := s.repos.Group.IsGroupMember(groupID, "user-3")
-	s.Nil(err)
+	isMember := s.repos.Group.IsGroupMember(groupID, "user-3")
 	s.True(isMember)
 }
 
@@ -515,8 +513,7 @@ func (s *GroupServiceTestSuite) Test_RejectInvite() {
 	s.NotEmpty(respForUser3.Invites[0].RejectedAt)
 	s.Empty(respForUser3.Invites[0].AcceptedByAdminAt)
 
-	isMember, err := s.repos.Group.IsGroupMember(groupID, "user-3")
-	s.Nil(err)
+	isMember := s.repos.Group.IsGroupMember(groupID, "user-3")
 	s.False(isMember)
 }
 
@@ -540,8 +537,7 @@ func (s *GroupServiceTestSuite) Test_ConfirmInvite() {
 	})
 	s.Require().Nil(err)
 
-	isMember, err := s.repos.Group.IsGroupMember(groupID, "user-3")
-	s.Nil(err)
+	isMember := s.repos.Group.IsGroupMember(groupID, "user-3")
 	s.False(isMember)
 
 	_, err = s.service.ConfirmInvite(ctx, &rpc.GroupConfirmInviteRequest{
@@ -579,8 +575,7 @@ func (s *GroupServiceTestSuite) Test_ConfirmInvite() {
 	})
 	s.Nil(err)
 
-	isMember, err = s.repos.Group.IsGroupMember(groupID, "user-3")
-	s.Nil(err)
+	isMember = s.repos.Group.IsGroupMember(groupID, "user-3")
 	s.True(isMember)
 
 	resp, err = s.service.InvitesToConfirm(ctx, &rpc.Empty{})
@@ -601,8 +596,7 @@ func (s *GroupServiceTestSuite) Test_RemoveUser() {
 	})
 	s.EqualError(err, "twirp error permission_denied: ")
 
-	isMember, err := s.repos.Group.IsGroupMember(groupID, "user-2")
-	s.Nil(err)
+	isMember := s.repos.Group.IsGroupMember(groupID, "user-2")
 	s.True(isMember)
 
 	ctx = s.userContext("user-1")
@@ -622,8 +616,7 @@ func (s *GroupServiceTestSuite) Test_RemoveUser() {
 	})
 	s.Nil(err)
 
-	isMember, err = s.repos.Group.IsGroupMember(groupID, "user-2")
-	s.Nil(err)
+	isMember = s.repos.Group.IsGroupMember(groupID, "user-2")
 	s.False(isMember)
 }
 
@@ -645,8 +638,7 @@ func (s *GroupServiceTestSuite) Test_LeaveGroup() {
 	})
 	s.EqualError(err, "twirp error invalid_argument: admin can't leave the group")
 
-	isMember, err := s.repos.Group.IsGroupMember(groupID, "user-2")
-	s.Nil(err)
+	isMember := s.repos.Group.IsGroupMember(groupID, "user-2")
 	s.True(isMember)
 
 	ctx = s.userContext("user-2")
@@ -655,8 +647,7 @@ func (s *GroupServiceTestSuite) Test_LeaveGroup() {
 	})
 	s.Nil(err)
 
-	isMember, err = s.repos.Group.IsGroupMember(groupID, "user-2")
-	s.Nil(err)
+	isMember = s.repos.Group.IsGroupMember(groupID, "user-2")
 	s.False(isMember)
 }
 
@@ -670,8 +661,7 @@ func (s *GroupServiceTestSuite) userContext(name string) context.Context {
 }
 
 func (s *GroupServiceTestSuite) addUser(name string) {
-	err := s.repos.User.AddUser(name, name+"-name", name+"@mail.org", name+" "+name, "")
-	s.Require().Nil(err)
+	s.repos.User.AddUser(name, name+"-name", name+"@mail.org", name+" "+name, "")
 }
 
 func (s *GroupServiceTestSuite) addGroup(name, adminName string) string {
@@ -689,6 +679,5 @@ func (s *GroupServiceTestSuite) addGroup(name, adminName string) string {
 }
 
 func (s *GroupServiceTestSuite) addGroupUser(groupID, userID string) {
-	err := s.repos.Group.AddUserToGroup(groupID, userID)
-	s.Require().Nil(err)
+	s.repos.Group.AddUserToGroup(groupID, userID)
 }

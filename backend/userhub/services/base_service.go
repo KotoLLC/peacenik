@@ -56,16 +56,13 @@ func (s *BaseService) isAdmin(ctx context.Context) bool {
 	return isAdmin
 }
 
-func (s *BaseService) getGroup(ctx context.Context, groupID string) (*repo.Group, bool, error) {
-	group, err := s.repos.Group.FindGroupByID(groupID)
-	if err != nil {
-		return nil, false, merry.Wrap(err)
-	}
+func (s *BaseService) getGroup(ctx context.Context, groupID string) (*repo.Group, bool) {
+	group := s.repos.Group.FindGroupByID(groupID)
 	if group == nil {
-		return nil, false, nil
+		return nil, false
 	}
 	user := s.getUser(ctx)
-	return group, group.AdminID == user.ID, nil
+	return group, group.AdminID == user.ID
 }
 
 func (s *BaseService) createBlobLink(ctx context.Context, blobID string) (string, error) {

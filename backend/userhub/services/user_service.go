@@ -31,16 +31,8 @@ func NewUser(base *BaseService, passwordHash PasswordHash) rpc.UserService {
 
 func (s *userService) Friends(ctx context.Context, _ *rpc.Empty) (*rpc.UserFriendsResponse, error) {
 	user := s.getUser(ctx)
-	friendMap, err := s.repos.Friend.FriendsWithSubFriends(user)
-	if err != nil {
-		return nil, err
-	}
-
-	inviteStatuses, err := s.repos.Invite.InviteStatuses(user)
-	if err != nil {
-		return nil, err
-	}
-
+	friendMap := s.repos.Friend.FriendsWithSubFriends(user)
+	inviteStatuses := s.repos.Invite.InviteStatuses(user)
 	rpcFriends := make([]*rpc.UserFriendsFriend, 0, len(friendMap))
 	for friend, users := range friendMap {
 		rpcUsers := make([]*rpc.UserFriendsFriendOfFriend, 0, len(users))
@@ -84,16 +76,8 @@ func (s *userService) Friends(ctx context.Context, _ *rpc.Empty) (*rpc.UserFrien
 
 func (s *userService) FriendsOfFriends(ctx context.Context, _ *rpc.Empty) (*rpc.UserFriendsOfFriendsResponse, error) {
 	user := s.getUser(ctx)
-	friendsOfFriends, err := s.repos.Friend.FriendsOfFriends(user)
-	if err != nil {
-		return nil, err
-	}
-
-	inviteStatuses, err := s.repos.Invite.InviteStatuses(user)
-	if err != nil {
-		return nil, err
-	}
-
+	friendsOfFriends := s.repos.Friend.FriendsOfFriends(user)
+	inviteStatuses := s.repos.Invite.InviteStatuses(user)
 	rpcFriendsOfFriends := make([]*rpc.UserFriendsOfFriendsResponseFriend, 0, len(friendsOfFriends))
 	for other, friends := range friendsOfFriends {
 		rpcFriends := make([]*rpc.User, len(friends))
@@ -134,10 +118,7 @@ func (s *userService) Me(ctx context.Context, _ *rpc.Empty) (*rpc.UserMeResponse
 	user := s.getUser(ctx)
 	isAdmin := s.isAdmin(ctx)
 
-	ownedHubs, err := s.repos.MessageHubs.Hubs(user)
-	if err != nil {
-		return nil, err
-	}
+	ownedHubs := s.repos.MessageHubs.Hubs(user)
 
 	ownedHubAddresses := make([]string, len(ownedHubs))
 	for i, hub := range ownedHubs {
@@ -165,10 +146,7 @@ func (s *userService) EditProfile(ctx context.Context, r *rpc.UserEditProfileReq
 			return nil, twirp.InvalidArgumentError("email", "is empty")
 		}
 		if r.Email != user.Email {
-			err := s.repos.User.SetEmail(user.ID, r.Email)
-			if err != nil {
-				return nil, err
-			}
+			s.repos.User.SetEmail(user.ID, r.Email)
 		}
 	}
 
@@ -186,10 +164,7 @@ func (s *userService) EditProfile(ctx context.Context, r *rpc.UserEditProfileReq
 			return nil, err
 		}
 
-		err = s.repos.User.SetPassword(user.ID, newPasswordHash)
-		if err != nil {
-			return nil, err
-		}
+		s.repos.User.SetPassword(user.ID, newPasswordHash)
 	}
 
 	if r.AvatarChanged {
@@ -201,10 +176,7 @@ func (s *userService) EditProfile(ctx context.Context, r *rpc.UserEditProfileReq
 
 	if r.FullNameChanged {
 		fullName := strings.Join(strings.Fields(r.FullName), " ")
-		err := s.repos.User.SetFullName(user.ID, fullName)
-		if err != nil {
-			return nil, merry.Wrap(err)
-		}
+		s.repos.User.SetFullName(user.ID, fullName)
 	}
 
 	return &rpc.Empty{}, nil
@@ -216,10 +188,7 @@ func (s *userService) setAvatar(ctx context.Context, user repo.User, avatarID st
 	}
 
 	if avatarID == "" {
-		err := s.repos.User.SetAvatar(user.ID, "", "")
-		if err != nil {
-			return merry.Wrap(err)
-		}
+		s.repos.User.SetAvatar(user.ID, "", "")
 		return nil
 	}
 
@@ -228,18 +197,12 @@ func (s *userService) setAvatar(ctx context.Context, user repo.User, avatarID st
 		return merry.Wrap(err)
 	}
 
-	err = s.repos.User.SetAvatar(user.ID, avatarID, thumbnailID)
-	if err != nil {
-		return merry.Wrap(err)
-	}
+	s.repos.User.SetAvatar(user.ID, avatarID, thumbnailID)
 	return nil
 }
 
 func (s *userService) Users(_ context.Context, r *rpc.UserUsersRequest) (*rpc.UserUsersResponse, error) {
-	users, err := s.repos.User.FindUsers(r.UserIds)
-	if err != nil {
-		return nil, err
-	}
+	users := s.repos.User.FindUsers(r.UserIds)
 	rpcUsers := make([]*rpc.User, len(users))
 	for i, user := range users {
 		rpcUsers[i] = &rpc.User{
@@ -263,17 +226,9 @@ func (s *userService) User(_ context.Context, r *rpc.UserUserRequest) (*rpc.User
 	}
 	var user *repo.User
 	if r.UserId != "" {
-		var err error
-		user, err = s.repos.User.FindUserByID(r.UserId)
-		if err != nil {
-			return nil, err
-		}
+		user = s.repos.User.FindUserByID(r.UserId)
 	} else {
-		var err error
-		user, err = s.repos.User.FindUserByName(r.UserName)
-		if err != nil {
-			return nil, err
-		}
+		user = s.repos.User.FindUserByName(r.UserName)
 	}
 	if user == nil {
 		return nil, twirp.NotFoundError("user not found")
@@ -300,10 +255,7 @@ func (s *userService) RegisterFCMToken(ctx context.Context, r *rpc.UserRegisterF
 		return nil, twirp.InvalidArgumentError("os", "is empty")
 	}
 
-	err := s.repos.FCMToken.AddToken(user.ID, r.Token, r.DeviceId, r.Os)
-	if err != nil {
-		return nil, err
-	}
+	s.repos.FCMToken.AddToken(user.ID, r.Token, r.DeviceId, r.Os)
 	return &rpc.Empty{}, nil
 }
 
@@ -313,9 +265,7 @@ func (s *userService) BlockUser(ctx context.Context, r *rpc.UserBlockUserRequest
 		return nil, twirp.InvalidArgumentError("user_id", "is invalid")
 	}
 
-	err := s.repos.User.BlockUser(user.ID, r.UserId)
-	if err != nil {
-		return nil, err
-	}
+	s.repos.User.BlockUser(user.ID, r.UserId)
+
 	return &rpc.Empty{}, nil
 }

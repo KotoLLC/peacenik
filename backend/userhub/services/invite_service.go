@@ -44,17 +44,10 @@ func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) 
 		return nil, twirp.NewError(twirp.InvalidArgument, "")
 	}
 
-	friend, err := s.repos.User.FindUserByIDOrName(r.Friend)
-	if err != nil {
-		return nil, err
-	}
-
+	friend := s.repos.User.FindUserByIDOrName(r.Friend)
 	if friend == nil {
 		if strings.Contains(r.Friend, "@") && strings.Contains(r.Friend, ".") {
-			friends, err := s.repos.User.FindUsersByEmail(r.Friend)
-			if err != nil {
-				return nil, err
-			}
+			friends := s.repos.User.FindUsersByEmail(r.Friend)
 			if len(friends) == 1 {
 				friend = &friends[0]
 			} else if len(friends) > 1 {
@@ -66,40 +59,26 @@ func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) 
 	}
 
 	if friend != nil {
-		areBlocked, err := s.repos.User.AreBlocked(user.ID, friend.ID)
-		if err != nil {
-			return nil, err
-		}
+		areBlocked := s.repos.User.AreBlocked(user.ID, friend.ID)
 		if areBlocked {
 			return nil, twirp.NotFoundError("user not found")
 		}
 
-		alreadyFriends, err := s.repos.Friend.AreFriends(user, *friend)
-		if err != nil {
-			return nil, err
-		}
-		if alreadyFriends {
+		if s.repos.Friend.AreFriends(user.ID, friend.ID) {
 			return nil, twirp.NewError(twirp.AlreadyExists, "already a friend.")
 		}
 
-		err = s.repos.Invite.AddInvite(user.ID, friend.ID)
-		if err != nil {
-			return nil, err
-		}
+		s.repos.Invite.AddInvite(user.ID, friend.ID)
 		s.notificationSender.SendNotification([]string{friend.ID}, user.DisplayName()+" invited you to be friends", "invite/add", map[string]interface{}{
 			"user_id": user.ID,
 		})
-		err = s.sendInviteLinkToRegisteredUser(ctx, user, friend.Email)
+		err := s.sendInviteLinkToRegisteredUser(ctx, user, friend.Email)
 		if err != nil {
 			log.Println("can't invite by email:", err)
 		}
 	} else {
-		err = s.repos.Invite.AddInviteByEmail(user.ID, r.Friend)
-		if err != nil {
-			return nil, err
-		}
-
-		err = s.sendInviteLinkToUnregisteredUser(ctx, user, r.Friend)
+		s.repos.Invite.AddInviteByEmail(user.ID, r.Friend)
+		err := s.sendInviteLinkToUnregisteredUser(ctx, user, r.Friend)
 		if err != nil {
 			log.Println("can't invite by email:", err)
 		}
@@ -110,12 +89,8 @@ func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) 
 
 func (s *inviteService) Accept(ctx context.Context, r *rpc.InviteAcceptRequest) (*rpc.Empty, error) {
 	user := s.getUser(ctx)
-	err := s.repos.Invite.AcceptInvite(r.InviterId, user.ID, false)
-	if err != nil {
-		if merry.Is(err, repo.ErrInviteNotFound) {
-			return nil, twirp.NotFoundError(err.Error())
-		}
-		return nil, err
+	if !s.repos.Invite.AcceptInvite(r.InviterId, user.ID, false) {
+		return nil, twirp.NotFoundError("invite not found")
 	}
 	s.notificationSender.SendNotification([]string{r.InviterId}, user.DisplayName()+" accepted your invite!", "invite/accept", map[string]interface{}{
 		"user_id": user.ID,
@@ -125,12 +100,8 @@ func (s *inviteService) Accept(ctx context.Context, r *rpc.InviteAcceptRequest) 
 
 func (s *inviteService) Reject(ctx context.Context, r *rpc.InviteRejectRequest) (*rpc.Empty, error) {
 	user := s.getUser(ctx)
-	err := s.repos.Invite.RejectInvite(r.InviterId, user.ID)
-	if err != nil {
-		if merry.Is(err, repo.ErrInviteNotFound) {
-			return nil, twirp.NotFoundError(err.Error())
-		}
-		return nil, err
+	if !s.repos.Invite.RejectInvite(r.InviterId, user.ID) {
+		return nil, twirp.NotFoundError("invite not found")
 	}
 	s.notificationSender.SendNotification([]string{r.InviterId}, user.DisplayName()+" rejected your invite", "invite/reject", map[string]interface{}{
 		"user_id": user.ID,
@@ -140,10 +111,7 @@ func (s *inviteService) Reject(ctx context.Context, r *rpc.InviteRejectRequest) 
 
 func (s *inviteService) FromMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFromMeResponse, error) {
 	user := s.getUser(ctx)
-	invites, err := s.repos.Invite.InvitesFromMe(user)
-	if err != nil {
-		return nil, err
-	}
+	invites := s.repos.Invite.InvitesFromMe(user)
 	rpcInvites := make([]*rpc.InviteFriendInvite, len(invites))
 	for i, invite := range invites {
 		friendName, friendFullName := invite.FriendName, invite.FriendFullName
@@ -175,10 +143,7 @@ func (s *inviteService) FromMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFr
 
 func (s *inviteService) ForMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteForMeResponse, error) {
 	user := s.getUser(ctx)
-	invites, err := s.repos.Invite.InvitesForMe(user)
-	if err != nil {
-		return nil, err
-	}
+	invites := s.repos.Invite.InvitesForMe(user)
 	rpcInvites := make([]*rpc.InviteFriendInvite, len(invites))
 	for i, invite := range invites {
 		userAvatarLink, err := s.createBlobLink(ctx, invite.UserAvatarID)
