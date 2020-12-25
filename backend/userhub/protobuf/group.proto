@@ -8,6 +8,8 @@ import "model.proto";
 service GroupService {
     rpc AddGroup (GroupAddGroupRequest) returns (GroupAddGroupResponse);
     rpc EditGroup (GroupEditGroupRequest) returns (Empty);
+    rpc DeleteGroup (GroupDeleteGroupRequest) returns (Empty);
+    rpc ManagedGroup (Empty) returns (GroupManagedGroupsResponse);
 
     rpc CreateInvite (GroupCreateInviteRequest) returns (Empty);
     rpc AcceptInvite (GroupAcceptInviteRequest) returns (Empty);
@@ -42,6 +44,14 @@ message GroupEditGroupRequest {
     string avatar_id = 5;
     bool is_public_changed = 6;
     bool is_public = 7;
+}
+
+message GroupDeleteGroupRequest {
+    string group_id = 1;
+}
+
+message GroupManagedGroupsResponse {
+    repeated Group groups = 1;
 }
 
 message GroupCreateInviteRequest {

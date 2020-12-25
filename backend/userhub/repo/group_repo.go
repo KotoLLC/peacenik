@@ -54,7 +54,7 @@ type GroupRepo interface {
 	SetDescription(groupID, description string) error
 	SetIsPublic(groupID string, isPublic bool) error
 	AddUserToGroup(groupID, userID string) error
-	DeleteUserFromGroup(groupID, userID string) error
+	DeleteGroup(groupID string) error
 	IsGroupMember(groupID, userID string) (bool, error)
 	AddInvite(groupID, inviterID, invitedID string) error
 	AddInviteByEmail(groupID, inviterID, invitedEmail string) error
@@ -215,15 +215,34 @@ func (r *groupRepo) AddUserToGroup(groupID, userID string) error {
 	return nil
 }
 
-func (r *groupRepo) DeleteUserFromGroup(groupID, userID string) error {
-	_, err := r.db.Exec(`
+func (r *groupRepo) DeleteGroup(groupID string) error {
+	return common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+		_, err := tx.Exec(`
 			delete from group_users
-			where group_id = $1 and user_id = $2;`,
-		groupID, userID)
-	if err != nil {
-		return merry.Wrap(err)
-	}
-	return nil
+			where group_id = $1;`,
+			groupID)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+
+		_, err = tx.Exec(`
+			delete from group_invites
+			where group_id = $1;`,
+			groupID)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+
+		_, err = tx.Exec(`
+			delete from groups
+			where id = $1;`,
+			groupID)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+
+		return nil
+	})
 }
 
 func (r *groupRepo) IsGroupMember(groupID, userID string) (bool, error) {

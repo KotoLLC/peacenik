@@ -22,6 +22,27 @@ type groupService struct {
 	*BaseService
 }
 
+func (s *groupService) ManagedGroup(ctx context.Context, _ *rpc.Empty) (*rpc.GroupManagedGroupsResponse, error) {
+	user := s.getUser(ctx)
+	groups, err := s.repos.Group.ManagedGroups(user.ID)
+	if err != nil {
+		return nil, err
+	}
+	rpcGroups := make([]*rpc.Group, len(groups))
+	for i, group := range groups {
+		rpcGroups[i] = &rpc.Group{
+			Id:          group.ID,
+			Name:        group.Name,
+			Description: group.Description,
+			IsPublic:    group.IsPublic,
+		}
+	}
+
+	return &rpc.GroupManagedGroupsResponse{
+		Groups: rpcGroups,
+	}, nil
+}
+
 func (s *groupService) AddGroup(ctx context.Context, r *rpc.GroupAddGroupRequest) (*rpc.GroupAddGroupResponse, error) {
 	user := s.getUser(ctx)
 
@@ -114,6 +135,25 @@ func (s *groupService) EditGroup(ctx context.Context, r *rpc.GroupEditGroupReque
 		}
 	}
 
+	return &rpc.Empty{}, nil
+}
+
+func (s *groupService) DeleteGroup(ctx context.Context, r *rpc.GroupDeleteGroupRequest) (*rpc.Empty, error) {
+	group, isGroupAdmin, err := s.getGroup(ctx, r.GroupId)
+	if err != nil {
+		return nil, err
+	}
+	if group == nil {
+		return nil, twirp.NotFoundError("group not found")
+	}
+	if !isGroupAdmin {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
+	}
+
+	err = s.repos.Group.DeleteGroup(r.GroupId)
+	if err != nil {
+		return nil, err
+	}
 	return &rpc.Empty{}, nil
 }
 
