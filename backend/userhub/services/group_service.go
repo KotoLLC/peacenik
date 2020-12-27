@@ -169,7 +169,7 @@ func (s *groupService) AddUser(ctx context.Context, r *rpc.GroupAddUserRequest) 
 	} else {
 		_, err := s.CreateInvite(ctx, &rpc.GroupCreateInviteRequest{
 			GroupId: r.GroupId,
-			Invited: user.ID,
+			Invited: r.UserId,
 		})
 		if err != nil {
 			return nil, err
@@ -184,6 +184,7 @@ func (s *groupService) RequestJoin(ctx context.Context, r *rpc.GroupRequestJoinR
 	return s.CreateInvite(ctx, &rpc.GroupCreateInviteRequest{
 		GroupId: r.GroupId,
 		Invited: user.ID,
+		Message: r.Message,
 	})
 }
 
@@ -197,8 +198,8 @@ func (s *groupService) CreateInvite(ctx context.Context, r *rpc.GroupCreateInvit
 		return nil, twirp.NewError(twirp.InvalidArgument, "invited")
 	}
 
-	group := s.repos.Group.FindGroupByID(r.GroupId)
-	if group == nil {
+	group, isGroupAdmin := s.getGroup(ctx, r.GroupId)
+	if group == nil || (!group.IsPublic && !isGroupAdmin) {
 		return nil, twirp.NotFoundError("group not found")
 	}
 
@@ -230,7 +231,7 @@ func (s *groupService) CreateInvite(ctx context.Context, r *rpc.GroupCreateInvit
 			return nil, twirp.NewError(twirp.AlreadyExists, "already in the group")
 		}
 
-		s.repos.Group.AddInvite(group.ID, user.ID, invitedUser.ID)
+		s.repos.Group.AddInvite(group.ID, user.ID, invitedUser.ID, r.Message)
 		if s.notificationSender != nil {
 			s.notificationSender.SendNotification([]string{invitedUser.ID}, user.DisplayName()+" invited you to the group "+group.Name+"", "group-invite/add", map[string]interface{}{
 				"group_id": group.ID,
@@ -243,7 +244,7 @@ func (s *groupService) CreateInvite(ctx context.Context, r *rpc.GroupCreateInvit
 		//	log.Println("can't invite by email:", err)
 		//}
 	} else {
-		s.repos.Group.AddInviteByEmail(group.ID, user.ID, r.Invited)
+		s.repos.Group.AddInviteByEmail(group.ID, user.ID, r.Invited, r.Message)
 
 		// TODO
 		//err = s.sendInviteLinkToUnregisteredUser(ctx, user, r.Invited)
@@ -318,6 +319,7 @@ func (s *groupService) InvitesFromMe(ctx context.Context, _ *rpc.Empty) (*rpc.Gr
 			AcceptedAt:        common.NullTimeToRPCString(invite.AcceptedAt),
 			RejectedAt:        common.NullTimeToRPCString(invite.RejectedAt),
 			AcceptedByAdminAt: common.NullTimeToRPCString(invite.AcceptedByAdminAt),
+			Message:           invite.Message,
 		}
 	}
 
@@ -342,6 +344,7 @@ func (s *groupService) InvitesForMe(ctx context.Context, _ *rpc.Empty) (*rpc.Gro
 			AcceptedAt:        common.NullTimeToRPCString(invite.AcceptedAt),
 			RejectedAt:        common.NullTimeToRPCString(invite.RejectedAt),
 			AcceptedByAdminAt: common.NullTimeToRPCString(invite.AcceptedByAdminAt),
+			Message:           invite.Message,
 		}
 	}
 
@@ -413,6 +416,7 @@ func (s *groupService) InvitesToConfirm(ctx context.Context, _ *rpc.Empty) (*rpc
 			AcceptedAt:        common.NullTimeToRPCString(invite.AcceptedAt),
 			RejectedAt:        common.NullTimeToRPCString(invite.RejectedAt),
 			AcceptedByAdminAt: common.NullTimeToRPCString(invite.AcceptedByAdminAt),
+			Message:           invite.Message,
 		}
 
 		if _, ok := groupSet[invite.GroupID]; !ok {

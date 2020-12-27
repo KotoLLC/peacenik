@@ -32,7 +32,7 @@ func (s *GroupServiceTestSuite) SetupSuite() {
 }
 
 func (s *GroupServiceTestSuite) SetupTest() {
-	_, err := s.te.DB.Exec(`truncate table group_users, group_invites, groups;`)
+	_, err := s.te.DB.Exec(`truncate table group_users, group_invites, groups, friends;`)
 	s.Require().Nil(err)
 	_, err = s.te.DB.Exec(`truncate table users cascade;`)
 	s.Require().Nil(err)
@@ -141,7 +141,7 @@ func (s *GroupServiceTestSuite) Test_AddExistingGroup() {
 }
 
 func (s *GroupServiceTestSuite) Test_EditGroup_Admin() {
-	groupID := s.addGroup("group-1", "user-1")
+	groupID := s.addPublicGroup("group-1", "user-1")
 
 	ctx := s.userContext("user-1")
 	_, err := s.service.EditGroup(ctx, &rpc.GroupEditGroupRequest{
@@ -160,7 +160,7 @@ func (s *GroupServiceTestSuite) Test_EditGroup_Admin() {
 }
 
 func (s *GroupServiceTestSuite) Test_EditGroup_NonAdmin() {
-	groupID := s.addGroup("group-1", "user-1")
+	groupID := s.addPublicGroup("group-1", "user-1")
 
 	ctx := s.userContext("user-2")
 	_, err := s.service.EditGroup(ctx, &rpc.GroupEditGroupRequest{
@@ -173,20 +173,121 @@ func (s *GroupServiceTestSuite) Test_EditGroup_NonAdmin() {
 	s.EqualError(err, "twirp error permission_denied: ")
 }
 
+func (s *GroupServiceTestSuite) Test_AddUser_NotAdmin() {
+	groupID := s.addPublicGroup("group-1", "user-1")
+	s.addUser("user-2")
+	s.addUser("user-3")
+
+	ctx := s.userContext("user-2")
+	_, err := s.service.AddUser(ctx, &rpc.GroupAddUserRequest{
+		GroupId: groupID,
+		UserId:  "user-3",
+	})
+	s.EqualError(err, "twirp error not_found: group not found")
+}
+
+func (s *GroupServiceTestSuite) Test_AddUser_Admin() {
+	groupID := s.addPublicGroup("group-1", "user-1")
+	s.addUser("user-2")
+	s.addUser("user-3")
+
+	_, err := s.te.DB.Exec(`
+		insert into friends(user_id, friend_id)
+		values ($1, $2), ($2, $1);`,
+		"user-1", "user-3")
+	s.Require().Nil(err)
+
+	ctx := s.userContext("user-1")
+	_, err = s.service.AddUser(ctx, &rpc.GroupAddUserRequest{
+		GroupId: groupID,
+		UserId:  "user-2",
+	})
+	s.Nil(err)
+	_, err = s.service.AddUser(ctx, &rpc.GroupAddUserRequest{
+		GroupId: groupID,
+		UserId:  "user-3",
+	})
+	s.Nil(err)
+
+	isGroupMember := s.repos.Group.IsGroupMember(groupID, "user-2")
+	s.False(isGroupMember)
+	isGroupMember = s.repos.Group.IsGroupMember(groupID, "user-3")
+	s.True(isGroupMember)
+
+	ctx = s.userContext("user-2")
+	resp, err := s.service.InvitesForMe(ctx, &rpc.Empty{})
+	s.Nil(err)
+	s.Equal(1, len(resp.Invites))
+	s.Equal(groupID, resp.Invites[0].GroupId)
+	s.Equal("group-1", resp.Invites[0].GroupName)
+	s.Equal("group-1 description", resp.Invites[0].GroupDescription)
+	s.Equal("user-1", resp.Invites[0].InviterId)
+	s.Equal("user-1-name", resp.Invites[0].InviterName)
+	s.Equal("user-1 user-1", resp.Invites[0].InviterFullName)
+	s.NotEmpty(resp.Invites[0].CreatedAt)
+	s.Empty(resp.Invites[0].AcceptedAt)
+	s.Empty(resp.Invites[0].RejectedAt)
+	s.Empty(resp.Invites[0].AcceptedByAdminAt)
+}
+
+func (s *GroupServiceTestSuite) Test_RequestJoin_PrivateGroup() {
+	groupID := s.addPrivateGroup("group-1", "user-1")
+	s.addUser("user-2")
+
+	ctx := s.userContext("user-2")
+	_, err := s.service.RequestJoin(ctx, &rpc.GroupRequestJoinRequest{
+		GroupId: groupID,
+		Message: "!123",
+	})
+	s.EqualError(err, "twirp error not_found: group not found")
+}
+
+func (s *GroupServiceTestSuite) Test_RequestJoin_PublicGroup() {
+	groupID := s.addPublicGroup("group-1", "user-1")
+	s.addUser("user-2")
+
+	ctx := s.userContext("user-2")
+	_, err := s.service.RequestJoin(ctx, &rpc.GroupRequestJoinRequest{
+		GroupId: groupID,
+		Message: "!123",
+	})
+	s.Nil(err)
+
+	isGroupMember := s.repos.Group.IsGroupMember(groupID, "user-2")
+	s.False(isGroupMember)
+
+	ctx = s.userContext("user-2")
+	resp, err := s.service.InvitesFromMe(ctx, &rpc.Empty{})
+	s.Nil(err)
+	s.Equal(1, len(resp.Invites))
+	s.Equal(groupID, resp.Invites[0].GroupId)
+	s.Equal("group-1", resp.Invites[0].GroupName)
+	s.Equal("group-1 description", resp.Invites[0].GroupDescription)
+	s.Equal("user-2", resp.Invites[0].InvitedId)
+	s.Equal("user-2-name", resp.Invites[0].InvitedName)
+	s.Equal("user-2 user-2", resp.Invites[0].InvitedFullName)
+	s.Equal("!123", resp.Invites[0].Message)
+	s.NotEmpty(resp.Invites[0].CreatedAt)
+	s.NotEmpty(resp.Invites[0].AcceptedAt)
+	s.Empty(resp.Invites[0].RejectedAt)
+	s.Empty(resp.Invites[0].AcceptedByAdminAt)
+}
+
 func (s *GroupServiceTestSuite) Test_CreateInvite_SameUser_NotMember() {
-	groupID := s.addGroup("group-1", "user-1")
+	groupID := s.addPublicGroup("group-1", "user-1")
 	s.addUser("user-2")
 
 	ctx := s.userContext("user-2")
 	_, err := s.service.CreateInvite(ctx, &rpc.GroupCreateInviteRequest{
 		GroupId: groupID,
 		Invited: "user-2",
+		Message: "!123",
 	})
 	s.Nil(err)
 }
 
 func (s *GroupServiceTestSuite) Test_CreateInvite_SameUser_AlreadyMember() {
-	groupID := s.addGroup("group-1", "user-1")
+	groupID := s.addPublicGroup("group-1", "user-1")
 	s.addUser("user-2")
 	s.addGroupUser(groupID, "user-2")
 
@@ -194,12 +295,13 @@ func (s *GroupServiceTestSuite) Test_CreateInvite_SameUser_AlreadyMember() {
 	_, err := s.service.CreateInvite(ctx, &rpc.GroupCreateInviteRequest{
 		GroupId: groupID,
 		Invited: "user-2",
+		Message: "!123",
 	})
 	s.EqualError(err, "twirp error already_exists: already in the group")
 }
 
 func (s *GroupServiceTestSuite) Test_CreateInvite_NotGroupMember() {
-	groupID := s.addGroup("group-1", "user-1")
+	groupID := s.addPublicGroup("group-1", "user-1")
 	s.addUser("user-2")
 	s.addUser("user-3")
 
@@ -207,12 +309,13 @@ func (s *GroupServiceTestSuite) Test_CreateInvite_NotGroupMember() {
 	_, err := s.service.CreateInvite(ctx, &rpc.GroupCreateInviteRequest{
 		GroupId: groupID,
 		Invited: "user-3",
+		Message: "!123",
 	})
 	s.EqualError(err, "twirp error permission_denied: not a group member")
 }
 
 func (s *GroupServiceTestSuite) Test_CreateInvite() {
-	groupID := s.addGroup("group-1", "user-1")
+	groupID := s.addPublicGroup("group-1", "user-1")
 	s.addUser("user-2")
 	s.addUser("user-3")
 	s.addGroupUser(groupID, "user-2")
@@ -221,6 +324,7 @@ func (s *GroupServiceTestSuite) Test_CreateInvite() {
 	_, err := s.service.CreateInvite(ctx, &rpc.GroupCreateInviteRequest{
 		GroupId: groupID,
 		Invited: "user-3",
+		Message: "!123",
 	})
 	s.Nil(err)
 	isMember := s.repos.Group.IsGroupMember(groupID, "user-2")
@@ -240,6 +344,7 @@ func (s *GroupServiceTestSuite) Test_CreateInvite() {
 	s.Equal("user-3", respFromUser2.Invites[0].InvitedId)
 	s.Equal("user-3-name", respFromUser2.Invites[0].InvitedName)
 	s.Equal("user-3 user-3", respFromUser2.Invites[0].InvitedFullName)
+	s.Equal("!123", respFromUser2.Invites[0].Message)
 	s.NotEmpty(respFromUser2.Invites[0].CreatedAt)
 	s.Empty(respFromUser2.Invites[0].AcceptedAt)
 	s.Empty(respFromUser2.Invites[0].RejectedAt)
@@ -255,6 +360,7 @@ func (s *GroupServiceTestSuite) Test_CreateInvite() {
 	s.Equal("user-2", respForUser3.Invites[0].InviterId)
 	s.Equal("user-2-name", respForUser3.Invites[0].InviterName)
 	s.Equal("user-2 user-2", respForUser3.Invites[0].InviterFullName)
+	s.Equal("!123", respForUser3.Invites[0].Message)
 	s.NotEmpty(respForUser3.Invites[0].CreatedAt)
 	s.Empty(respForUser3.Invites[0].AcceptedAt)
 	s.Empty(respForUser3.Invites[0].RejectedAt)
@@ -266,13 +372,14 @@ func (s *GroupServiceTestSuite) Test_CreateInvite() {
 }
 
 func (s *GroupServiceTestSuite) Test_CreateInvite_GroupAdmin() {
-	groupID := s.addGroup("group-1", "user-2")
+	groupID := s.addPublicGroup("group-1", "user-2")
 	s.addUser("user-3")
 
 	ctx := s.userContext("user-2")
 	_, err := s.service.CreateInvite(ctx, &rpc.GroupCreateInviteRequest{
 		GroupId: groupID,
 		Invited: "user-3",
+		Message: "!123",
 	})
 	s.Nil(err)
 	isMember := s.repos.Group.IsGroupMember(groupID, "user-2")
@@ -292,6 +399,7 @@ func (s *GroupServiceTestSuite) Test_CreateInvite_GroupAdmin() {
 	s.Equal("user-3", respFromUser2.Invites[0].InvitedId)
 	s.Equal("user-3-name", respFromUser2.Invites[0].InvitedName)
 	s.Equal("user-3 user-3", respFromUser2.Invites[0].InvitedFullName)
+	s.Equal("!123", respFromUser2.Invites[0].Message)
 	s.NotEmpty(respFromUser2.Invites[0].CreatedAt)
 	s.Empty(respFromUser2.Invites[0].AcceptedAt)
 	s.Empty(respFromUser2.Invites[0].RejectedAt)
@@ -307,6 +415,7 @@ func (s *GroupServiceTestSuite) Test_CreateInvite_GroupAdmin() {
 	s.Equal("user-2", respForUser3.Invites[0].InviterId)
 	s.Equal("user-2-name", respForUser3.Invites[0].InviterName)
 	s.Equal("user-2 user-2", respForUser3.Invites[0].InviterFullName)
+	s.Equal("!123", respForUser3.Invites[0].Message)
 	s.NotEmpty(respForUser3.Invites[0].CreatedAt)
 	s.Empty(respForUser3.Invites[0].AcceptedAt)
 	s.Empty(respForUser3.Invites[0].RejectedAt)
@@ -318,7 +427,7 @@ func (s *GroupServiceTestSuite) Test_CreateInvite_GroupAdmin() {
 }
 
 func (s *GroupServiceTestSuite) Test_CreateInvite_ByEmail() {
-	groupID := s.addGroup("group-1", "user-1")
+	groupID := s.addPublicGroup("group-1", "user-1")
 	s.addUser("user-2")
 	s.addUser("user-3")
 	s.addGroupUser(groupID, "user-2")
@@ -327,6 +436,7 @@ func (s *GroupServiceTestSuite) Test_CreateInvite_ByEmail() {
 	_, err := s.service.CreateInvite(ctx, &rpc.GroupCreateInviteRequest{
 		GroupId: groupID,
 		Invited: "user-3@mail.org",
+		Message: "!123",
 	})
 	s.Nil(err)
 	isMember := s.repos.Group.IsGroupMember(groupID, "user-2")
@@ -346,6 +456,7 @@ func (s *GroupServiceTestSuite) Test_CreateInvite_ByEmail() {
 	s.Equal("user-3", respFromUser2.Invites[0].InvitedId)
 	s.Equal("user-3-name", respFromUser2.Invites[0].InvitedName)
 	s.Equal("user-3 user-3", respFromUser2.Invites[0].InvitedFullName)
+	s.Equal("!123", respFromUser2.Invites[0].Message)
 	s.NotEmpty(respFromUser2.Invites[0].CreatedAt)
 	s.Empty(respFromUser2.Invites[0].AcceptedAt)
 	s.Empty(respFromUser2.Invites[0].RejectedAt)
@@ -361,6 +472,7 @@ func (s *GroupServiceTestSuite) Test_CreateInvite_ByEmail() {
 	s.Equal("user-2", respForUser3.Invites[0].InviterId)
 	s.Equal("user-2-name", respForUser3.Invites[0].InviterName)
 	s.Equal("user-2 user-2", respForUser3.Invites[0].InviterFullName)
+	s.Equal("!123", respForUser3.Invites[0].Message)
 	s.NotEmpty(respForUser3.Invites[0].CreatedAt)
 	s.Empty(respForUser3.Invites[0].AcceptedAt)
 	s.Empty(respForUser3.Invites[0].RejectedAt)
@@ -372,7 +484,7 @@ func (s *GroupServiceTestSuite) Test_CreateInvite_ByEmail() {
 }
 
 func (s *GroupServiceTestSuite) Test_CreateInvite_UnregisteredUser() {
-	groupID := s.addGroup("group-1", "user-1")
+	groupID := s.addPublicGroup("group-1", "user-1")
 	s.addUser("user-2")
 	s.addGroupUser(groupID, "user-2")
 
@@ -380,6 +492,7 @@ func (s *GroupServiceTestSuite) Test_CreateInvite_UnregisteredUser() {
 	_, err := s.service.CreateInvite(ctx, &rpc.GroupCreateInviteRequest{
 		GroupId: groupID,
 		Invited: "user-3@mail.org",
+		Message: "!123",
 	})
 	s.Nil(err)
 	isMember := s.repos.Group.IsGroupMember(groupID, "user-2")
@@ -399,6 +512,7 @@ func (s *GroupServiceTestSuite) Test_CreateInvite_UnregisteredUser() {
 	s.Equal("", respFromUser2.Invites[0].InvitedId)
 	s.Equal("user-3@mail.org", respFromUser2.Invites[0].InvitedName)
 	s.Equal("", respFromUser2.Invites[0].InvitedFullName)
+	s.Equal("!123", respFromUser2.Invites[0].Message)
 	s.NotEmpty(respFromUser2.Invites[0].CreatedAt)
 	s.Empty(respFromUser2.Invites[0].AcceptedAt)
 	s.Empty(respFromUser2.Invites[0].RejectedAt)
@@ -406,7 +520,7 @@ func (s *GroupServiceTestSuite) Test_CreateInvite_UnregisteredUser() {
 }
 
 func (s *GroupServiceTestSuite) Test_AcceptInvite() {
-	groupID := s.addGroup("group-1", "user-1")
+	groupID := s.addPublicGroup("group-1", "user-1")
 	s.addUser("user-2")
 	s.addUser("user-3")
 	s.addGroupUser(groupID, "user-2")
@@ -444,7 +558,7 @@ func (s *GroupServiceTestSuite) Test_AcceptInvite() {
 }
 
 func (s *GroupServiceTestSuite) Test_AcceptInvite_FromGroupAdmin() {
-	groupID := s.addGroup("group-1", "user-2")
+	groupID := s.addPublicGroup("group-1", "user-2")
 	s.addUser("user-3")
 
 	ctx := s.userContext("user-2")
@@ -480,7 +594,7 @@ func (s *GroupServiceTestSuite) Test_AcceptInvite_FromGroupAdmin() {
 }
 
 func (s *GroupServiceTestSuite) Test_RejectInvite() {
-	groupID := s.addGroup("group-1", "user-1")
+	groupID := s.addPublicGroup("group-1", "user-1")
 	s.addUser("user-2")
 	s.addUser("user-3")
 	s.addGroupUser(groupID, "user-2")
@@ -518,7 +632,7 @@ func (s *GroupServiceTestSuite) Test_RejectInvite() {
 }
 
 func (s *GroupServiceTestSuite) Test_ConfirmInvite() {
-	groupID := s.addGroup("group-1", "user-1")
+	groupID := s.addPublicGroup("group-1", "user-1")
 	s.addUser("user-2")
 	s.addUser("user-3")
 	s.addGroupUser(groupID, "user-2")
@@ -527,6 +641,7 @@ func (s *GroupServiceTestSuite) Test_ConfirmInvite() {
 	_, err := s.service.CreateInvite(ctx, &rpc.GroupCreateInviteRequest{
 		GroupId: groupID,
 		Invited: "user-3",
+		Message: "!123",
 	})
 	s.Require().Nil(err)
 
@@ -563,6 +678,7 @@ func (s *GroupServiceTestSuite) Test_ConfirmInvite() {
 	s.Equal("user-3", resp.Groups[0].Invites[0].InvitedId)
 	s.Equal("user-3-name", resp.Groups[0].Invites[0].InvitedName)
 	s.Equal("user-3 user-3", resp.Groups[0].Invites[0].InvitedFullName)
+	s.Equal("!123", resp.Groups[0].Invites[0].Message)
 	s.NotEmpty(resp.Groups[0].Invites[0].CreatedAt)
 	s.NotEmpty(resp.Groups[0].Invites[0].AcceptedAt)
 	s.Empty(resp.Groups[0].Invites[0].RejectedAt)
@@ -584,7 +700,7 @@ func (s *GroupServiceTestSuite) Test_ConfirmInvite() {
 }
 
 func (s *GroupServiceTestSuite) Test_RemoveUser() {
-	groupID := s.addGroup("group-1", "user-1")
+	groupID := s.addPublicGroup("group-1", "user-1")
 	s.addUser("user-2")
 	s.addUser("user-3")
 	s.addGroupUser(groupID, "user-2")
@@ -621,7 +737,7 @@ func (s *GroupServiceTestSuite) Test_RemoveUser() {
 }
 
 func (s *GroupServiceTestSuite) Test_LeaveGroup() {
-	groupID := s.addGroup("group-1", "user-1")
+	groupID := s.addPublicGroup("group-1", "user-1")
 	s.addUser("user-2")
 	s.addUser("user-3")
 	s.addGroupUser(groupID, "user-2")
@@ -664,7 +780,7 @@ func (s *GroupServiceTestSuite) addUser(name string) {
 	s.repos.User.AddUser(name, name+"-name", name+"@mail.org", name+" "+name, "")
 }
 
-func (s *GroupServiceTestSuite) addGroup(name, adminName string) string {
+func (s *GroupServiceTestSuite) addPublicGroup(name, adminName string) string {
 	s.addUser(adminName)
 
 	ctx := s.userContext(adminName)
@@ -672,6 +788,20 @@ func (s *GroupServiceTestSuite) addGroup(name, adminName string) string {
 		Name:        name,
 		Description: name + " description",
 		IsPublic:    true,
+	})
+	s.Require().Nil(err)
+
+	return resp.Group.Id
+}
+
+func (s *GroupServiceTestSuite) addPrivateGroup(name, adminName string) string {
+	s.addUser(adminName)
+
+	ctx := s.userContext(adminName)
+	resp, err := s.service.AddGroup(ctx, &rpc.GroupAddGroupRequest{
+		Name:        name,
+		Description: name + " description",
+		IsPublic:    false,
 	})
 	s.Require().Nil(err)
 

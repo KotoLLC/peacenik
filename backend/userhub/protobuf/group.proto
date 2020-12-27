@@ -64,11 +64,13 @@ message GroupAddUserRequest {
 
 message GroupRequestJoinRequest {
     string group_id = 1;
+    string message = 2;
 }
 
 message GroupCreateInviteRequest {
     string group_id = 1;
     string invited = 2;
+    string message = 3;
 }
 
 message GroupAcceptInviteRequest {
@@ -101,6 +103,7 @@ message GroupInvite {
     string accepted_at = 11;
     string rejected_at = 12;
     string accepted_by_admin_at = 13;
+    string message = 14;
 }
 
 message GroupInvites {

@@ -43,6 +43,7 @@ type GroupInvite struct {
 	AcceptedAt        sql.NullTime `db:"accepted_at"`
 	RejectedAt        sql.NullTime `db:"rejected_at"`
 	AcceptedByAdminAt sql.NullTime `db:"accepted_by_admin_at"`
+	Message           string       `db:"message"`
 }
 
 type GroupRepo interface {
@@ -56,8 +57,8 @@ type GroupRepo interface {
 	AddUserToGroup(groupID, userID string)
 	DeleteGroup(groupID string)
 	IsGroupMember(groupID, userID string) bool
-	AddInvite(groupID, inviterID, invitedID string)
-	AddInviteByEmail(groupID, inviterID, invitedEmail string)
+	AddInvite(groupID, inviterID, invitedID, message string)
+	AddInviteByEmail(groupID, inviterID, invitedEmail, message string)
 	AcceptInvite(groupID, inviterID, invitedID string) bool
 	RejectInvite(groupID, inviterID, invitedID string) bool
 	InvitesFromMe(user User) []GroupInvite
@@ -268,23 +269,31 @@ func (r *groupRepo) IsGroupMember(groupID, userID string) bool {
 	return isMember
 }
 
-func (r *groupRepo) AddInvite(groupID, inviterID, invitedID string) {
+func (r *groupRepo) AddInvite(groupID, inviterID, invitedID, message string) {
+	now := common.CurrentTimestamp()
+	acceptedAt := sql.NullTime{}
+	if inviterID == invitedID {
+		acceptedAt = sql.NullTime{
+			Time:  now,
+			Valid: true,
+		}
+	}
 	_, err := r.db.Exec(`
-		insert into group_invites(group_id, inviter_id, invited_id, created_at)
-		select $1, $2, $3, $4
+		insert into group_invites(group_id, inviter_id, invited_id, created_at, accepted_at, message)
+		select $1, $2, $3, $4, $5, $6
 		where not exists(select * from group_invites where group_id = $1 and inviter_id = $2 and invited_id = $3 and rejected_at is null)`,
-		groupID, inviterID, invitedID, common.CurrentTimestamp())
+		groupID, inviterID, invitedID, now, acceptedAt, message)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func (r *groupRepo) AddInviteByEmail(groupID, inviterID, invitedEmail string) {
+func (r *groupRepo) AddInviteByEmail(groupID, inviterID, invitedEmail, message string) {
 	_, err := r.db.Exec(`
-		insert into group_invites(group_id, inviter_id, invited_email, created_at)
-		select $1, $2, $3, $4
+		insert into group_invites(group_id, inviter_id, invited_email, created_at, message)
+		select $1, $2, $3, $4, $5
 		where not exists(select * from group_invites where group_id = $1 and inviter_id = $2 and invited_email = $3 and rejected_at is null);`,
-		groupID, inviterID, invitedEmail, common.CurrentTimestamp())
+		groupID, inviterID, invitedEmail, common.CurrentTimestamp(), message)
 	if err != nil {
 		panic(err)
 	}
@@ -365,7 +374,7 @@ func (r *groupRepo) InvitesFromMe(user User) []GroupInvite {
 		select i.id, g.id as group_id, g.name group_name, g.description group_description, g.is_public group_is_public,
 		       i.inviter_id, coalesce(u.id, '') as invited_id, coalesce(u.name, '') invited_name, coalesce(u.full_name, '') invited_full_name, coalesce(u.email, i.invited_email) as invited_email,
 		       coalesce(u.avatar_thumbnail_id, '') invited_avatar_id,
-		       i.created_at, i.accepted_at, i.rejected_at, i.accepted_by_admin_at
+		       i.created_at, i.accepted_at, i.rejected_at, i.accepted_by_admin_at, i.message
 		from group_invites i
 		    inner join groups g on g.id = i.group_id
 			left join users u on u.id = i.invited_id 
@@ -386,7 +395,7 @@ func (r *groupRepo) InvitesForMe(user User) []GroupInvite {
 	err := r.db.Select(&invites, `
 		select i.id, g.id as group_id, g.name group_name, g.description group_description, g.is_public group_is_public,
 		       i.inviter_id, u.name inviter_name, u.full_name inviter_full_name, u.email inviter_email, u.avatar_thumbnail_id inviter_avatar_id,
-		       i.created_at, i.accepted_at, i.rejected_at, i.accepted_by_admin_at
+		       i.created_at, i.accepted_at, i.rejected_at, i.accepted_by_admin_at, i.message
 		from group_invites i
 		    inner join groups g on g.id = i.group_id
 			inner join users u on u.id = i.inviter_id
@@ -465,7 +474,7 @@ func (r *groupRepo) InvitesToConfirm(adminID string) []GroupInvite {
 		select i.id, g.id as group_id, g.name group_name, g.description group_description, g.is_public group_is_public,
 		       i.inviter_id, ur.name inviter_name, ur.full_name inviter_full_name, ur.avatar_thumbnail_id inviter_avatar_id,
 		       i.invited_id, ud.name invited_name, ud.full_name invited_full_name, ud.avatar_thumbnail_id inviter_avatar_id,
-		       i.created_at, i.accepted_at, i.rejected_at, i.accepted_by_admin_at
+		       i.created_at, i.accepted_at, i.rejected_at, i.accepted_by_admin_at, i.message
 		from group_invites i
 		    inner join groups g on g.id = i.group_id
 			inner join users ur on ur.id = i.inviter_id
