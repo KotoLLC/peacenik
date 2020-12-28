@@ -18,6 +18,8 @@ service GroupService {
     rpc DenyInvite (GroupDenyInviteRequest) returns (Empty);
 
     // User API
+    rpc PublicGroups (Empty) returns (GroupPublicGroupsResponse);
+    rpc GroupDetails (GroupGroupDetailsRequest) returns (GroupGroupDetailsResponse);
     rpc RequestJoin (GroupRequestJoinRequest) returns (Empty);
     rpc LeaveGroup (GroupLeaveGroupRequest) returns (Empty);
     rpc InvitesFromMe (Empty) returns (GroupInvitesFromMeResponse);
@@ -138,4 +140,22 @@ message GroupLeaveGroupRequest {
 message GroupRemoveUserRequest {
     string group_id = 1;
     string user_id = 2;
+}
+
+message GroupPublicGroupsResponseItem {
+    Group group = 1;
+    string status = 2;
+}
+
+message GroupPublicGroupsResponse {
+    repeated GroupPublicGroupsResponseItem groups = 1;
+}
+
+message GroupGroupDetailsRequest {
+    string group_id = 1;
+}
+
+message GroupGroupDetailsResponse {
+    Group group = 1;
+    repeated User members = 2;
 }

@@ -16,6 +16,8 @@ type Group struct {
 	Name              string    `json:"name" db:"name"`
 	Description       string    `json:"description" db:"description"`
 	AdminID           string    `json:"admin_id" db:"admin_id"`
+	AdminName         string    `json:"admin_name" db:"admin_name"`
+	AdminFullName     string    `json:"admin_full_name" db:"admin_full_name"`
 	AvatarOriginalID  string    `json:"avatar_original_id,omitempty" db:"avatar_original_id"`
 	AvatarThumbnailID string    `json:"avatar_thumbnail_id,omitempty" db:"avatar_thumbnail_id"`
 	IsPublic          bool      `json:"is_public" db:"is_public"`
@@ -70,6 +72,8 @@ type GroupRepo interface {
 	ConfirmInvite(groupID, inviterID, invitedID string)
 	DenyInvite(groupID, inviterID, invitedID string)
 	InvitesToConfirm(adminID string) []GroupInvite
+	PublicGroups() []Group
+	JoinStatuses(userID string) map[string]string
 }
 
 func NewGroups(db *sqlx.DB) GroupRepo {
@@ -85,9 +89,11 @@ type groupRepo struct {
 func (r *groupRepo) FindGroupByIDOrName(value string) *Group {
 	var group Group
 	err := r.db.Get(&group, `
-		select id, name, description, admin_id, avatar_original_id, avatar_thumbnail_id, is_public, created_at, updated_at
-		from groups
-		where id = $1 or lower(name) = $2`,
+		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at
+		from groups g
+			inner join users u on u.id = g.admin_id
+		where g.id = $1 or lower(g.name) = $2`,
 		value, strings.ToLower(value))
 	if err != nil {
 		if merry.Is(err, sql.ErrNoRows) {
@@ -101,9 +107,11 @@ func (r *groupRepo) FindGroupByIDOrName(value string) *Group {
 func (r *groupRepo) FindGroupByID(id string) *Group {
 	var group Group
 	err := r.db.Get(&group, `
-		select id, name, description, admin_id, avatar_original_id, avatar_thumbnail_id, is_public, created_at, updated_at
-		from groups
-		where id = $1`, id)
+		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at
+		from groups g
+			inner join users u on u.id = g.admin_id
+		where g.id = $1`, id)
 	if err != nil {
 		if merry.Is(err, sql.ErrNoRows) {
 			return nil
@@ -116,9 +124,11 @@ func (r *groupRepo) FindGroupByID(id string) *Group {
 func (r *groupRepo) FindGroupByName(name string) *Group {
 	var group Group
 	err := r.db.Get(&group, `
-		select id, name, description, admin_id, avatar_original_id, avatar_thumbnail_id, is_public, created_at, updated_at
-		from groups
-		where lower(name) = $1`,
+		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at
+		from groups g
+			inner join users u on u.id = g.admin_id
+		where lower(g.name) = $1`,
 		strings.ToLower(name))
 	if err != nil {
 		if merry.Is(err, sql.ErrNoRows) {
@@ -410,10 +420,12 @@ func (r *groupRepo) GroupMembers(groupID string) []User {
 func (r *groupRepo) ManagedGroups(adminID string) []Group {
 	var groups []Group
 	err := r.db.Select(&groups, `
-		select id, name, description, admin_id, avatar_original_id, avatar_thumbnail_id, is_public, created_at, updated_at
-		from groups
-		where admin_id = $1
-		order by name;`,
+		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at
+		from groups g
+			inner join users u on u.id = g.admin_id
+		where g.admin_id = $1
+		order by g.name;`,
 		adminID)
 	if err != nil {
 		panic(err)
@@ -503,4 +515,45 @@ func (r *groupRepo) InvitesToConfirm(adminID string) []GroupInvite {
 		panic(err)
 	}
 	return invites
+}
+
+func (r *groupRepo) PublicGroups() []Group {
+	var groups []Group
+	err := r.db.Select(&groups, `
+		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at
+		from groups g
+			inner join users u on u.id = g.admin_id
+		where g.is_public = true
+		order by g.name;`)
+	if err != nil {
+		panic(err)
+	}
+	return groups
+}
+
+func (r *groupRepo) JoinStatuses(userID string) map[string]string {
+	var items []struct {
+		GroupID string `db:"group_id"`
+		Status  string `db:"status"`
+	}
+	err := r.db.Select(&items, `
+		select g.id group_id,
+		       case
+		           when exists(select * from group_users where group_id = g.id and user_id = $1) then 'member'
+		           when exists(select * from group_invites where group_id = g.id and invited_id = $1 and (rejected_at is not null or rejected_by_admin_at is not null)) then 'rejected'
+		           when exists(select * from group_invites where group_id = g.id and invited_id = $1) then 'pending'
+		           else ''
+			   end status
+		from groups g
+		where g.is_public = true;`,
+		userID)
+	if err != nil {
+		panic(err)
+	}
+	statuses := make(map[string]string, len(items))
+	for _, item := range items {
+		statuses[item.GroupID] = item.Status
+	}
+	return statuses
 }

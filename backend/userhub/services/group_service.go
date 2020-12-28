@@ -465,3 +465,74 @@ func (s *groupService) InvitesToConfirm(ctx context.Context, _ *rpc.Empty) (*rpc
 		Groups: groups,
 	}, nil
 }
+
+func (s *groupService) PublicGroups(ctx context.Context, _ *rpc.Empty) (*rpc.GroupPublicGroupsResponse, error) {
+	user := s.getUser(ctx)
+
+	groups := s.repos.Group.PublicGroups()
+	statuses := s.repos.Group.JoinStatuses(user.ID)
+
+	rpcGroups := make([]*rpc.GroupPublicGroupsResponseItem, len(groups))
+	for i, group := range groups {
+		rpcGroups[i] = &rpc.GroupPublicGroupsResponseItem{
+			Group: &rpc.Group{
+				Id:          group.ID,
+				Name:        group.Name,
+				Description: group.Description,
+				IsPublic:    group.IsPublic,
+				Admin: &rpc.User{
+					Id:       group.AdminID,
+					Name:     group.AdminName,
+					FullName: group.AdminFullName,
+				},
+			},
+			Status: statuses[group.ID],
+		}
+	}
+
+	return &rpc.GroupPublicGroupsResponse{
+		Groups: rpcGroups,
+	}, nil
+}
+
+func (s *groupService) GroupDetails(ctx context.Context, r *rpc.GroupGroupDetailsRequest) (*rpc.GroupGroupDetailsResponse, error) {
+	user := s.getUser(ctx)
+	group, isGroupAdmin := s.getGroup(ctx, r.GroupId)
+	if group == nil {
+		return nil, twirp.NotFoundError("group not found")
+	}
+	if !isGroupAdmin {
+		isMember := s.repos.Group.IsGroupMember(r.GroupId, user.ID)
+		if !isMember {
+			return nil, twirp.NewError(twirp.PermissionDenied, "")
+		}
+	}
+	rpcGroup := &rpc.Group{
+		Id:          group.ID,
+		Name:        group.Name,
+		Description: group.Description,
+		IsPublic:    group.IsPublic,
+		Admin: &rpc.User{
+			Id:       group.AdminID,
+			Name:     group.AdminName,
+			FullName: group.AdminFullName,
+		},
+	}
+	members := s.repos.Group.GroupMembers(r.GroupId)
+	rpcMembers := make([]*rpc.User, 0, len(members))
+	for _, member := range members {
+		if member.ID == group.AdminID {
+			continue
+		}
+		rpcMembers = append(rpcMembers, &rpc.User{
+			Id:       member.ID,
+			Name:     member.Name,
+			FullName: member.FullName,
+		})
+	}
+
+	return &rpc.GroupGroupDetailsResponse{
+		Group:   rpcGroup,
+		Members: rpcMembers,
+	}, nil
+}
