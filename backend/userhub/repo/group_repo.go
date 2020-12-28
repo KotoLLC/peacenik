@@ -43,6 +43,7 @@ type GroupInvite struct {
 	AcceptedAt        sql.NullTime `db:"accepted_at"`
 	RejectedAt        sql.NullTime `db:"rejected_at"`
 	AcceptedByAdminAt sql.NullTime `db:"accepted_by_admin_at"`
+	RejectedByAdminAt sql.NullTime `db:"rejected_by_admin_at"`
 	Message           string       `db:"message"`
 }
 
@@ -67,6 +68,7 @@ type GroupRepo interface {
 	GroupMembers(groupID string) []User
 	ManagedGroups(adminID string) []Group
 	ConfirmInvite(groupID, inviterID, invitedID string)
+	DenyInvite(groupID, inviterID, invitedID string)
 	InvitesToConfirm(adminID string) []GroupInvite
 }
 
@@ -300,53 +302,24 @@ func (r *groupRepo) AddInviteByEmail(groupID, inviterID, invitedEmail, message s
 }
 
 func (r *groupRepo) AcceptInvite(groupID, inviterID, invitedID string) bool {
-	accepted := false
-	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
-		var adminID string
-		err := tx.Get(&adminID, `select admin_id from groups where id = $1`, groupID)
-		if err != nil {
-			return merry.Wrap(err)
-		}
+	now := common.CurrentTimestamp()
 
-		now := common.CurrentTimestamp()
-
-		res, err := tx.Exec(`
+	res, err := r.db.Exec(`
 		update group_invites
-		set accepted_at = $1,
-		    accepted_by_admin_at = case
-		        when inviter_id = $2 then $1
-		        else accepted_by_admin_at
-		        end
-		where group_id = $3 and inviter_id = $4 and invited_id = $5 and rejected_at is null`,
-			now, adminID, groupID, inviterID, invitedID)
-		if err != nil {
-			return merry.Wrap(err)
-		}
-		rowsAffected, err := res.RowsAffected()
-		if err != nil {
-			return merry.Wrap(err)
-		}
-		if rowsAffected == 0 {
-			return nil
-		}
-
-		if adminID == inviterID {
-			_, err = tx.Exec(`
-			insert into group_users(group_id, user_id, created_at, updated_at) 
-			select $1, $2, $3, $3
-			where not exists(select * from group_users where group_id = $1 and user_id = $2)`,
-				groupID, invitedID, now)
-			if err != nil {
-				return merry.Wrap(err)
-			}
-		}
-		accepted = true
-		return nil
-	})
+		set accepted_at = $1
+		where group_id = $2 and inviter_id = $3 and invited_id = $4 and rejected_at is null`,
+		now, groupID, inviterID, invitedID)
 	if err != nil {
 		panic(err)
 	}
-	return accepted
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		panic(err)
+	}
+	if rowsAffected == 0 {
+		return false
+	}
+	return true
 }
 
 func (r *groupRepo) RejectInvite(groupID, inviterID, invitedID string) bool {
@@ -374,7 +347,7 @@ func (r *groupRepo) InvitesFromMe(user User) []GroupInvite {
 		select i.id, g.id as group_id, g.name group_name, g.description group_description, g.is_public group_is_public,
 		       i.inviter_id, coalesce(u.id, '') as invited_id, coalesce(u.name, '') invited_name, coalesce(u.full_name, '') invited_full_name, coalesce(u.email, i.invited_email) as invited_email,
 		       coalesce(u.avatar_thumbnail_id, '') invited_avatar_id,
-		       i.created_at, i.accepted_at, i.rejected_at, i.accepted_by_admin_at, i.message
+		       i.created_at, i.accepted_at, i.rejected_at, i.accepted_by_admin_at, i.rejected_by_admin_at, i.message
 		from group_invites i
 		    inner join groups g on g.id = i.group_id
 			left join users u on u.id = i.invited_id 
@@ -395,7 +368,7 @@ func (r *groupRepo) InvitesForMe(user User) []GroupInvite {
 	err := r.db.Select(&invites, `
 		select i.id, g.id as group_id, g.name group_name, g.description group_description, g.is_public group_is_public,
 		       i.inviter_id, u.name inviter_name, u.full_name inviter_full_name, u.email inviter_email, u.avatar_thumbnail_id inviter_avatar_id,
-		       i.created_at, i.accepted_at, i.rejected_at, i.accepted_by_admin_at, i.message
+		       i.created_at, i.accepted_at, i.rejected_at, i.accepted_by_admin_at, i.rejected_by_admin_at, i.message
 		from group_invites i
 		    inner join groups g on g.id = i.group_id
 			inner join users u on u.id = i.inviter_id
@@ -449,22 +422,66 @@ func (r *groupRepo) ManagedGroups(adminID string) []Group {
 }
 
 func (r *groupRepo) ConfirmInvite(groupID, inviterID, invitedID string) {
-	res, err := r.db.Exec(`
+	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+		res, err := tx.Exec(`
 		update group_invites
 		set accepted_by_admin_at = $1
 		where group_id = $2 and inviter_id = $3 and invited_id = $4
-		  and accepted_by_admin_at is null and accepted_at is not null and rejected_at is null;`,
+		  and accepted_by_admin_at is null and rejected_by_admin_at is null and accepted_at is not null and rejected_at is null;`,
+			common.CurrentTimestamp(), groupID, inviterID, invitedID,
+		)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+		rowsAffected, err := res.RowsAffected()
+		if err != nil {
+			return merry.Wrap(err)
+		}
+		if rowsAffected == 0 {
+			return nil
+		}
+		r.AddUserToGroup(groupID, invitedID)
+
+		var adminID string
+		err = tx.Get(&adminID, `select admin_id from groups where id = $1`, groupID)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+
+		_, err = tx.Exec(`
+			insert into friends(user_id, friend_id)
+			select $1, $2
+			where not exists(select * from friends where user_id = $1 and friend_id = $2)`,
+			adminID, invitedID)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+
+		_, err = tx.Exec(`
+			insert into friends(user_id, friend_id)
+			select $1, $2
+			where not exists(select * from friends where user_id = $1 and friend_id = $2)`,
+			invitedID, adminID)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (r *groupRepo) DenyInvite(groupID, inviterID, invitedID string) {
+	_, err := r.db.Exec(`
+		update group_invites
+		set rejected_by_admin_at = $1
+		where group_id = $2 and inviter_id = $3 and invited_id = $4
+		  and accepted_by_admin_at is null and rejected_by_admin_at is null and accepted_at is not null and rejected_at is null;`,
 		common.CurrentTimestamp(), groupID, inviterID, invitedID,
 	)
 	if err != nil {
 		panic(err)
-	}
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		panic(err)
-	}
-	if rowsAffected > 0 {
-		r.AddUserToGroup(groupID, invitedID)
 	}
 }
 
@@ -474,12 +491,12 @@ func (r *groupRepo) InvitesToConfirm(adminID string) []GroupInvite {
 		select i.id, g.id as group_id, g.name group_name, g.description group_description, g.is_public group_is_public,
 		       i.inviter_id, ur.name inviter_name, ur.full_name inviter_full_name, ur.avatar_thumbnail_id inviter_avatar_id,
 		       i.invited_id, ud.name invited_name, ud.full_name invited_full_name, ud.avatar_thumbnail_id inviter_avatar_id,
-		       i.created_at, i.accepted_at, i.rejected_at, i.accepted_by_admin_at, i.message
+		       i.created_at, i.accepted_at, i.rejected_at, i.accepted_by_admin_at, i.rejected_by_admin_at, i.message
 		from group_invites i
 		    inner join groups g on g.id = i.group_id
 			inner join users ur on ur.id = i.inviter_id
 			inner join users ud on ud.id = i.invited_id
-		where g.admin_id = $1 and i.accepted_by_admin_at is null
+		where g.admin_id = $1 and i.accepted_by_admin_at is null and rejected_by_admin_at is null
 		order by g.name, i.created_at desc;`,
 		adminID)
 	if err != nil {

@@ -263,8 +263,17 @@ func (s *groupService) AcceptInvite(ctx context.Context, r *rpc.GroupAcceptInvit
 		return nil, twirp.NewError(twirp.InvalidArgument, "group_id")
 	}
 
+	group, _ := s.getGroup(ctx, r.GroupId)
+	if group == nil {
+		return nil, twirp.NotFoundError("group not found")
+	}
+
 	if !s.repos.Group.AcceptInvite(r.GroupId, r.InviterId, user.ID) {
-		return nil, twirp.NotFoundError("invie not found")
+		return nil, twirp.NotFoundError("invite not found")
+	}
+
+	if r.InviterId == group.AdminID {
+		s.repos.Group.ConfirmInvite(r.GroupId, r.InviterId, user.ID)
 	}
 
 	// TODO
@@ -319,6 +328,7 @@ func (s *groupService) InvitesFromMe(ctx context.Context, _ *rpc.Empty) (*rpc.Gr
 			AcceptedAt:        common.NullTimeToRPCString(invite.AcceptedAt),
 			RejectedAt:        common.NullTimeToRPCString(invite.RejectedAt),
 			AcceptedByAdminAt: common.NullTimeToRPCString(invite.AcceptedByAdminAt),
+			RejectedByAdminAt: common.NullTimeToRPCString(invite.RejectedByAdminAt),
 			Message:           invite.Message,
 		}
 	}
@@ -344,6 +354,7 @@ func (s *groupService) InvitesForMe(ctx context.Context, _ *rpc.Empty) (*rpc.Gro
 			AcceptedAt:        common.NullTimeToRPCString(invite.AcceptedAt),
 			RejectedAt:        common.NullTimeToRPCString(invite.RejectedAt),
 			AcceptedByAdminAt: common.NullTimeToRPCString(invite.AcceptedByAdminAt),
+			RejectedByAdminAt: common.NullTimeToRPCString(invite.RejectedByAdminAt),
 			Message:           invite.Message,
 		}
 	}
@@ -398,6 +409,19 @@ func (s *groupService) ConfirmInvite(ctx context.Context, r *rpc.GroupConfirmInv
 	return &rpc.Empty{}, nil
 }
 
+func (s *groupService) DenyInvite(ctx context.Context, r *rpc.GroupDenyInviteRequest) (*rpc.Empty, error) {
+	group, isGroupAdmin := s.getGroup(ctx, r.GroupId)
+	if group == nil {
+		return nil, twirp.NotFoundError("group not found")
+	}
+	if !isGroupAdmin {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
+	}
+
+	s.repos.Group.DenyInvite(r.GroupId, r.InviterId, r.InvitedId)
+	return &rpc.Empty{}, nil
+}
+
 func (s *groupService) InvitesToConfirm(ctx context.Context, _ *rpc.Empty) (*rpc.GroupInvitesToConfirmResponse, error) {
 	user := s.getUser(ctx)
 	invites := s.repos.Group.InvitesToConfirm(user.ID)
@@ -416,6 +440,7 @@ func (s *groupService) InvitesToConfirm(ctx context.Context, _ *rpc.Empty) (*rpc
 			AcceptedAt:        common.NullTimeToRPCString(invite.AcceptedAt),
 			RejectedAt:        common.NullTimeToRPCString(invite.RejectedAt),
 			AcceptedByAdminAt: common.NullTimeToRPCString(invite.AcceptedByAdminAt),
+			RejectedByAdminAt: common.NullTimeToRPCString(invite.RejectedByAdminAt),
 			Message:           invite.Message,
 		}
 

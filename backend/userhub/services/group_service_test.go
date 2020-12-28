@@ -555,6 +555,9 @@ func (s *GroupServiceTestSuite) Test_AcceptInvite() {
 
 	isMember := s.repos.Group.IsGroupMember(groupID, "user-3")
 	s.False(isMember)
+
+	areFriends := s.repos.Friend.AreFriends("user-1", "user-3")
+	s.False(areFriends)
 }
 
 func (s *GroupServiceTestSuite) Test_AcceptInvite_FromGroupAdmin() {
@@ -591,6 +594,9 @@ func (s *GroupServiceTestSuite) Test_AcceptInvite_FromGroupAdmin() {
 
 	isMember := s.repos.Group.IsGroupMember(groupID, "user-3")
 	s.True(isMember)
+
+	areFriends := s.repos.Friend.AreFriends("user-2", "user-3")
+	s.True(areFriends)
 }
 
 func (s *GroupServiceTestSuite) Test_RejectInvite() {
@@ -683,6 +689,10 @@ func (s *GroupServiceTestSuite) Test_ConfirmInvite() {
 	s.NotEmpty(resp.Groups[0].Invites[0].AcceptedAt)
 	s.Empty(resp.Groups[0].Invites[0].RejectedAt)
 	s.Empty(resp.Groups[0].Invites[0].AcceptedByAdminAt)
+	s.Empty(resp.Groups[0].Invites[0].RejectedByAdminAt)
+
+	areFriends := s.repos.Friend.AreFriends("user-1", "user-3")
+	s.False(areFriends)
 
 	_, err = s.service.ConfirmInvite(ctx, &rpc.GroupConfirmInviteRequest{
 		GroupId:   groupID,
@@ -697,6 +707,84 @@ func (s *GroupServiceTestSuite) Test_ConfirmInvite() {
 	resp, err = s.service.InvitesToConfirm(ctx, &rpc.Empty{})
 	s.Nil(err)
 	s.Empty(len(resp.Groups))
+
+	areFriends = s.repos.Friend.AreFriends("user-1", "user-3")
+	s.True(areFriends)
+}
+
+func (s *GroupServiceTestSuite) Test_DenyInvite() {
+	groupID := s.addPublicGroup("group-1", "user-1")
+	s.addUser("user-2")
+	s.addUser("user-3")
+	s.addGroupUser(groupID, "user-2")
+
+	ctx := s.userContext("user-2")
+	_, err := s.service.CreateInvite(ctx, &rpc.GroupCreateInviteRequest{
+		GroupId: groupID,
+		Invited: "user-3",
+		Message: "!123",
+	})
+	s.Require().Nil(err)
+
+	ctx = s.userContext("user-3")
+	_, err = s.service.AcceptInvite(ctx, &rpc.GroupAcceptInviteRequest{
+		GroupId:   groupID,
+		InviterId: "user-2",
+	})
+	s.Require().Nil(err)
+
+	isMember := s.repos.Group.IsGroupMember(groupID, "user-3")
+	s.False(isMember)
+
+	_, err = s.service.DenyInvite(ctx, &rpc.GroupDenyInviteRequest{
+		GroupId:   groupID,
+		InviterId: "user-2",
+		InvitedId: "user-3",
+	})
+	s.EqualError(err, "twirp error permission_denied: ")
+
+	ctx = s.userContext("user-1")
+
+	resp, err := s.service.InvitesToConfirm(ctx, &rpc.Empty{})
+	s.Nil(err)
+	s.Equal(1, len(resp.Groups))
+	s.Equal(groupID, resp.Groups[0].Group.Id)
+	s.Equal("group-1", resp.Groups[0].Group.Name)
+	s.Equal("group-1 description", resp.Groups[0].Group.Description)
+	s.Equal(true, resp.Groups[0].Group.IsPublic)
+	s.Equal(1, len(resp.Groups[0].Invites))
+	s.Equal("user-2", resp.Groups[0].Invites[0].InviterId)
+	s.Equal("user-2-name", resp.Groups[0].Invites[0].InviterName)
+	s.Equal("user-2 user-2", resp.Groups[0].Invites[0].InviterFullName)
+	s.Equal("user-3", resp.Groups[0].Invites[0].InvitedId)
+	s.Equal("user-3-name", resp.Groups[0].Invites[0].InvitedName)
+	s.Equal("user-3 user-3", resp.Groups[0].Invites[0].InvitedFullName)
+	s.Equal("!123", resp.Groups[0].Invites[0].Message)
+	s.NotEmpty(resp.Groups[0].Invites[0].CreatedAt)
+	s.NotEmpty(resp.Groups[0].Invites[0].AcceptedAt)
+	s.Empty(resp.Groups[0].Invites[0].RejectedAt)
+	s.Empty(resp.Groups[0].Invites[0].AcceptedByAdminAt)
+	s.Empty(resp.Groups[0].Invites[0].RejectedByAdminAt)
+
+	areFriends := s.repos.Friend.AreFriends("user-1", "user-3")
+	s.False(areFriends)
+
+	_, err = s.service.DenyInvite(ctx, &rpc.GroupDenyInviteRequest{
+		GroupId:   groupID,
+		InviterId: "user-2",
+		InvitedId: "user-3",
+	})
+	s.Nil(err)
+
+	isMember = s.repos.Group.IsGroupMember(groupID, "user-3")
+	s.False(isMember)
+
+	resp, err = s.service.InvitesToConfirm(ctx, &rpc.Empty{})
+	s.Nil(err)
+	s.Empty(len(resp.Groups))
+
+	areFriends = s.repos.Friend.AreFriends("user-1", "user-3")
+	s.False(areFriends)
 }
 
 func (s *GroupServiceTestSuite) Test_RemoveUser() {

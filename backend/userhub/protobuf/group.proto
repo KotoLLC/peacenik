@@ -6,26 +6,27 @@ option go_package = "../rpc";
 import "model.proto";
 
 service GroupService {
+    // Admin API
     rpc AddGroup (GroupAddGroupRequest) returns (GroupAddGroupResponse);
     rpc EditGroup (GroupEditGroupRequest) returns (Empty);
     rpc DeleteGroup (GroupDeleteGroupRequest) returns (Empty);
     rpc ManagedGroup (Empty) returns (GroupManagedGroupsResponse);
-
     rpc AddUser(GroupAddUserRequest) returns (Empty);
-    rpc RequestJoin (GroupRequestJoinRequest) returns (Empty);
+    rpc RemoveUser (GroupRemoveUserRequest) returns (Empty);
+    rpc InvitesToConfirm (Empty) returns (GroupInvitesToConfirmResponse);
+    rpc ConfirmInvite (GroupConfirmInviteRequest) returns (Empty);
+    rpc DenyInvite (GroupDenyInviteRequest) returns (Empty);
 
+    // User API
+    rpc RequestJoin (GroupRequestJoinRequest) returns (Empty);
+    rpc LeaveGroup (GroupLeaveGroupRequest) returns (Empty);
+    rpc InvitesFromMe (Empty) returns (GroupInvitesFromMeResponse);
+    rpc InvitesForMe (Empty) returns (GroupInvitesForMeResponse);
+
+    // Low-level API
     rpc CreateInvite (GroupCreateInviteRequest) returns (Empty);
     rpc AcceptInvite (GroupAcceptInviteRequest) returns (Empty);
     rpc RejectInvite (GroupRejectInviteRequest) returns (Empty);
-
-    rpc ConfirmInvite (GroupConfirmInviteRequest) returns (Empty);
-
-    rpc InvitesFromMe (Empty) returns (GroupInvitesFromMeResponse);
-    rpc InvitesForMe (Empty) returns (GroupInvitesForMeResponse);
-    rpc InvitesToConfirm (Empty) returns (GroupInvitesToConfirmResponse);
-
-    rpc LeaveGroup (GroupLeaveGroupRequest) returns (Empty);
-    rpc RemoveUser (GroupRemoveUserRequest) returns (Empty);
 }
 
 message GroupAddGroupRequest {
@@ -89,6 +90,12 @@ message GroupConfirmInviteRequest {
     string invited_id = 3;
 }
 
+message GroupDenyInviteRequest {
+    string group_id = 1;
+    string inviter_id = 2;
+    string invited_id = 3;
+}
+
 message GroupInvite {
     string group_id = 1;
     string group_name = 2;
@@ -103,7 +110,8 @@ message GroupInvite {
     string accepted_at = 11;
     string rejected_at = 12;
     string accepted_by_admin_at = 13;
-    string message = 14;
+    string rejected_by_admin_at = 14;
+    string message = 15;
 }
 
 message GroupInvites {
