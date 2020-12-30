@@ -74,6 +74,7 @@ type GroupRepo interface {
 	InvitesToConfirm(adminID string) []GroupInvite
 	PublicGroups() []Group
 	JoinStatuses(userID string) map[string]string
+	UserGroups(userID string) []Group
 }
 
 func NewGroups(db *sqlx.DB) GroupRepo {
@@ -556,4 +557,20 @@ func (r *groupRepo) JoinStatuses(userID string) map[string]string {
 		statuses[item.GroupID] = item.Status
 	}
 	return statuses
+}
+
+func (r *groupRepo) UserGroups(userID string) []Group {
+	var groups []Group
+	err := r.db.Select(&groups, `
+		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at
+		from groups g
+			inner join users u on u.id = g.admin_id
+		where exists(select * from group_users where user_id = $1 and group_id = g.id)
+		order by g.name;`,
+		userID)
+	if err != nil {
+		panic(err)
+	}
+	return groups
 }

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/ansel1/merry"
+	"github.com/twitchtv/twirp"
 
 	"github.com/mreider/koto/backend/token"
 	"github.com/mreider/koto/backend/userhub/rpc"
@@ -55,7 +56,14 @@ func (s *tokenService) Auth(ctx context.Context, _ *rpc.Empty) (*rpc.TokenAuthRe
 	}, nil
 }
 
-func (s *tokenService) PostMessage(ctx context.Context, _ *rpc.Empty) (*rpc.TokenPostMessageResponse, error) {
+func (s *tokenService) PostMessage(ctx context.Context, r *rpc.TokenPostMessageRequest) (*rpc.TokenPostMessageResponse, error) {
+	if r.GroupId == "" {
+		return s.postMessage(ctx)
+	}
+	return s.postMessageForGroup(ctx, r.GroupId)
+}
+
+func (s *tokenService) postMessage(ctx context.Context) (*rpc.TokenPostMessageResponse, error) {
 	user := s.getUser(ctx)
 
 	hubs := s.repos.MessageHubs.ConnectedHubs(user)
@@ -114,6 +122,35 @@ func (s *tokenService) PostMessage(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 			return nil, merry.Wrap(err)
 		}
 		tokens[hub.Hub.Address] = hubToken
+	}
+	return &rpc.TokenPostMessageResponse{
+		Tokens: tokens,
+	}, nil
+}
+
+func (s *tokenService) postMessageForGroup(ctx context.Context, groupID string) (*rpc.TokenPostMessageResponse, error) {
+	user := s.getUser(ctx)
+	group, _ := s.getGroup(ctx, groupID)
+	if group == nil {
+		return nil, twirp.NotFoundError("group not found")
+	}
+	if !s.repos.Group.IsGroupMember(groupID, user.ID) {
+		return nil, twirp.NotFoundError("group not found")
+	}
+
+	adminHub := s.repos.MessageHubs.UserHub(group.AdminID)
+	tokens := make(map[string]string)
+	if adminHub != "" {
+		exp := time.Now().Add(s.tokenDuration)
+		claims := map[string]interface{}{
+			"hub":      adminHub,
+			"group_id": groupID,
+		}
+		hubToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "post-message", exp, claims)
+		if err != nil {
+			return nil, merry.Wrap(err)
+		}
+		tokens[adminHub] = hubToken
 	}
 	return &rpc.TokenPostMessageResponse{
 		Tokens: tokens,

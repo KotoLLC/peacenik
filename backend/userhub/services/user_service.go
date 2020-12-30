@@ -125,6 +125,22 @@ func (s *userService) Me(ctx context.Context, _ *rpc.Empty) (*rpc.UserMeResponse
 		ownedHubAddresses[i] = hub.Address
 	}
 
+	groups := s.repos.Group.UserGroups(user.ID)
+	rpcGroups := make([]*rpc.Group, len(groups))
+	for i, group := range groups {
+		rpcGroups[i] = &rpc.Group{
+			Id:          group.ID,
+			Name:        group.Name,
+			Description: group.Description,
+			IsPublic:    group.IsPublic,
+			Admin: &rpc.User{
+				Id:       group.AdminID,
+				Name:     group.AdminName,
+				FullName: group.AdminFullName,
+			},
+		}
+	}
+
 	return &rpc.UserMeResponse{
 		User: &rpc.User{
 			Id:          user.ID,
@@ -135,6 +151,7 @@ func (s *userService) Me(ctx context.Context, _ *rpc.Empty) (*rpc.UserMeResponse
 		},
 		IsAdmin:   isAdmin,
 		OwnedHubs: ownedHubAddresses,
+		Groups:    rpcGroups,
 	}, nil
 }
 

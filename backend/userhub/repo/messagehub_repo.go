@@ -44,6 +44,7 @@ type MessageHubRepo interface {
 	SetHubPostLimit(hubAdminID, hubID string, postLimit int)
 	AssignUserToHub(userID, hubID string)
 	UserHubs(userIDs []string) map[string][]string
+	UserHub(userID string) string
 	BlockUser(userID, hubID string)
 }
 
@@ -295,7 +296,7 @@ func (r *messageHubRepo) UserHubs(userIDs []string) map[string][]string {
 		select umh.user_id, h.address hub_address
 		from user_message_hubs umh
 			inner join message_hubs h on h.id = umh.hub_id
-		where umh.user_id in (?)`, userIDs)
+		where umh.user_id in (?) and umh.blocked_at is null;`, userIDs)
 	if err != nil {
 		panic(err)
 	}
@@ -319,6 +320,25 @@ func (r *messageHubRepo) UserHubs(userIDs []string) map[string][]string {
 		})
 	}
 	return result
+}
+
+func (r *messageHubRepo) UserHub(userID string) string {
+	var hubAddress string
+	err := r.db.Get(&hubAddress, `
+		select h.address
+		from user_message_hubs umh
+			inner join message_hubs h on h.id = umh.hub_id
+		where umh.user_id = $1 and umh.blocked_at is null
+		order by umh.updated_at desc
+		limit 1;`,
+		userID)
+	if err != nil {
+		if merry.Is(err, sql.ErrNoRows) {
+			return ""
+		}
+		panic(err)
+	}
+	return hubAddress
 }
 
 func (r *messageHubRepo) BlockUser(userID, hubID string) {

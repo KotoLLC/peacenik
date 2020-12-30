@@ -7,12 +7,16 @@ import "model.proto";
 
 service TokenService {
     rpc Auth (Empty) returns (TokenAuthResponse);
-    rpc PostMessage (Empty) returns (TokenPostMessageResponse);
+    rpc PostMessage (TokenPostMessageRequest) returns (TokenPostMessageResponse);
     rpc GetMessages (Empty) returns (TokenGetMessagesResponse);
 }
 
 message TokenAuthResponse {
     string token = 1;
+}
+
+message TokenPostMessageRequest {
+    string group_id = 1;
 }
 
 message TokenPostMessageResponse {
