@@ -3,7 +3,8 @@ import { Switch, Route } from 'react-router-dom'
 import { WithTopBar } from '@view/shared/WithTopBar'
 import { ContainerStyled, PaperStyled } from './styles'
 import { GroupsPage } from './GroupsPage'
-import { CreateGroup } from './CreateGroup'
+import { CreateGroupPage } from './CreateGroupPage'
+import { GroupDetailsPage } from './GroupDetailsPage'
 
 export const GroupPages = () => {
   return (
@@ -12,7 +13,8 @@ export const GroupPages = () => {
         <PaperStyled>
           <Switch>
             <Route path="/groups" exact component={GroupsPage} />
-            <Route path="/groups/create" exact component={CreateGroup} />
+            <Route path="/groups/create" exact component={CreateGroupPage} />
+            <Route path="/groups/details" exact component={GroupDetailsPage} />
           </Switch>
         </PaperStyled>
       </ContainerStyled>

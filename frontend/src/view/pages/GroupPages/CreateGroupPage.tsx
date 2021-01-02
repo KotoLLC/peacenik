@@ -12,7 +12,7 @@ import {
   FormButtonsWrapper,
 } from './styles'
 
-export const CreateGroup = () => (
+export const CreateGroupPage = () => (
   <>
     <PageTitle>Create Group</PageTitle>
     <FormWrapper>

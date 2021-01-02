@@ -18,6 +18,10 @@ interface Props extends RouteComponentProps { }
 export const GroupsPage: React.FC<Props> = (props) => {
   const { history } = props
 
+  const goToGroupDetails = () => {
+    history.push('/groups/details')
+  }
+
   return (
     <>
       
@@ -28,11 +32,12 @@ export const GroupsPage: React.FC<Props> = (props) => {
             <GroupAvatar
               variant="rounded"
               alt="Remy Sharp"
+              onClick={goToGroupDetails}
               src="">
               <DeckIcon fontSize="large" />
             </GroupAvatar>
             <div>
-              <GroupName>Super group name</GroupName>
+              <GroupName onClick={goToGroupDetails}>Super group name</GroupName>
               <GroupPublicity>Public</GroupPublicity>
             </div>
           </GroupsListItem>
@@ -40,11 +45,12 @@ export const GroupsPage: React.FC<Props> = (props) => {
             <GroupAvatar
               variant="rounded"
               alt="Remy Sharp"
+              onClick={goToGroupDetails}
               src="">
               <DeckIcon fontSize="large" />
             </GroupAvatar>
             <div>
-              <GroupName>Super group name</GroupName>
+              <GroupName onClick={goToGroupDetails}>Super group name</GroupName>
               <GroupPublicity>Private</GroupPublicity>
             </div>
           </GroupsListItem>

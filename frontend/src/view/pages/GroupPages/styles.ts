@@ -63,11 +63,21 @@ export const GroupAvatar = styled(Avatar)`
   width: 80px;
   height: 80px;
   margin-right: 15px;
+  cursor: pointer;
+
+  &.no-pointer {
+    cursor: default;
+  }
 `
 
 export const GroupName = styled.h4`
   width: 100%;
   margin: 0 0 5px;
+  cursor: pointer;
+
+  &.no-pointer {
+    cursor: default;
+  }
 `
 
 export const GroupPublicity = styled.div`
@@ -97,4 +107,23 @@ export const FormButtonsWrapper = styled.div`
 export const FormButton = styled(Button)`
   margin-left: 15px;
   min-width: 100px;
+`
+
+export const GroupDetailsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`
+
+export const RightButton = styled(Button)`
+  margin-left: auto;  
+`
+
+export const UsersListWrapper = styled.div`
+  max-width: 500px;
+  width: 100%;
+`
+
+export const ListTitle = styled.h4`
+  margin-bottom: 5px;
+  padding-left: 16px;
 `
