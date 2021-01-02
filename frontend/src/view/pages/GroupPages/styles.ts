@@ -3,6 +3,8 @@ import Container from '@material-ui/core/Container'
 import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button'
 import Avatar from '@material-ui/core/Avatar'
+import TextField from '@material-ui/core/TextField'
+import FormControl from '@material-ui/core/FormControl'
 
 export const ContainerStyled = styled(Container)`
   && {
@@ -20,11 +22,11 @@ export const PaperStyled = styled(Paper)`
 `
 
 export const PageTitle = styled.h3`
-  font-size: 16px;
-  margin: 0 0 10px;
+  font-size: 18px;
+  margin: 0 0 15px;
 `
 
-export const MyGropusWrapper = styled.div`
+export const MyGroupsWrapper = styled.div`
   display: flex;
   justify-content: space-between;
 `
@@ -32,6 +34,7 @@ export const MyGropusWrapper = styled.div`
 export const GroupsList = styled.ul`
   max-width: 70%;
   padding: 0;
+  margin: 0;
 `
 
 export const GroupsListItem = styled.div`
@@ -69,4 +72,29 @@ export const GroupName = styled.h4`
 
 export const GroupPublicity = styled.div`
   width: 100%;
+`
+
+export const FormWrapper = styled.div`
+  max-width: 430px;
+  width: 100%;
+  margin: 0 auto;
+`
+
+export const TextFieldStyled = styled(TextField)`
+  width: 100%;
+  margin-bottom: 15px;
+`
+
+export const FormControlStyled = styled(FormControl)`
+  margin-bottom: 10px;
+`
+
+export const FormButtonsWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`
+
+export const FormButton = styled(Button)`
+  margin-left: 15px;
+  min-width: 100px;
 `

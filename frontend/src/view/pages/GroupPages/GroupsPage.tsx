@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router'
 import DeckIcon from '@material-ui/icons/Deck'
 import {
   PageTitle,
-  MyGropusWrapper,
+  MyGroupsWrapper,
   GroupsList,
   ButtonsWrapper,
   ButtonStyled,
@@ -20,9 +20,10 @@ export const GroupsPage: React.FC<Props> = (props) => {
 
   return (
     <>
-      <PageTitle>My Gropus</PageTitle>
-      <MyGropusWrapper>
+      
+      <MyGroupsWrapper>
         <GroupsList>
+          <PageTitle>My Groups</PageTitle>
           <GroupsListItem>
             <GroupAvatar
               variant="rounded"
@@ -59,7 +60,7 @@ export const GroupsPage: React.FC<Props> = (props) => {
             onClick={() => history.push('/groups/create')}
           >Create a group</ButtonStyled>
         </ButtonsWrapper>
-      </MyGropusWrapper>
+      </MyGroupsWrapper>
     </>
   )
 
