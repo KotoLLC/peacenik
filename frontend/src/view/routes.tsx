@@ -18,6 +18,7 @@ import ForgotPasswordPage from '@view/pages/ForgotPasswordPage'
 import ForgotUserNamePage from '@view/pages/ForgotUserNamePage'
 import ResetPasswordPage from '@view/pages/ResetPasswordPage'
 import { DashboardPage } from '@view/pages/DashboardPage'
+import { GroupPages } from '@view/pages/GroupPages'
 import selectors from '@selectors/index'
 import { LastLocationProvider } from 'react-router-last-location'
 import { useSwipeable } from 'react-swipeable'
@@ -104,6 +105,7 @@ export const Routes = () => {
             <Route path="/resend-confirm-email" component={ResendConfirmEmailPage} />
             <Route path="/no-hubs" component={NoHubsPage} />
             <PrivateRoute path="/friends" component={FriendsPage} />
+            <PrivateRoute path="/groups" component={GroupPages} />
             <PrivateRoute path="/hubs" component={HubPages} />
             <PrivateRoute path="/messages" component={MessagesPage} />
             <PrivateRoute path="/notifications" component={NotificationsPage} />

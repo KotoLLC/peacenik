@@ -18,6 +18,7 @@ import Avatar from '@material-ui/core/Avatar'
 import { getAvatarUrl } from '@services/avatarUrl'
 import selectors from '@selectors/index'
 import { StoreTypes } from 'src/types'
+import DeckIcon from '@material-ui/icons/Deck'
 
 interface Props {
   userId: string
@@ -65,6 +66,12 @@ const TopMenu: React.FC<Props> = (props) => {
             <ForumIcon fontSize="small" />
           </ListItemIconStyled>
           <ListItemText primary="Messages" />
+        </MenuItem>
+        <MenuItem onClick={() => goToPage('/groups')}>
+          <ListItemIconStyled>
+            <DeckIcon fontSize="small" />
+          </ListItemIconStyled>
+          <ListItemText primary="Groups" />
         </MenuItem>
         <MenuItem onClick={() => goToPage('/friends/all')}>
           <ListItemIconStyled>
