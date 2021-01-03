@@ -13,8 +13,8 @@ import (
 )
 
 func LoadRSAKey(settingRepo SettingRepo, keyPath string) (string, error) {
-	const privateKeyId = "private-key"
-	privateKey, exists, err := settingRepo.Get(privateKeyId)
+	const privateKeyID = "private-key"
+	privateKey, exists, err := settingRepo.Get(privateKeyID)
 	if err != nil {
 		return "", merry.Wrap(err)
 	}
@@ -50,7 +50,7 @@ func LoadRSAKey(settingRepo SettingRepo, keyPath string) (string, error) {
 		keyContent = b.Bytes()
 	}
 
-	err = settingRepo.Add(privateKeyId, string(keyContent))
+	err = settingRepo.Add(privateKeyID, string(keyContent))
 	if err != nil {
 		return "", merry.Wrap(err)
 	}

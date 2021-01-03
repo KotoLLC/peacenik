@@ -170,11 +170,40 @@ func (s *tokenService) GetMessages(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 	}
 	userHubs := s.repos.MessageHubs.UserHubs(userIDs)
 
-	for hubAddress, hubUserIDs := range userHubs {
-		claims := map[string]interface{}{
-			"hub":   hubAddress,
-			"users": hubUserIDs,
+	groupHubs := make(map[string][]string)
+	userGroups := s.repos.Group.UserGroups(user.ID)
+	for _, group := range userGroups {
+		adminHub := s.repos.MessageHubs.UserHub(group.AdminID)
+		if adminHub != "" {
+			groupHubs[adminHub] = append(groupHubs[adminHub], group.ID)
 		}
+	}
+
+	allHubs := make([]string, 0, len(userHubs)+len(groupHubs))
+	for userHub := range userHubs {
+		allHubs = append(allHubs, userHub)
+	}
+Loop:
+	for groupHub := range groupHubs {
+		for _, hub := range allHubs {
+			if hub == groupHub {
+				continue Loop
+			}
+		}
+		allHubs = append(allHubs, groupHub)
+	}
+
+	for _, hubAddress := range allHubs {
+		claims := map[string]interface{}{
+			"hub": hubAddress,
+		}
+		if hubUserIDs, ok := userHubs[hubAddress]; ok {
+			claims["users"] = hubUserIDs
+		}
+		if hubGroupIDs, ok := groupHubs[hubAddress]; ok {
+			claims["groups"] = hubGroupIDs
+		}
+
 		hubToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "get-messages", exp, claims)
 		if err != nil {
 			return nil, merry.Wrap(err)

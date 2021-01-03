@@ -32,6 +32,7 @@ message MessageMessagesRequest {
     string token = 1;
     string from = 2;
     int32 count = 3;
+    string group_id = 4;
 }
 
 message MessageMessagesResponse {
@@ -150,7 +151,7 @@ message MessageReportMessageRequest {
 }
 
 message MessageReportMessageResponse {
-    string report_id= 1;
+    string report_id = 1;
 }
 
 message MessageMessageReportRequest {
