@@ -70,10 +70,10 @@ export const TopBarRightSide = styled.div`
 export const PageWrapper = styled.main`
   display: flex;
   flex-wrap: wrap;
-  padding: 15px 20px;
+  padding: 15px 20px 140px;
 
   @media (max-width: 600px) {
-    padding: 0px;
+    padding: 0px 0 120px;
   }
 `
 

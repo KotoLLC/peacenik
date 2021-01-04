@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { withRouter, RouteComponentProps } from 'react-router'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
-import { WithTopBar } from '@view/shared/WithTopBar'
+import { PageLayout } from '@view/shared/PageLayout'
 import { ContainerStyled, ButtonStyled } from './styles'
 import ReactMarkdown from 'react-markdown'
 import firstPicture from './../../../assets/images/1.nohub.png'
@@ -47,7 +47,7 @@ export const NoHubs: React.FC<Props> = (props) => {
   ])
 
   return (
-    <WithTopBar>
+    <PageLayout>
       <ContainerStyled maxWidth="md">
         <ReactMarkdown>{`
 
@@ -110,7 +110,7 @@ You can host your own hub on Amazon, Google, Digital Ocean, etc. Of course, this
 </a>
         
   </ContainerStyled>
-</WithTopBar>
+</PageLayout>
   )
 }
 

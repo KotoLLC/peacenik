@@ -287,6 +287,11 @@ export const UpButton = styled(IconButton)`
   right: 20px;
   bottom: 20px;
   z-index: 1000;
+
+  @media (max-width: 600px) {
+    right: 15px;
+    bottom: 0;
+  }
 `
 
 export const ReactionsWrapper = styled.div`

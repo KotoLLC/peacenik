@@ -1,6 +1,6 @@
 import React from 'react'
 import { Switch, Route } from 'react-router-dom'
-import { WithTopBar } from '@view/shared/WithTopBar'
+import { PageLayout } from '@view/shared/PageLayout'
 import { ContainerStyled, PaperStyled } from './styles'
 import { GroupsPage } from './GroupsPage'
 import { CreateGroupPage } from './CreateGroupPage'
@@ -8,7 +8,7 @@ import { GroupDetailsPage } from './GroupDetailsPage'
 
 export const GroupPages = () => {
   return (
-    <WithTopBar>
+    <PageLayout>
       <ContainerStyled>
         <PaperStyled>
           <Switch>
@@ -18,6 +18,6 @@ export const GroupPages = () => {
           </Switch>
         </PaperStyled>
       </ContainerStyled>
-    </WithTopBar>
+    </PageLayout>
   )
 }

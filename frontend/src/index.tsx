@@ -17,6 +17,7 @@ import 'react-awesome-slider/dist/styles.css'
 import 'github-markdown-css'
 import './assets/styles/pullToResresh.css'
 import './assets/styles/mentions.css'
+import './assets/styles/fonts.css'
 
 const defaultTheme = createMuiTheme({
   typography: {

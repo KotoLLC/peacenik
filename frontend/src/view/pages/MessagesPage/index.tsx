@@ -1,12 +1,12 @@
 import React from 'react'
 import { Switch, Route } from 'react-router-dom'
-import { WithTopBar } from '@view/shared/WithTopBar'
+import { PageLayout } from '@view/shared/PageLayout'
 import MessageFeed from './MessageFeed'
 
 export const MessagesPage = () => (
-  <WithTopBar>
+  <PageLayout>
     <Switch>
       <Route path="/messages" exact component={MessageFeed} />
     </Switch>
-  </WithTopBar>
+  </PageLayout>
 )

@@ -3,19 +3,21 @@ import { PageWrapper } from './styles'
 import TopBar from './TopBar'
 import selectors from '@selectors/index'
 import { connect } from 'react-redux'
+import { BottomBar } from './BottomBar'
 
 interface Props {
   isLogged: boolean
   isEmailConfirmed: boolean
 }
 
-export const TopBarComponent: React.SFC<Props> = (props) => {
+export const WithPageLayout: React.SFC<Props> = (props) => {
   const {isLogged, isEmailConfirmed} = props  
 
   return (
     <PageWrapper>
       {isLogged && isEmailConfirmed && <TopBar/>}
       {props.children}
+      {isLogged && isEmailConfirmed && <BottomBar/>}
     </PageWrapper>
   )
 }
@@ -26,4 +28,4 @@ const mapStateToProps = (state): StateProps => ({
   isEmailConfirmed: selectors.profile.isEmailConfirmed(state) || false,
 })
 
-export const WithTopBar = connect(mapStateToProps)(TopBarComponent)
+export const PageLayout = connect(mapStateToProps)(WithPageLayout)

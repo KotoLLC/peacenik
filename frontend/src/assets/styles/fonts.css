@@ -1,0 +1,14 @@
+@font-face {
+  font-family: 'SFUITextBold';
+  src: local('SFUITextBold'), url('./../fonts/SFUIText-Bold.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'SFUITextMedium';
+  src: local('SFUITextMedium'), url('./../fonts/SFUIText-Medium.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'SFUITextRegular';
+  src: local('SFUITextRegular'), url('./../fonts/SFUIText-Regular.woff') format('woff');
+}

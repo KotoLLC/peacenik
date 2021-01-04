@@ -3,7 +3,7 @@ import { Switch, Route, Redirect, RouteComponentProps } from 'react-router-dom'
 import { connect } from 'react-redux'
 import selectors from '@selectors/index'
 import { StoreTypes } from 'src/types'
-import { WithTopBar } from '@view/shared/WithTopBar'
+import { PageLayout } from '@view/shared/PageLayout'
 import MyProfile from './MyProfile'
 import UserProfile from './UserProfile'
 import queryString from 'query-string'
@@ -23,7 +23,7 @@ const ProfilePage: React.FC<Props> = (props) => {
   const currentUserId = params.id ? params.id : ''
 
   return (
-    <WithTopBar>
+    <PageLayout>
       <ContainerStyled>
         <Switch>
           <Route path="/profile/me" exact component={MyProfile} />
@@ -32,7 +32,7 @@ const ProfilePage: React.FC<Props> = (props) => {
           </Route>
         </Switch>
       </ContainerStyled>
-    </WithTopBar>
+    </PageLayout>
   )
 }
 

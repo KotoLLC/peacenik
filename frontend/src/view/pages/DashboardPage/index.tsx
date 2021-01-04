@@ -1,15 +1,15 @@
 import React from 'react'
-import { WithTopBar } from '@view/shared/WithTopBar'
+import { PageLayout } from '@view/shared/PageLayout'
 import { ContainerStyled } from './styles'
 import ObjectionableContent from './ObjectionableContent'
 
 export const DashboardPage = () => {
 
   return (
-    <WithTopBar>
+    <PageLayout>
       <ContainerStyled maxWidth="md">
         <ObjectionableContent/>
       </ContainerStyled>
-    </WithTopBar>
+    </PageLayout>
   )
 }

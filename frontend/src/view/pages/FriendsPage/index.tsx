@@ -4,7 +4,7 @@ import Invitations from './Invitations'
 import FriendInvite from './FriendInvite'
 import FriendTabs from './Tabs'
 import { Switch, Route, RouteComponentProps } from 'react-router-dom'
-import { WithTopBar } from '@view/shared/WithTopBar'
+import { PageLayout } from '@view/shared/PageLayout'
 import { Header } from '@view/shared/styles'
 import GroupAddIcon from '@material-ui/icons/GroupAdd'
 import Button from '@material-ui/core/Button'
@@ -12,7 +12,7 @@ import Button from '@material-ui/core/Button'
 export const FriendsPage: React.SFC<RouteComponentProps> = (props) => {
 
   return (
-    <WithTopBar>
+    <PageLayout>
       <Header>
         <FriendTabs />
         <Button
@@ -28,6 +28,6 @@ export const FriendsPage: React.SFC<RouteComponentProps> = (props) => {
         <Route path="/friends/invitations" exact component={Invitations} />
         <Route path="/friends/invite" exact component={FriendInvite} />
       </Switch>
-    </WithTopBar>
+    </PageLayout>
   )
 }
