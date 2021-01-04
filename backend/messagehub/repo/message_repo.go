@@ -111,6 +111,7 @@ func (r *messageRepo) Messages(currentUserID string, userIDs []string, from time
 			from messages m
 				left join users u on u.id = m.user_id
 			where m.user_id in (?) and m.parent_id is null
+				and m.group_id is null
 				and m.created_at < ?
 			    and m.deleted_at is null
 				and not exists(select * from message_visibility mv where mv.user_id = ? and mv.message_id = m.id and mv.visibility = false)

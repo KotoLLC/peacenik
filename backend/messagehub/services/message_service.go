@@ -164,19 +164,22 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 
 	var messages []repo.Message
 	if r.GroupId == "" {
-		rawUserIDs := claims["users"].([]interface{})
-		userIDs := make([]string, len(rawUserIDs))
-		for i, rawUserID := range rawUserIDs {
-			userIDs[i] = rawUserID.(string)
+		if rawUserIDs, ok := claims["users"]; ok {
+			rawUserIDs := rawUserIDs.([]interface{})
+			userIDs := make([]string, len(rawUserIDs))
+			for i, rawUserID := range rawUserIDs {
+				userIDs[i] = rawUserID.(string)
+			}
+			messages = s.repos.Message.Messages(user.ID, userIDs, from, int(r.Count))
 		}
-		messages = s.repos.Message.Messages(user.ID, userIDs, from, int(r.Count))
 	} else {
 		found := false
-		rawGroupIDs := claims["groups"].([]interface{})
-		for _, rawGroupID := range rawGroupIDs {
-			if rawGroupID.(string) == r.GroupId {
-				found = true
-				break
+		if rawGroupIDs, ok := claims["groups"]; ok {
+			for _, rawGroupID := range rawGroupIDs.([]interface{}) {
+				if rawGroupID.(string) == r.GroupId {
+					found = true
+					break
+				}
 			}
 		}
 		if !found {
@@ -287,19 +290,34 @@ func (s *messageService) Message(ctx context.Context, r *rpc.MessageMessageReque
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
 	}
 
-	rawUserIDs := claims["users"].([]interface{})
-	userIDs := make(map[string]bool, len(rawUserIDs))
-	for _, rawUserID := range rawUserIDs {
-		userIDs[rawUserID.(string)] = true
-	}
-
 	msg := s.repos.Message.Message(user.ID, r.MessageId)
 	if msg == nil {
 		return nil, twirp.NotFoundError("message not found")
 	}
 
-	if !userIDs[msg.UserID] {
-		return nil, twirp.NotFoundError("message not found")
+	found := false
+	if msg.GroupID.Valid {
+		if rawGroupIDs, ok := claims["groups"]; ok {
+			for _, rawGroupID := range rawGroupIDs.([]interface{}) {
+				if rawGroupID.(string) == msg.GroupID.String {
+					found = true
+					break
+				}
+			}
+		}
+	} else {
+		if rawUserIDs, ok := claims["users"]; ok {
+			for _, rawUserID := range rawUserIDs.([]interface{}) {
+				if rawUserID.(string) == msg.UserID {
+					found = true
+					break
+				}
+			}
+		}
+	}
+
+	if !found {
+		return nil, twirp.NotFoundError("not found")
 	}
 
 	attachmentLink, err := s.createBlobLink(ctx, msg.AttachmentID)
@@ -468,13 +486,24 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 		return nil, twirp.NotFoundError("not found")
 	}
 
-	rawUserIDs := claims["users"].([]interface{})
 	found := false
-	for _, rawUserID := range rawUserIDs {
-		userID := rawUserID.(string)
-		if userID == msg.UserID {
-			found = true
-			break
+	if msg.GroupID.Valid {
+		if rawGroupIDs, ok := claims["groups"]; ok {
+			for _, rawGroupID := range rawGroupIDs.([]interface{}) {
+				if rawGroupID.(string) == msg.GroupID.String {
+					found = true
+					break
+				}
+			}
+		}
+	} else {
+		if rawUserIDs, ok := claims["users"]; ok {
+			for _, rawUserID := range rawUserIDs.([]interface{}) {
+				if rawUserID.(string) == msg.UserID {
+					found = true
+					break
+				}
+			}
 		}
 	}
 
@@ -500,6 +529,7 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 		AttachmentThumbnailID: attachmentThumbnailID,
 		CreatedAt:             now,
 		UpdatedAt:             now,
+		GroupID:               msg.GroupID,
 	}
 	s.repos.Message.AddMessage(r.MessageId, comment)
 
