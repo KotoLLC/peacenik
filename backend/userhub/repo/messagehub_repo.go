@@ -33,7 +33,7 @@ type ConnectedMessageHub struct {
 
 type MessageHubRepo interface {
 	HubExists(address string) bool
-	AddHub(address, details string, hubAdmin User, postLimit int) string
+	AddHub(address, details string, hubAdminID string, postLimit int) string
 	AllHubs() []MessageHub
 	Hubs(user User) []MessageHub
 	HubByID(hubID string) *MessageHub
@@ -71,7 +71,7 @@ func (r *messageHubRepo) HubExists(address string) bool {
 	return true
 }
 
-func (r *messageHubRepo) AddHub(address, details string, hubAdmin User, postLimit int) string {
+func (r *messageHubRepo) AddHub(address, details string, hubAdminID string, postLimit int) string {
 	hubID := common.GenerateUUID()
 	if postLimit < 0 {
 		postLimit = 0
@@ -80,7 +80,7 @@ func (r *messageHubRepo) AddHub(address, details string, hubAdmin User, postLimi
 	_, err := r.db.Exec(`
 		insert into message_hubs(id, address, admin_id, created_at, details, post_limit) 
 		VALUES ($1, $2, $3, $4, $5, $6)`,
-		hubID, address, hubAdmin.ID, common.CurrentTimestamp(), details, postLimit)
+		hubID, address, hubAdminID, common.CurrentTimestamp(), details, postLimit)
 	if err != nil {
 		panic(err)
 	}
@@ -97,9 +97,6 @@ func (r *messageHubRepo) AllHubs() []MessageHub {
 	if err != nil {
 		panic(err)
 	}
-	for i := range hubs {
-		hubs[i].Address = common.CleanPublicURL(hubs[i].Address)
-	}
 	return hubs
 }
 
@@ -113,9 +110,6 @@ func (r *messageHubRepo) Hubs(user User) []MessageHub {
 		where h.admin_id = $1`, user.ID)
 	if err != nil {
 		panic(err)
-	}
-	for i := range hubs {
-		hubs[i].Address = common.CleanPublicURL(hubs[i].Address)
 	}
 	return hubs
 }
@@ -132,8 +126,6 @@ func (r *messageHubRepo) HubByID(hubID string) *MessageHub {
 		}
 		panic(err)
 	}
-
-	hub.Address = common.CleanPublicURL(hub.Address)
 	return &hub
 }
 
@@ -149,8 +141,6 @@ func (r *messageHubRepo) HubByIDOrAddress(hubID string) *MessageHub {
 		}
 		panic(err)
 	}
-
-	hub.Address = common.CleanPublicURL(hub.Address)
 	return &hub
 }
 
@@ -249,7 +239,6 @@ func (r *messageHubRepo) ConnectedHubs(user User) []ConnectedMessageHub {
 	connectedHubs := make([]ConnectedMessageHub, 0, 10)
 	for _, hub := range hubs {
 		if friend, ok := friends[hub.AdminID]; ok && (hub.PostLimit <= 0 || friend.MinDistance < hub.PostLimit) {
-			hub.Address = common.CleanPublicURL(hub.Address)
 			connectedHubs = append(connectedHubs, ConnectedMessageHub{
 				Hub:         hub,
 				MinDistance: friend.MinDistance,
@@ -334,9 +323,22 @@ func (r *messageHubRepo) UserHub(userID string) string {
 		userID)
 	if err != nil {
 		if merry.Is(err, sql.ErrNoRows) {
-			return ""
+			err := r.db.Get(&hubAddress, `
+				select address
+				from message_hubs
+				where admin_id = $1 and approved_at is not null
+				order by approved_at desc
+				limit 1;`,
+				userID)
+			if err != nil {
+				if merry.Is(err, sql.ErrNoRows) {
+					return ""
+				}
+				panic(err)
+			}
+		} else {
+			panic(err)
 		}
-		panic(err)
 	}
 	return hubAddress
 }

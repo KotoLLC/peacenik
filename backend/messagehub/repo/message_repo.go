@@ -29,6 +29,7 @@ type Message struct {
 	UpdatedAt             time.Time      `json:"updated_at" db:"updated_at"`
 	Likes                 int            `json:"likes" db:"likes"`
 	LikedByMe             bool           `json:"liked_by_me" db:"liked_by_me"`
+	GroupID               sql.NullString `json:"group_id" db:"group_id"`
 }
 
 type MessageLike struct {
@@ -59,6 +60,7 @@ type MessageReport struct {
 
 type MessageRepo interface {
 	Messages(currentUserID string, userIDs []string, from time.Time, count int) []Message
+	GroupMessages(currentUserID string, groupID string, from time.Time, count int) []Message
 	Message(currentUserID string, messageID string) *Message
 	AddMessage(parentID string, message Message)
 	EditMessageText(userID, messageID, text string, updatedAt time.Time) bool
@@ -102,12 +104,14 @@ func (r *messageRepo) Messages(currentUserID string, userIDs []string, from time
 
 	var messages []Message
 	query, args, err := sqlx.In(`
-			select m.id, m.parent_id, m.user_id, m.user_name, coalesce(u.full_name, '') user_full_name, m.text, m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at,
+			select m.id, m.parent_id, m.user_id, m.user_name, coalesce(u.full_name, '') user_full_name, m.text,
+			       m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at, m.group_id,
 				   (select count(*) from message_likes where message_id = m.id) likes,
 				   case when exists(select * from message_likes where message_id = m.id and user_id = ?) then true else false end liked_by_me
 			from messages m
 				left join users u on u.id = m.user_id
 			where m.user_id in (?) and m.parent_id is null
+				and m.group_id is null
 				and m.created_at < ?
 			    and m.deleted_at is null
 				and not exists(select * from message_visibility mv where mv.user_id = ? and mv.message_id = m.id and mv.visibility = false)
@@ -125,10 +129,40 @@ func (r *messageRepo) Messages(currentUserID string, userIDs []string, from time
 	return messages
 }
 
+func (r *messageRepo) GroupMessages(currentUserID string, groupID string, from time.Time, count int) []Message {
+	if from.IsZero() {
+		from = maxTimestamp
+	}
+	if count <= 0 {
+		count = defaultMessageCount
+	}
+
+	var messages []Message
+	err := r.db.Select(&messages, `
+		select m.id, m.parent_id, m.user_id, m.user_name, coalesce(u.full_name, '') user_full_name, m.text,
+			   m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at, m.group_id,
+			   (select count(*) from message_likes where message_id = m.id) likes,
+			   case when exists(select * from message_likes where message_id = m.id and user_id = ?) then true else false end liked_by_me
+		from messages m
+			left join users u on u.id = m.user_id
+		where m.group_id = ? and m.parent_id is null
+			and m.created_at < ?
+			and m.deleted_at is null
+			and not exists(select * from message_visibility mv where mv.user_id = ? and mv.message_id = m.id and mv.visibility = false)
+		order by m.created_at desc, m.id
+		limit ?`,
+		currentUserID, groupID, from, currentUserID, count)
+	if err != nil {
+		panic(err)
+	}
+	return messages
+}
+
 func (r *messageRepo) Message(currentUserID string, messageID string) *Message {
 	var message Message
 	err := r.db.Get(&message, `
-			select m.id, m.parent_id, m.user_id, m.user_name, coalesce(u.full_name, '') user_full_name, m.text, m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at,
+			select m.id, m.parent_id, m.user_id, m.user_name, coalesce(u.full_name, '') user_full_name, m.text,
+			       m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at, m.group_id,
 				   (select count(*) from message_likes where message_id = m.id) likes,
 				   case when exists(select * from message_likes where message_id = m.id and user_id = $1) then true else false end liked_by_me
 			from messages m
@@ -145,13 +179,13 @@ func (r *messageRepo) Message(currentUserID string, messageID string) *Message {
 
 func (r *messageRepo) AddMessage(parentID string, message Message) {
 	_, err := r.db.Exec(`
-		insert into messages(id, parent_id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at)
-		select $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
+		insert into messages(id, parent_id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at, group_id)
+		select $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
 		where not exists(select * from messages where id = $1)`,
 		message.ID, sql.NullString{String: parentID, Valid: parentID != ""},
 		message.UserID, message.UserName,
 		message.Text, message.AttachmentID, message.AttachmentType, message.AttachmentThumbnailID,
-		message.CreatedAt, message.UpdatedAt)
+		message.CreatedAt, message.UpdatedAt, message.GroupID)
 	if err != nil {
 		panic(err)
 	}
@@ -180,7 +214,10 @@ func (r *messageRepo) EditMessageAttachment(userID, messageID, attachmentID, att
 	ok := false
 	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
 		var message Message
-		err := tx.Get(&message, "select attachment_id, attachment_thumbnail_id from messages where id = $1 and user_id = $2",
+		err := tx.Get(&message, `
+			select attachment_id, attachment_thumbnail_id
+			from messages
+			where id = $1 and user_id = $2`,
 			messageID, userID)
 		if err != nil && !merry.Is(err, sql.ErrNoRows) {
 			return merry.Wrap(err)

@@ -13,8 +13,8 @@ import (
 )
 
 func LoadRSAKey(settingRepo SettingRepo, keyPath string) (string, error) {
-	const privateKeyId = "private-key"
-	privateKey, exists, err := settingRepo.Get(privateKeyId)
+	const privateKeyID = "private-key"
+	privateKey, exists, err := settingRepo.Get(privateKeyID)
 	if err != nil {
 		return "", merry.Wrap(err)
 	}
@@ -31,30 +31,36 @@ func LoadRSAKey(settingRepo SettingRepo, keyPath string) (string, error) {
 	}
 
 	if len(keyContent) == 0 {
-		const bitSize = 1024
-		reader := rand.Reader
-		key, err := rsa.GenerateKey(reader, bitSize)
+		keyContent, err = GenerateRSAKey()
 		if err != nil {
 			return "", merry.Wrap(err)
 		}
-		var privateKey = &pem.Block{
-			Type:  "PRIVATE KEY",
-			Bytes: x509.MarshalPKCS1PrivateKey(key),
-		}
-
-		var b bytes.Buffer
-		err = pem.Encode(&b, privateKey)
-		if err != nil {
-			return "", merry.Wrap(err)
-		}
-		keyContent = b.Bytes()
 	}
 
-	err = settingRepo.Add(privateKeyId, string(keyContent))
+	err = settingRepo.Add(privateKeyID, string(keyContent))
 	if err != nil {
 		return "", merry.Wrap(err)
 	}
 	return string(keyContent), nil
+}
+
+func GenerateRSAKey() ([]byte, error) {
+	const bitSize = 1024
+	reader := rand.Reader
+	key, err := rsa.GenerateKey(reader, bitSize)
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+	var privateKey = &pem.Block{
+		Type:  "PRIVATE KEY",
+		Bytes: x509.MarshalPKCS1PrivateKey(key),
+	}
+	var b bytes.Buffer
+	err = pem.Encode(&b, privateKey)
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+	return b.Bytes(), nil
 }
 
 func RSAKeysFromPrivateKeyContent(privateKeyContent string) (privateKey *rsa.PrivateKey, publicKey *rsa.PublicKey, publicKeyPEM []byte, err error) {

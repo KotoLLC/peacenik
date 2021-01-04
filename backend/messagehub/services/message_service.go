@@ -3,6 +3,7 @@ package services
 import (
 	"bytes"
 	"context"
+	"database/sql"
 	"image/jpeg"
 	"log"
 	"path/filepath"
@@ -53,10 +54,21 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
 	}
 
-	rawFriendIDs := claims["friends"].([]interface{})
-	friends := make([]string, len(rawFriendIDs))
-	for i, rawID := range rawFriendIDs {
-		friends[i] = rawID.(string)
+	var notifiedUsers []string
+	if rawFriends, ok := claims["friends"]; ok {
+		rawFriendIDs := rawFriends.([]interface{})
+		notifiedUsers = make([]string, len(rawFriendIDs))
+		for i, rawID := range rawFriendIDs {
+			notifiedUsers[i] = rawID.(string)
+		}
+	}
+
+	var groupID sql.NullString
+	if rawGroupID, ok := claims["group_id"]; ok {
+		groupID = sql.NullString{
+			String: rawGroupID.(string),
+			Valid:  rawGroupID.(string) != "",
+		}
 	}
 
 	messageID := common.GenerateUUID()
@@ -77,9 +89,10 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		AttachmentThumbnailID: attachmentThumbnailID,
 		CreatedAt:             now,
 		UpdatedAt:             now,
+		GroupID:               groupID,
 	}
 	s.repos.Message.AddMessage("", msg)
-	s.notificationSender.SendNotification(friends, user.DisplayName()+" posted a new message", "message/post", map[string]interface{}{
+	s.notificationSender.SendNotification(notifiedUsers, user.DisplayName()+" posted a new message", "message/post", map[string]interface{}{
 		"user_id":    msg.UserID,
 		"message_id": msg.ID,
 	})
@@ -141,12 +154,6 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
 	}
 
-	rawUserIDs := claims["users"].([]interface{})
-	userIDs := make([]string, len(rawUserIDs))
-	for i, rawUserID := range rawUserIDs {
-		userIDs[i] = rawUserID.(string)
-	}
-
 	var from time.Time
 	if r.From != "" {
 		from, err = common.RPCStringToTime(r.From)
@@ -155,7 +162,32 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 		}
 	}
 
-	messages := s.repos.Message.Messages(user.ID, userIDs, from, int(r.Count))
+	var messages []repo.Message
+	if r.GroupId == "" {
+		if rawUserIDs, ok := claims["users"]; ok {
+			rawUserIDs := rawUserIDs.([]interface{})
+			userIDs := make([]string, len(rawUserIDs))
+			for i, rawUserID := range rawUserIDs {
+				userIDs[i] = rawUserID.(string)
+			}
+			messages = s.repos.Message.Messages(user.ID, userIDs, from, int(r.Count))
+		}
+	} else {
+		found := false
+		if rawGroupIDs, ok := claims["groups"]; ok {
+			for _, rawGroupID := range rawGroupIDs.([]interface{}) {
+				if rawGroupID.(string) == r.GroupId {
+					found = true
+					break
+				}
+			}
+		}
+		if !found {
+			return &rpc.MessageMessagesResponse{}, nil
+		}
+		messages = s.repos.Message.GroupMessages(user.ID, r.GroupId, from, int(r.Count))
+	}
+
 	messageIDs := make([]string, len(messages))
 	rpcMessages := make([]*rpc.Message, len(messages))
 	rpcMessageMap := make(map[string]*rpc.Message, len(messages))
@@ -258,19 +290,34 @@ func (s *messageService) Message(ctx context.Context, r *rpc.MessageMessageReque
 		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
 	}
 
-	rawUserIDs := claims["users"].([]interface{})
-	userIDs := make(map[string]bool, len(rawUserIDs))
-	for _, rawUserID := range rawUserIDs {
-		userIDs[rawUserID.(string)] = true
-	}
-
 	msg := s.repos.Message.Message(user.ID, r.MessageId)
 	if msg == nil {
 		return nil, twirp.NotFoundError("message not found")
 	}
 
-	if !userIDs[msg.UserID] {
-		return nil, twirp.NotFoundError("message not found")
+	found := false
+	if msg.GroupID.Valid {
+		if rawGroupIDs, ok := claims["groups"]; ok {
+			for _, rawGroupID := range rawGroupIDs.([]interface{}) {
+				if rawGroupID.(string) == msg.GroupID.String {
+					found = true
+					break
+				}
+			}
+		}
+	} else {
+		if rawUserIDs, ok := claims["users"]; ok {
+			for _, rawUserID := range rawUserIDs.([]interface{}) {
+				if rawUserID.(string) == msg.UserID {
+					found = true
+					break
+				}
+			}
+		}
+	}
+
+	if !found {
+		return nil, twirp.NotFoundError("not found")
 	}
 
 	attachmentLink, err := s.createBlobLink(ctx, msg.AttachmentID)
@@ -439,13 +486,24 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 		return nil, twirp.NotFoundError("not found")
 	}
 
-	rawUserIDs := claims["users"].([]interface{})
 	found := false
-	for _, rawUserID := range rawUserIDs {
-		userID := rawUserID.(string)
-		if userID == msg.UserID {
-			found = true
-			break
+	if msg.GroupID.Valid {
+		if rawGroupIDs, ok := claims["groups"]; ok {
+			for _, rawGroupID := range rawGroupIDs.([]interface{}) {
+				if rawGroupID.(string) == msg.GroupID.String {
+					found = true
+					break
+				}
+			}
+		}
+	} else {
+		if rawUserIDs, ok := claims["users"]; ok {
+			for _, rawUserID := range rawUserIDs.([]interface{}) {
+				if rawUserID.(string) == msg.UserID {
+					found = true
+					break
+				}
+			}
 		}
 	}
 
@@ -471,6 +529,7 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 		AttachmentThumbnailID: attachmentThumbnailID,
 		CreatedAt:             now,
 		UpdatedAt:             now,
+		GroupID:               msg.GroupID,
 	}
 	s.repos.Message.AddMessage(r.MessageId, comment)
 
