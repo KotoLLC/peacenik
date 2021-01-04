@@ -54,7 +54,7 @@ func (s *messageHubService) Register(ctx context.Context, r *rpc.MessageHubRegis
 		return nil, twirp.NewError(twirp.InvalidArgument, err.Error())
 	}
 
-	hubID := s.repos.MessageHubs.AddHub(r.Address, r.Details, user, int(r.PostLimit))
+	hubID := s.repos.MessageHubs.AddHub(r.Address, r.Details, user.ID, int(r.PostLimit))
 
 	for _, admin := range s.admins {
 		adminUser := s.repos.User.FindUserByName(admin)
@@ -387,7 +387,7 @@ func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateR
 		return nil, err
 	}
 
-	hubID := s.repos.MessageHubs.AddHub(config.HubExternalAddress, r.Notes, *owner, 0)
+	hubID := s.repos.MessageHubs.AddHub(config.HubExternalAddress, r.Notes, owner.ID, 0)
 	s.repos.MessageHubs.ApproveHub(hubID)
 
 	return &rpc.Empty{}, nil

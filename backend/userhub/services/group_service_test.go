@@ -1,4 +1,4 @@
-package services
+package services_test
 
 import (
 	"context"
@@ -11,6 +11,7 @@ import (
 	"github.com/mreider/koto/backend/userhub/migrate"
 	"github.com/mreider/koto/backend/userhub/repo"
 	"github.com/mreider/koto/backend/userhub/rpc"
+	"github.com/mreider/koto/backend/userhub/services"
 )
 
 type GroupServiceTestSuite struct {
@@ -27,8 +28,8 @@ func TestGroupServiceTestSuite(t *testing.T) {
 func (s *GroupServiceTestSuite) SetupSuite() {
 	s.te = testutils.NewTestEnvironment("group_service", migrate.Migrate)
 	s.repos = repo.NewRepos(s.te.DB)
-	base := NewBase(s.repos, s.te.Storage, nil, nil, nil, config.Config{}, nil)
-	s.service = NewGroup(base)
+	base := services.NewBase(s.repos, s.te.Storage, nil, nil, nil, config.Config{}, nil)
+	s.service = services.NewGroup(base)
 }
 
 func (s *GroupServiceTestSuite) SetupTest() {
@@ -856,12 +857,12 @@ func (s *GroupServiceTestSuite) Test_LeaveGroup() {
 }
 
 func (s *GroupServiceTestSuite) userContext(name string) context.Context {
-	ctx := context.WithValue(context.Background(), ContextUserKey, repo.User{
+	ctx := context.WithValue(context.Background(), services.ContextUserKey, repo.User{
 		ID:       name,
 		Name:     name + "-name",
 		FullName: name + " " + name,
 	})
-	return context.WithValue(ctx, ContextIsAdminKey, false)
+	return context.WithValue(ctx, services.ContextIsAdminKey, false)
 }
 
 func (s *GroupServiceTestSuite) addUser(name string) {
