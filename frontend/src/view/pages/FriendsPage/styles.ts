@@ -15,10 +15,10 @@ export const PageWrapper = styled.div`
   margin: 0 auto;
   max-width: 1000px;
   width: 100%;
-  padding-bottom: 140px;
+  padding-bottom: 60px;
   
   @media (max-width: 600px) {
-    padding: 15px 15px 120px;
+    padding: 15px 15px 60px;
   }
 `
 

@@ -6,6 +6,7 @@ import FormControl from '@material-ui/core/FormControl'
 export const ContainerStyled = styled(Container)`
   && {
     margin-top: 75px;
+    padding-bottom: 30px;
   }
 `
 

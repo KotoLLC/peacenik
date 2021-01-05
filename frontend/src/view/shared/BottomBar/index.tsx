@@ -1,5 +1,5 @@
 import React from 'react'
-import LogoIconImage from '@assets/images/logo-icon.png'
+import LogoIconImage from '@assets/images/logo-icon.svg'
 import {
   BottomBarWrapper,
   CopyrightWrapper,

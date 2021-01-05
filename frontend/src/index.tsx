@@ -18,6 +18,15 @@ import 'github-markdown-css'
 import './assets/styles/pullToResresh.css'
 import './assets/styles/mentions.css'
 import './assets/styles/fonts.css'
+import { createGlobalStyle } from 'styled-components'
+
+const GlobalStyle = createGlobalStyle`
+  body {
+    background: #F6F7FB;
+    position: relative;
+    min-height: 100vh;
+  }
+`
 
 const defaultTheme = createMuiTheme({
   typography: {
@@ -122,6 +131,7 @@ class AppComponent extends React.Component<Props, State> {
           <Notify />
           <ConnectionErrorPopup/>
         </ThemeProvider>
+        <GlobalStyle/>
       </ErrorBoundary>
     )
   }
