@@ -67,12 +67,12 @@ const TopMenu: React.FC<Props> = (props) => {
           </ListItemIconStyled>
           <ListItemText primary="Messages" />
         </MenuItem>
-        <MenuItem onClick={() => goToPage('/groups')}>
+        {/* <MenuItem onClick={() => goToPage('/groups')}>
           <ListItemIconStyled>
             <DeckIcon fontSize="small" />
           </ListItemIconStyled>
           <ListItemText primary="Groups" />
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem onClick={() => goToPage('/friends/all')}>
           <ListItemIconStyled>
             <PeopleIcon fontSize="small" />
