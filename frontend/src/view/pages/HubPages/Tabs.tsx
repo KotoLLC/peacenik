@@ -8,11 +8,11 @@ const MessageHubTabs: React.SFC<RouteComponentProps> = React.memo((props) => {
   const { history, location } = props
 
   useEffect(() => {
-    if (location.pathname.indexOf('create') !== -1) {
+    if (location.pathname.indexOf('hubs') !== -1) {
       onTabChange(0)
     }
 
-    if (location.pathname.indexOf('list') !== -1) {
+    if (location.pathname.indexOf('hubs/list') !== -1) {
       onTabChange(1)
     }
   }, [location.pathname])
@@ -27,7 +27,7 @@ const MessageHubTabs: React.SFC<RouteComponentProps> = React.memo((props) => {
             textColor="primary"
             onChange={(event, newTab) => onTabChange(newTab)}
             centered>
-            <TabStyled label="Request Message Hub" onClick={() => history.push('/hubs/create')} />
+            <TabStyled label="Request Message Hub" onClick={() => history.push('/hubs')} />
             <TabStyled label="Message Hub List" onClick={() => history.push('/hubs/list')} />
           </TabsStyled>
         </Paper>

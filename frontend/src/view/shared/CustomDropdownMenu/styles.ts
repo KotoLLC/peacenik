@@ -1,0 +1,68 @@
+import styled from 'styled-components'
+import MenuItem from '@material-ui/core/MenuItem'
+
+export const DropdownMenuWrapper = styled.div`
+  position: relative;
+`
+
+export const Dropdown = styled.div`
+  position: absolute;
+  z-index: 2500;
+  width: 180px;
+  right: -5px; 
+  top: 43px;
+  background: #FFFFFF;
+  box-shadow: 0px 1px 8px #D4D4D4;
+  border-radius: 6px;
+  padding: 15px 0 10px;
+
+  &:after {
+    position: absolute;
+    content: '';
+    top: -5px;
+    right: 30px;
+    transform: rotate(45deg);
+    z-index: 2400;
+    width: 10px;
+    height: 10px;
+    background: #FFFFFF;
+    box-shadow: 0px 1px 8px #D4D4D4;
+  }
+  &:before {
+    position: absolute;
+    content: '';
+    top: 0px;
+    right: 15px;
+    z-index: 2450;
+    width: 40px;
+    height: 15px;
+    background: #fff;
+  }
+`
+
+export const MenuItemStyled = styled(MenuItem)`
+  min-width: 180px;
+  color: #262626;
+  padding: 10px 20px;
+
+  &.logout {
+    color: #A1AEC8;
+    position: relative;
+
+    svg {
+      color: #A1AEC8;
+    }
+
+    &:before {
+      display: inline-block;
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 160px;
+      height: 1px;
+      background: #979797;
+      opacity: 0.6;
+      content: '';
+    }
+  }
+`

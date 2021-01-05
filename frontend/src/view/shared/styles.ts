@@ -8,6 +8,8 @@ import Tabs from '@material-ui/core/Tabs'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
 import { Link } from 'react-router-dom'
+import MenuItem from '@material-ui/core/MenuItem'
+import Menu from '@material-ui/core/Menu'
 
 export const TooltipStyle = styled(Tooltip)`
   && {
@@ -21,35 +23,9 @@ export const IconButtonStyled = styled(IconButton)`
   }
 `
 
-export const LogoWrapper = styled(Link)`
-  font-size: 1.25rem;
-  font-weight: bold;
-  text-decoration: none;
-`
-
-export const Logo = styled.img`
-  max-height: 42px;
-  position: relative;
-  top: 3px;
-
-  @media (max-width: 800px){
-    display: none;
-  }
-`
-
-export const LogoMobile = styled.img`
-  display: none;
-
-  @media (max-width: 800px){
-    position: relative;
-    top: 0px;
-    left: -5px;
-    display: block;
-    max-height: 40px;
-  }
-`
-
 export const ListItemIconStyled = styled(ListItemIcon)`
+  color: #262626;
+  
   && {
     min-width: 40px;
   }
@@ -59,12 +35,6 @@ export const MenuButton = styled(Button)`
   && {
     color: #fff;
   }
-`
-
-export const TopBarRightSide = styled.div`
-  display: flex;
-  align-items: center;
-  margin-left: auto;
 `
 
 export const PageWrapper = styled.main`
@@ -141,17 +111,6 @@ export const DialogContentStyled = styled(DialogContent)`
     @media (max-width: 600px) {
       min-width: auto;
     }    
-  }
-`
-
-export const NotificationsWrapper = styled(Link)`
-  display: flex;
-  cursor: pointer;
-  color: #fff;
-  margin-right: 10px;
-
-  &:hover {
-    text-decoration: none;
   }
 `
 
@@ -293,4 +252,33 @@ export const RefreshButtonWrapper = styled.div`
 
 export const ConnectionErorrTitle = styled.h3`
   width: 100%;
+`
+
+export const MenuItemStyled = styled(MenuItem)`
+  min-width: 180px;
+
+  &.logout {
+    color: #A1AEC8;
+    position: relative;
+
+    svg {
+      color: #A1AEC8;
+    }
+
+    &:before {
+      display: inline-block;
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 160px;
+      height: 1px;
+      background: #979797;
+      opacity: 0.6;
+      content: '';
+    }
+  }
+`
+export const MenuStyled = styled(Menu)`
+  top: 40px !important;
+  border-radius: 6px;
 `

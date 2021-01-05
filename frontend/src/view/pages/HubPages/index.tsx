@@ -9,7 +9,7 @@ export const HubPages = () => (
   <PageLayout>
     <HubTabs />
     <Switch>
-      <Route path="/hubs/create" exact component={HubCreationPage} />
+      <Route path="/hubs" exact component={HubCreationPage} />
       <Route path="/hubs/list" exact component={HubListPage} />
     </Switch>
   </PageLayout>
