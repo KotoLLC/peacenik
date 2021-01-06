@@ -37,7 +37,7 @@ export const GroupsPage: React.FC<Props> = (props) => {
               <DeckIcon fontSize="large" />
             </GroupAvatar>
             <div>
-              <GroupName onClick={goToGroupDetails}>Super group name</GroupName>
+              <GroupName onClick={goToGroupDetails}>Group name 1</GroupName>
               <GroupPublicity>Public</GroupPublicity>
             </div>
           </GroupsListItem>
@@ -50,7 +50,7 @@ export const GroupsPage: React.FC<Props> = (props) => {
               <DeckIcon fontSize="large" />
             </GroupAvatar>
             <div>
-              <GroupName onClick={goToGroupDetails}>Super group name</GroupName>
+              <GroupName onClick={goToGroupDetails}>Group name 2</GroupName>
               <GroupPublicity>Private</GroupPublicity>
             </div>
           </GroupsListItem>
