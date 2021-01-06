@@ -6,6 +6,10 @@ import Badge from '@material-ui/core/Badge'
 export const AppBarStyled = styled(AppBar)`
   background: #fff;
   box-shadow: 0px 1px 5px #D4D4D4;
+  
+  @media (max-width: 700px){
+    display: none;
+  }
 `
 
 export const LogoMobile = styled.img`
@@ -53,10 +57,10 @@ export const MenuItem = styled.span`
     content: '';
   }
 
-  &:nth-child(2) {
+  &:nth-child(6) {
 
     &:after {
-      /* display: none; */
+      display: none;
     }
 
   }

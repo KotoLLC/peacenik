@@ -134,6 +134,12 @@ export const AvatarWrapperLink = styled(Link)`
   width: 40px;
   height: 40px;
   margin: 0 10px;
+
+  @media (max-width: 700px){
+    width: 28px;
+    height: 28px;
+    margin: 0;
+  }
 `
 
 export const AvatarWrapper = styled.div`
@@ -144,6 +150,11 @@ export const AvatarWrapper = styled.div`
   height: 40px;
   margin: 0 10px;
   cursor: pointer;
+
+  @media (max-width: 700px){
+    transform: scale(0.7);
+    margin: 0;
+  }
 `
 
 export const ErrorMessage = styled.div`

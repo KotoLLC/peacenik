@@ -1,6 +1,7 @@
 import React from 'react'
 import { PageWrapper } from './styles'
 import TopBar from './TopBar'
+import MobileTopBar from './MobileTopBar'
 import selectors from '@selectors/index'
 import { connect } from 'react-redux'
 import { BottomBar } from './BottomBar'
@@ -16,6 +17,7 @@ export const WithPageLayout: React.SFC<Props> = (props) => {
   return (
     <PageWrapper>
       {isLogged && isEmailConfirmed && <TopBar/>}
+      {isLogged && isEmailConfirmed && <MobileTopBar/>}
       {props.children}
       {isLogged && isEmailConfirmed && <BottomBar/>}
     </PageWrapper>

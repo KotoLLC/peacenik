@@ -19,7 +19,7 @@ import {
 import {
   DropdownMenuWrapper,
   Dropdown,
-  MenuItemStyled,
+  CustomMenuItem,
 } from './styles'
 
 interface Props {
@@ -51,24 +51,24 @@ const DropdownMenu2: React.FC<Props> = (props) => {
           <Avatar src={getAvatarUrl(userId)} />
         </AvatarWrapper>
         {isMenuOpen && <Dropdown>
-          <MenuItemStyled>
+          <CustomMenuItem>
             <ListItemIconStyled>
               <SettingsIcon fontSize="small" />
             </ListItemIconStyled>
             <ListItemText primary="Settings" />
-          </MenuItemStyled>
-          <MenuItemStyled onClick={() => goToPage('/profile/me')}>
+          </CustomMenuItem>
+          <CustomMenuItem onClick={() => goToPage('/profile/me')}>
             <ListItemIconStyled>
               <EditIcon fontSize="small" />
             </ListItemIconStyled>
             <ListItemText primary="Edit Profile" />
-          </MenuItemStyled>
-          <MenuItemStyled className="logout" onClick={onLogoutClick}>
+          </CustomMenuItem>
+          <CustomMenuItem className="logout" onClick={onLogoutClick}>
             <ListItemIconStyled>
               <ExitToAppIcon fontSize="small" />
             </ListItemIconStyled>
             <ListItemText primary="Log out" />
-          </MenuItemStyled>
+          </CustomMenuItem>
         </Dropdown>}
       </DropdownMenuWrapper>
     </ClickAwayListener>

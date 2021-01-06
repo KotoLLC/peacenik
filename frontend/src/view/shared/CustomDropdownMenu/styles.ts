@@ -14,7 +14,7 @@ export const Dropdown = styled.div`
   background: #FFFFFF;
   box-shadow: 0px 1px 8px #D4D4D4;
   border-radius: 6px;
-  padding: 15px 0 10px;
+  /* padding: 0 10px; */
 
   &:after {
     position: absolute;
@@ -40,10 +40,19 @@ export const Dropdown = styled.div`
   }
 `
 
-export const MenuItemStyled = styled(MenuItem)`
+export const CustomMenuItem = styled.li`
   min-width: 180px;
   color: #262626;
   padding: 10px 20px;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: 0.15s;
+
+  svg {
+    transition: 0.15s;
+  }
 
   &.logout {
     color: #A1AEC8;
@@ -63,6 +72,14 @@ export const MenuItemStyled = styled(MenuItem)`
       background: #979797;
       opacity: 0.6;
       content: '';
+    }
+  }
+
+  &:hover {
+    color: #8f8f90;
+
+    svg {
+      color: #8f8f90;
     }
   }
 `
