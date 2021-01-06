@@ -142,16 +142,16 @@ func (r *messageRepo) GroupMessages(currentUserID string, groupID string, from t
 		select m.id, m.parent_id, m.user_id, m.user_name, coalesce(u.full_name, '') user_full_name, m.text,
 			   m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at, m.group_id,
 			   (select count(*) from message_likes where message_id = m.id) likes,
-			   case when exists(select * from message_likes where message_id = m.id and user_id = ?) then true else false end liked_by_me
+			   case when exists(select * from message_likes where message_id = m.id and user_id = $1) then true else false end liked_by_me
 		from messages m
 			left join users u on u.id = m.user_id
-		where m.group_id = ? and m.parent_id is null
-			and m.created_at < ?
+		where m.group_id = $2 and m.parent_id is null
+			and m.created_at < $3
 			and m.deleted_at is null
-			and not exists(select * from message_visibility mv where mv.user_id = ? and mv.message_id = m.id and mv.visibility = false)
+			and not exists(select * from message_visibility mv where mv.user_id = $1 and mv.message_id = m.id and mv.visibility = false)
 		order by m.created_at desc, m.id
-		limit ?`,
-		currentUserID, groupID, from, currentUserID, count)
+		limit $4`,
+		currentUserID, groupID, from, count)
 	if err != nil {
 		panic(err)
 	}
