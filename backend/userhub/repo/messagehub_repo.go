@@ -285,7 +285,7 @@ func (r *messageHubRepo) UserHubs(userIDs []string) map[string][]string {
 		select umh.user_id, h.address hub_address
 		from user_message_hubs umh
 			inner join message_hubs h on h.id = umh.hub_id
-		where umh.user_id in (?) and umh.blocked_at is null;`, userIDs)
+		where umh.user_id in (?) and umh.blocked_at is null and h.approved_at is not null;`, userIDs)
 	if err != nil {
 		panic(err)
 	}
@@ -317,7 +317,7 @@ func (r *messageHubRepo) UserHub(userID string) string {
 		select h.address
 		from user_message_hubs umh
 			inner join message_hubs h on h.id = umh.hub_id
-		where umh.user_id = $1 and umh.blocked_at is null
+		where umh.user_id = $1 and umh.blocked_at is null and h.approved_at is not null
 		order by umh.updated_at desc
 		limit 1;`,
 		userID)
