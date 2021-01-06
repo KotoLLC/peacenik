@@ -64,7 +64,7 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
             </MenuLink>
           </MenuItem>
           <MenuItem>
-            <MenuLink to={`/profile/user?id=${userId}`}>
+            <MenuLink to={`/profile/me`}> {/*`/profile/user?id=${userId}`*/}
               <PersonIcon />
             </MenuLink>
           </MenuItem>

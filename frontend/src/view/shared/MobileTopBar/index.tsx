@@ -33,7 +33,7 @@ interface Props {
 }
 
 const MobileTopBar: React.FC<Props> = React.memo((props) => {
-  const [isHamburgerMenuOpen, openHamburgerMenu] = useState<boolean>(!false)
+  const [isHamburgerMenuOpen, openHamburgerMenu] = useState<boolean>(false)
   const { notificationsUnread, userId } = props
 
   return (
