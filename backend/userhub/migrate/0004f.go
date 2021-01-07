@@ -4,12 +4,12 @@ import (
 	migrate "github.com/rubenv/sql-migrate"
 )
 
-func m0004e() *migrate.Migration {
+func m0004f() *migrate.Migration {
 	return &migrate.Migration{
-		Id: "0004e",
+		Id: "0004f",
 		Up: []string{
 			`
-alter table group_invites add rejected_by_admin_at timestamp with time zone;
+alter table groups add background_id text default '' not null;
 `,
 		},
 		Down: []string{},

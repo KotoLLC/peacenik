@@ -83,6 +83,7 @@ func (s *GroupServiceTestSuite) Test_AddPrivateGroup() {
 	s.Equal("d", resp.Group.Description)
 	s.Equal(false, resp.Group.IsPublic)
 	s.Equal("", resp.Group.AvatarOriginal)
+	s.Equal("", resp.Group.Background)
 
 	isGroupMember := s.repos.Group.IsGroupMember(resp.Group.Id, "user-1")
 	s.True(isGroupMember)
@@ -106,6 +107,7 @@ func (s *GroupServiceTestSuite) Test_AddPublicGroup() {
 	s.Equal("d", resp.Group.Description)
 	s.Equal(true, resp.Group.IsPublic)
 	s.Equal("", resp.Group.AvatarOriginal)
+	s.Equal("", resp.Group.Background)
 
 	isGroupMember := s.repos.Group.IsGroupMember(resp.Group.Id, "user-1")
 	s.True(isGroupMember)
@@ -131,6 +133,7 @@ func (s *GroupServiceTestSuite) Test_AddExistingGroup() {
 	s.Equal("d", resp.Group.Description)
 	s.Equal(true, resp.Group.IsPublic)
 	s.Equal("", resp.Group.AvatarOriginal)
+	s.Equal("", resp.Group.Background)
 
 	ctx = s.userContext("user-2")
 	_, err = s.service.AddGroup(ctx, &rpc.GroupAddGroupRequest{

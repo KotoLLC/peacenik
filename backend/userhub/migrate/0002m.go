@@ -4,7 +4,7 @@ import (
 	migrate "github.com/rubenv/sql-migrate"
 )
 
-func migration0002m() *migrate.Migration {
+func m0002m() *migrate.Migration {
 	return &migrate.Migration{
 		Id: "0002m",
 		Up: []string{

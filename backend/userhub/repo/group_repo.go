@@ -23,6 +23,7 @@ type Group struct {
 	IsPublic          bool      `json:"is_public" db:"is_public"`
 	CreatedAt         time.Time `json:"created_at,omitempty" db:"created_at"`
 	UpdatedAt         time.Time `json:"updated_at,omitempty" db:"updated_at"`
+	BackgroundID      string    `json:"background_id" db:"background_id"`
 }
 
 type GroupInvite struct {
@@ -55,6 +56,7 @@ type GroupRepo interface {
 	FindGroupByName(name string) *Group
 	AddGroup(id, name, description, adminID string, isPublic bool)
 	SetAvatar(groupID, avatarOriginalID, avatarThumbnailID string)
+	SetBackground(groupID, backgroundID string)
 	SetDescription(groupID, description string)
 	SetIsPublic(groupID string, isPublic bool)
 	AddUserToGroup(groupID, userID string)
@@ -91,7 +93,7 @@ func (r *groupRepo) FindGroupByIDOrName(value string) *Group {
 	var group Group
 	err := r.db.Get(&group, `
 		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
-		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id
 		from groups g
 			inner join users u on u.id = g.admin_id
 		where g.id = $1 or lower(g.name) = $2`,
@@ -109,7 +111,7 @@ func (r *groupRepo) FindGroupByID(id string) *Group {
 	var group Group
 	err := r.db.Get(&group, `
 		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
-		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id
 		from groups g
 			inner join users u on u.id = g.admin_id
 		where g.id = $1`, id)
@@ -126,7 +128,7 @@ func (r *groupRepo) FindGroupByName(name string) *Group {
 	var group Group
 	err := r.db.Get(&group, `
 		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
-		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id
 		from groups g
 			inner join users u on u.id = g.admin_id
 		where lower(g.name) = $1`,
@@ -198,6 +200,36 @@ func (r *groupRepo) SetAvatar(groupID, avatarOriginalID, avatarThumbnailID strin
 			set avatar_original_id = $1, avatar_thumbnail_id = $2, updated_at = $3
 			where id = $4;`,
 			avatarOriginalID, avatarThumbnailID, now, groupID)
+		return merry.Wrap(err)
+	})
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (r *groupRepo) SetBackground(groupID, backgroundID string) {
+	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+		var group Group
+		err := tx.Get(&group, "select background_id from groups where id = $1", groupID)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+		now := common.CurrentTimestamp()
+		if group.BackgroundID != "" && group.BackgroundID != backgroundID {
+			_, err = tx.Exec(`
+				insert into blob_pending_deletes(blob_id, deleted_at)
+				values ($1, $2)`,
+				group.BackgroundID, now)
+			if err != nil {
+				return merry.Wrap(err)
+			}
+		}
+
+		_, err = tx.Exec(`
+			update groups
+			set background_id = $1, updated_at = $2
+			where id = $3;`,
+			backgroundID, now, groupID)
 		return merry.Wrap(err)
 	})
 	if err != nil {
@@ -422,7 +454,7 @@ func (r *groupRepo) ManagedGroups(adminID string) []Group {
 	var groups []Group
 	err := r.db.Select(&groups, `
 		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
-		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id
 		from groups g
 			inner join users u on u.id = g.admin_id
 		where g.admin_id = $1
@@ -522,7 +554,7 @@ func (r *groupRepo) PublicGroups() []Group {
 	var groups []Group
 	err := r.db.Select(&groups, `
 		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
-		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id
 		from groups g
 			inner join users u on u.id = g.admin_id
 		where g.is_public = true
@@ -563,7 +595,7 @@ func (r *groupRepo) UserGroups(userID string) []Group {
 	var groups []Group
 	err := r.db.Select(&groups, `
 		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
-		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id
 		from groups g
 			inner join users u on u.id = g.admin_id
 		where exists(select * from group_users where user_id = $1 and group_id = g.id)

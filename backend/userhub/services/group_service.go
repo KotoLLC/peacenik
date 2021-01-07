@@ -75,6 +75,10 @@ func (s *groupService) AddGroup(ctx context.Context, r *rpc.GroupAddGroupRequest
 		}
 	}
 
+	if r.BackgroundId != "" {
+		s.repos.Group.SetBackground(group.ID, r.BackgroundId)
+	}
+
 	return &rpc.GroupAddGroupResponse{
 		Group: &rpc.Group{
 			Id:          group.ID,
@@ -112,6 +116,10 @@ func (s *groupService) EditGroup(ctx context.Context, r *rpc.GroupEditGroupReque
 		if err != nil {
 			return nil, merry.Wrap(err)
 		}
+	}
+
+	if r.BackgroundChanged {
+		s.repos.Group.SetBackground(group.ID, r.BackgroundId)
 	}
 
 	return &rpc.Empty{}, nil
@@ -507,11 +515,16 @@ func (s *groupService) GroupDetails(ctx context.Context, r *rpc.GroupGroupDetail
 			return nil, twirp.NewError(twirp.PermissionDenied, "")
 		}
 	}
+	backgroundLink, err := s.createBlobLink(ctx, group.BackgroundID)
+	if err != nil {
+		return nil, err
+	}
 	rpcGroup := &rpc.Group{
 		Id:          group.ID,
 		Name:        group.Name,
 		Description: group.Description,
 		IsPublic:    group.IsPublic,
+		Background:  backgroundLink,
 		Admin: &rpc.User{
 			Id:       group.AdminID,
 			Name:     group.AdminName,

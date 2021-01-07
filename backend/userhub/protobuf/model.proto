@@ -22,6 +22,7 @@ message Group {
     string avatar_original = 4;
     bool is_public = 5;
     User admin = 6;
+    string background = 7;
 }
 
 message Notification {
