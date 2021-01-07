@@ -79,12 +79,18 @@ func (s *groupService) AddGroup(ctx context.Context, r *rpc.GroupAddGroupRequest
 		s.repos.Group.SetBackground(group.ID, r.BackgroundId)
 	}
 
+	backgroundLink, err := s.createBlobLink(ctx, r.BackgroundId)
+	if err != nil {
+		return nil, err
+	}
+
 	return &rpc.GroupAddGroupResponse{
 		Group: &rpc.Group{
 			Id:          group.ID,
 			Name:        group.Name,
 			Description: group.Description,
 			IsPublic:    group.IsPublic,
+			Background:  backgroundLink,
 		},
 	}, nil
 }

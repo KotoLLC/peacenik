@@ -288,6 +288,26 @@ func (r *groupRepo) DeleteGroup(groupID string) {
 			return merry.Wrap(err)
 		}
 
+		now := common.CurrentTimestamp()
+		_, err = tx.Exec(`
+			insert into blob_pending_deletes(blob_id, deleted_at)
+			select blob_id, $2 from (
+			select avatar_original_id blob_id
+			from groups
+			where id = $1 and avatar_original_id <> ''
+			union 			
+			select avatar_thumbnail_id
+			from groups
+			where id = $1 and avatar_thumbnail_id <> ''
+			union 			
+			select background_id
+			from groups
+			where id = $1 and background_id <> '') t;`,
+			groupID, now)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+
 		_, err = tx.Exec(`
 			delete from groups
 			where id = $1;`,
