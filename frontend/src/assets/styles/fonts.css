@@ -12,3 +12,13 @@
   font-family: 'SFUITextRegular';
   src: local('SFUITextRegular'), url('./../fonts/SFUIText-Regular.woff') format('woff');
 }
+
+@font-face {
+  font-family: 'SFUITextSemibold';
+  src: local('SFUITextSemibold'), url('./../fonts/SFUIText-Semibold.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'SFUITextLight';
+  src: local('SFUITextLight'), url('./../fonts/SFUIText-Light.woff') format('woff');
+}

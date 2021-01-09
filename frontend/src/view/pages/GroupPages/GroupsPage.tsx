@@ -1,17 +1,10 @@
 import React from 'react'
 import { RouteComponentProps } from 'react-router'
-import DeckIcon from '@material-ui/icons/Deck'
-import {
-  PageTitle,
-  MyGroupsWrapper,
-  GroupsList,
-  ButtonsWrapper,
-  ButtonStyled,
-  GroupAvatar,
-  GroupName,
-  GroupPublicity,
-  GroupsListItem,
-} from './styles'
+import { Switch, Route } from 'react-router-dom'
+import { GroupsSidebar } from './GroupsSIdebar'
+import { MyGroups } from './MyGroups'
+import { PublicGroups } from './PublicGroups'
+import { GroupsContainer } from './styles'
 
 interface Props extends RouteComponentProps { }
 
@@ -23,51 +16,12 @@ export const GroupsPage: React.FC<Props> = (props) => {
   }
 
   return (
-    <>
-      
-      <MyGroupsWrapper>
-        <GroupsList>
-          <PageTitle>My Groups</PageTitle>
-          <GroupsListItem>
-            <GroupAvatar
-              variant="rounded"
-              alt="Remy Sharp"
-              onClick={goToGroupDetails}
-              src="">
-              <DeckIcon fontSize="large" />
-            </GroupAvatar>
-            <div>
-              <GroupName onClick={goToGroupDetails}>Group name 1</GroupName>
-              <GroupPublicity>Public</GroupPublicity>
-            </div>
-          </GroupsListItem>
-          <GroupsListItem>
-            <GroupAvatar
-              variant="rounded"
-              alt="Remy Sharp"
-              onClick={goToGroupDetails}
-              src="">
-              <DeckIcon fontSize="large" />
-            </GroupAvatar>
-            <div>
-              <GroupName onClick={goToGroupDetails}>Group name 2</GroupName>
-              <GroupPublicity>Private</GroupPublicity>
-            </div>
-          </GroupsListItem>
-        </GroupsList>
-        <ButtonsWrapper>
-          <ButtonStyled
-            variant="contained"
-            color="primary"
-          >Public group list</ButtonStyled>
-          <ButtonStyled
-            variant="contained"
-            color="primary"
-            onClick={() => history.push('/groups/create')}
-          >Create a group</ButtonStyled>
-        </ButtonsWrapper>
-      </MyGroupsWrapper>
-    </>
+    <GroupsContainer>
+      <GroupsSidebar />
+      <Switch>
+        <Route path="/groups/my" exact component={MyGroups} />
+        <Route path="/groups/public" exact component={PublicGroups} />
+      </Switch>
+    </GroupsContainer>
   )
-
 } 

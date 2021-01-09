@@ -7,8 +7,6 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar'
 import Divider from '@material-ui/core/Divider'
 import { getAvatarUrl } from '@services/avatarUrl'
 import {
-  GroupAvatar,
-  GroupName,
   GroupPublicity,
   RightButton,
   GroupDetailsWrapper,
@@ -31,15 +29,7 @@ export const GroupDetailsPage: React.FC<Props> = (props) => {
   return (
     <>
       <GroupDetailsWrapper>
-        <GroupAvatar
-          variant="rounded"
-          alt="Remy Sharp"
-          className="no-pointer"
-          src="">
-          <DeckIcon fontSize="large" />
-        </GroupAvatar>
         <div>
-          <GroupName className="no-pointer">Super group name</GroupName>
           <GroupPublicity>Public</GroupPublicity>
         </div>
         <RightButton

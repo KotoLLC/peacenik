@@ -23,6 +23,7 @@ import { createGlobalStyle } from 'styled-components'
 const GlobalStyle = createGlobalStyle`
   body {
     background: #F6F7FB;
+    color: #262626;
     position: relative;
     min-height: 100vh;
   }
