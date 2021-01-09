@@ -83,6 +83,7 @@ func (s *GroupServiceTestSuite) Test_AddPrivateGroup() {
 	s.Equal("d", resp.Group.Description)
 	s.Equal(false, resp.Group.IsPublic)
 	s.Equal("", resp.Group.AvatarOriginal)
+	s.Equal("", resp.Group.Background)
 
 	isGroupMember := s.repos.Group.IsGroupMember(resp.Group.Id, "user-1")
 	s.True(isGroupMember)
@@ -96,9 +97,10 @@ func (s *GroupServiceTestSuite) Test_AddPublicGroup() {
 	s.addUser("user-1")
 	ctx := s.userContext("user-1")
 	resp, err := s.service.AddGroup(ctx, &rpc.GroupAddGroupRequest{
-		Name:        "group-1",
-		Description: "d",
-		IsPublic:    true,
+		Name:         "group-1",
+		Description:  "d",
+		IsPublic:     true,
+		BackgroundId: "back-1",
 	})
 	s.Nil(err)
 	s.True(resp.Group.Id != "")
@@ -106,6 +108,7 @@ func (s *GroupServiceTestSuite) Test_AddPublicGroup() {
 	s.Equal("d", resp.Group.Description)
 	s.Equal(true, resp.Group.IsPublic)
 	s.Equal("", resp.Group.AvatarOriginal)
+	s.NotEmpty(resp.Group.Background)
 
 	isGroupMember := s.repos.Group.IsGroupMember(resp.Group.Id, "user-1")
 	s.True(isGroupMember)
@@ -131,6 +134,7 @@ func (s *GroupServiceTestSuite) Test_AddExistingGroup() {
 	s.Equal("d", resp.Group.Description)
 	s.Equal(true, resp.Group.IsPublic)
 	s.Equal("", resp.Group.AvatarOriginal)
+	s.Equal("", resp.Group.Background)
 
 	ctx = s.userContext("user-2")
 	_, err = s.service.AddGroup(ctx, &rpc.GroupAddGroupRequest{
@@ -151,6 +155,8 @@ func (s *GroupServiceTestSuite) Test_EditGroup_Admin() {
 		Description:        "new description",
 		IsPublicChanged:    true,
 		IsPublic:           false,
+		BackgroundChanged:  true,
+		BackgroundId:       "back-2",
 	})
 	s.Nil(err)
 
@@ -158,6 +164,7 @@ func (s *GroupServiceTestSuite) Test_EditGroup_Admin() {
 	s.Equal(groupID, group.ID)
 	s.Equal("new description", group.Description)
 	s.Equal(false, group.IsPublic)
+	s.Equal("back-2", group.BackgroundID)
 }
 
 func (s *GroupServiceTestSuite) Test_EditGroup_NonAdmin() {
@@ -854,6 +861,25 @@ func (s *GroupServiceTestSuite) Test_LeaveGroup() {
 
 	isMember = s.repos.Group.IsGroupMember(groupID, "user-2")
 	s.False(isMember)
+}
+
+func (s *GroupServiceTestSuite) Test_DeleteGroup() {
+	groupID := s.addPublicGroup("group-1", "user-1")
+	s.addUser("user-2")
+	s.addGroupUser(groupID, "user-2")
+
+	g := s.repos.Group.FindGroupByID(groupID)
+	s.NotNil(g)
+	s.Equal(groupID, g.ID)
+
+	ctx := s.userContext("user-1")
+	_, err := s.service.DeleteGroup(ctx, &rpc.GroupDeleteGroupRequest{
+		GroupId: groupID,
+	})
+	s.Nil(err)
+
+	g = s.repos.Group.FindGroupByID(groupID)
+	s.Nil(g)
 }
 
 func (s *GroupServiceTestSuite) userContext(name string) context.Context {

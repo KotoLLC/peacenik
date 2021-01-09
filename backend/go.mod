@@ -6,12 +6,12 @@ require (
 	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/ansel1/merry v1.5.1
 	github.com/appleboy/go-fcm v0.1.5
-	github.com/aws/aws-sdk-go v1.36.19
+	github.com/aws/aws-sdk-go v1.36.21
 	github.com/containerd/containerd v1.4.3 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/disintegration/imaging v1.6.2
 	github.com/docker/distribution v2.7.1+incompatible // indirect
-	github.com/docker/docker v20.10.1+incompatible
+	github.com/docker/docker v20.10.2+incompatible
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/go-chi/chi v4.1.2+incompatible
@@ -39,6 +39,6 @@ require (
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
 	golang.org/x/net v0.0.0-20201202161906-c7110b5ffcbb // indirect
 	google.golang.org/protobuf v1.25.0
-	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
+	gopkg.in/yaml.v3 v3.0.0-20210105161348-2e78108cf5f8
 	gotest.tools/v3 v3.0.3 // indirect
 )

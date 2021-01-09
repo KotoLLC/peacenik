@@ -92,11 +92,12 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		GroupID:               groupID,
 	}
 	s.repos.Message.AddMessage("", msg)
-	s.notificationSender.SendNotification(notifiedUsers, user.DisplayName()+" posted a new message", "message/post", map[string]interface{}{
-		"user_id":    msg.UserID,
-		"message_id": msg.ID,
-	})
-
+	if len(notifiedUsers) > 0 && s.notificationSender != nil {
+		s.notificationSender.SendNotification(notifiedUsers, user.DisplayName()+" posted a new message", "message/post", map[string]interface{}{
+			"user_id":    msg.UserID,
+			"message_id": msg.ID,
+		})
+	}
 	userTags := message.FindUserTags(msg.Text)
 	users := s.repos.User.FindUsersByName(userTags)
 	notifyUsers := make([]string, 0, len(users))
@@ -105,11 +106,12 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 			notifyUsers = append(notifyUsers, u.ID)
 		}
 	}
-	s.notificationSender.SendNotification(notifyUsers, user.DisplayName()+" tagged you in a message", "message/tag", map[string]interface{}{
-		"user_id":    msg.UserID,
-		"message_id": msg.ID,
-	})
-
+	if len(notifyUsers) > 0 && s.notificationSender != nil {
+		s.notificationSender.SendNotification(notifyUsers, user.DisplayName()+" tagged you in a message", "message/tag", map[string]interface{}{
+			"user_id":    msg.UserID,
+			"message_id": msg.ID,
+		})
+	}
 	attachmentLink, err := s.createBlobLink(ctx, msg.AttachmentID)
 	if err != nil {
 		return nil, err

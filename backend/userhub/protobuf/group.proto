@@ -11,7 +11,7 @@ service GroupService {
     rpc EditGroup (GroupEditGroupRequest) returns (Empty);
     rpc DeleteGroup (GroupDeleteGroupRequest) returns (Empty);
     rpc ManagedGroup (Empty) returns (GroupManagedGroupsResponse);
-    rpc AddUser(GroupAddUserRequest) returns (Empty);
+    rpc AddUser (GroupAddUserRequest) returns (Empty);
     rpc RemoveUser (GroupRemoveUserRequest) returns (Empty);
     rpc InvitesToConfirm (Empty) returns (GroupInvitesToConfirmResponse);
     rpc ConfirmInvite (GroupConfirmInviteRequest) returns (Empty);
@@ -36,6 +36,7 @@ message GroupAddGroupRequest {
     string description = 2;
     string avatar_id = 3;
     bool is_public = 4;
+    string background_id = 5;
 }
 
 message GroupAddGroupResponse {
@@ -50,6 +51,8 @@ message GroupEditGroupRequest {
     string avatar_id = 5;
     bool is_public_changed = 6;
     bool is_public = 7;
+    bool background_changed = 8;
+    string background_id = 9;
 }
 
 message GroupDeleteGroupRequest {

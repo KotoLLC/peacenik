@@ -48,12 +48,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	repos := repo.Repos{
-		Message:      repo.NewMessages(db),
-		Notification: common.NewNotifications(db),
-		User:         repo.NewUsers(db),
-		Setting:      common.NewSettings(db),
-	}
+	repos := repo.NewRepos(db)
 
 	privateKeyContent, err := common.LoadRSAKey(repos.Setting, cfg.PrivateKeyPath)
 	if err != nil {
