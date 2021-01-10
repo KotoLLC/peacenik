@@ -11,6 +11,10 @@ import (
 	"github.com/mreider/koto/backend/common"
 )
 
+const (
+	GuestHubDistance = 1_000_000
+)
+
 type MessageHub struct {
 	ID            string       `db:"id"`
 	Address       string       `db:"address"`
@@ -42,7 +46,7 @@ type MessageHubRepo interface {
 	RemoveHub(hubID string)
 	ConnectedHubs(user User) []ConnectedMessageHub
 	SetHubPostLimit(hubAdminID, hubID string, postLimit int)
-	AssignUserToHub(userID, hubID string)
+	AssignUserToHub(userID, hubID string, minDistance int)
 	UserHubs(userIDs []string) map[string][]string
 	UserHub(userID string) string
 	BlockUser(userID, hubID string)
@@ -244,6 +248,12 @@ func (r *messageHubRepo) ConnectedHubs(user User) []ConnectedMessageHub {
 				MinDistance: friend.MinDistance,
 				Count:       friend.Count,
 			})
+		} else if hub.PostLimit == 0 {
+			connectedHubs = append(connectedHubs, ConnectedMessageHub{
+				Hub:         hub,
+				MinDistance: GuestHubDistance,
+				Count:       0,
+			})
 		}
 	}
 	return connectedHubs
@@ -264,13 +274,13 @@ func (r *messageHubRepo) SetHubPostLimit(hubAdminID, hubID string, postLimit int
 	}
 }
 
-func (r *messageHubRepo) AssignUserToHub(userID, hubID string) {
+func (r *messageHubRepo) AssignUserToHub(userID, hubID string, minDistance int) {
 	now := common.CurrentTimestamp()
 	_, err := r.db.Exec(`
-			insert into user_message_hubs(user_id, hub_id, created_at, updated_at)
-			values($1, $2, $3, $4)
-			on conflict (user_id, hub_id) do update set updated_at = $4;`,
-		userID, hubID, now, now)
+			insert into user_message_hubs(user_id, hub_id, created_at, updated_at, min_distance)
+			values($1, $2, $3, $4, $5)
+			on conflict (user_id, hub_id) do update set updated_at = $4, min_distance = $5;`,
+		userID, hubID, now, now, minDistance)
 	if err != nil {
 		panic(err)
 	}
@@ -302,10 +312,10 @@ func (r *messageHubRepo) UserHubs(userIDs []string) map[string][]string {
 	for _, hub := range hubs {
 		result[hub.HubAddress] = append(result[hub.HubAddress], hub.UserID)
 	}
-	for _, habUserIDs := range result {
-		habUserIDs := habUserIDs
-		sort.Slice(habUserIDs, func(i, j int) bool {
-			return habUserIDs[i] < habUserIDs[j]
+	for _, hubUserIDs := range result {
+		hubUserIDs := hubUserIDs
+		sort.Slice(hubUserIDs, func(i, j int) bool {
+			return hubUserIDs[i] < hubUserIDs[j]
 		})
 	}
 	return result
