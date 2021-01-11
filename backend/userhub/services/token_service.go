@@ -9,6 +9,7 @@ import (
 	"github.com/twitchtv/twirp"
 
 	"github.com/mreider/koto/backend/token"
+	"github.com/mreider/koto/backend/userhub/repo"
 	"github.com/mreider/koto/backend/userhub/rpc"
 )
 
@@ -99,7 +100,7 @@ func (s *tokenService) postMessage(ctx context.Context) (*rpc.TokenPostMessageRe
 	})
 
 	hubs = hubs[:1]
-	s.repos.MessageHubs.AssignUserToHub(user.ID, hubs[0].Hub.ID)
+	s.repos.MessageHubs.AssignUserToHub(user.ID, hubs[0].Hub.ID, hubs[0].MinDistance)
 
 	friends := s.repos.Friend.Friends(user)
 	friendIDs := make([]string, len(friends))
@@ -114,8 +115,9 @@ func (s *tokenService) postMessage(ctx context.Context) (*rpc.TokenPostMessageRe
 	exp := time.Now().Add(s.tokenDuration)
 	for _, hub := range hubs {
 		claims := map[string]interface{}{
-			"hub":     hub.Hub.Address,
-			"friends": friendIDs,
+			"hub":          hub.Hub.Address,
+			"friends":      friendIDs,
+			"is_guest_hub": hub.MinDistance == repo.GuestHubDistance,
 		}
 		hubToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "post-message", exp, claims)
 		if err != nil {

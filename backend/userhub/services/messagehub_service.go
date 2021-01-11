@@ -41,6 +41,10 @@ func NewMessageHub(base *BaseService, admins []string) rpc.MessageHubService {
 }
 
 func (s *messageHubService) Register(ctx context.Context, r *rpc.MessageHubRegisterRequest) (*rpc.Empty, error) {
+	if !s.isAdmin(ctx) && r.PostLimit <= 0 {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
+	}
+
 	user := s.getUser(ctx)
 
 	r.Address = common.CleanPublicURL(r.Address)
@@ -228,6 +232,10 @@ func (s *messageHubService) removeHubBySubdomain(ctx context.Context, subdomain 
 }
 
 func (s *messageHubService) SetPostLimit(ctx context.Context, r *rpc.MessageHubSetPostLimitRequest) (*rpc.Empty, error) {
+	if !s.isAdmin(ctx) && r.PostLimit <= 0 {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
+	}
+
 	user := s.getUser(ctx)
 	hub := s.repos.MessageHubs.HubByID(r.HubId)
 	if hub == nil {

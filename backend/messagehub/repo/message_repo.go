@@ -30,6 +30,7 @@ type Message struct {
 	Likes                 int            `json:"likes" db:"likes"`
 	LikedByMe             bool           `json:"liked_by_me" db:"liked_by_me"`
 	GroupID               sql.NullString `json:"group_id" db:"group_id"`
+	IsGuest               bool           `json:"is_guest" db:"is_guest"`
 }
 
 type MessageLike struct {
@@ -179,13 +180,13 @@ func (r *messageRepo) Message(currentUserID string, messageID string) *Message {
 
 func (r *messageRepo) AddMessage(parentID string, message Message) {
 	_, err := r.db.Exec(`
-		insert into messages(id, parent_id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at, group_id)
-		select $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
+		insert into messages(id, parent_id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at, group_id, is_guest)
+		select $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
 		where not exists(select * from messages where id = $1)`,
 		message.ID, sql.NullString{String: parentID, Valid: parentID != ""},
 		message.UserID, message.UserName,
 		message.Text, message.AttachmentID, message.AttachmentType, message.AttachmentThumbnailID,
-		message.CreatedAt, message.UpdatedAt, message.GroupID)
+		message.CreatedAt, message.UpdatedAt, message.GroupID, message.IsGuest)
 	if err != nil {
 		panic(err)
 	}

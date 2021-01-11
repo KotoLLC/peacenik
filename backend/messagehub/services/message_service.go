@@ -71,6 +71,11 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		}
 	}
 
+	isGuestHub := false
+	if rawIsGuestHub, ok := claims["is_guest_hub"]; ok {
+		isGuestHub, _ = rawIsGuestHub.(bool)
+	}
+
 	messageID := common.GenerateUUID()
 	attachmentThumbnailID, attachmentType, err := s.processAttachment(ctx, r.AttachmentId)
 	if err != nil {
@@ -90,6 +95,7 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		CreatedAt:             now,
 		UpdatedAt:             now,
 		GroupID:               groupID,
+		IsGuest:               isGuestHub,
 	}
 	s.repos.Message.AddMessage("", msg)
 	if len(notifiedUsers) > 0 && s.notificationSender != nil {
@@ -532,6 +538,7 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 		CreatedAt:             now,
 		UpdatedAt:             now,
 		GroupID:               msg.GroupID,
+		IsGuest:               msg.IsGuest,
 	}
 	s.repos.Message.AddMessage(r.MessageId, comment)
 
