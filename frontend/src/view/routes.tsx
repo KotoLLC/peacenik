@@ -18,13 +18,16 @@ import ForgotPasswordPage from '@view/pages/ForgotPasswordPage'
 import ForgotUserNamePage from '@view/pages/ForgotUserNamePage'
 import ResetPasswordPage from '@view/pages/ResetPasswordPage'
 import { DashboardPage } from '@view/pages/DashboardPage'
-import { GroupPages } from '@view/pages/GroupPages'
 import selectors from '@selectors/index'
 import { LastLocationProvider } from 'react-router-last-location'
 import { useSwipeable } from 'react-swipeable'
 import { ForwardIconWrapper, BackIconWrapper } from './shared/styles'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
+import { MyGroups } from '@view/pages/GroupPages/MyGroups'
+import { PublicGroups } from '@view/pages/GroupPages/PublicGroups'
+import { CreateGroupPage } from '@view/pages/GroupPages/CreateGroupPage'
+import { GroupDetailsPage } from '@view/pages/GroupPages/GroupDetailsPage'
 
 export const history = createBrowserHistory()
 
@@ -105,7 +108,11 @@ export const Routes = () => {
             <Route path="/resend-confirm-email" component={ResendConfirmEmailPage} />
             <Route path="/no-hubs" component={NoHubsPage} />
             <PrivateRoute path="/friends" component={FriendsPage} />
-            <PrivateRoute path="/groups" component={GroupPages} />
+            <PrivateRoute exact path="/groups" component={MyGroups} />
+            <PrivateRoute path="/groups/my" component={MyGroups} />
+            <PrivateRoute path="/groups/public" component={PublicGroups} />
+            <PrivateRoute path="/groups/details" exact component={GroupDetailsPage} />
+            <PrivateRoute path="/groups/create" exact component={CreateGroupPage} />
             <PrivateRoute path="/hubs" component={HubPages} />
             <PrivateRoute path="/messages" component={MessagesPage} />
             <PrivateRoute path="/notifications" component={NotificationsPage} />

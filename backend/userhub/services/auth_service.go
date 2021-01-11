@@ -99,12 +99,16 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 	if user == nil {
 		return nil, twirp.NotFoundError("user not found")
 	}
-	if r.InviteToken == "" {
+
+	switch {
+	case s.cfg.IsAdmin(user.Name) || s.cfg.IsAdmin(user.Email):
+		s.repos.User.ConfirmUser(user.ID)
+	case r.InviteToken == "":
 		err := s.sendConfirmLink(*user)
 		if err != nil {
 			log.Printf("can't send email to %s: %s\n", user.Email, err)
 		}
-	} else {
+	default:
 		err := s.confirmInviteToken(*user, r.InviteToken)
 		if err != nil {
 			log.Printf("can't confirm invite token for %s: %s\n", user.Email, err)

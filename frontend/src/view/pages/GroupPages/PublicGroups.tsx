@@ -1,15 +1,22 @@
 import React from 'react'
 import { GroupsListItem } from './GroupsListItem'
-import { GroupsListWrappe } from './styles'
+import { GroupsSidebar } from './GroupsSIdebar'
+import { GroupsContainer, GroupsListWrapper } from './styles'
+import { PageLayout } from '@view/shared/PageLayout'
 
 export const PublicGroups = () => {
   return (
-    <GroupsListWrappe>
-      <GroupsListItem/>
-      <GroupsListItem/>
-      <GroupsListItem/>
-      <GroupsListItem/>
-      <GroupsListItem/>
-    </GroupsListWrappe>
+    <PageLayout>
+      <GroupsContainer>
+        <GroupsSidebar />
+        <GroupsListWrapper>
+          <GroupsListItem />
+          <GroupsListItem />
+          <GroupsListItem />
+          <GroupsListItem />
+          <GroupsListItem />
+        </GroupsListWrapper>
+      </GroupsContainer>
+    </PageLayout>
   )
 }
