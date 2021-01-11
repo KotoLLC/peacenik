@@ -12,7 +12,7 @@ export const ItemCover = styled.div`
   height: 80px;
   background-position: center;
   background-size: cover;
-  background-color: #ccc;
+  background-color: #A1AEC8;
 `
 
 export const ItemContentWraper = styled.div`
@@ -62,7 +62,8 @@ export const ButtonOutlined = styled.span`
 `
 
 export const AvatarStyled = styled(Avatar)`
-  
+  background: #DEE5F2;
+
   && {
     width: 62px;
     height: 62px;

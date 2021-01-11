@@ -1,9 +1,6 @@
 import styled from 'styled-components'
 import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button'
-import Avatar from '@material-ui/core/Avatar'
-import TextField from '@material-ui/core/TextField'
-import FormControl from '@material-ui/core/FormControl'
 import { NavLink, Link } from 'react-router-dom'
 
 export const GroupsContainer = styled.main`
@@ -30,31 +27,6 @@ export const PageTitle = styled.h3`
 
 export const GroupPublicity = styled.div`
   width: 100%;
-`
-
-export const FormWrapper = styled.div`
-  max-width: 430px;
-  width: 100%;
-  margin: 0 auto;
-`
-
-export const TextFieldStyled = styled(TextField)`
-  width: 100%;
-  margin-bottom: 15px;
-`
-
-export const FormControlStyled = styled(FormControl)`
-  margin-bottom: 10px;
-`
-
-export const FormButtonsWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
-`
-
-export const FormButton = styled(Button)`
-  margin-left: 15px;
-  min-width: 100px;
 `
 
 export const GroupDetailsWrapper = styled.div`
