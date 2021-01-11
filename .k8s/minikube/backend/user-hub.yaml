@@ -28,9 +28,9 @@ spec:
           mountPath: /data
         command: ["cp", "/usr/local/bin/doctl", "/data/doctl"]
       volumes:
-        # - name: user-hub-key
-        #   secret:
-        #     secretName: user-hub-key
+        - name: user-hub-key
+          secret:
+            secretName: user-hub-key
         - name: kubectl
           emptyDir: {}
         - name: doctl
@@ -44,8 +44,8 @@ spec:
         ports:
         - containerPort: 12001
         volumeMounts:
-          # - name: user-hub-key
-          #   mountPath: "/tmp"
+          - name: user-hub-key
+            mountPath: "/tmp"
           - name: kubectl
             subPath: kubectl
             mountPath: /usr/local/bin/kubectl

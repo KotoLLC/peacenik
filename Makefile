@@ -12,7 +12,7 @@ DIRECTORY := .k8s/minikube
 
 ## Build all the images
 build:
-	$(eval $(minikube docker-env))
+	eval $(minikube docker-env)
 	docker build --tag frontend ./frontend -f ./frontend/Dockerfile.production
 	docker build --tag message-hub ./backend -f ./backend/messagehub/Dockerfile
 	docker build --tag user-hub ./backend -f ./backend/userhub/Dockerfile

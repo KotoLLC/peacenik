@@ -1,0 +1,8 @@
+apiVersion: v1
+data:
+  password: bW9ja2tleTEyMw==
+kind: Secret
+metadata:
+  name: user-hub-key
+  namespace: backend
+type: Opaque
