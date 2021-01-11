@@ -69,6 +69,8 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	confirmAdminUsers(repos.User, cfg)
+
 	server := userhub.NewServer(cfg, string(publicKeyPEM), repos, tokenGenerator, tokenParser, s3Storage, staticFS)
 	err = server.Run()
 	if err != nil {
@@ -94,4 +96,14 @@ func loadConfig(execDir string) (config.Config, error) {
 	}
 
 	return cfg, nil
+}
+
+func confirmAdminUsers(userRepo repo.UserRepo, cfg config.Config) {
+	for _, userName := range cfg.AdminList() {
+		user := userRepo.FindUserByName(userName)
+		if user != nil && !user.ConfirmedAt.Valid {
+			log.Println("Auto-confirm an admin:", userName)
+			userRepo.ConfirmUser(user.ID)
+		}
+	}
 }
