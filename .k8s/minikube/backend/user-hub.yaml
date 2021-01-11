@@ -37,6 +37,10 @@ spec:
           emptyDir: {}
         - name: koto-writeable
           emptyDir: {}
+      hostAliases:
+      - ip: "192.168.64.2"
+        hostnames:
+        - "node1.orbits.local"
       containers:
       - name: user-hub
         image: user-hub:latest
