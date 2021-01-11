@@ -27,6 +27,31 @@ const GlobalStyle = createGlobalStyle`
     position: relative;
     min-height: 100vh;
   }
+
+  h1, h2, h3, h4, h5, h6, p, figure, ul, li, img {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline; 
+  }
+
+  article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+    display: block; 
+  }
+
+  ol, ul {
+    list-style: none; 
+  }
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0; }
+
+  a, button {
+    outline: none;
+  }
 `
 
 const defaultTheme = createMuiTheme({

@@ -1,15 +1,15 @@
 import React from 'react'
 import { GroupsListItem } from './GroupsListItem'
-import { GroupsListWrappe } from './styles'
+import { GroupsListWrapper } from './styles'
 
 export const PublicGroups = () => {
   return (
-    <GroupsListWrappe>
+    <GroupsListWrapper>
       <GroupsListItem/>
       <GroupsListItem/>
       <GroupsListItem/>
       <GroupsListItem/>
       <GroupsListItem/>
-    </GroupsListWrappe>
+    </GroupsListWrapper>
   )
 }

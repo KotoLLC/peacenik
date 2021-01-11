@@ -152,8 +152,57 @@ export const SidebarButton = styled(Link)`
   }
 `
 
-export const GroupsListWrappe = styled.div`
+export const GroupsListWrapper = styled.div`
   width: 880px;
   display: flex;
   flex-wrap: wrap;
+`
+
+export const EmptyGroups = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  width: calc(100% - 30px);
+  height: calc(100vh - 270px);
+  margin-left: 30px;
+  background: #E8EDF3;
+`
+
+export const EmptyGroupsText = styled.p`
+  display: inline-block;
+  font-size: 18px;
+  max-width: 415px;
+`
+
+export const EmptyGroupsTextWrapper = styled.div`
+  text-align: center;
+  width: 100%;
+  /* font-family: 'SFUITextLight'; */
+`
+
+export const EmptyGroupsTextLink = styled(Link)`
+  color: #599C0B;
+`
+
+export const EmptyGroupsIconWrapper = styled.figure`
+  width: 196px;
+  height: 196px;
+  background: #FFFFFF;
+  box-shadow: 0px 1px 4px 2px rgba(216, 216, 216, 0.2);
+  border-radius: 38px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 38px;
+
+  .groug-icon {
+    fill: #C8CFD4;
+  }
+
+  .icon {
+    width: 108px;
+    height: 108px;
+  }
 `
