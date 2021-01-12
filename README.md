@@ -1,12 +1,11 @@
-![koto-logo-transparent-black](https://user-images.githubusercontent.com/118036/89899037-fa331e00-dbe1-11ea-9e18-5710ee81c79e.png)
+Koto is an ad-free, hate-free, distributed social network
 
-Koto is an ad-free, friendly, distributed social network
+# About the project
 
-![.github/workflows/shipit-staging.yml](https://github.com/mreider/koto/workflows/.github/workflows/shipit-staging.yml/badge.svg)
+You can read more about Koto [here](https://docs.koto.at).
 
-You can sign up for Koto at [https://koto.at](https://koto.at). 
+# API Reference
 
-We've also launched apps for [iPhone](https://apps.apple.com/us/app/koto-social-network/id1530633715) and [Android](https://play.google.com/store/apps/details?id=koto.at&gl=AT).
+API is documented [here](api.md).
 
-[Please refer to our docs for more info](https://docs.koto.at).
-
+# Getting in touch

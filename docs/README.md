@@ -1,57 +1,66 @@
 
-![koto-logo-transparent-black](https://user-images.githubusercontent.com/118036/89899037-fa331e00-dbe1-11ea-9e18-5710ee81c79e.png)
-
-Koto is an ad-free distributed Facebook alternative
+Koto is an ad-free, hate-free, distributed social network
 
 [Koto for iOS](https://apps.apple.com/us/app/koto-social-network/id1530633715)
+
 [Koto for Android](https://play.google.com/store/apps/details?id=koto.at)
 
-## Table of Contents
+## About Koto
 
-- User's reference
+Koto is a social network to share ideas, photos, and videos with friends. Koto's community agrees to a [code of conduct](conduct.md), which boils down to: **be kind**.
 
-[Overview](README.md) | [User's guide](users-guide.md)
+Koto is also distributed. This means we do not store your messages, photos, or videos on our servers. Instead, we store them on your - our member's - servers.
 
-- About the project
+## Common Questions
 
-[Social graph](how-it-works.md) | [What's ahead](roadmap.md) | [Submit a bug](bugs.md) | [Get help](help.md) [Volunteer / donate](helping-out.md)
+### Why would I join Koto?
 
-- Message hubs
+For the same reason you would join Facebook. To keep in touch with friends. But unlike Facebook, you'd prefer NOT to have:
 
-[Host your own hub](install-message-hub.md)
+- Advertising
+- Behavioral tracking
+- Bullying, bating, hate speech etc.
 
+### What is a distributed social network?
 
-## Introduction
+Distributed social networks store their messages on servers all over the world. Normal people own and operate these servers because they want the network to succeed and prefer an alternative to Facebook or Twitter.
 
-I created Koto because I love using Facebook to keep in touch with friends, but hate what it's doing to us. The volume of disinformation on Facebook is staggering. Much of it is Russian state sponsored - designed to divide us and create chaos. It's working.
+### Do I control where my messages, photos, and videos are stored?
 
-While Facebook has given this issue plenty of lip service - they refuse to make meaningful changes. It's simply too profitable to sell advertising against content that evokes anger and hatred.
+Yes. When you join Koto, your messages are temporarily stored on the default message hub, where they only last for a week before disappearing. If you want permanent storage, you have a few options.
 
-As of early September Koto is functional, but there are plenty of little problems and quirks. We'll iron it all out over time.
+1. Find a friend with a message hub. You need to know their username or email address.
+2. Host your own message hub on a server. There's a technical "how-to" on your profile page.
+3. Send a note to admin@koto.at to request a sponsored message hub.
 
-## Comparison to other social network projects
+### What's a message hub?
 
-Koto is unique among [social network sites](https://en.wikipedia.org/wiki/List_of_social_networking_websites) and [projects](https://en.wikipedia.org/wiki/Comparison_of_social_networking_software), which seem to fall into one of four categories:
+It's where your messages are stored. Anyone can install a message hub for themselves and their friends.
 
-1. Failed (or failing) startups with no revenue
-2. Commercial products that serve ads or charge a fee
-3. Distributed OSS projects comparable to Twitter ([Mastadon](https://joinmastodon.org/), [Diaspora](https://diasporafoundation.org/), [Steemit](https://steemit.com/))
-4. Centralized OSS projects comparable to Facebook ([Buddy Press](https://buddypress.org/)]
+### What if neither I, nor my friends, has a message hub?
 
-Koto blends these last two categories, offering both a distributed OSS approach, as well as more of a "closed circle" approach like Facebook.
+Then you're stuck on the default message hub, where messages disappear a week after they're posted. Oh, and you also won't be able to create groups, which are a lot like Facebook groups.
 
-*Note: [Minds](https://www.minds.com/) is a similar blend, but relies on Blockchain, and an incentive model for posting, which seem unnecesary to us.*
+### Is Koto's "feed" similar to Facebook's "news feed?"
 
-## How the social graph works
+Sort of. You and your friends can share with one another on Koto's feed, just like Facebook. But unlike Facebook these posts are never public to the Internet, nor viewable by anyone outside of your Koto friendships.
 
-You can read about Koto's [social graph here](social-graph.md). It's almost identical to Facebook. Friends can post / see your timeline, but nobody else can.
+### Are Koto's groups similar to Facebook groups?
 
-## Who are you?
+Sort of. There are two types of Koto groups: listed, and unlisted. Both are private, meaning that nobody can see any group messages unless they allowed in by the group's owner. Listed groups appear on the group list, where anyone can ask to join. Unlisted groups are invitation only.
+
+### What are some other distributed social networks?
+
+Some distributed social networks are comparable to Twitter. These include ([Mastadon](https://joinmastodon.org/), [Diaspora](https://diasporafoundation.org/), or [Steemit](https://steemit.com/). Others are more to Facebook, like [Minds](https://www.minds.com/).
+
+### What makes Koto different?
+
+It's different in two ways. First, Koto passes the "grandma test," which means your grandma can use it without feeling over-the-hill. Second, Koto's [code of conduct](conduct.md) does not allow bullying, objectionable content, hate speech, threats, trolling, baiting, nor personal attacks.
+
+### Is Koto too boring and politically correct?
+
+No. Let's look at Reddit as a good example of how to have fun with rules. Thousands of Gritty, sarcastic, and heated conversations take place on Reddit, yet many of their subs enforce these same rules. People can have fun without resorting to hate speech.
+
+### Who are you?
 
 [I am a product manager with 30 years of experience](https://www.linkedin.com/in/mreider/) in the industry. I have been part of large software companies, and a few startups, one of which worked to measure Facebook video analytics. I am from Boston, lived in San Francisco for 20 years, and now live in Austria with my 2 kids and lovely wife. I work for Dynatrace and manage Koto in my spare time.
-
-## How you can hrlp
-
-There are a few ways you can help.
-
-If you have some free time, I have all sorts of things you can do. Just get in touch via email at mreider at gmail dot com.
