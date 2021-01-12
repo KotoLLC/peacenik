@@ -13,15 +13,15 @@ API is documented [here](api.md).
 Koto can be tested as follows:
 
 1. install minikube
-2. run `minikube addons enable ingress`
-3. run `minikube ip` and copy the ip address
-4. in /.k8s/minikube/backend replace hostAliases.ip with the ip address
-5. run `make apply` from koto root
-6. Add hosts to /etc/hosts with minikube ip like this:
+2. run `minikube addons enable ingress`\
+3. run `eval $(minikube docker-env)`
+4. run `minikube ip` and copy the ip address
+5. in /.k8s/minikube/backend replace hostAliases.ip with the ip address
+6. run `make apply` from koto root
+7. Add hosts to /etc/hosts with minikube ip like this:
 ```
 192.168.64.10 node1.orbits.local
 192.168.64.10 central.orbits.local
 192.168.64.10 orbits.local
 ```
 7. You should be able to browse to https://orbits.local
-8. Download postman and run the collection
