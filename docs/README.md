@@ -1,3 +1,4 @@
+# Koto
 
 Koto is an ad-free, hate-free, distributed social network
 
@@ -5,11 +6,7 @@ Koto is an ad-free, hate-free, distributed social network
 
 [Koto for Android](https://play.google.com/store/apps/details?id=koto.at)
 
-## About Koto
-
-Koto is a social network to share ideas, photos, and videos with friends. Koto's community agrees to a [code of conduct](conduct.md), which boils down to: **be kind**.
-
-Koto is also distributed. This means we do not store your messages, photos, or videos on our servers. Instead, we store them on your - our member's - servers.
+Koto is a social network to share ideas, photos, and videos with friends. Koto's community agrees to a [code of conduct](conduct.md), which boils down to: **be kind**. Koto is also distributed. This means we do not store your messages, photos, or videos on our servers. Instead, we store them on your - our member's - servers.
 
 ## Common Questions
 

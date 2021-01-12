@@ -1,5 +1,5 @@
   
-- [About Koto](README.md)
+- [About us](README.md)
 - [Contact us](contact-us.md)
 - [Code of conduct](conduct.md)
 - [Privacy policy](privacy.md)
