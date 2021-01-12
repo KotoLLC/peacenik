@@ -161,6 +161,20 @@ func (s *TokenServiceTestSuite) Test_PostMessage_Group() {
 	s.False(ok)
 }
 
+func (s *TokenServiceTestSuite) Test_PostMessage_Group_NotHubAdmin() {
+	s.addUser("user-1")
+	s.addUser("user-2")
+	s.addHub("hub-1", "user-2")
+	s.addFriends("user-1", "user-2")
+	s.addPublicGroup("group-1", "user-1")
+	s.addGroupUser("group-1", "user-2")
+
+	ctx := s.userContext("user-1")
+	resp, err := s.service.PostMessage(ctx, &rpc.TokenPostMessageRequest{GroupId: "group-1"})
+	s.Nil(err)
+	s.Equal(0, len(resp.Tokens))
+}
+
 func (s *TokenServiceTestSuite) Test_GetMessages() {
 	now := time.Now()
 	s.addUser("user-1")
@@ -210,7 +224,7 @@ func (s *TokenServiceTestSuite) addGroupUser(groupID, userID string) {
 }
 
 func (s *TokenServiceTestSuite) addHub(address, adminID string) string {
-	hubID := s.repos.MessageHubs.AddHub(address, "", adminID, 0)
+	hubID := s.repos.MessageHubs.AddHub(address, "", adminID, 0, false)
 	s.repos.MessageHubs.ApproveHub(hubID)
 	return hubID
 }

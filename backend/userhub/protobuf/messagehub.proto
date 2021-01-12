@@ -13,6 +13,7 @@ service MessageHubService {
     rpc Approve (MessageHubApproveRequest) returns (MessageHubApproveResponse);
     rpc Remove (MessageHubRemoveRequest) returns (MessageHubRemoveResponse);
     rpc SetPostLimit (MessageHubSetPostLimitRequest) returns (Empty);
+    rpc SetAllowFriendGroups (MessageHubSetAllowFriendGroupsRequest) returns (Empty);
     rpc ReportMessage (MessageHubReportMessageRequest) returns (Empty);
     rpc BlockUser (MessageHubBlockUserRequest) returns (Empty);
 }
@@ -29,6 +30,7 @@ message MessageHubRegisterRequest {
     string address = 1;
     string details = 2;
     int32 post_limit = 3;
+    bool allow_friend_groups = 4;
 }
 
 message MessageHubHubsResponseHub {
@@ -40,6 +42,7 @@ message MessageHubHubsResponseHub {
     string disabled_at = 6;
     string details = 7;
     int32 post_limit = 8;
+    bool allow_friend_groups = 9;
 }
 
 message MessageHubHubsResponse {
@@ -74,6 +77,11 @@ message MessageHubRemoveResponse {
 message MessageHubSetPostLimitRequest {
     string hub_id = 1;
     int32 post_limit = 2;
+}
+
+message MessageHubSetAllowFriendGroupsRequest {
+    string hub_id = 1;
+    bool allow_friend_groups = 2;
 }
 
 message MessageHubReportMessageRequest {

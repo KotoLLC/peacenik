@@ -140,7 +140,7 @@ func (s *tokenService) postMessageForGroup(ctx context.Context, groupID string) 
 		return nil, twirp.NotFoundError("group not found")
 	}
 
-	adminHub := s.repos.MessageHubs.UserHub(group.AdminID)
+	adminHub := s.repos.MessageHubs.GroupHub(group.AdminID)
 	tokens := make(map[string]string)
 	if adminHub != "" {
 		exp := time.Now().Add(s.tokenDuration)
@@ -175,8 +175,8 @@ func (s *tokenService) GetMessages(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 	groupHubs := make(map[string][]string)
 	userGroups := s.repos.Group.UserGroups(user.ID)
 	for _, group := range userGroups {
-		adminHub := s.repos.MessageHubs.UserHub(group.AdminID)
-		if adminHub != "" {
+		adminHubs := s.repos.MessageHubs.UserHubs([]string{group.AdminID})
+		for adminHub := range adminHubs {
 			groupHubs[adminHub] = append(groupHubs[adminHub], group.ID)
 		}
 	}
