@@ -32,9 +32,9 @@ Yes. When you join Koto, your messages are temporarily stored on the default mes
 
 ### What's a message hub?
 
-It's where your messages are stored. Anyone can install a message hub for themselves and their friends.
+It's where your messages are stored. Anyone can install a message hub for themselves and their friends. So you don't need to install one if a connected friend has one already.
 
-### What if neither I, nor my friends, has a message hub?
+### What if I / my friends have no hub?
 
 Then you're stuck on the default message hub, where messages disappear a week after they're posted. Oh, and you also won't be able to create groups, which are a lot like Facebook groups.
 
