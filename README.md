@@ -24,4 +24,4 @@ Koto can be tested as follows:
 192.168.64.10 central.orbits.local
 192.168.64.10 orbits.local
 ```
-7. You should be able to browse to https://orbits.local
+7. You should be able to browse to http://orbits.local
