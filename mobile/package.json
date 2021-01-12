@@ -14,7 +14,7 @@
     "@react-native-community/cookies": "^4.0.1",
     "@react-native-firebase/app": "^8.3.1",
     "@react-native-firebase/messaging": "^7.7.4",
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "react": "16.13.1",
     "react-native": "0.63.2",
     "react-native-device-info": "^6.0.0",
