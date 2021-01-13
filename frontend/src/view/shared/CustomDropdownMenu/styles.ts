@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import MenuItem from '@material-ui/core/MenuItem'
 
 export const DropdownMenuWrapper = styled.div`
   position: relative;
@@ -14,7 +13,6 @@ export const Dropdown = styled.div`
   background: #FFFFFF;
   box-shadow: 0px 1px 8px #D4D4D4;
   border-radius: 6px;
-  /* padding: 0 10px; */
 
   &:after {
     position: absolute;

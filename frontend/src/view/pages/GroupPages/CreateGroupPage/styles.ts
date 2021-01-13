@@ -2,7 +2,6 @@ import styled from 'styled-components'
 import Avatar from '@material-ui/core/Avatar'
 import Radio from '@material-ui/core/Radio'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
-import RadioGroup from '@material-ui/core/RadioGroup'
 
 export const CreateGroupContainer = styled.main`
   display: flex;

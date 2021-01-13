@@ -30,7 +30,6 @@ import {
   AvatarLabel,
   ProfileWrapper,
   Header,
-  Title,
   UsersWrapper,
   NoCommonFriendsMessage,
   ProfileName,

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import AvatarIcon from '@assets/images/groups-avatar-icon.svg'
-import { ButtonContained, ButtonOutlined } from '@view/shared/styles'
+import { ButtonContained, /*ButtonOutlined*/ } from '@view/shared/styles'
 import {
   GroupsListItemWrapper,
   ItemCover,

@@ -13,7 +13,6 @@ import PeopleAltIcon from '@material-ui/icons/PeopleAlt'
 import MenuIcon from '@material-ui/icons/Menu'
 import CloseIcon from '@material-ui/icons/Close'
 import ClickAwayListener from '@material-ui/core/ClickAwayListener'
-
 import {
   NavigationsWrapper,
   BadgeStyled,
@@ -34,7 +33,7 @@ interface Props {
 
 const MobileTopBar: React.FC<Props> = React.memo((props) => {
   const [isHamburgerMenuOpen, openHamburgerMenu] = useState<boolean>(false)
-  const { notificationsUnread, userId } = props
+  const { notificationsUnread, /*userId*/ } = props
 
   return (
     <MobileTopBarWrapper>

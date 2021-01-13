@@ -15,7 +15,6 @@ import InputAdornment from '@material-ui/core/InputAdornment'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
 import loadImage from 'blueimp-load-image'
-import { capitalizeFirstLetter } from '@services/capitalizeFirstLetter'
 
 import {
   UserContentWrapper,

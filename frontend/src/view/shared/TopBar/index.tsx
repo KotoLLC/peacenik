@@ -30,7 +30,7 @@ interface Props {
 }
 
 const TopBar: React.SFC<Props> = React.memo((props) => {
-  const { notificationsUnread, userId } = props
+  const { notificationsUnread, /*userId*/ } = props
 
   return (
     <AppBarStyled position="fixed" color="primary">
