@@ -79,6 +79,7 @@ type MessageRepo interface {
 	DeleteReportedMessage(reportID string) bool
 	BlockReportedUser(reportID string) bool
 	ResolveMessageReport(reportID string) bool
+	DeleteOldGuestMessages(until time.Time)
 }
 
 type messageRepo struct {
@@ -644,4 +645,75 @@ func (r *messageRepo) ResolveMessageReport(reportID string) bool {
 		return false
 	}
 	return true
+}
+
+func (r *messageRepo) DeleteOldGuestMessages(until time.Time) {
+	until = until.UTC()
+	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+		_, err := tx.Exec(`
+			with m as (select id from messages where parent_id is null and is_guest = true and created_at < $1),
+				 c as (select id from messages where parent_id in (select id from m)),
+				 mc as (select id from m union select id from c)
+			delete from message_likes
+			where message_id in (select id from mc);`,
+			until)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+
+		_, err = tx.Exec(`
+			with m as (select id from messages where parent_id is null and is_guest = true and created_at < $1),
+				 c as (select id from messages where parent_id in (select id from m)),
+				 mc as (select id from m union select id from c)
+			delete from message_visibility
+			where message_id in (select id from mc);`,
+			until)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+
+		_, err = tx.Exec(`
+			with m as (select id from messages where parent_id is null and is_guest = true and created_at < $1),
+				 c as (select id from messages where parent_id in (select id from m)),
+				 mc as (select id from m union select id from c)
+			delete from message_reports
+			where message_id in (select id from mc);`,
+			until)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+
+		_, err = tx.Exec(`
+			with m as (select id from messages where parent_id is null and is_guest = true and created_at < $1),
+				 c as (select id from messages where parent_id in (select id from m)),
+				 mc as (select id from m union select id from c)
+			insert into blob_pending_deletes(blob_id, deleted_at)
+			select attachment_id, $2::timestamptz
+			from messages
+			where id in (select id from mc) and attachment_id != ''
+			union
+			select attachment_thumbnail_id, $2::timestamptz
+			from messages
+			where id in (select id from mc) and attachment_thumbnail_id != '';`,
+			until, common.CurrentTimestamp())
+		if err != nil {
+			return merry.Wrap(err)
+		}
+
+		_, err = tx.Exec(`
+			with m as (select id from messages where parent_id is null and is_guest = true and created_at < $1),
+				 c as (select id from messages where parent_id in (select id from m)),
+				 mc as (select id from m union select id from c)
+			delete from messages
+			where id in (select id from mc);`,
+			until)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
 }

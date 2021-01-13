@@ -58,7 +58,7 @@ func (s *messageHubService) Register(ctx context.Context, r *rpc.MessageHubRegis
 		return nil, twirp.NewError(twirp.InvalidArgument, err.Error())
 	}
 
-	hubID := s.repos.MessageHubs.AddHub(r.Address, r.Details, user.ID, int(r.PostLimit))
+	hubID := s.repos.MessageHubs.AddHub(r.Address, r.Details, user.ID, int(r.PostLimit), r.AllowFriendGroups)
 
 	for _, admin := range s.admins {
 		adminUser := s.repos.User.FindUserByName(admin)
@@ -92,11 +92,12 @@ func (s *messageHubService) Hubs(ctx context.Context, _ *rpc.Empty) (*rpc.Messag
 				Name:     hub.AdminName,
 				FullName: hub.AdminFullName,
 			},
-			CreatedAt:  common.TimeToRPCString(hub.CreatedAt),
-			ApprovedAt: common.NullTimeToRPCString(hub.ApprovedAt),
-			DisabledAt: common.NullTimeToRPCString(hub.DisabledAt),
-			Details:    hub.Details,
-			PostLimit:  int32(hub.PostLimit),
+			CreatedAt:         common.TimeToRPCString(hub.CreatedAt),
+			ApprovedAt:        common.NullTimeToRPCString(hub.ApprovedAt),
+			DisabledAt:        common.NullTimeToRPCString(hub.DisabledAt),
+			Details:           hub.Details,
+			PostLimit:         int32(hub.PostLimit),
+			AllowFriendGroups: hub.AllowFriendGroups,
 		}
 	}
 
@@ -251,6 +252,22 @@ func (s *messageHubService) SetPostLimit(ctx context.Context, r *rpc.MessageHubS
 	return &rpc.Empty{}, nil
 }
 
+func (s *messageHubService) SetAllowFriendGroups(ctx context.Context, r *rpc.MessageHubSetAllowFriendGroupsRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+	hub := s.repos.MessageHubs.HubByID(r.HubId)
+	if hub == nil {
+		return nil, twirp.NotFoundError("hub not found")
+	}
+
+	if hub.AdminID != user.ID {
+		return nil, twirp.NotFoundError("hub not found")
+	}
+
+	s.repos.MessageHubs.SetHubAllowFriendGroups(user.ID, r.HubId, r.AllowFriendGroups)
+
+	return &rpc.Empty{}, nil
+}
+
 func (s *messageHubService) ReportMessage(ctx context.Context, r *rpc.MessageHubReportMessageRequest) (*rpc.Empty, error) {
 	user := s.getUser(ctx)
 
@@ -395,7 +412,7 @@ func (s *messageHubService) Create(ctx context.Context, r *rpc.MessageHubCreateR
 		return nil, err
 	}
 
-	hubID := s.repos.MessageHubs.AddHub(config.HubExternalAddress, r.Notes, owner.ID, 0)
+	hubID := s.repos.MessageHubs.AddHub(config.HubExternalAddress, r.Notes, owner.ID, 0, false)
 	s.repos.MessageHubs.ApproveHub(hubID)
 
 	return &rpc.Empty{}, nil

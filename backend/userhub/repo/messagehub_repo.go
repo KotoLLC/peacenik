@@ -16,17 +16,18 @@ const (
 )
 
 type MessageHub struct {
-	ID            string       `db:"id"`
-	Address       string       `db:"address"`
-	AdminID       string       `db:"admin_id"`
-	AdminName     string       `db:"admin_name"`
-	AdminFullName string       `db:"admin_full_name"`
-	AdminAvatarID string       `db:"admin_avatar_id"`
-	CreatedAt     time.Time    `db:"created_at"`
-	ApprovedAt    sql.NullTime `db:"approved_at"`
-	DisabledAt    sql.NullTime `db:"disabled_at"`
-	Details       string       `db:"details"`
-	PostLimit     int          `db:"post_limit"`
+	ID                string       `db:"id"`
+	Address           string       `db:"address"`
+	AdminID           string       `db:"admin_id"`
+	AdminName         string       `db:"admin_name"`
+	AdminFullName     string       `db:"admin_full_name"`
+	AdminAvatarID     string       `db:"admin_avatar_id"`
+	CreatedAt         time.Time    `db:"created_at"`
+	ApprovedAt        sql.NullTime `db:"approved_at"`
+	DisabledAt        sql.NullTime `db:"disabled_at"`
+	Details           string       `db:"details"`
+	PostLimit         int          `db:"post_limit"`
+	AllowFriendGroups bool         `db:"allow_friend_groups"`
 }
 
 type ConnectedMessageHub struct {
@@ -37,7 +38,7 @@ type ConnectedMessageHub struct {
 
 type MessageHubRepo interface {
 	HubExists(address string) bool
-	AddHub(address, details string, hubAdminID string, postLimit int) string
+	AddHub(address, details string, hubAdminID string, postLimit int, allowFriendGroups bool) string
 	AllHubs() []MessageHub
 	Hubs(user User) []MessageHub
 	HubByID(hubID string) *MessageHub
@@ -46,9 +47,10 @@ type MessageHubRepo interface {
 	RemoveHub(hubID string)
 	ConnectedHubs(user User) []ConnectedMessageHub
 	SetHubPostLimit(hubAdminID, hubID string, postLimit int)
+	SetHubAllowFriendGroups(hubAdminID, hubID string, allowFriendGroups bool)
 	AssignUserToHub(userID, hubID string, minDistance int)
 	UserHubs(userIDs []string) map[string][]string
-	UserHub(userID string) string
+	GroupHub(groupAdminID string) string
 	BlockUser(userID, hubID string)
 }
 
@@ -75,16 +77,16 @@ func (r *messageHubRepo) HubExists(address string) bool {
 	return true
 }
 
-func (r *messageHubRepo) AddHub(address, details string, hubAdminID string, postLimit int) string {
+func (r *messageHubRepo) AddHub(address, details string, hubAdminID string, postLimit int, allowFriendGroups bool) string {
 	hubID := common.GenerateUUID()
 	if postLimit < 0 {
 		postLimit = 0
 	}
 
 	_, err := r.db.Exec(`
-		insert into message_hubs(id, address, admin_id, created_at, details, post_limit) 
-		VALUES ($1, $2, $3, $4, $5, $6)`,
-		hubID, address, hubAdminID, common.CurrentTimestamp(), details, postLimit)
+		insert into message_hubs(id, address, admin_id, created_at, details, post_limit, allow_friend_groups) 
+		VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+		hubID, address, hubAdminID, common.CurrentTimestamp(), details, postLimit, allowFriendGroups)
 	if err != nil {
 		panic(err)
 	}
@@ -94,10 +96,11 @@ func (r *messageHubRepo) AddHub(address, details string, hubAdminID string, post
 func (r *messageHubRepo) AllHubs() []MessageHub {
 	var hubs []MessageHub
 	err := r.db.Select(&hubs, `
-			select h.id, h.address, h.admin_id, h.created_at, h.approved_at, h.disabled_at, h.details,
-				   u.name admin_name, u.full_name admin_full_name, u.avatar_thumbnail_id admin_avatar_id, post_limit
-			from message_hubs h
-				inner join users u on u.id = h.admin_id`)
+		select h.id, h.address, h.admin_id, h.created_at, h.approved_at, h.disabled_at, h.details,
+			   u.name admin_name, u.full_name admin_full_name, u.avatar_thumbnail_id admin_avatar_id,
+			   h.post_limit, h.allow_friend_groups
+		from message_hubs h
+			inner join users u on u.id = h.admin_id`)
 	if err != nil {
 		panic(err)
 	}
@@ -108,7 +111,8 @@ func (r *messageHubRepo) Hubs(user User) []MessageHub {
 	var hubs []MessageHub
 	err := r.db.Select(&hubs, `
 		select h.id, h.address, h.admin_id, h.created_at, h.approved_at, h.disabled_at, h.details,
-				   u.name admin_name, u.full_name admin_full_name, u.avatar_thumbnail_id admin_avatar_id, post_limit
+			   u.name admin_name, u.full_name admin_full_name, u.avatar_thumbnail_id admin_avatar_id,
+		       h.post_limit, h.allow_friend_groups
 		from message_hubs h
 			inner join users u on u.id = h.admin_id
 		where h.admin_id = $1`, user.ID)
@@ -274,6 +278,17 @@ func (r *messageHubRepo) SetHubPostLimit(hubAdminID, hubID string, postLimit int
 	}
 }
 
+func (r *messageHubRepo) SetHubAllowFriendGroups(hubAdminID, hubID string, allowFriendGroups bool) {
+	_, err := r.db.Exec(`
+		update message_hubs
+		set allow_friend_groups = $1
+		where id = $2 and admin_id = $3`,
+		allowFriendGroups, hubID, hubAdminID)
+	if err != nil {
+		panic(err)
+	}
+}
+
 func (r *messageHubRepo) AssignUserToHub(userID, hubID string, minDistance int) {
 	now := common.CurrentTimestamp()
 	_, err := r.db.Exec(`
@@ -295,7 +310,12 @@ func (r *messageHubRepo) UserHubs(userIDs []string) map[string][]string {
 		select umh.user_id, h.address hub_address
 		from user_message_hubs umh
 			inner join message_hubs h on h.id = umh.hub_id
-		where umh.user_id in (?) and umh.blocked_at is null and h.approved_at is not null;`, userIDs)
+		where umh.user_id in (?) and umh.blocked_at is null and h.approved_at is not null
+		union all
+		select admin_id, address hub_address
+		from message_hubs
+		where admin_id in (?) and approved_at is not null;`,
+		userIDs, userIDs)
 	if err != nil {
 		panic(err)
 	}
@@ -321,16 +341,17 @@ func (r *messageHubRepo) UserHubs(userIDs []string) map[string][]string {
 	return result
 }
 
-func (r *messageHubRepo) UserHub(userID string) string {
+func (r *messageHubRepo) GroupHub(groupAdminID string) string {
 	var hubAddress string
 	err := r.db.Get(&hubAddress, `
 		select h.address
 		from user_message_hubs umh
 			inner join message_hubs h on h.id = umh.hub_id
 		where umh.user_id = $1 and umh.blocked_at is null and h.approved_at is not null
+			and (h.admin_id = $1 or h.allow_friend_groups = true)
 		order by umh.updated_at desc
 		limit 1;`,
-		userID)
+		groupAdminID)
 	if err != nil {
 		if merry.Is(err, sql.ErrNoRows) {
 			err := r.db.Get(&hubAddress, `
@@ -339,7 +360,7 @@ func (r *messageHubRepo) UserHub(userID string) string {
 				where admin_id = $1 and approved_at is not null
 				order by approved_at desc
 				limit 1;`,
-				userID)
+				groupAdminID)
 			if err != nil {
 				if merry.Is(err, sql.ErrNoRows) {
 					return ""

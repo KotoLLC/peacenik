@@ -22,6 +22,7 @@ type User struct {
 	CreatedAt         time.Time    `json:"created_at,omitempty" db:"created_at"`
 	UpdatedAt         time.Time    `json:"updated_at,omitempty" db:"updated_at"`
 	ConfirmedAt       sql.NullTime `json:"confirmed_at,omitempty" db:"confirmed_at"`
+	BackgroundID      string       `json:"background_id" db:"background_id"`
 }
 
 func (u User) DisplayName() string {
@@ -42,6 +43,7 @@ type UserRepo interface {
 	SetEmail(userID, email string)
 	SetFullName(userID, fullName string)
 	SetPassword(userID, passwordHash string)
+	SetBackground(userID, backgroundID string)
 	FindUsers(ids []string) []User
 	ConfirmUser(userID string) bool
 	BlockUser(userID, blockedUserID string)
@@ -62,7 +64,7 @@ func NewUsers(db *sqlx.DB) UserRepo {
 func (r *userRepo) FindUserByIDOrName(value string) *User {
 	var user User
 	err := r.db.Get(&user, `
-		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at
+		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, background_id
 		from users
 		where id = $1 or lower(name) = $2`,
 		value, strings.ToLower(value))
@@ -78,7 +80,7 @@ func (r *userRepo) FindUserByIDOrName(value string) *User {
 func (r *userRepo) FindUserByID(id string) *User {
 	var user User
 	err := r.db.Get(&user, `
-		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
+		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at, background_id
 		from users
 		where id = $1`, id)
 	if err != nil {
@@ -93,7 +95,7 @@ func (r *userRepo) FindUserByID(id string) *User {
 func (r *userRepo) FindUsersByEmail(email string) []User {
 	var users []User
 	err := r.db.Select(&users, `
-		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
+		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at, background_id
 		from users
 		where email = $1`, email)
 	if err != nil {
@@ -105,7 +107,7 @@ func (r *userRepo) FindUsersByEmail(email string) []User {
 func (r *userRepo) FindUserByName(name string) *User {
 	var user User
 	err := r.db.Get(&user, `
-		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
+		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at, background_id
 		from users
 		where lower(name) = $1`,
 		strings.ToLower(name))
@@ -189,6 +191,36 @@ func (r *userRepo) SetAvatar(userID, avatarOriginalID, avatarThumbnailID string)
 	}
 }
 
+func (r *userRepo) SetBackground(userID, backgroundID string) {
+	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+		var currentBackgroundID string
+		err := tx.Get(&currentBackgroundID, "select background_id from users where id = $1;", userID)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+		now := common.CurrentTimestamp()
+		if currentBackgroundID != "" && currentBackgroundID != backgroundID {
+			_, err = tx.Exec(`
+				insert into blob_pending_deletes(blob_id, deleted_at)
+				values ($1, $2);`,
+				currentBackgroundID, now)
+			if err != nil {
+				return merry.Wrap(err)
+			}
+		}
+
+		_, err = tx.Exec(`
+			update users
+			set background_id = $1, updated_at = $2
+			where id = $3;`,
+			backgroundID, now, userID)
+		return merry.Wrap(err)
+	})
+	if err != nil {
+		panic(err)
+	}
+}
+
 func (r *userRepo) SetEmail(userID, email string) {
 	_, err := r.db.Exec(`
 		update users
@@ -228,7 +260,7 @@ func (r *userRepo) FindUsers(ids []string) []User {
 	}
 
 	query, args, err := sqlx.In(`
-		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
+		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at, background_id
 		from users
 		where id in (?)`, ids)
 	if err != nil {

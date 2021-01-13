@@ -13,6 +13,7 @@ message User {
     string email = 4;
     string full_name = 5;
     bool is_confirmed = 6;
+    string background = 7;
 }
 
 message Group {

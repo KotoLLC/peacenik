@@ -196,6 +196,10 @@ func (s *userService) EditProfile(ctx context.Context, r *rpc.UserEditProfileReq
 		s.repos.User.SetFullName(user.ID, fullName)
 	}
 
+	if r.BackgroundChanged {
+		s.repos.User.SetBackground(user.ID, r.BackgroundId)
+	}
+
 	return &rpc.Empty{}, nil
 }
 

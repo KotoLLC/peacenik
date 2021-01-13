@@ -209,17 +209,17 @@ func (r *groupRepo) SetAvatar(groupID, avatarOriginalID, avatarThumbnailID strin
 
 func (r *groupRepo) SetBackground(groupID, backgroundID string) {
 	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
-		var group Group
-		err := tx.Get(&group, "select background_id from groups where id = $1", groupID)
+		var currentBackgroundID string
+		err := tx.Get(&currentBackgroundID, "select background_id from groups where id = $1;", groupID)
 		if err != nil {
 			return merry.Wrap(err)
 		}
 		now := common.CurrentTimestamp()
-		if group.BackgroundID != "" && group.BackgroundID != backgroundID {
+		if currentBackgroundID != "" && currentBackgroundID != backgroundID {
 			_, err = tx.Exec(`
 				insert into blob_pending_deletes(blob_id, deleted_at)
-				values ($1, $2)`,
-				group.BackgroundID, now)
+				values ($1, $2);`,
+				currentBackgroundID, now)
 			if err != nil {
 				return merry.Wrap(err)
 			}

@@ -1,12 +1,27 @@
-![koto-logo-transparent-black](https://user-images.githubusercontent.com/118036/89899037-fa331e00-dbe1-11ea-9e18-5710ee81c79e.png)
+Koto is an ad-free, hate-free, distributed social network
 
-Koto is an ad-free, friendly, distributed social network
+# About the project
 
-![.github/workflows/shipit-staging.yml](https://github.com/mreider/koto/workflows/.github/workflows/shipit-staging.yml/badge.svg)
+You can read more about Koto [here](https://docs.koto.at).
 
-You can sign up for Koto at [https://koto.at](https://koto.at). 
+# API Reference
 
-We've also launched apps for [iPhone](https://apps.apple.com/us/app/koto-social-network/id1530633715) and [Android](https://play.google.com/store/apps/details?id=koto.at&gl=AT).
+API is documented [here](api.md).
 
-[Please refer to our docs for more info](https://docs.koto.at).
+# Testing
 
+Koto can be tested as follows:
+
+1. install minikube
+2. run `minikube addons enable ingress`\
+3. run `eval $(minikube docker-env)`
+4. run `minikube ip` and copy the ip address
+5. in /.k8s/minikube/backend replace hostAliases.ip with the ip address
+6. run `make apply` from koto root
+7. Add hosts to /etc/hosts with minikube ip like this:
+```
+192.168.64.10 node1.orbits.local
+192.168.64.10 central.orbits.local
+192.168.64.10 orbits.local
+```
+7. You should be able to browse to http://orbits.local
