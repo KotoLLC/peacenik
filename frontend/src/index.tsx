@@ -26,6 +26,8 @@ const GlobalStyle = createGlobalStyle`
     color: #262626;
     position: relative;
     min-height: 100vh;
+    font-size: 16px;
+    font-family: 'SFUITextRegular';
   }
 
   h1, h2, h3, h4, h5, h6, p, figure, ul, li, img {

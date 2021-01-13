@@ -1,6 +1,5 @@
 import styled from 'styled-components'
 import Paper from '@material-ui/core/Paper'
-import Button from '@material-ui/core/Button'
 import { NavLink, Link } from 'react-router-dom'
 
 export const GroupsContainer = styled.main`
@@ -9,7 +8,7 @@ export const GroupsContainer = styled.main`
   align-items: flex-start;
   position: relative;
   width: 1140px;
-  margin: 50px auto 0;
+  margin: 65px auto 0;
   padding-top: 30px;
 `
 
@@ -23,29 +22,6 @@ export const PaperStyled = styled(Paper)`
 export const PageTitle = styled.h3`
   font-size: 18px;
   margin: 0 0 15px;
-`
-
-export const GroupPublicity = styled.div`
-  width: 100%;
-`
-
-export const GroupDetailsWrapper = styled.div`
-  display: flex;
-  align-items: center;
-`
-
-export const RightButton = styled(Button)`
-  margin-left: auto;  
-`
-
-export const UsersListWrapper = styled.div`
-  max-width: 500px;
-  width: 100%;
-`
-
-export const ListTitle = styled.h4`
-  margin-bottom: 5px;
-  padding-left: 16px;
 `
 
 export const SidebarWrapper = styled.ul`

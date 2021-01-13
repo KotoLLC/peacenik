@@ -40,7 +40,7 @@ export const MenuButton = styled(Button)`
 export const PageWrapper = styled.main`
   display: flex;
   flex-wrap: wrap;
-  padding: 15px 20px 140px;
+  padding: 0px 0px 170px;
 
   @media (max-width: 600px) {
     padding: 0px 0 120px;
@@ -292,4 +292,87 @@ export const MenuItemStyled = styled(MenuItem)`
 export const MenuStyled = styled(Menu)`
   top: 40px !important;
   border-radius: 6px;
+`
+
+export const ButtonContained = styled.span`
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 120px;
+  height: 32px;
+  background: #599C0B;
+  border-radius: 16px;
+  font-family: 'SFUITextMedium';
+  text-align: center;
+  color: #fff;
+  font-size: 14px;
+  transition: 0.15s;
+  cursor: pointer;
+
+  &.small {
+    height: 30px;
+    min-width: 110px;
+    font-size: 12px;
+  }
+
+  &.extra-small {
+    height: 26px;
+    min-width: 105px;
+    font-size: 12px;
+    border-radius: 13px;
+  }
+
+  &:hover {
+    background: #4e8c07;
+  }
+
+  &.gray {
+    background: #A1AEC8;
+
+    &:hover {
+      background: #262626;
+    }
+  }
+  
+`
+
+export const ButtonOutlined = styled.span`
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px;
+  min-width: 120px;
+  height: 32px;
+  background: #fff;
+  border-radius: 16px;
+  font-family: 'SFUITextMedium';
+  text-align: center;
+  border: 1px solid #599C0B;
+  color: #599C0B;
+  font-size: 14px;
+  transition: 0.15s;
+  cursor: pointer;
+
+  &.small {
+    height: 30px;
+    min-width: 110px;
+    font-size: 12px;
+  }
+  
+  &.extra-small {
+    height: 26px;
+    min-width: 105px;
+    font-size: 12px;
+    border-radius: 13px;
+  }
+
+  &.gray {
+    border-color: #A1AEC8;
+    color: #A1AEC8;
+
+    &:hover {
+      border-color: #262626;
+      color: #262626;
+    }
+  }
 `

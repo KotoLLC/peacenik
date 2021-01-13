@@ -11,7 +11,7 @@ export const CreateGroupContainer = styled.main`
   position: relative;
   flex-wrap: wrap;
   width: 750px;
-  margin: 80px auto 30px;
+  margin: 95px auto 30px;
   background: #FFFFFF;
   box-shadow: 0px 1px 3px #D4D4D4;
 `
@@ -158,43 +158,6 @@ export const TextareaField = styled.textarea`
   &:focus {
     border-color: #A1AEC8;
   }
-`
-
-export const ButtonContained = styled.span`
-  display: inline-block;
-  min-width: 120px;
-  height: 32px;
-  background: #599C0B;
-  border-radius: 16px;
-  font-family: 'SFUITextMedium';
-  text-align: center;
-  color: #fff;
-  line-height: 32px;
-  font-size: 14px;
-  transition: 0.15s;
-  cursor: pointer;
-
-  &:hover {
-    background: #4e8c07;
-  }
-`
-
-export const ButtonOutlined = styled.span`
-  display: inline-block;
-  margin-right: 10px;
-  min-width: 120px;
-  height: 32px;
-  background: #fff;
-  border-radius: 16px;
-  font-family: 'SFUITextMedium';
-  text-align: center;
-  border: 1px solid #599C0B;
-  color: ${props => props.color ? props.color : '#599C0B'};
-  border-color: ${props => props.color ? props.color : '#599C0B'};
-  line-height: 32px;
-  font-size: 14px;
-  transition: 0.15s;
-  cursor: pointer;
 `
 
 export const ButtonsWrapper = styled.div`

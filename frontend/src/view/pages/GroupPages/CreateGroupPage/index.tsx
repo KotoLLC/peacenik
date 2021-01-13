@@ -1,7 +1,5 @@
 import React from 'react'
 import RadioGroup from '@material-ui/core/RadioGroup'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Radio from '@material-ui/core/Radio'
 import { PageLayout } from '@view/shared/PageLayout'
 import AvatarIcon from '@assets/images/groups-avatar-icon.svg'
 import CoverIcon from '@assets/images/groups-cover-icon.svg'
@@ -20,12 +18,11 @@ import {
   InputField,
   TextareaField,
   ButtonsWrapper,
-  ButtonContained,
-  ButtonOutlined,
   RadioStyled,
   FormControlLabelStyled,
   RadiosWrapper,
 } from './styles'
+import { ButtonContained, ButtonOutlined } from '@view/shared/styles'
 
 export const CreateGroupPage = () => (
   <PageLayout>

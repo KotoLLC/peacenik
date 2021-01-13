@@ -1,16 +1,17 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
+import AvatarIcon from '@assets/images/groups-avatar-icon.svg'
+import { ButtonContained, ButtonOutlined } from '@view/shared/styles'
 import {
   GroupsListItemWrapper,
   ItemCover,
   ItemContentWraper,
   ItemHeader,
-  ButtonContained,
   AvatarStyled,
   GroupName,
   GroupCounter,
   GroupPublicity,
   GroupDescription,
-  ButtonOutlined,
 } from './styles'
 
 export const GroupsListItem = React.memo(() => {
@@ -19,12 +20,16 @@ export const GroupsListItem = React.memo(() => {
       <ItemCover style={{ backgroundImage: '' }} />
       <ItemContentWraper>
         <ItemHeader>
-          <AvatarStyled />
-          <ButtonContained>Join</ButtonContained>
+          <Link to="/groups/group">
+            <AvatarStyled>
+              <img src={AvatarIcon} alt="icon" />
+            </AvatarStyled>
+          </Link>
+          <ButtonContained className="extra-small">Join</ButtonContained>
           {/* <ButtonOutlined>Edit group </ButtonOutlined> */}
           {/* <ButtonOutlined color="#A1AEC8">Remove</ButtonOutlined> */}
         </ItemHeader>
-        <GroupName>Photo lovers</GroupName>
+        <GroupName to="/groups/group">Photo lovers</GroupName>
         <GroupCounter>123 participants</GroupCounter>
         <GroupPublicity>Private</GroupPublicity>
         <GroupDescription>

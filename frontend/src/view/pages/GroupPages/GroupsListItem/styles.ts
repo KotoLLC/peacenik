@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import Avatar from '@material-ui/core/Avatar'
+import { Link } from 'react-router-dom'
 
 export const GroupsListItemWrapper = styled.div`
   width: 262px;
@@ -25,42 +26,6 @@ export const ItemHeader = styled.header`
   position: relative;
 `
 
-export const ButtonContained = styled.span`
-  display: inline-block;
-  width: 105px;
-  height: 26px;
-  background: #599C0B;
-  border-radius: 13px;
-  font-family: 'SFUITextMedium';
-  text-align: center;
-  color: #fff;
-  line-height: 26px;
-  font-size: 12px;
-  transition: 0.15s;
-  cursor: pointer;
-
-  &:hover {
-    background: #4e8c07;
-  }
-`
-
-export const ButtonOutlined = styled.span`
-  display: inline-block;
-  width: 105px;
-  height: 26px;
-  background: #fff;
-  border-radius: 13px;
-  font-family: 'SFUITextMedium';
-  text-align: center;
-  border: 1px solid #599C0B;
-  color: ${props => props.color ? props.color : '#599C0B'};
-  border-color: ${props => props.color ? props.color : '#599C0B'};
-  line-height: 26px;
-  font-size: 12px;
-  transition: 0.15s;
-  cursor: pointer;
-`
-
 export const AvatarStyled = styled(Avatar)`
   background: #DEE5F2;
 
@@ -72,12 +37,18 @@ export const AvatarStyled = styled(Avatar)`
     left: 0;
     top: -41px;
   }
+
+  img {
+    width: 24px;
+    height: 24px;
+  }
 `
 
-export const GroupName = styled.h3`
+export const GroupName = styled(Link)`
   color: #262626;
   font-family: 'SFUITextSemibold';
   margin: 5px 0;
+  text-decoration: none;
 `
 
 export const GroupCounter = styled.div`
