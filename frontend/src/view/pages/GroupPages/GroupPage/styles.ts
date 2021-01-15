@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import Avatar from '@material-ui/core/Avatar'
 import { Link } from 'react-router-dom'
 import { ButtonOutlined } from '@view/shared/styles'
+import Dialog from '@material-ui/core/Dialog'
 
 export const GroupCover = styled.div`
   width: 100%;

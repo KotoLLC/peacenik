@@ -7,6 +7,7 @@ import { Types as ProfileTypes } from '@store/profile/actions'
 import { Types as MessagesTypes } from '@store/messages/actions'
 import { Types as NotificationsTypes } from '@store/notifications/actions'
 import { Types as DashboardTypes } from '@store/dashboard/actions'
+import { Types as GroupsTypes } from '@store/groups/actions'
 
 import {
     watchlogin,
@@ -84,6 +85,9 @@ import {
     watchBlockReportedUser,
     watchBlockUser,
 } from './dashboard'
+import {
+    watchAddGroup,
+} from './groups'
 
 export function* rootSaga() {
     yield all([
@@ -154,5 +158,7 @@ export function* rootSaga() {
         takeEvery(DashboardTypes.DELETE_REPORTED_MESSAGE_REQUEST, watchDeleteReportedMessage),
         takeEvery(DashboardTypes.BLOCK_REPORTED_USER_REQUEST, watchBlockReportedUser),
         takeEvery(DashboardTypes.BLOCK_USER_REQUEST, watchBlockUser),
+        
+        takeEvery(GroupsTypes.ADD_GROUP_REQUEST, watchAddGroup),
     ])
 }

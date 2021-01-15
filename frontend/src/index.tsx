@@ -47,12 +47,19 @@ const GlobalStyle = createGlobalStyle`
     list-style: none; 
   }
 
-table {
-  border-collapse: collapse;
-  border-spacing: 0; }
+  table {
+    border-collapse: collapse;
+    border-spacing: 0; 
+  }
 
-  a, button {
+  button {
     outline: none;
+    border: none;
+  }
+
+  a {
+    outline: none;
+    text-decoration: none;
   }
 `
 

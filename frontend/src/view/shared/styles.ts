@@ -294,7 +294,7 @@ export const MenuStyled = styled(Menu)`
   border-radius: 6px;
 `
 
-export const ButtonContained = styled.span`
+export const ButtonContained = styled.button`
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -307,7 +307,9 @@ export const ButtonContained = styled.span`
   color: #fff;
   font-size: 14px;
   transition: 0.15s;
+  text-decoration: none;
   cursor: pointer;
+  
 
   &.small {
     height: 30px;
@@ -351,6 +353,7 @@ export const ButtonOutlined = styled.span`
   color: #599C0B;
   font-size: 14px;
   transition: 0.15s;
+  text-decoration: none;
   cursor: pointer;
 
   &.small {

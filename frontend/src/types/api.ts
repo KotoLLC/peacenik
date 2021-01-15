@@ -23,7 +23,7 @@ export declare namespace ApiTypes {
     name: string
     email: string
   }
-  
+
   export interface ForgotUserName {
     email: string
   }
@@ -364,6 +364,17 @@ export declare namespace ApiTypes {
       host: string,
       user_id: string,
       report_id: string
+    }
+  }
+
+  export namespace Groups {
+
+    export interface AddGroup {
+      name: string
+      description: string
+      is_public: boolean
+      avatar_id?: string
+      background_id?: string
     }
   }
 }
