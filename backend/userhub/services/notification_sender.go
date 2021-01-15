@@ -9,6 +9,7 @@ import (
 	"github.com/appleboy/go-fcm"
 
 	"github.com/mreider/koto/backend/common"
+	"github.com/mreider/koto/backend/userhub/caches"
 	"github.com/mreider/koto/backend/userhub/repo"
 )
 
@@ -21,6 +22,7 @@ type NotificationSender interface {
 
 type notificationSender struct {
 	repos              repo.Repos
+	userCache          caches.Users
 	firebaseClient     *fcm.Client
 	mailSender         *common.MailSender
 	notifications      chan []Notification
@@ -35,9 +37,10 @@ type Notification struct {
 	IsExternal  bool
 }
 
-func NewNotificationSender(repos repo.Repos, firebaseClient *fcm.Client, mailSender *common.MailSender) NotificationSender {
+func NewNotificationSender(repos repo.Repos, userCache caches.Users, firebaseClient *fcm.Client, mailSender *common.MailSender) NotificationSender {
 	return &notificationSender{
 		repos:          repos,
+		userCache:      userCache,
 		firebaseClient: firebaseClient,
 		mailSender:     mailSender,
 		notifications:  make(chan []Notification, 10000),
@@ -127,13 +130,14 @@ func (s *notificationSender) sendEmailNotifications(n Notification) {
 		if user == nil {
 			continue
 		}
+		userInfo := s.userCache.UserFullAccess(user.ID)
 		const body = `%s
 <p>%s</p>`
-		err := s.mailSender.SendHTMLEmail([]string{user.Email}, "KOTO notification",
+		err := s.mailSender.SendHTMLEmail([]string{userInfo.Email}, "KOTO notification",
 			fmt.Sprintf(body, userAttachments.InlineHTML("avatar"), html.EscapeString(n.Text)),
 			userAttachments)
 		if err != nil {
-			log.Printf("can't send email to '%s': %v", user.Email, err)
+			log.Printf("can't send email to '%s': %v", userInfo.Email, err)
 		}
 	}
 }

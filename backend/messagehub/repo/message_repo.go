@@ -19,8 +19,6 @@ type Message struct {
 	ID                    string         `json:"id" db:"id"`
 	ParentID              sql.NullString `json:"parent_id" db:"parent_id"`
 	UserID                string         `json:"user_id" db:"user_id"`
-	UserName              string         `json:"user_name" db:"user_name"`
-	UserFullName          string         `json:"user_full_name" db:"user_full_name"`
 	Text                  string         `json:"text" db:"text"`
 	AttachmentID          string         `json:"attachment_id" db:"attachment_id"`
 	AttachmentType        string         `json:"attachment_type" db:"attachment_type"`
@@ -34,25 +32,19 @@ type Message struct {
 }
 
 type MessageLike struct {
-	MessageID    string    `json:"message_id" db:"message_id"`
-	UserID       string    `json:"user_id" db:"user_id"`
-	UserName     string    `json:"user_name" db:"user_name"`
-	UserFullName string    `json:"user_full_name" db:"user_full_name"`
-	CreatedAt    time.Time `json:"created_at" db:"created_at"`
+	MessageID string    `json:"message_id" db:"message_id"`
+	UserID    string    `json:"user_id" db:"user_id"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
 type MessageReport struct {
 	ID                    string       `json:"id" db:"id"`
 	ReportedByID          string       `json:"reported_by" db:"reported_by"`
-	ReportedByName        string       `json:"reported_by_name" db:"reported_by_name"`
-	ReportedByFullName    string       `json:"reported_by_full_name" db:"reported_by_full_name"`
 	Report                string       `json:"report" db:"report"`
 	CreatedAt             time.Time    `json:"created_at" db:"created_at"`
 	ResolvedAt            sql.NullTime `json:"resolved_at" db:"resolved_at"`
 	MessageID             string       `json:"message_id" db:"message_id"`
 	AuthorID              string       `json:"author_id" db:"author_id"`
-	AuthorName            string       `json:"author_name" db:"author_name"`
-	AuthorFullName        string       `json:"author_full_name" db:"author_full_name"`
 	Text                  string       `json:"text" db:"text"`
 	AttachmentType        string       `json:"attachment_type" db:"attachment_type"`
 	AttachmentID          string       `json:"attachment_id" db:"attachment_id"`
@@ -106,12 +98,11 @@ func (r *messageRepo) Messages(currentUserID string, userIDs []string, from time
 
 	var messages []Message
 	query, args, err := sqlx.In(`
-			select m.id, m.parent_id, m.user_id, m.user_name, coalesce(u.full_name, '') user_full_name, m.text,
+			select m.id, m.parent_id, m.user_id, m.text,
 			       m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at, m.group_id,
 				   (select count(*) from message_likes where message_id = m.id) likes,
 				   case when exists(select * from message_likes where message_id = m.id and user_id = ?) then true else false end liked_by_me
 			from messages m
-				left join users u on u.id = m.user_id
 			where m.user_id in (?) and m.parent_id is null
 				and m.group_id is null
 				and m.created_at < ?
@@ -141,12 +132,11 @@ func (r *messageRepo) GroupMessages(currentUserID string, groupID string, from t
 
 	var messages []Message
 	err := r.db.Select(&messages, `
-		select m.id, m.parent_id, m.user_id, m.user_name, coalesce(u.full_name, '') user_full_name, m.text,
+		select m.id, m.parent_id, m.user_id, m.text,
 			   m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at, m.group_id,
 			   (select count(*) from message_likes where message_id = m.id) likes,
 			   case when exists(select * from message_likes where message_id = m.id and user_id = $1) then true else false end liked_by_me
 		from messages m
-			left join users u on u.id = m.user_id
 		where m.group_id = $2 and m.parent_id is null
 			and m.created_at < $3
 			and m.deleted_at is null
@@ -163,12 +153,11 @@ func (r *messageRepo) GroupMessages(currentUserID string, groupID string, from t
 func (r *messageRepo) Message(currentUserID string, messageID string) *Message {
 	var message Message
 	err := r.db.Get(&message, `
-			select m.id, m.parent_id, m.user_id, m.user_name, coalesce(u.full_name, '') user_full_name, m.text,
+			select m.id, m.parent_id, m.user_id, m.text,
 			       m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at, m.group_id,
 				   (select count(*) from message_likes where message_id = m.id) likes,
 				   case when exists(select * from message_likes where message_id = m.id and user_id = $1) then true else false end liked_by_me
 			from messages m
-				left join users u on u.id = m.user_id
 			where m.id = $2`, currentUserID, messageID)
 	if err != nil {
 		if merry.Is(err, sql.ErrNoRows) {
@@ -181,11 +170,11 @@ func (r *messageRepo) Message(currentUserID string, messageID string) *Message {
 
 func (r *messageRepo) AddMessage(parentID string, message Message) {
 	_, err := r.db.Exec(`
-		insert into messages(id, parent_id, user_id, user_name, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at, group_id, is_guest)
-		select $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
+		insert into messages(id, parent_id, user_id, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at, group_id, is_guest)
+		select $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
 		where not exists(select * from messages where id = $1)`,
 		message.ID, sql.NullString{String: parentID, Valid: parentID != ""},
-		message.UserID, message.UserName,
+		message.UserID,
 		message.Text, message.AttachmentID, message.AttachmentType, message.AttachmentThumbnailID,
 		message.CreatedAt, message.UpdatedAt, message.GroupID, message.IsGuest)
 	if err != nil {
@@ -374,11 +363,10 @@ func (r *messageRepo) Comments(currentUserID string, messageIDs []string) map[st
 
 	var comments []Message
 	query, args, err := sqlx.In(`
-			select m.id, m.parent_id, m.user_id, m.user_name, coalesce(u.full_name, '') user_full_name, m.text, m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at,
+			select m.id, m.parent_id, m.user_id, m.text, m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at,
 				   (select count(*) from message_likes where message_id = m.id) likes,
 				   case when exists(select * from message_likes where message_id = m.id and user_id = ?) then true else false end liked_by_me
 			from messages m
-				left join users u on u.id = m.user_id
 			where m.parent_id in (?)
 				and not exists(select * from message_visibility mv where mv.user_id = ? and mv.message_id = m.id and mv.visibility = false)
 			    and m.deleted_at is null
@@ -440,9 +428,8 @@ func (r *messageRepo) MessagesLikes(messageIDs []string) map[string][]MessageLik
 
 	var plainLikes []MessageLike
 	query, args, err := sqlx.In(`
-		select ml.message_id, ml.user_id, u.name user_name, u.full_name user_full_name, ml.created_at
+		select ml.message_id, ml.user_id, ml.created_at
 		from message_likes ml
-			inner join users u on u.id = ml.user_id
 		where ml.message_id in (?)
 		order by ml.message_id, ml.created_at`, messageIDs)
 	if err != nil {
@@ -512,14 +499,12 @@ func (r *messageRepo) ReportMessage(userID, messageID, report string) string {
 func (r *messageRepo) MessageReport(reportID string) *MessageReport {
 	var report MessageReport
 	err := r.db.Get(&report, `
-		select mr.id, mr.user_id reported_by, ur.name reported_by_name, ur.full_name reported_by_full_name,
+		select mr.id, mr.user_id reported_by,
 		       mr.report, mr.created_at, mr.resolved_at,
-		       m.id as message_id, m.user_id author_id, um.name author_name, um.full_name author_full_name, m.text,
+		       m.id as message_id, m.user_id author_id,
 		       m.attachment_type, m.attachment_id, m.attachment_thumbnail_id 
 		from message_reports mr
 			inner join messages m on m.id = mr.message_id
-			inner join users ur on ur.id = mr.user_id
-			inner join users um on um.id = m.user_id
 		where mr.id = $1`,
 		reportID)
 	if err != nil {
@@ -534,14 +519,12 @@ func (r *messageRepo) MessageReport(reportID string) *MessageReport {
 func (r *messageRepo) MessageReports() []MessageReport {
 	var reports []MessageReport
 	err := r.db.Select(&reports, `
-		select mr.id, mr.user_id reported_by, ur.name reported_by_name, ur.full_name reported_by_full_name,
+		select mr.id, mr.user_id reported_by,
 		       mr.report, mr.created_at, mr.resolved_at,
-		       m.id as message_id, m.user_id author_id, um.name author_name, um.full_name author_full_name, m.text,
+		       m.id as message_id, m.user_id author_id,
 		       m.attachment_type, m.attachment_id, m.attachment_thumbnail_id 
 		from message_reports mr
 			inner join messages m on m.id = mr.message_id
-			inner join users ur on ur.id = mr.user_id
-			inner join users um on um.id = m.user_id
 `)
 	if err != nil {
 		panic(err)

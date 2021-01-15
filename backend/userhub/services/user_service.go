@@ -30,22 +30,24 @@ func NewUser(base *BaseService, passwordHash PasswordHash) rpc.UserService {
 }
 
 func (s *userService) Friends(ctx context.Context, _ *rpc.Empty) (*rpc.UserFriendsResponse, error) {
-	user := s.getUser(ctx)
-	friendMap := s.repos.Friend.FriendsWithSubFriends(user)
-	inviteStatuses := s.repos.Invite.InviteStatuses(user)
+	me := s.getMe(ctx)
+	friendMap := s.repos.Friend.FriendsWithSubFriends(me)
+	inviteStatuses := s.repos.Invite.InviteStatuses(me)
 	rpcFriends := make([]*rpc.UserFriendsFriend, 0, len(friendMap))
 	for friend, users := range friendMap {
 		rpcUsers := make([]*rpc.UserFriendsFriendOfFriend, 0, len(users))
 		for _, u := range users {
-			if u.ID == user.ID {
+			if u.ID == me.ID {
 				continue
 			}
 
+			uInfo := s.userCache.User(u.ID, me.ID)
 			rpcUsers = append(rpcUsers, &rpc.UserFriendsFriendOfFriend{
 				User: &rpc.User{
-					Id:       u.ID,
-					Name:     u.Name,
-					FullName: u.FullName,
+					Id:           u.ID,
+					Name:         uInfo.Name,
+					FullName:     uInfo.FullName,
+					HideIdentity: uInfo.HideIdentity,
 				},
 				InviteStatus: inviteStatuses[u.ID],
 			})
@@ -55,11 +57,13 @@ func (s *userService) Friends(ctx context.Context, _ *rpc.Empty) (*rpc.UserFrien
 			return rpcUsers[i].User.Name < rpcUsers[j].User.Name
 		})
 
+		friendInfo := s.userCache.User(friend.ID, me.ID)
 		rpcFriends = append(rpcFriends, &rpc.UserFriendsFriend{
 			User: &rpc.User{
-				Id:       friend.ID,
-				Name:     friend.Name,
-				FullName: friend.FullName,
+				Id:           friend.ID,
+				Name:         friendInfo.Name,
+				FullName:     friendInfo.FullName,
+				HideIdentity: friendInfo.HideIdentity,
 			},
 			Friends: rpcUsers,
 		})
@@ -75,17 +79,19 @@ func (s *userService) Friends(ctx context.Context, _ *rpc.Empty) (*rpc.UserFrien
 }
 
 func (s *userService) FriendsOfFriends(ctx context.Context, _ *rpc.Empty) (*rpc.UserFriendsOfFriendsResponse, error) {
-	user := s.getUser(ctx)
-	friendsOfFriends := s.repos.Friend.FriendsOfFriends(user)
-	inviteStatuses := s.repos.Invite.InviteStatuses(user)
+	me := s.getMe(ctx)
+	friendsOfFriends := s.repos.Friend.FriendsOfFriends(me)
+	inviteStatuses := s.repos.Invite.InviteStatuses(me)
 	rpcFriendsOfFriends := make([]*rpc.UserFriendsOfFriendsResponseFriend, 0, len(friendsOfFriends))
 	for other, friends := range friendsOfFriends {
 		rpcFriends := make([]*rpc.User, len(friends))
 		for i, friend := range friends {
+			friendInfo := s.userCache.User(friend.ID, me.ID)
 			rpcFriends[i] = &rpc.User{
-				Id:       friend.ID,
-				Name:     friend.Name,
-				FullName: friend.FullName,
+				Id:           friend.ID,
+				Name:         friendInfo.Name,
+				FullName:     friendInfo.FullName,
+				HideIdentity: friendInfo.HideIdentity,
 			}
 		}
 
@@ -94,11 +100,13 @@ func (s *userService) FriendsOfFriends(ctx context.Context, _ *rpc.Empty) (*rpc.
 		})
 
 		inviteStatus := inviteStatuses[other.ID]
+		otherInfo := s.userCache.User(other.ID, me.ID)
 		rpcFriendsOfFriends = append(rpcFriendsOfFriends, &rpc.UserFriendsOfFriendsResponseFriend{
 			User: &rpc.User{
-				Id:       other.ID,
-				Name:     other.Name,
-				FullName: other.FullName,
+				Id:           other.ID,
+				Name:         otherInfo.Name,
+				FullName:     otherInfo.FullName,
+				HideIdentity: otherInfo.HideIdentity,
 			},
 			InviteStatus: inviteStatus,
 			Friends:      rpcFriends,
@@ -115,39 +123,43 @@ func (s *userService) FriendsOfFriends(ctx context.Context, _ *rpc.Empty) (*rpc.
 }
 
 func (s *userService) Me(ctx context.Context, _ *rpc.Empty) (*rpc.UserMeResponse, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 	isAdmin := s.isAdmin(ctx)
 
-	ownedHubs := s.repos.MessageHubs.Hubs(user)
+	ownedHubs := s.repos.MessageHubs.Hubs(me)
 
 	ownedHubAddresses := make([]string, len(ownedHubs))
 	for i, hub := range ownedHubs {
 		ownedHubAddresses[i] = hub.Address
 	}
 
-	groups := s.repos.Group.UserGroups(user.ID)
+	groups := s.repos.Group.UserGroups(me.ID)
 	rpcGroups := make([]*rpc.Group, len(groups))
 	for i, group := range groups {
+		adminInfo := s.userCache.User(group.AdminID, me.ID)
 		rpcGroups[i] = &rpc.Group{
 			Id:          group.ID,
 			Name:        group.Name,
 			Description: group.Description,
 			IsPublic:    group.IsPublic,
 			Admin: &rpc.User{
-				Id:       group.AdminID,
-				Name:     group.AdminName,
-				FullName: group.AdminFullName,
+				Id:           group.AdminID,
+				Name:         adminInfo.Name,
+				FullName:     adminInfo.FullName,
+				HideIdentity: adminInfo.HideIdentity,
 			},
 		}
 	}
 
+	meInfo := s.userCache.UserFullAccess(me.ID)
 	return &rpc.UserMeResponse{
 		User: &rpc.User{
-			Id:          user.ID,
-			Name:        user.Name,
-			Email:       user.Email,
-			FullName:    user.FullName,
-			IsConfirmed: user.ConfirmedAt.Valid,
+			Id:           me.ID,
+			Name:         meInfo.Name,
+			Email:        meInfo.Email,
+			FullName:     meInfo.FullName,
+			IsConfirmed:  me.ConfirmedAt.Valid,
+			HideIdentity: meInfo.HideIdentity,
 		},
 		IsAdmin:   isAdmin,
 		OwnedHubs: ownedHubAddresses,
@@ -156,14 +168,15 @@ func (s *userService) Me(ctx context.Context, _ *rpc.Empty) (*rpc.UserMeResponse
 }
 
 func (s *userService) EditProfile(ctx context.Context, r *rpc.UserEditProfileRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 
 	if r.EmailChanged {
 		if r.Email == "" {
 			return nil, twirp.InvalidArgumentError("email", "is empty")
 		}
-		if r.Email != user.Email {
-			s.repos.User.SetEmail(user.ID, r.Email)
+		meInfo := s.userCache.UserFullAccess(me.ID)
+		if r.Email != meInfo.Email {
+			s.repos.User.SetEmail(me.ID, r.Email)
 		}
 	}
 
@@ -172,7 +185,7 @@ func (s *userService) EditProfile(ctx context.Context, r *rpc.UserEditProfileReq
 			return nil, twirp.InvalidArgumentError("password", "is empty")
 		}
 
-		if !s.passwordHash.CompareHashAndPassword(user.PasswordHash, r.CurrentPassword) {
+		if !s.passwordHash.CompareHashAndPassword(me.PasswordHash, r.CurrentPassword) {
 			return nil, twirp.NewError(twirp.InvalidArgument, "invalid password")
 		}
 
@@ -181,11 +194,11 @@ func (s *userService) EditProfile(ctx context.Context, r *rpc.UserEditProfileReq
 			return nil, err
 		}
 
-		s.repos.User.SetPassword(user.ID, newPasswordHash)
+		s.repos.User.SetPassword(me.ID, newPasswordHash)
 	}
 
 	if r.AvatarChanged {
-		err := s.setAvatar(ctx, user, r.AvatarId)
+		err := s.setAvatar(ctx, me, r.AvatarId)
 		if err != nil {
 			return nil, merry.Wrap(err)
 		}
@@ -193,18 +206,23 @@ func (s *userService) EditProfile(ctx context.Context, r *rpc.UserEditProfileReq
 
 	if r.FullNameChanged {
 		fullName := strings.Join(strings.Fields(r.FullName), " ")
-		s.repos.User.SetFullName(user.ID, fullName)
+		s.repos.User.SetFullName(me.ID, fullName)
 	}
 
 	if r.BackgroundChanged {
-		s.repos.User.SetBackground(user.ID, r.BackgroundId)
+		s.repos.User.SetBackground(me.ID, r.BackgroundId)
+	}
+
+	if r.HideIdentityChanged {
+		s.repos.User.SetHideIdentity(me.ID, r.HideIdentity)
 	}
 
 	return &rpc.Empty{}, nil
 }
 
 func (s *userService) setAvatar(ctx context.Context, user repo.User, avatarID string) (err error) {
-	if user.AvatarOriginalID == avatarID {
+	userInfo := s.userCache.UserFullAccess(user.ID)
+	if userInfo.AvatarOriginalID == avatarID {
 		return nil
 	}
 
@@ -222,14 +240,17 @@ func (s *userService) setAvatar(ctx context.Context, user repo.User, avatarID st
 	return nil
 }
 
-func (s *userService) Users(_ context.Context, r *rpc.UserUsersRequest) (*rpc.UserUsersResponse, error) {
+func (s *userService) Users(ctx context.Context, r *rpc.UserUsersRequest) (*rpc.UserUsersResponse, error) {
+	me := s.getMe(ctx)
 	users := s.repos.User.FindUsers(r.UserIds)
 	rpcUsers := make([]*rpc.User, len(users))
 	for i, user := range users {
+		userInfo := s.userCache.User(user.ID, me.ID)
 		rpcUsers[i] = &rpc.User{
-			Id:       user.ID,
-			Name:     user.Name,
-			FullName: user.FullName,
+			Id:           user.ID,
+			Name:         userInfo.Name,
+			FullName:     userInfo.FullName,
+			HideIdentity: userInfo.HideIdentity,
 		}
 	}
 
@@ -238,28 +259,24 @@ func (s *userService) Users(_ context.Context, r *rpc.UserUsersRequest) (*rpc.Us
 	}, nil
 }
 
-func (s *userService) User(_ context.Context, r *rpc.UserUserRequest) (*rpc.UserUserResponse, error) {
-	if r.UserId == "" && r.UserName == "" {
-		return nil, twirp.NewError(twirp.InvalidArgument, "user_id or user_name should be specified")
+func (s *userService) User(ctx context.Context, r *rpc.UserUserRequest) (*rpc.UserUserResponse, error) {
+	me := s.getMe(ctx)
+
+	if r.UserId == "" {
+		return nil, twirp.NewError(twirp.InvalidArgument, "user_id should be specified")
 	}
-	if r.UserId != "" && r.UserName != "" {
-		return nil, twirp.NewError(twirp.InvalidArgument, "one of user_id and user_name should be specified")
-	}
-	var user *repo.User
-	if r.UserId != "" {
-		user = s.repos.User.FindUserByID(r.UserId)
-	} else {
-		user = s.repos.User.FindUserByName(r.UserName)
-	}
+	user := s.repos.User.FindUserByID(r.UserId)
 	if user == nil {
 		return nil, twirp.NotFoundError("user not found")
 	}
 
+	userInfo := s.userCache.User(user.ID, me.ID)
 	rpcUser := &rpc.User{
-		Id:          user.ID,
-		Name:        user.Name,
-		FullName:    user.FullName,
-		IsConfirmed: user.ConfirmedAt.Valid,
+		Id:           user.ID,
+		Name:         userInfo.Name,
+		FullName:     userInfo.FullName,
+		IsConfirmed:  user.ConfirmedAt.Valid,
+		HideIdentity: userInfo.HideIdentity,
 	}
 	return &rpc.UserUserResponse{
 		User: rpcUser,
@@ -267,7 +284,7 @@ func (s *userService) User(_ context.Context, r *rpc.UserUserRequest) (*rpc.User
 }
 
 func (s *userService) RegisterFCMToken(ctx context.Context, r *rpc.UserRegisterFCMTokenRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 
 	if r.Token == "" {
 		return nil, twirp.InvalidArgumentError("token", "is empty")
@@ -276,17 +293,17 @@ func (s *userService) RegisterFCMToken(ctx context.Context, r *rpc.UserRegisterF
 		return nil, twirp.InvalidArgumentError("os", "is empty")
 	}
 
-	s.repos.FCMToken.AddToken(user.ID, r.Token, r.DeviceId, r.Os)
+	s.repos.FCMToken.AddToken(me.ID, r.Token, r.DeviceId, r.Os)
 	return &rpc.Empty{}, nil
 }
 
 func (s *userService) BlockUser(ctx context.Context, r *rpc.UserBlockUserRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
-	if user.ID == r.UserId || r.UserId == "" {
+	me := s.getMe(ctx)
+	if me.ID == r.UserId || r.UserId == "" {
 		return nil, twirp.InvalidArgumentError("user_id", "is invalid")
 	}
 
-	s.repos.User.BlockUser(user.ID, r.UserId)
+	s.repos.User.BlockUser(me.ID, r.UserId)
 
 	return &rpc.Empty{}, nil
 }

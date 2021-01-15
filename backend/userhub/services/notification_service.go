@@ -18,8 +18,8 @@ func NewNotification(base *BaseService) rpc.NotificationService {
 }
 
 func (s *notificationService) Count(ctx context.Context, _ *rpc.Empty) (*rpc.NotificationCountResponse, error) {
-	user := s.getUser(ctx)
-	total, unread, err := s.repos.Notification.Counts(user.ID)
+	me := s.getMe(ctx)
+	total, unread, err := s.repos.Notification.Counts(me.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -30,8 +30,8 @@ func (s *notificationService) Count(ctx context.Context, _ *rpc.Empty) (*rpc.Not
 }
 
 func (s *notificationService) Notifications(ctx context.Context, _ *rpc.Empty) (*rpc.NotificationNotificationsResponse, error) {
-	user := s.getUser(ctx)
-	notifications, err := s.repos.Notification.Notifications(user.ID)
+	me := s.getMe(ctx)
+	notifications, err := s.repos.Notification.Notifications(me.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -53,8 +53,8 @@ func (s *notificationService) Notifications(ctx context.Context, _ *rpc.Empty) (
 }
 
 func (s *notificationService) Clean(ctx context.Context, r *rpc.NotificationCleanRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
-	err := s.repos.Notification.Clean(user.ID, r.LastKnownId)
+	me := s.getMe(ctx)
+	err := s.repos.Notification.Clean(me.ID, r.LastKnownId)
 	if err != nil {
 		return nil, err
 	}
@@ -62,8 +62,8 @@ func (s *notificationService) Clean(ctx context.Context, r *rpc.NotificationClea
 }
 
 func (s *notificationService) MarkRead(ctx context.Context, r *rpc.NotificationMarkReadRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
-	err := s.repos.Notification.MarkRead(user.ID, r.LastKnownId)
+	me := s.getMe(ctx)
+	err := s.repos.Notification.MarkRead(me.ID, r.LastKnownId)
 	if err != nil {
 		return nil, err
 	}

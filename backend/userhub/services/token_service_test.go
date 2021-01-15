@@ -11,6 +11,7 @@ import (
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/testutils"
 	"github.com/mreider/koto/backend/token"
+	"github.com/mreider/koto/backend/userhub/caches"
 	"github.com/mreider/koto/backend/userhub/config"
 	"github.com/mreider/koto/backend/userhub/migrate"
 	"github.com/mreider/koto/backend/userhub/repo"
@@ -42,7 +43,8 @@ func (s *TokenServiceTestSuite) SetupSuite() {
 
 	s.te = testutils.NewTestEnvironment("token_service", migrate.Migrate)
 	s.repos = repo.NewRepos(s.te.DB)
-	base := services.NewBase(s.repos, s.te.Storage, nil, nil, nil, config.Config{}, nil)
+	userCache := caches.NewUsers(s.te.DB)
+	base := services.NewBase(s.repos, userCache, s.te.Storage, nil, nil, nil, config.Config{}, nil)
 	s.service = services.NewToken(base, tokenGenerator, time.Minute)
 }
 
@@ -59,6 +61,7 @@ func (s *TokenServiceTestSuite) TearDownSuite() {
 
 func (s *TokenServiceTestSuite) Test_Auth_SimpleUser() {
 	now := time.Now()
+	s.addUser("user-1")
 	ctx := s.userContext("user-1")
 	resp, err := s.service.Auth(ctx, &rpc.Empty{})
 	s.Nil(err)
@@ -125,7 +128,6 @@ func (s *TokenServiceTestSuite) Test_PostMessage_WithoutGroup() {
 	s.Equal("post-message", claims["scope"].(string))
 	s.Equal("hub-1", claims["hub"].(string))
 	s.Equal("user-1", claims["id"].(string))
-	s.Equal("user-1-name", claims["name"].(string))
 	s.Equal([]interface{}{"user-2"}, claims["friends"].([]interface{}))
 	s.True(claims["exp"].(float64) > float64(now.Unix()))
 	s.True(claims["exp"].(float64) < float64(now.Add(time.Second*63).Unix()))
@@ -152,7 +154,6 @@ func (s *TokenServiceTestSuite) Test_PostMessage_Group() {
 	s.Equal("post-message", claims["scope"].(string))
 	s.Equal("hub-1", claims["hub"].(string))
 	s.Equal("user-1", claims["id"].(string))
-	s.Equal("user-1-name", claims["name"].(string))
 	s.Equal("group-1", claims["group_id"].(string))
 	s.True(claims["exp"].(float64) > float64(now.Unix()))
 	s.True(claims["exp"].(float64) < float64(now.Add(time.Second*63).Unix()))
@@ -193,7 +194,6 @@ func (s *TokenServiceTestSuite) Test_GetMessages() {
 	s.Equal("get-messages", claims["scope"].(string))
 	s.Equal("hub-1", claims["hub"].(string))
 	s.Equal("user-1", claims["id"].(string))
-	s.Equal("user-1-name", claims["name"].(string))
 	s.Equal([]interface{}{"group-1"}, claims["groups"].([]interface{}))
 	s.True(claims["exp"].(float64) > float64(now.Unix()))
 	s.True(claims["exp"].(float64) < float64(now.Add(time.Second*63).Unix()))
@@ -204,15 +204,13 @@ func (s *TokenServiceTestSuite) Test_GetMessages() {
 
 func (s *TokenServiceTestSuite) userContext(name string) context.Context {
 	ctx := context.WithValue(context.Background(), services.ContextUserKey, repo.User{
-		ID:       name,
-		Name:     name + "-name",
-		FullName: name + " " + name,
+		ID: name,
 	})
 	return context.WithValue(ctx, services.ContextIsAdminKey, false)
 }
 
 func (s *TokenServiceTestSuite) addUser(name string) {
-	s.repos.User.AddUser(name, name+"-name", name+"@mail.org", name+" "+name, "")
+	s.repos.User.AddUser(name, name+"-name", name+"@mail.org", name+" "+name, "", false)
 }
 
 func (s *TokenServiceTestSuite) addPublicGroup(id, adminName string) {

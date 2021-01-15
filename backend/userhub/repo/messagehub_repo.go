@@ -19,9 +19,6 @@ type MessageHub struct {
 	ID                string       `db:"id"`
 	Address           string       `db:"address"`
 	AdminID           string       `db:"admin_id"`
-	AdminName         string       `db:"admin_name"`
-	AdminFullName     string       `db:"admin_full_name"`
-	AdminAvatarID     string       `db:"admin_avatar_id"`
 	CreatedAt         time.Time    `db:"created_at"`
 	ApprovedAt        sql.NullTime `db:"approved_at"`
 	DisabledAt        sql.NullTime `db:"disabled_at"`
@@ -97,10 +94,8 @@ func (r *messageHubRepo) AllHubs() []MessageHub {
 	var hubs []MessageHub
 	err := r.db.Select(&hubs, `
 		select h.id, h.address, h.admin_id, h.created_at, h.approved_at, h.disabled_at, h.details,
-			   u.name admin_name, u.full_name admin_full_name, u.avatar_thumbnail_id admin_avatar_id,
 			   h.post_limit, h.allow_friend_groups
-		from message_hubs h
-			inner join users u on u.id = h.admin_id`)
+		from message_hubs h;`)
 	if err != nil {
 		panic(err)
 	}
@@ -111,10 +106,8 @@ func (r *messageHubRepo) Hubs(user User) []MessageHub {
 	var hubs []MessageHub
 	err := r.db.Select(&hubs, `
 		select h.id, h.address, h.admin_id, h.created_at, h.approved_at, h.disabled_at, h.details,
-			   u.name admin_name, u.full_name admin_full_name, u.avatar_thumbnail_id admin_avatar_id,
 		       h.post_limit, h.allow_friend_groups
 		from message_hubs h
-			inner join users u on u.id = h.admin_id
 		where h.admin_id = $1`, user.ID)
 	if err != nil {
 		panic(err)

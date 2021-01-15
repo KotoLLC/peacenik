@@ -66,8 +66,6 @@ func (s *MessageServiceTestSuite) Test_Post() {
 	m := resp.Message
 	s.NotEmpty(m.Id)
 	s.Equal("user-1", m.UserId)
-	s.Equal("user-1-name", m.UserName)
-	s.Equal("user-1 user-1", m.UserFullName)
 	s.Equal("first message", m.Text)
 	s.Empty(m.Attachment)
 	s.Empty(m.AttachmentType)
@@ -87,8 +85,6 @@ func (s *MessageServiceTestSuite) Test_Post() {
 	m = resp.Message
 	s.NotEmpty(m.Id)
 	s.Equal("user-1", m.UserId)
-	s.Equal("user-1-name", m.UserName)
-	s.Equal("user-1 user-1", m.UserFullName)
 	s.Equal("second message", m.Text)
 	s.Empty(m.Attachment)
 	s.Empty(m.AttachmentType)
@@ -126,7 +122,7 @@ func (s *MessageServiceTestSuite) userContext(name string) context.Context {
 }
 
 func (s *MessageServiceTestSuite) postToken(user string) string {
-	t, err := s.tokenGenerator.Generate(user, user+"-name", "post-message", time.Now().Add(time.Second), map[string]interface{}{
+	t, err := s.tokenGenerator.Generate(user, "post-message", time.Now().Add(time.Second), map[string]interface{}{
 		"hub": "hub-1",
 	})
 	s.Require().Nil(err)
@@ -134,7 +130,7 @@ func (s *MessageServiceTestSuite) postToken(user string) string {
 }
 
 func (s *MessageServiceTestSuite) postGroupToken(user, groupID string) string {
-	t, err := s.tokenGenerator.Generate(user, user+"-name", "post-message", time.Now().Add(time.Second), map[string]interface{}{
+	t, err := s.tokenGenerator.Generate(user, "post-message", time.Now().Add(time.Second), map[string]interface{}{
 		"hub":      "hub-1",
 		"group_id": groupID,
 	})
@@ -150,7 +146,7 @@ func (s *MessageServiceTestSuite) getToken(user string, groups []string) string 
 	if len(groups) > 0 {
 		claims["groups"] = groups
 	}
-	t, err := s.tokenGenerator.Generate(user, user+"-name", "get-messages", time.Now().Add(time.Second), claims)
+	t, err := s.tokenGenerator.Generate(user, "get-messages", time.Now().Add(time.Second), claims)
 	s.Require().Nil(err)
 	return t
 }

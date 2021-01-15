@@ -45,7 +45,7 @@ func (s *messageHubService) Register(ctx context.Context, r *rpc.MessageHubRegis
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 
 	r.Address = common.CleanPublicURL(r.Address)
 	hubExists := s.repos.MessageHubs.HubExists(r.Address)
@@ -58,13 +58,14 @@ func (s *messageHubService) Register(ctx context.Context, r *rpc.MessageHubRegis
 		return nil, twirp.NewError(twirp.InvalidArgument, err.Error())
 	}
 
-	hubID := s.repos.MessageHubs.AddHub(r.Address, r.Details, user.ID, int(r.PostLimit), r.AllowFriendGroups)
+	hubID := s.repos.MessageHubs.AddHub(r.Address, r.Details, me.ID, int(r.PostLimit), r.AllowFriendGroups)
 
+	meInfo := s.userCache.UserFullAccess(me.ID)
 	for _, admin := range s.admins {
 		adminUser := s.repos.User.FindUserByName(admin)
 		if adminUser != nil {
-			s.notificationSender.SendNotification([]string{adminUser.ID}, user.DisplayName()+" added a new message hub", "message-hub/add", map[string]interface{}{
-				"user_id": user.ID,
+			s.notificationSender.SendNotification([]string{adminUser.ID}, meInfo.DisplayName+" added a new message hub", "message-hub/add", map[string]interface{}{
+				"user_id": me.ID,
 				"hub_id":  hubID,
 			})
 		}
@@ -73,24 +74,26 @@ func (s *messageHubService) Register(ctx context.Context, r *rpc.MessageHubRegis
 }
 
 func (s *messageHubService) Hubs(ctx context.Context, _ *rpc.Empty) (*rpc.MessageHubHubsResponse, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 
 	var hubs []repo.MessageHub
 	if s.isAdmin(ctx) {
 		hubs = s.repos.MessageHubs.AllHubs()
 	} else {
-		hubs = s.repos.MessageHubs.Hubs(user)
+		hubs = s.repos.MessageHubs.Hubs(me)
 	}
 
 	rpcHubs := make([]*rpc.MessageHubHubsResponseHub, len(hubs))
 	for i, hub := range hubs {
+		adminInfo := s.userCache.UserFullAccess(hub.AdminID)
 		rpcHubs[i] = &rpc.MessageHubHubsResponseHub{
 			Id:      hub.ID,
 			Address: hub.Address,
 			User: &rpc.User{
-				Id:       hub.AdminID,
-				Name:     hub.AdminName,
-				FullName: hub.AdminFullName,
+				Id:           hub.AdminID,
+				Name:         adminInfo.Name,
+				FullName:     adminInfo.FullName,
+				HideIdentity: adminInfo.HideIdentity,
 			},
 			CreatedAt:         common.TimeToRPCString(hub.CreatedAt),
 			ApprovedAt:        common.NullTimeToRPCString(hub.ApprovedAt),
@@ -128,7 +131,7 @@ func (s *messageHubService) Approve(ctx context.Context, r *rpc.MessageHubApprov
 	if !s.isAdmin(ctx) {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 
 	resp, err := s.Verify(ctx, &rpc.MessageHubVerifyRequest{HubId: r.HubId})
 	if err != nil {
@@ -144,8 +147,8 @@ func (s *messageHubService) Approve(ctx context.Context, r *rpc.MessageHubApprov
 
 	hub := s.repos.MessageHubs.HubByID(r.HubId)
 
-	s.notificationSender.SendNotification([]string{hub.AdminID}, user.DisplayName()+" approved your message hub", "message-hub/approve", map[string]interface{}{
-		"user_id": user.ID,
+	s.notificationSender.SendNotification([]string{hub.AdminID}, "Your message hub is approved", "message-hub/approve", map[string]interface{}{
+		"user_id": me.ID,
 		"hub_id":  r.HubId,
 	})
 	return &rpc.MessageHubApproveResponse{}, nil
@@ -172,21 +175,21 @@ func (s *messageHubService) Remove(ctx context.Context, r *rpc.MessageHubRemoveR
 }
 
 func (s *messageHubService) removeHubByID(ctx context.Context, hubID string) error {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 	hub := s.repos.MessageHubs.HubByID(hubID)
 	if hub == nil {
 		return twirp.NotFoundError("hub not found")
 	}
 
-	if !s.isAdmin(ctx) && hub.AdminID != user.ID {
+	if !s.isAdmin(ctx) && hub.AdminID != me.ID {
 		return twirp.NotFoundError("hub not found")
 	}
 
 	s.repos.MessageHubs.RemoveHub(hubID)
 
-	if hub.AdminID != user.ID {
-		s.notificationSender.SendNotification([]string{hub.AdminID}, user.DisplayName()+" removed your message hub", "message-hub/remove", map[string]interface{}{
-			"user_id": user.ID,
+	if hub.AdminID != me.ID {
+		s.notificationSender.SendNotification([]string{hub.AdminID}, "Your message hub is removed", "message-hub/remove", map[string]interface{}{
+			"user_id": me.ID,
 			"hub_id":  hubID,
 		})
 	}
@@ -195,7 +198,7 @@ func (s *messageHubService) removeHubByID(ctx context.Context, hubID string) err
 }
 
 func (s *messageHubService) removeHubBySubdomain(ctx context.Context, subdomain string) (messages []string, err error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 	if !s.isAdmin(ctx) {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
@@ -212,7 +215,7 @@ func (s *messageHubService) removeHubBySubdomain(ctx context.Context, subdomain 
 
 	s.repos.MessageHubs.RemoveHub(hub.ID)
 
-	err = s.destroyMessageHubData(ctx, user, hub.Address)
+	err = s.destroyMessageHubData(ctx, me, hub.Address)
 	if err != nil {
 		messages = append(messages, "can't send request to destroy hub data: "+err.Error())
 	}
@@ -222,9 +225,9 @@ func (s *messageHubService) removeHubBySubdomain(ctx context.Context, subdomain 
 		messages = append(messages, "can't delete hub: "+err.Error())
 	}
 
-	if hub.AdminID != user.ID {
-		s.notificationSender.SendNotification([]string{hub.AdminID}, user.DisplayName()+" removed your message hub", "message-hub/remove", map[string]interface{}{
-			"user_id": user.ID,
+	if hub.AdminID != me.ID {
+		s.notificationSender.SendNotification([]string{hub.AdminID}, "Your message hub is removed", "message-hub/remove", map[string]interface{}{
+			"user_id": me.ID,
 			"hub_id":  hub.ID,
 		})
 	}
@@ -237,39 +240,39 @@ func (s *messageHubService) SetPostLimit(ctx context.Context, r *rpc.MessageHubS
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 	hub := s.repos.MessageHubs.HubByID(r.HubId)
 	if hub == nil {
 		return nil, twirp.NotFoundError("hub not found")
 	}
 
-	if hub.AdminID != user.ID {
+	if hub.AdminID != me.ID {
 		return nil, twirp.NotFoundError("hub not found")
 	}
 
-	s.repos.MessageHubs.SetHubPostLimit(user.ID, r.HubId, int(r.PostLimit))
+	s.repos.MessageHubs.SetHubPostLimit(me.ID, r.HubId, int(r.PostLimit))
 
 	return &rpc.Empty{}, nil
 }
 
 func (s *messageHubService) SetAllowFriendGroups(ctx context.Context, r *rpc.MessageHubSetAllowFriendGroupsRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 	hub := s.repos.MessageHubs.HubByID(r.HubId)
 	if hub == nil {
 		return nil, twirp.NotFoundError("hub not found")
 	}
 
-	if hub.AdminID != user.ID {
+	if hub.AdminID != me.ID {
 		return nil, twirp.NotFoundError("hub not found")
 	}
 
-	s.repos.MessageHubs.SetHubAllowFriendGroups(user.ID, r.HubId, r.AllowFriendGroups)
+	s.repos.MessageHubs.SetHubAllowFriendGroups(me.ID, r.HubId, r.AllowFriendGroups)
 
 	return &rpc.Empty{}, nil
 }
 
 func (s *messageHubService) ReportMessage(ctx context.Context, r *rpc.MessageHubReportMessageRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 
 	hub := s.repos.MessageHubs.HubByIDOrAddress(r.HubId)
 	if hub == nil {
@@ -284,7 +287,7 @@ func (s *messageHubService) ReportMessage(ctx context.Context, r *rpc.MessageHub
 	claims := map[string]interface{}{
 		"owned_hubs": []string{hub.Address},
 	}
-	authToken, err := s.tokenGenerator.Generate(hubAdmin.ID, hubAdmin.Name, "auth", time.Now().Add(time.Second*30), claims)
+	authToken, err := s.tokenGenerator.Generate(hubAdmin.ID, "auth", time.Now().Add(time.Second*30), claims)
 	if err != nil {
 		return nil, err
 	}
@@ -326,7 +329,7 @@ func (s *messageHubService) ReportMessage(ctx context.Context, r *rpc.MessageHub
 		return nil, twirp.NotFoundError("reported user not found")
 	}
 
-	if user.ID != reportedBy.ID {
+	if me.ID != reportedBy.ID {
 		return nil, twirp.InvalidArgumentError("user", "not valid")
 	}
 
@@ -335,10 +338,13 @@ func (s *messageHubService) ReportMessage(ctx context.Context, r *rpc.MessageHub
 		return nil, twirp.NotFoundError("message author not found")
 	}
 
-	err = s.mailSender.SendHTMLEmail([]string{hubAdmin.Email}, "Objectional Content Reported",
+	hubAdminInfo := s.userCache.UserFullAccess(hubAdmin.ID)
+	reportedByInfo := s.userCache.UserFullAccess(reportedBy.ID)
+	authorInfo := s.userCache.UserFullAccess(author.ID)
+	err = s.mailSender.SendHTMLEmail([]string{hubAdminInfo.Email}, "Objectional Content Reported",
 		fmt.Sprintf(`<p>User %s just reported objectionable content for user %s: %s<p>
 <p>Please visit <a href="%s" target="_blank">the audit dashboard</a> to review the content.</p>`,
-			reportedBy.DisplayName(), author.DisplayName(), html.EscapeString(body.Report), s.cfg.FrontendAddress+"/dashboard"), nil)
+			reportedByInfo.DisplayName, authorInfo.DisplayName, html.EscapeString(body.Report), s.cfg.FrontendAddress+"/dashboard"), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -346,14 +352,14 @@ func (s *messageHubService) ReportMessage(ctx context.Context, r *rpc.MessageHub
 }
 
 func (s *messageHubService) BlockUser(ctx context.Context, r *rpc.MessageHubBlockUserRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 
 	hub := s.repos.MessageHubs.HubByIDOrAddress(r.HubId)
 	if hub == nil {
 		return nil, twirp.NotFoundError("hub not found")
 	}
 
-	if hub.AdminID != user.ID {
+	if hub.AdminID != me.ID {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 
@@ -618,7 +624,7 @@ func (s *messageHubService) destroyMessageHubData(ctx context.Context, user repo
 	claims := map[string]interface{}{
 		"owned_hubs": []string{messageHubAddress},
 	}
-	authToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "auth", time.Now().Add(time.Second*30), claims)
+	authToken, err := s.tokenGenerator.Generate(user.ID, "auth", time.Now().Add(time.Second*30), claims)
 	if err != nil {
 		return err
 	}

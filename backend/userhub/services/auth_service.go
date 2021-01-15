@@ -93,7 +93,7 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 		return nil, merry.Wrap(err)
 	}
 
-	s.repos.User.AddUser(userID, r.Name, r.Email, r.FullName, passwordHash)
+	s.repos.User.AddUser(userID, r.Name, r.Email, r.FullName, passwordHash, r.HideIdentity)
 
 	user = s.repos.User.FindUserByID(userID)
 	if user == nil {
@@ -101,17 +101,17 @@ func (s *authService) Register(_ context.Context, r *rpc.AuthRegisterRequest) (*
 	}
 
 	switch {
-	case s.cfg.IsAdmin(user.Name) || s.cfg.IsAdmin(user.Email):
+	case s.cfg.IsAdmin(r.Name) || s.cfg.IsAdmin(r.Email):
 		s.repos.User.ConfirmUser(user.ID)
 	case r.InviteToken == "":
 		err := s.sendConfirmLink(*user)
 		if err != nil {
-			log.Printf("can't send email to %s: %s\n", user.Email, err)
+			log.Printf("can't send email to %s: %s\n", r.Email, err)
 		}
 	default:
 		err := s.confirmInviteToken(*user, r.InviteToken)
 		if err != nil {
-			log.Printf("can't confirm invite token for %s: %s\n", user.Email, err)
+			log.Printf("can't confirm invite token for %s: %s\n", r.Email, err)
 		}
 	}
 	return &rpc.Empty{}, nil
@@ -175,11 +175,11 @@ func (s *authService) Confirm(ctx context.Context, r *rpc.AuthConfirmRequest) (*
 }
 
 func (s *authService) SendConfirmLink(ctx context.Context, _ *rpc.Empty) (*rpc.Empty, error) {
-	if !s.hasUser(ctx) {
+	if !s.hasMe(ctx) {
 		return nil, twirp.NewError(twirp.Unauthenticated, "")
 	}
-	user := s.getUser(ctx)
-	err := s.sendConfirmLink(user)
+	me := s.getMe(ctx)
+	err := s.sendConfirmLink(me)
 	if err != nil {
 		return nil, err
 	}
@@ -188,11 +188,12 @@ func (s *authService) SendConfirmLink(ctx context.Context, _ *rpc.Empty) (*rpc.E
 
 func (s *authService) SendResetPasswordLink(_ context.Context, r *rpc.AuthSendResetPasswordLinkRequest) (*rpc.Empty, error) {
 	user := s.repos.User.FindUserByName(r.Name)
-	if user == nil || user.Email != r.Email {
+	userInfo := s.userCache.UserFullAccess(user.ID)
+	if user == nil || userInfo.Email != r.Email {
 		return nil, twirp.NotFoundError("user not found")
 	}
 
-	resetToken, err := s.tokenGenerator.Generate(r.Name, r.Name, "user-password-reset",
+	resetToken, err := s.tokenGenerator.Generate(r.Name, "user-password-reset",
 		time.Now().Add(time.Minute*10),
 		map[string]interface{}{
 			"email": r.Email,
@@ -247,17 +248,18 @@ func (s *authService) sendConfirmLink(user repo.User) error {
 		return nil
 	}
 
-	confirmToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "user-confirm",
+	userInfo := s.userCache.UserFullAccess(user.ID)
+	confirmToken, err := s.tokenGenerator.Generate(user.ID, "user-confirm",
 		time.Now().Add(time.Hour*24*30*12),
 		map[string]interface{}{
-			"email": user.Email,
+			"email": userInfo.Email,
 		})
 	if err != nil {
 		return merry.Wrap(err)
 	}
 
 	link := fmt.Sprintf("%s"+confirmFrontendPath, s.cfg.FrontendAddress, confirmToken)
-	return s.mailSender.SendHTMLEmail([]string{user.Email}, confirmEmailSubject, fmt.Sprintf(confirmEmailBody, link), nil)
+	return s.mailSender.SendHTMLEmail([]string{userInfo.Email}, confirmEmailSubject, fmt.Sprintf(confirmEmailBody, link), nil)
 }
 
 func (s *authService) confirmUser(ctx context.Context, confirmToken string) error {
@@ -286,13 +288,15 @@ func (s *authService) confirmUser(ctx context.Context, confirmToken string) erro
 		return nil
 	}
 
+	userInfo := s.userCache.UserFullAccess(user.ID)
+	adminInfo := s.userCache.UserFullAccess(admin.ID)
 	switch s.adminFriendship {
 	case "invite":
 		s.repos.Invite.AddInvite(user.ID, admin.ID)
-		s.notificationSender.SendNotification([]string{admin.ID}, user.DisplayName()+" invited you to be friends", "invite/add", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{admin.ID}, userInfo.DisplayName+" invited you to be friends", "invite/add", map[string]interface{}{
 			"user_id": user.ID,
 		})
-		err = s.sendInviteLinkToRegisteredUser(ctx, *user, admin.Email)
+		err = s.sendInviteLinkToRegisteredUser(ctx, *user, adminInfo.Email)
 		if err != nil {
 			log.Println("can't invite by email:", err)
 		}
@@ -301,7 +305,7 @@ func (s *authService) confirmUser(ctx context.Context, confirmToken string) erro
 		if !s.repos.Invite.AcceptInvite(userID, admin.ID, true) {
 			return twirp.NotFoundError("invite not found")
 		}
-		s.notificationSender.SendNotification([]string{admin.ID}, user.DisplayName()+" is registered and added to your friends!", "invite/accept", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{admin.ID}, userInfo.DisplayName+" is registered and added to your friends!", "invite/accept", map[string]interface{}{
 			"user_id": user.ID,
 		})
 	}
@@ -313,9 +317,10 @@ func (s *authService) confirmInviteToken(user repo.User, confirmToken string) er
 	if err != nil {
 		return merry.Wrap(err)
 	}
+	userInfo := s.userCache.UserFullAccess(user.ID)
 	var userEmail string
 	var ok bool
-	if userEmail, ok = claims["email"].(string); !ok || user.Email != userEmail {
+	if userEmail, ok = claims["email"].(string); !ok || userInfo.Email != userEmail {
 		return token.ErrInvalidToken.Here()
 	}
 
@@ -330,8 +335,9 @@ func (s *authService) sendInviteLinkToRegisteredUser(ctx context.Context, invite
 
 	attachments := s.GetUserAttachments(ctx, inviter)
 
+	inviterInfo := s.userCache.UserFullAccess(inviter.ID)
 	link := fmt.Sprintf("%s"+invitationsFrontendPath, s.cfg.FrontendAddress)
-	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviter.DisplayName()+" invited you to be friends on KOTO",
+	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviterInfo.DisplayName+" invited you to be friends on KOTO",
 		fmt.Sprintf(inviteRegisteredUserEmailBody, attachments.InlineHTML("avatar"), link),
 		attachments)
 }
@@ -348,7 +354,8 @@ func (s *authService) RecallNames(_ context.Context, r *rpc.AuthRecallNamesReque
 
 	userNames := make([]string, len(users))
 	for i, user := range users {
-		userNames[i] = user.DisplayName()
+		userInfo := s.userCache.UserFullAccess(user.ID)
+		userNames[i] = userInfo.DisplayName
 	}
 
 	var message string

@@ -93,7 +93,7 @@ func (n *notificationSender) sendNotifications(notifications []notification) {
 	claims := map[string]interface{}{
 		"notifications": notifications,
 	}
-	notificationsToken, err := n.tokenGenerator.Generate(n.externalAddress, "", "notifications",
+	notificationsToken, err := n.tokenGenerator.Generate(n.externalAddress, "notifications",
 		time.Now().Add(time.Minute*1), claims)
 	if err != nil {
 		log.Println("can't generate notifications token:", err)

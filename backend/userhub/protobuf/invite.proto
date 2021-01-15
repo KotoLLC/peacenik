@@ -29,7 +29,6 @@ message InviteFriendInvite {
     string friend_id = 1;
     string friend_name = 2;
     string friend_full_name = 3;
-    string friend_avatar = 4;
     string created_at = 5;
     string accepted_at = 6;
     string rejected_at = 7;

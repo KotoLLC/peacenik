@@ -15,6 +15,7 @@ import (
 	_ "github.com/mreider/koto/backend/statik"
 	"github.com/mreider/koto/backend/token"
 	"github.com/mreider/koto/backend/userhub"
+	"github.com/mreider/koto/backend/userhub/caches"
 	"github.com/mreider/koto/backend/userhub/config"
 	"github.com/mreider/koto/backend/userhub/migrate"
 	"github.com/mreider/koto/backend/userhub/repo"
@@ -45,6 +46,7 @@ func main() {
 	}
 
 	repos := repo.NewRepos(db)
+	userCache := caches.NewUsers(db)
 
 	privateKeyContent, err := common.LoadRSAKey(repos.Setting, cfg.PrivateKeyPath)
 	if err != nil {
@@ -71,7 +73,7 @@ func main() {
 
 	confirmAdminUsers(repos.User, cfg)
 
-	server := userhub.NewServer(cfg, string(publicKeyPEM), repos, tokenGenerator, tokenParser, s3Storage, staticFS)
+	server := userhub.NewServer(cfg, string(publicKeyPEM), repos, userCache, tokenGenerator, tokenParser, s3Storage, staticFS)
 	err = server.Run()
 	if err != nil {
 		log.Fatalln(err)

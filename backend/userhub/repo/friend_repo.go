@@ -24,12 +24,9 @@ func NewFriends(db *sqlx.DB) FriendRepo {
 func (r *friendRepo) Friends(user User) []User {
 	var friends []User
 	err := r.db.Select(&friends, `
-		select id, name, full_name, avatar_thumbnail_id
-		from users
-		where id in (
-			select friend_id
-			from friends
-			where user_id = $1)`,
+		select friend_id as id
+		from friends
+		where user_id = $1;`,
 		user.ID)
 	if err != nil {
 		panic(err)
@@ -70,16 +67,10 @@ func (r *friendRepo) FriendsWithSubFriends(user User) map[User][]User {
 
 	for _, item := range items {
 		user := User{
-			ID:                item.UserID,
-			Name:              item.UserName,
-			FullName:          item.UserFullName,
-			AvatarThumbnailID: item.UserAvatarID,
+			ID: item.UserID,
 		}
 		result[user] = append(result[user], User{
-			ID:                item.FriendID,
-			Name:              item.FriendName,
-			FullName:          item.FriendFullName,
-			AvatarThumbnailID: item.FriendAvatarID,
+			ID: item.FriendID,
 		})
 	}
 
@@ -120,16 +111,10 @@ func (r *friendRepo) FriendsOfFriends(user User) map[User][]User {
 
 	for _, item := range items {
 		user := User{
-			ID:                item.UserID,
-			Name:              item.UserName,
-			FullName:          item.UserFullName,
-			AvatarThumbnailID: item.UserAvatarID,
+			ID: item.UserID,
 		}
 		result[user] = append(result[user], User{
-			ID:                item.FriendID,
-			Name:              item.FriendName,
-			FullName:          item.FriendFullName,
-			AvatarThumbnailID: item.FriendAvatarID,
+			ID: item.FriendID,
 		})
 	}
 

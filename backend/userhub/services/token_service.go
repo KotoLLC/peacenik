@@ -28,26 +28,39 @@ func NewToken(base *BaseService, tokenGenerator token.Generator, tokenDuration t
 }
 
 func (s *tokenService) Auth(ctx context.Context, _ *rpc.Empty) (*rpc.TokenAuthResponse, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 
-	ownedHubs := s.repos.MessageHubs.Hubs(user)
+	ownedHubs := s.repos.MessageHubs.Hubs(me)
 	ownedHubAddresses := make([]string, len(ownedHubs))
 	for i, hub := range ownedHubs {
 		ownedHubAddresses[i] = hub.Address
 	}
 
-	blockedUserIDs := s.repos.User.BlockedUserIDs(user.ID)
+	blockedUserIDs := s.repos.User.BlockedUserIDs(me.ID)
 	if blockedUserIDs == nil {
 		blockedUserIDs = []string{}
 	}
 
+	meInfo := s.userCache.UserFullAccess(me.ID)
 	claims := map[string]interface{}{
 		"owned_hubs":    ownedHubAddresses,
 		"blocked_users": blockedUserIDs,
-		"full_name":     user.FullName,
+		"name":          meInfo.Name,
+		"full_name":     meInfo.FullName,
+		"hide_identity": meInfo.HideIdentity,
 	}
 
-	authToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "auth", time.Now().Add(s.tokenDuration), claims)
+	if meInfo.HideIdentity {
+		friends := s.repos.Friend.Friends(me)
+		friendIDs := make([]string, len(friends))
+		for i, friend := range friends {
+			friendIDs[i] = friend.ID
+		}
+		sort.Strings(friendIDs)
+		claims["friends"] = friendIDs
+	}
+
+	authToken, err := s.tokenGenerator.Generate(me.ID, "auth", time.Now().Add(s.tokenDuration), claims)
 	if err != nil {
 		return nil, err
 	}
@@ -65,9 +78,9 @@ func (s *tokenService) PostMessage(ctx context.Context, r *rpc.TokenPostMessageR
 }
 
 func (s *tokenService) postMessage(ctx context.Context) (*rpc.TokenPostMessageResponse, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 
-	hubs := s.repos.MessageHubs.ConnectedHubs(user)
+	hubs := s.repos.MessageHubs.ConnectedHubs(me)
 	if len(hubs) == 0 {
 		return &rpc.TokenPostMessageResponse{
 			Tokens: nil,
@@ -100,16 +113,14 @@ func (s *tokenService) postMessage(ctx context.Context) (*rpc.TokenPostMessageRe
 	})
 
 	hubs = hubs[:1]
-	s.repos.MessageHubs.AssignUserToHub(user.ID, hubs[0].Hub.ID, hubs[0].MinDistance)
+	s.repos.MessageHubs.AssignUserToHub(me.ID, hubs[0].Hub.ID, hubs[0].MinDistance)
 
-	friends := s.repos.Friend.Friends(user)
+	friends := s.repos.Friend.Friends(me)
 	friendIDs := make([]string, len(friends))
 	for i, friend := range friends {
 		friendIDs[i] = friend.ID
 	}
-	sort.Slice(friendIDs, func(i, j int) bool {
-		return friendIDs[i] < friendIDs[j]
-	})
+	sort.Strings(friendIDs)
 
 	tokens := make(map[string]string)
 	exp := time.Now().Add(s.tokenDuration)
@@ -119,7 +130,7 @@ func (s *tokenService) postMessage(ctx context.Context) (*rpc.TokenPostMessageRe
 			"friends":      friendIDs,
 			"is_guest_hub": hub.MinDistance == repo.GuestHubDistance,
 		}
-		hubToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "post-message", exp, claims)
+		hubToken, err := s.tokenGenerator.Generate(me.ID, "post-message", exp, claims)
 		if err != nil {
 			return nil, merry.Wrap(err)
 		}
@@ -131,12 +142,12 @@ func (s *tokenService) postMessage(ctx context.Context) (*rpc.TokenPostMessageRe
 }
 
 func (s *tokenService) postMessageForGroup(ctx context.Context, groupID string) (*rpc.TokenPostMessageResponse, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 	group, _ := s.getGroup(ctx, groupID)
 	if group == nil {
 		return nil, twirp.NotFoundError("group not found")
 	}
-	if !s.repos.Group.IsGroupMember(groupID, user.ID) {
+	if !s.repos.Group.IsGroupMember(groupID, me.ID) {
 		return nil, twirp.NotFoundError("group not found")
 	}
 
@@ -148,7 +159,7 @@ func (s *tokenService) postMessageForGroup(ctx context.Context, groupID string) 
 			"hub":      adminHub,
 			"group_id": groupID,
 		}
-		hubToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "post-message", exp, claims)
+		hubToken, err := s.tokenGenerator.Generate(me.ID, "post-message", exp, claims)
 		if err != nil {
 			return nil, merry.Wrap(err)
 		}
@@ -160,20 +171,20 @@ func (s *tokenService) postMessageForGroup(ctx context.Context, groupID string) 
 }
 
 func (s *tokenService) GetMessages(ctx context.Context, _ *rpc.Empty) (*rpc.TokenGetMessagesResponse, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 	tokens := make(map[string]string)
 	exp := time.Now().Add(s.tokenDuration)
 
-	friends := s.repos.Friend.Friends(user)
+	friends := s.repos.Friend.Friends(me)
 	userIDs := make([]string, len(friends)+1)
-	userIDs[0] = user.ID
+	userIDs[0] = me.ID
 	for i, u := range friends {
 		userIDs[i+1] = u.ID
 	}
 	userHubs := s.repos.MessageHubs.UserHubs(userIDs)
 
 	groupHubs := make(map[string][]string)
-	userGroups := s.repos.Group.UserGroups(user.ID)
+	userGroups := s.repos.Group.UserGroups(me.ID)
 	for _, group := range userGroups {
 		adminHubs := s.repos.MessageHubs.UserHubs([]string{group.AdminID})
 		for adminHub := range adminHubs {
@@ -206,7 +217,7 @@ Loop:
 			claims["groups"] = hubGroupIDs
 		}
 
-		hubToken, err := s.tokenGenerator.Generate(user.ID, user.Name, "get-messages", exp, claims)
+		hubToken, err := s.tokenGenerator.Generate(me.ID, "get-messages", exp, claims)
 		if err != nil {
 			return nil, merry.Wrap(err)
 		}

@@ -12,24 +12,11 @@ import (
 )
 
 type User struct {
-	ID                string       `json:"id" db:"id"`
-	Name              string       `json:"name" db:"name"`
-	Email             string       `json:"email,omitempty" db:"email"`
-	FullName          string       `json:"full_name" db:"full_name"`
-	PasswordHash      string       `json:"-" db:"password_hash"`
-	AvatarOriginalID  string       `json:"avatar_original_id,omitempty" db:"avatar_original_id"`
-	AvatarThumbnailID string       `json:"avatar_thumbnail_id,omitempty" db:"avatar_thumbnail_id"`
-	CreatedAt         time.Time    `json:"created_at,omitempty" db:"created_at"`
-	UpdatedAt         time.Time    `json:"updated_at,omitempty" db:"updated_at"`
-	ConfirmedAt       sql.NullTime `json:"confirmed_at,omitempty" db:"confirmed_at"`
-	BackgroundID      string       `json:"background_id" db:"background_id"`
-}
-
-func (u User) DisplayName() string {
-	if u.FullName == "" || u.FullName == u.Name {
-		return u.Name
-	}
-	return u.FullName + " (" + u.Name + ")"
+	ID           string       `json:"id" db:"id"`
+	PasswordHash string       `json:"-" db:"password_hash"`
+	CreatedAt    time.Time    `json:"created_at,omitempty" db:"created_at"`
+	UpdatedAt    time.Time    `json:"updated_at,omitempty" db:"updated_at"`
+	ConfirmedAt  sql.NullTime `json:"confirmed_at,omitempty" db:"confirmed_at"`
 }
 
 type UserRepo interface {
@@ -37,13 +24,14 @@ type UserRepo interface {
 	FindUserByID(id string) *User
 	FindUsersByEmail(email string) []User
 	FindUserByName(name string) *User
-	AddUser(id, name, email, fullName, passwordHash string)
+	AddUser(id, name, email, fullName, passwordHash string, hideIdentity bool)
 	UserCount() int
 	SetAvatar(userID, avatarOriginalID, avatarThumbnailID string)
 	SetEmail(userID, email string)
 	SetFullName(userID, fullName string)
 	SetPassword(userID, passwordHash string)
 	SetBackground(userID, backgroundID string)
+	SetHideIdentity(userID string, hideIdentity bool)
 	FindUsers(ids []string) []User
 	ConfirmUser(userID string) bool
 	BlockUser(userID, blockedUserID string)
@@ -64,7 +52,7 @@ func NewUsers(db *sqlx.DB) UserRepo {
 func (r *userRepo) FindUserByIDOrName(value string) *User {
 	var user User
 	err := r.db.Get(&user, `
-		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, background_id
+		select id, password_hash, created_at, updated_at, confirmed_at
 		from users
 		where id = $1 or lower(name) = $2`,
 		value, strings.ToLower(value))
@@ -80,7 +68,7 @@ func (r *userRepo) FindUserByIDOrName(value string) *User {
 func (r *userRepo) FindUserByID(id string) *User {
 	var user User
 	err := r.db.Get(&user, `
-		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at, background_id
+		select id, password_hash, created_at, updated_at, confirmed_at
 		from users
 		where id = $1`, id)
 	if err != nil {
@@ -95,7 +83,7 @@ func (r *userRepo) FindUserByID(id string) *User {
 func (r *userRepo) FindUsersByEmail(email string) []User {
 	var users []User
 	err := r.db.Select(&users, `
-		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at, background_id
+		select id, password_hash, created_at, updated_at, confirmed_at
 		from users
 		where email = $1`, email)
 	if err != nil {
@@ -107,7 +95,7 @@ func (r *userRepo) FindUsersByEmail(email string) []User {
 func (r *userRepo) FindUserByName(name string) *User {
 	var user User
 	err := r.db.Get(&user, `
-		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at, background_id
+		select id, password_hash, created_at, updated_at, confirmed_at
 		from users
 		where lower(name) = $1`,
 		strings.ToLower(name))
@@ -120,12 +108,12 @@ func (r *userRepo) FindUserByName(name string) *User {
 	return &user
 }
 
-func (r *userRepo) AddUser(id, name, email, fullName, passwordHash string) {
+func (r *userRepo) AddUser(id, name, email, fullName, passwordHash string, hideIdentity bool) {
 	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
 		_, err := tx.Exec(`
-			insert into users(id, name, email, full_name, password_hash, created_at, updated_at)
-			values($1, $2, $3, $4, $5, $6, $6)`,
-			id, name, email, fullName, passwordHash, common.CurrentTimestamp())
+			insert into users(id, name, email, full_name, password_hash, created_at, updated_at, hide_identity)
+			values($1, $2, $3, $4, $5, $6, $6, $7)`,
+			id, name, email, fullName, passwordHash, common.CurrentTimestamp(), hideIdentity)
 		if err != nil {
 			return merry.Wrap(err)
 		}
@@ -154,7 +142,10 @@ func (r *userRepo) UserCount() int {
 
 func (r *userRepo) SetAvatar(userID, avatarOriginalID, avatarThumbnailID string) {
 	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
-		var user User
+		var user struct {
+			AvatarOriginalID  string `db:"avatar_original_id"`
+			AvatarThumbnailID string `db:"avatar_thumbnail_id"`
+		}
 		err := tx.Get(&user, "select avatar_original_id, avatar_thumbnail_id from users where id = $1", userID)
 		if err != nil {
 			return merry.Wrap(err)
@@ -216,6 +207,17 @@ func (r *userRepo) SetBackground(userID, backgroundID string) {
 			backgroundID, now, userID)
 		return merry.Wrap(err)
 	})
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (r *userRepo) SetHideIdentity(userID string, hideIdentity bool) {
+	_, err := r.db.Exec(`
+		update users
+		set hide_identity = $1, updated_at = $2
+		where id = $3;`,
+		hideIdentity, common.CurrentTimestamp(), userID)
 	if err != nil {
 		panic(err)
 	}
