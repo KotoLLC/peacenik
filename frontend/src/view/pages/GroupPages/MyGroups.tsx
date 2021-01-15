@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { GroupsListItem } from './GroupsListItem'
+import GroupsListItem from './GroupsListItem'
 import { GroupsSidebar } from './GroupsSIdebar'
 import { PageLayout } from '@view/shared/PageLayout'
 import { connect } from 'react-redux'
@@ -48,7 +48,7 @@ const MyGroups: React.FC<Props> = (props) => {
       <EmptyGroupsTextWrapper>
         <EmptyGroupsText>
           No groups. You can either
-          <EmptyGroupsTextLink to="/groups/public">join a public group</EmptyGroupsTextLink> <br /> or <EmptyGroupsTextLink to="/groups/create">create</EmptyGroupsTextLink> a public or private group of your own
+          <EmptyGroupsTextLink to="/groups/public"> join a public group</EmptyGroupsTextLink> <br /> or <EmptyGroupsTextLink to="/groups/create">create</EmptyGroupsTextLink> a public or private group of your own
         </EmptyGroupsText>
       </EmptyGroupsTextWrapper>
     </EmptyGroups>

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { GroupsListItem } from './GroupsListItem'
+import GroupsListItem from './GroupsListItem'
 import { GroupsSidebar } from './GroupsSIdebar'
 import { PageLayout } from '@view/shared/PageLayout'
 import { connect } from 'react-redux'
@@ -26,9 +26,7 @@ const PublicGroups: React.FC<Props> = (props) => {
   const { onGetPublicGroupsRequest, publicGroups } = props
 
   useEffect(() => {
-    if (!publicGroups.length) {
-      onGetPublicGroupsRequest()
-    }
+    onGetPublicGroupsRequest()
   }, [])
 
   const renderGroups = () => (

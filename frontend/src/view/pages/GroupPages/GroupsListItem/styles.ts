@@ -45,6 +45,7 @@ export const AvatarStyled = styled(Avatar)`
 `
 
 export const GroupName = styled(Link)`
+  display: inline-block;
   color: #262626;
   font-family: 'SFUITextSemibold';
   margin: 5px 0;

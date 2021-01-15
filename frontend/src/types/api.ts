@@ -397,7 +397,7 @@ export declare namespace ApiTypes {
 
     export interface RecievedGroup {
       group: Group
-      status: string
+      status: 'member' | ''
     }
   }
 }
