@@ -376,5 +376,28 @@ export declare namespace ApiTypes {
       avatar_id?: string
       background_id?: string
     }
+
+    export interface GroupAdmin {
+      avatar_original: string
+      email: string
+      full_name: string
+      id: string
+      is_confirmed: boolean
+      name: string
+    }
+
+    export interface Group {
+      admin: GroupAdmin
+      avatar_original: string
+      description: string
+      id: string
+      is_public: boolean
+      name: string
+    }
+
+    export interface RecievedGroup {
+      group: Group
+      status: string
+    }
   }
 }

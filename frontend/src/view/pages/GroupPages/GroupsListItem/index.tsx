@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import AvatarIcon from '@assets/images/groups-avatar-icon.svg'
 import { ButtonContained, /*ButtonOutlined*/ } from '@view/shared/styles'
+import { ApiTypes } from 'src/types'
 import {
   GroupsListItemWrapper,
   ItemCover,
@@ -14,10 +15,15 @@ import {
   GroupDescription,
 } from './styles'
 
-export const GroupsListItem = React.memo(() => {
+interface Props extends ApiTypes.Groups.RecievedGroup {}
+
+export const GroupsListItem: React.FC<Props> = React.memo((props) => {
+  const { group } = props
+  const { avatar_original, description, id, is_public, name } = group
+
   return (
     <GroupsListItemWrapper>
-      <ItemCover style={{ backgroundImage: '' }} />
+      <ItemCover style={{ backgroundImage: avatar_original }} />
       <ItemContentWraper>
         <ItemHeader>
           <Link to="/groups/group">
@@ -29,12 +35,10 @@ export const GroupsListItem = React.memo(() => {
           {/* <ButtonOutlined>Edit group </ButtonOutlined> */}
           {/* <ButtonOutlined color="#A1AEC8">Remove</ButtonOutlined> */}
         </ItemHeader>
-        <GroupName to="/groups/group">Photo lovers</GroupName>
+        <GroupName to={`/groups/group?id=${id}`}>{name}</GroupName>
         <GroupCounter>123 participants</GroupCounter>
-        <GroupPublicity>Private</GroupPublicity>
-        <GroupDescription>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim dolorem, reiciendis vitae, saepe placeat molestias quo voluptates labore tempore deserunt consequatur quas rerum sint nisi? Porro sed quis atque reprehenderit!
-        </GroupDescription>
+        <GroupPublicity>{is_public ? 'Public' : 'Private'}</GroupPublicity>
+        <GroupDescription>{description}</GroupDescription>
       </ItemContentWraper>
     </GroupsListItemWrapper>
   )

@@ -7,4 +7,16 @@ export default {
       return response
     }).catch(error => ({ error }))
   }, 
+  
+  getMyGroups: async () => {
+    return await axiosInstance.post('/rpc.GroupService/PublicGroups').then(response => {
+      return response
+    }).catch(error => ({ error }))
+  }, 
+  
+  getPublicGroups: async () => {
+    return await axiosInstance.post('/rpc.GroupService/PublicGroups', {}).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  }, 
 }

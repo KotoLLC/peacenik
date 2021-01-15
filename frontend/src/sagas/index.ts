@@ -87,6 +87,8 @@ import {
 } from './dashboard'
 import {
     watchAddGroup,
+    watchGetMyGroups,
+    watchGetPublicGroups,
 } from './groups'
 
 export function* rootSaga() {
@@ -160,5 +162,7 @@ export function* rootSaga() {
         takeEvery(DashboardTypes.BLOCK_USER_REQUEST, watchBlockUser),
         
         takeEvery(GroupsTypes.ADD_GROUP_REQUEST, watchAddGroup),
+        takeEvery(GroupsTypes.GET_MY_GROUPS_REQUEST, watchGetMyGroups),
+        takeEvery(GroupsTypes.GET_PUBLIC_GROUPS_REQUEST, watchGetPublicGroups),
     ])
 }
