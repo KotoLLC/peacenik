@@ -50,7 +50,7 @@ export const LoginForm = (props) => {
 
   const onValidate = (): boolean => {
     if (!validate.isUserNameValid(username)) {
-      setErrorMessage('User Name is incorrect')
+      setErrorMessage('Your username contains invalid characters, allowed: a-z A-Z 0-9 @ . -')
       setNoValideField('username')
       return false
     }

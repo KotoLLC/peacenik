@@ -56,8 +56,8 @@ const CreateGroupPage: React.FC<Props> = (props) => {
 
   const isDataValid = (): boolean => {
 
-    if (!validate.isGroupNameValid(groupName)) {
-      setInvalideMessage('Group name must not contain any spaces')
+    if (!groupName) {
+      setInvalideMessage('Group name is necessarily')
       return false
     }
 

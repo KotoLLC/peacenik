@@ -7,10 +7,6 @@ export const validate = {
     return !/^[A-Z0-9@+-._\s]{2,50}$/i.test(value) ? false : true
   },
 
-  isGroupNameValid: function (value: string): boolean {
-    return groupNameSchema.validate(value) as boolean
-  },
-
   isEmailValid: function (value: string): boolean {
     return !/^[A-Z0-9._+-]+@[A-Z0-9.-]+\.[A-Z]{2,30}$/i.test(value) ? false : true
   },
@@ -23,9 +19,4 @@ export const validate = {
 const passwordSchema = schema
   .is().min(2)
   .is().max(40)
-  .has().not().spaces()
-
-const groupNameSchema = schema
-  .is().min(2)
-  .is().max(100)
-  .has().not().spaces()                           
+  .has().not().spaces()                       
