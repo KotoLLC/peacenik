@@ -33,8 +33,7 @@ const (
 )
 
 var (
-	userNameRe  = regexp.MustCompile(`^\w(\w|-|_|\.)+\w$`)
-	groupNameRe = userNameRe
+	userNameRe = regexp.MustCompile(`^\w(\w|-|_|\.)+\w$`)
 )
 
 type PasswordHash interface {

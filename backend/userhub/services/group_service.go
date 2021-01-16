@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"regexp"
 	"strings"
 
 	"github.com/ansel1/merry"
@@ -10,6 +11,10 @@ import (
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/userhub/repo"
 	"github.com/mreider/koto/backend/userhub/rpc"
+)
+
+var (
+	groupNameRe = regexp.MustCompile(`^(\p{L}|\d)(\p{L}|\d|-|_|\.| )+(\p{L}|\d)$`)
 )
 
 func NewGroup(base *BaseService) rpc.GroupService {
