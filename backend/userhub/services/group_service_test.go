@@ -66,7 +66,7 @@ func (s *GroupServiceTestSuite) Test_AddGroup_EmptyDescription() {
 func (s *GroupServiceTestSuite) Test_AddGroup_InvalidName() {
 	ctx := s.userContext("user-1")
 	_, err := s.service.AddGroup(ctx, &rpc.GroupAddGroupRequest{
-		Name:        "n 1",
+		Name:        "n\t1",
 		Description: "d",
 	})
 	s.EqualError(err, "twirp error invalid_argument: name is invalid")

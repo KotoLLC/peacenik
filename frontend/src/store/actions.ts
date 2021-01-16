@@ -7,6 +7,7 @@ import profile from './profile/actions'
 import messages from './messages/actions'
 import notifications from './notifications/actions'
 import dashboard from './dashboard/actions'
+import groups from './groups/actions'
 
 export default {
   registration,
@@ -18,4 +19,5 @@ export default {
   messages,
   notifications,
   dashboard,
+  groups,
 }

@@ -11,6 +11,7 @@ import profile from './profile'
 import messages from './messages'
 import notifications from './notifications'
 import dashboard from './dashboard'
+import groups from './groups'
 
 const appReducer = combineReducers({
     registration,
@@ -22,6 +23,7 @@ const appReducer = combineReducers({
     messages,
     notifications,
     dashboard,
+    groups,
 })
 
 const rootReducer = (state, action) => {

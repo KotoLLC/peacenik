@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"regexp"
 	"strings"
 
 	"github.com/ansel1/merry"
@@ -10,6 +11,10 @@ import (
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/userhub/repo"
 	"github.com/mreider/koto/backend/userhub/rpc"
+)
+
+var (
+	groupNameRe = regexp.MustCompile(`^(\p{L}|\d)(\p{L}|\d|-|_|\.| )+(\p{L}|\d)$`)
 )
 
 func NewGroup(base *BaseService) rpc.GroupService {
@@ -32,6 +37,7 @@ func (s *groupService) ManagedGroup(ctx context.Context, _ *rpc.Empty) (*rpc.Gro
 			Name:        group.Name,
 			Description: group.Description,
 			IsPublic:    group.IsPublic,
+			MemberCount: int32(group.MemberCount),
 		}
 	}
 
@@ -486,6 +492,7 @@ func (s *groupService) PublicGroups(ctx context.Context, _ *rpc.Empty) (*rpc.Gro
 				Name:        group.Name,
 				Description: group.Description,
 				IsPublic:    group.IsPublic,
+				MemberCount: int32(group.MemberCount),
 				Admin: &rpc.User{
 					Id:           group.AdminID,
 					Name:         adminInfo.Name,
@@ -525,6 +532,7 @@ func (s *groupService) GroupDetails(ctx context.Context, r *rpc.GroupGroupDetail
 		Description: group.Description,
 		IsPublic:    group.IsPublic,
 		Background:  backgroundLink,
+		MemberCount: int32(group.MemberCount),
 		Admin: &rpc.User{
 			Id:           group.AdminID,
 			Name:         adminInfo.Name,

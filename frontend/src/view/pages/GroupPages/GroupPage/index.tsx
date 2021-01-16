@@ -2,10 +2,10 @@ import React from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 import { PageLayout } from '@view/shared/PageLayout'
 import AvatarIcon from '@assets/images/groups-avatar-icon.svg'
-import { DangerZone } from './DangerZone'
 import { GroupMember } from './GroupMember'
 import { GroupMemberPotential } from './GroupMemberPotential'
 import { GroupTopBar } from './GroupTopBar'
+import DestroyGroupDialog from './DestroyGroupDialog'
 import {
   GroupCover,
   GroupContainer,
@@ -40,7 +40,7 @@ export const GroupPage: React.FC<Props> = (props) => {
             <GroupDescriptopn>
               Beauty expert and renowned makeup artist Sonia Kashuk, who has worked with the world’sma powder brush dusted with sheer, loose powder.
           </GroupDescriptopn>
-            <DangerZone />
+            <DestroyGroupDialog />
           </LeftSideBar>
           <CentralBar>
             <BarTitle>Members (367)</BarTitle>
@@ -50,8 +50,8 @@ export const GroupPage: React.FC<Props> = (props) => {
           </CentralBar>
           <RightSideBar>
             <BarTitle>Waiting for approval (14)</BarTitle>
-            <GroupMemberPotential/>
-            <GroupMemberPotential/>
+            <GroupMemberPotential />
+            <GroupMemberPotential />
             <ViewMoreButton>View more</ViewMoreButton>
           </RightSideBar>
         </GroupMainWrapper>

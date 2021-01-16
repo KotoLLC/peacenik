@@ -24,9 +24,9 @@ import { useSwipeable } from 'react-swipeable'
 import { ForwardIconWrapper, BackIconWrapper } from './shared/styles'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
-import { MyGroups } from '@view/pages/GroupPages/MyGroups'
-import { PublicGroups } from '@view/pages/GroupPages/PublicGroups'
-import { CreateGroupPage } from '@view/pages/GroupPages/CreateGroupPage'
+import MyGroups from '@view/pages/GroupPages/MyGroups'
+import PublicGroups from '@view/pages/GroupPages/PublicGroups'
+import CreateGroupPage from '@view/pages/GroupPages/CreateGroupPage'
 import { GroupPage } from '@view/pages/GroupPages/GroupPage'
 
 export const history = createBrowserHistory()
@@ -107,6 +107,7 @@ export const Routes = () => {
             <Route path="/confirm-user" component={ConfirmUserPage} />
             <Route path="/resend-confirm-email" component={ResendConfirmEmailPage} />
             <Route path="/no-hubs" component={NoHubsPage} />
+
             <PrivateRoute path="/friends" component={FriendsPage} />
             <PrivateRoute exact path="/groups" component={MyGroups} />
             <PrivateRoute path="/groups/my" component={MyGroups} />
@@ -118,6 +119,7 @@ export const Routes = () => {
             <PrivateRoute path="/notifications" component={NotificationsPage} />
             <PrivateRoute path="/profile" component={ProfilePage} />
             <PrivateRoute path="/dashboard" component={DashboardPage} />
+            
             <Route component={() => <>404 not found</>} />
           </Switch>
         </LastLocationProvider>

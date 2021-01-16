@@ -22,6 +22,7 @@ type Group struct {
 	CreatedAt         time.Time `json:"created_at,omitempty" db:"created_at"`
 	UpdatedAt         time.Time `json:"updated_at,omitempty" db:"updated_at"`
 	BackgroundID      string    `json:"background_id" db:"background_id"`
+	MemberCount       int       `json:"member_count" db:"member_count"`
 }
 
 type GroupInvite struct {
@@ -86,7 +87,8 @@ func (r *groupRepo) FindGroupByIDOrName(value string) *Group {
 	var group Group
 	err := r.db.Get(&group, `
 		select g.id, g.name, g.description, g.admin_id,
-		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id,
+		       (select count(*) from group_users where group_id = g.id) member_count
 		from groups g
 		where g.id = $1 or lower(g.name) = $2`,
 		value, strings.ToLower(value))
@@ -103,7 +105,8 @@ func (r *groupRepo) FindGroupByID(id string) *Group {
 	var group Group
 	err := r.db.Get(&group, `
 		select g.id, g.name, g.description, g.admin_id,
-		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id,
+		       (select count(*) from group_users where group_id = g.id) member_count
 		from groups g
 		where g.id = $1`, id)
 	if err != nil {
@@ -119,7 +122,8 @@ func (r *groupRepo) FindGroupByName(name string) *Group {
 	var group Group
 	err := r.db.Get(&group, `
 		select g.id, g.name, g.description, g.admin_id,
-		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id,
+		       (select count(*) from group_users where group_id = g.id) member_count
 		from groups g
 		where lower(g.name) = $1`,
 		strings.ToLower(name))
@@ -461,7 +465,8 @@ func (r *groupRepo) ManagedGroups(adminID string) []Group {
 	var groups []Group
 	err := r.db.Select(&groups, `
 		select g.id, g.name, g.description, g.admin_id,
-		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id,
+		       (select count(*) from group_users where group_id = g.id) member_count
 		from groups g
 		where g.admin_id = $1
 		order by g.name;`,
@@ -557,7 +562,8 @@ func (r *groupRepo) PublicGroups() []Group {
 	var groups []Group
 	err := r.db.Select(&groups, `
 		select g.id, g.name, g.description, g.admin_id,
-		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id,
+		       (select count(*) from group_users where group_id = g.id) member_count
 		from groups g
 		where g.is_public = true
 		order by g.name;`)
@@ -597,7 +603,8 @@ func (r *groupRepo) UserGroups(userID string) []Group {
 	var groups []Group
 	err := r.db.Select(&groups, `
 		select g.id, g.name, g.description, g.admin_id,
-		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id,
+		       (select count(*) from group_users where group_id = g.id) member_count
 		from groups g
 		where exists(select * from group_users where user_id = $1 and group_id = g.id)
 		order by g.name;`,

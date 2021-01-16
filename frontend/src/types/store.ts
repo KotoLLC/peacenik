@@ -7,6 +7,7 @@ import { State as ProfileState } from '@store/profile'
 import { State as MessagesState } from '@store/messages'
 import { State as NotificationsState } from '@store/notifications'
 import { State as DashboardState } from '@store/dashboard'
+import { State as GroupsState } from '@store/groups'
 
 export interface StoreTypes {
   registration: RegistrationState
@@ -18,4 +19,5 @@ export interface StoreTypes {
   messages: MessagesState
   notifications: NotificationsState
   dashboard: DashboardState
+  groups: GroupsState
 }

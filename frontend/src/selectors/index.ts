@@ -7,6 +7,7 @@ import registration from './registration'
 import common from './common'
 import notifications from './notifications'
 import dashboard from './dashboard'
+import groups from './groups'
 
 export default {
     friends,
@@ -18,4 +19,5 @@ export default {
     common,
     notifications,
     dashboard,
+    groups,
 }
