@@ -24,6 +24,7 @@ message Group {
     bool is_public = 5;
     User admin = 6;
     string background = 7;
+    int32 member_count = 8;
 }
 
 message Notification {

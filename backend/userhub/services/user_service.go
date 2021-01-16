@@ -133,6 +133,7 @@ func (s *userService) Me(ctx context.Context, _ *rpc.Empty) (*rpc.UserMeResponse
 			Name:        group.Name,
 			Description: group.Description,
 			IsPublic:    group.IsPublic,
+			MemberCount: int32(group.MemberCount),
 			Admin: &rpc.User{
 				Id:       group.AdminID,
 				Name:     group.AdminName,

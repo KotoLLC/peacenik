@@ -32,6 +32,7 @@ func (s *groupService) ManagedGroup(ctx context.Context, _ *rpc.Empty) (*rpc.Gro
 			Name:        group.Name,
 			Description: group.Description,
 			IsPublic:    group.IsPublic,
+			MemberCount: int32(group.MemberCount),
 		}
 	}
 
@@ -494,6 +495,7 @@ func (s *groupService) PublicGroups(ctx context.Context, _ *rpc.Empty) (*rpc.Gro
 				Name:        group.Name,
 				Description: group.Description,
 				IsPublic:    group.IsPublic,
+				MemberCount: int32(group.MemberCount),
 				Admin: &rpc.User{
 					Id:       group.AdminID,
 					Name:     group.AdminName,
@@ -531,6 +533,7 @@ func (s *groupService) GroupDetails(ctx context.Context, r *rpc.GroupGroupDetail
 		Description: group.Description,
 		IsPublic:    group.IsPublic,
 		Background:  backgroundLink,
+		MemberCount: int32(group.MemberCount),
 		Admin: &rpc.User{
 			Id:       group.AdminID,
 			Name:     group.AdminName,
