@@ -10,10 +10,10 @@ jobs:
         uses: whoan/docker-build-with-cache-action@v5
         with:
           image_tag: v0.${{ env.RUN_ID }},latest
+          image_name: koto/frontend
           context: ./frontend
           dockerfile: Dockerfile.production
           registry: docker.pkg.github.com
-          repository: kotollc/koto/frontend
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }} }}
 
@@ -21,10 +21,10 @@ jobs:
         uses: whoan/docker-build-with-cache-action@v5
         with:
           image_tag: v0.${{ env.RUN_ID }},latest
+          image_name: koto/userhub
           context: ./backend
           dockerfile: userhub/Dockerfile
           registry: docker.pkg.github.com
-          repository: kotollc/koto/userhub
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }} }}
 
@@ -32,10 +32,10 @@ jobs:
         uses: whoan/docker-build-with-cache-action@v5
         with:
           image_tag: v0.${{ env.RUN_ID }},latest
+          image_name: koto/messagehub
           directory: ./backend
           dockerfile: ./backend/messagehub/Dockerfile
           registry: docker.pkg.github.com
-          repository: kotollc/koto/backend
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }} }}
   deploy-to-staging:
