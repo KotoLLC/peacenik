@@ -10,7 +10,7 @@ jobs:
         uses: whoan/docker-build-with-cache-action@v5
         with:
           image_tag: v0.${{ env.RUN_ID }},latest
-          image_name: koto/frontend
+          image_name: kotollc/koto/frontend
           context: ./frontend
           dockerfile: Dockerfile.production
           registry: docker.pkg.github.com
@@ -21,7 +21,7 @@ jobs:
         uses: whoan/docker-build-with-cache-action@v5
         with:
           image_tag: v0.${{ env.RUN_ID }},latest
-          image_name: koto/userhub
+          image_name: kotollc/koto/userhub
           context: ./backend
           dockerfile: userhub/Dockerfile
           registry: docker.pkg.github.com
@@ -32,7 +32,7 @@ jobs:
         uses: whoan/docker-build-with-cache-action@v5
         with:
           image_tag: v0.${{ env.RUN_ID }},latest
-          image_name: koto/messagehub
+          image_name: kotollc/koto/messagehub
           directory: ./backend
           dockerfile: ./backend/messagehub/Dockerfile
           registry: docker.pkg.github.com
