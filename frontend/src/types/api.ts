@@ -407,6 +407,11 @@ export declare namespace ApiTypes {
       is_public: boolean
       name: string
     }
+    
+    export interface GroupDetails {
+      group: Group
+      members: []
+    }
 
     export interface RecievedGroup {
       group: Group

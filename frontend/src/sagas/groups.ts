@@ -43,3 +43,23 @@ export function* watchGetPublicGroups() {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
+
+export function* watchGetGroupDetails(action: { type: string, payload: string }) {
+  const response = yield API.groups.getGroupDetails(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.groups.getGroupDetailsSuccess(response.data))
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
+export function* watchDeleteGroup(action: { type: string, payload: string }) {
+  const response = yield API.groups.deleteGroup(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.groups.deleteGroupSuccess(true))
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}

@@ -1,61 +1,53 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
-import { PageLayout } from '@view/shared/PageLayout'
-import AvatarIcon from '@assets/images/groups-avatar-icon.svg'
-import { GroupMember } from './GroupMember'
-import { GroupMemberPotential } from './GroupMemberPotential'
-import { GroupTopBar } from './GroupTopBar'
-import DestroyGroupDialog from './DestroyGroupDialog'
-import {
-  GroupCover,
-  GroupContainer,
-  GroupMainWrapper,
-  LeftSideBar,
-  RightSideBar,
-  CentralBar,
-  AvatarStyled,
-  GroupName,
-  GroupPublicity,
-  GroupDescriptopn,
-  BarTitle,
-  ViewMoreButton,
-} from './styles'
+import { connect } from 'react-redux'
+import Actions from '@store/actions'
+import selectors from '@selectors/index'
+import queryString from 'query-string'
+import { ApiTypes, StoreTypes } from 'src/types'
+import AdminLauout from './AdminLauout'
 
-interface Props extends RouteComponentProps { }
+interface Props extends RouteComponentProps {
+  groupDetails: ApiTypes.Groups.GroupDetails | null
+  userId: string
 
-export const GroupPage: React.FC<Props> = (props) => {
-
-  return (
-    <PageLayout>
-      <GroupCover />
-      <GroupTopBar />
-      <GroupContainer>
-        <GroupMainWrapper>
-          <LeftSideBar>
-            <AvatarStyled>
-              <img src={AvatarIcon} alt="icon" />
-            </AvatarStyled>
-            <GroupName>We are photo lovers!</GroupName>
-            <GroupPublicity>Public group</GroupPublicity>
-            <GroupDescriptopn>
-              Beauty expert and renowned makeup artist Sonia Kashuk, who has worked with the world’sma powder brush dusted with sheer, loose powder.
-          </GroupDescriptopn>
-            <DestroyGroupDialog />
-          </LeftSideBar>
-          <CentralBar>
-            <BarTitle>Members (367)</BarTitle>
-            <GroupMember />
-            <GroupMember />
-            <ViewMoreButton>View more</ViewMoreButton>
-          </CentralBar>
-          <RightSideBar>
-            <BarTitle>Waiting for approval (14)</BarTitle>
-            <GroupMemberPotential />
-            <GroupMemberPotential />
-            <ViewMoreButton>View more</ViewMoreButton>
-          </RightSideBar>
-        </GroupMainWrapper>
-      </GroupContainer>
-    </PageLayout>
-  )
+  onGetGroupDetailsRequest: (value: string) => void
 }
+
+const GroupPage: React.FC<Props> = (props) => {
+  const { 
+    onGetGroupDetailsRequest, 
+    location, 
+    groupDetails, 
+    userId,
+  } = props
+
+  const url = location.search
+  const params = queryString.parse(url)
+  const groupId = params.id ? params.id : ''
+
+  useEffect(() => {
+    if (groupDetails?.group?.id !== groupId) {
+      onGetGroupDetailsRequest(groupId as string)
+    }
+  }, [groupDetails, userId])
+
+  if (groupDetails && groupDetails?.group?.admin?.id === userId) {
+    return <AdminLauout/>
+  } else {
+    return <>Member layput</>
+  }
+}
+
+type StateProps = Pick<Props, 'groupDetails' | 'userId'>
+const mapStateToProps = (state: StoreTypes): StateProps => ({
+  groupDetails: selectors.groups.groupDetails(state),
+  userId: selectors.profile.userId(state),
+})
+
+type DispatchProps = Pick<Props, 'onGetGroupDetailsRequest'>
+const mapDispatchToProps = (dispatch): DispatchProps => ({
+  onGetGroupDetailsRequest: (value: string) => dispatch(Actions.groups.getGroupDetailsRequest(value)),
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(GroupPage)

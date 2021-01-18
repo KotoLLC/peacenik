@@ -28,7 +28,7 @@ import MyGroups from '@view/pages/GroupPages/MyGroups'
 import PublicGroups from '@view/pages/GroupPages/PublicGroups'
 import CreateGroupPage from '@view/pages/GroupPages/CreateGroupPage'
 import EditGroupPage from '@view/pages/GroupPages/EditGroupPage'
-import { GroupPage } from '@view/pages/GroupPages/GroupPage'
+import GroupPage from '@view/pages/GroupPages/GroupPage'
 
 export const history = createBrowserHistory()
 

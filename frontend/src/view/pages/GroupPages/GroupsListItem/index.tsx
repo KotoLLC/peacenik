@@ -49,7 +49,7 @@ const GroupsListItem: React.FC<Props> = React.memo((props) => {
       <ItemCover style={{ backgroundImage: avatar_original }} />
       <ItemContentWraper>
         <ItemHeader>
-          <Link to="/groups/group">
+          <Link to={`/groups/group?id=${id}`}>
             <AvatarStyled>
               <img src={AvatarIcon} alt="icon" />
             </AvatarStyled>
