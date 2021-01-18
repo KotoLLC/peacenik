@@ -415,7 +415,12 @@ export declare namespace ApiTypes {
 
     export interface RecievedGroup {
       group: Group
-      status: 'member' | ''
+      status: 'member' | 'pending' | ''
+    }
+    
+    export interface RequestJoin {
+      group_id: string
+      message: string
     }
     
   }

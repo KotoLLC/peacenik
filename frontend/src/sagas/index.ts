@@ -92,6 +92,7 @@ import {
     watchEditGroup,
     watchGetGroupDetails,
     watchDeleteGroup,
+    watchRequestJounGroup,
 } from './groups'
 
 export function* rootSaga() {
@@ -170,5 +171,6 @@ export function* rootSaga() {
         takeEvery(GroupsTypes.EDIT_GROUP_REQUEST, watchEditGroup),
         takeEvery(GroupsTypes.GET_GROUP_DETAILS_REQUEST, watchGetGroupDetails),
         takeEvery(GroupsTypes.DELETE_GROUP_REQUEST, watchDeleteGroup),
+        takeEvery(GroupsTypes.JOIN_TO_GROUP_REQUEST, watchRequestJounGroup),
     ])
 }

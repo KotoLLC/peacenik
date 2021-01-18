@@ -35,4 +35,10 @@ export default {
       return response
     }).catch(error => ({ error }))
   }, 
+  
+  requestJoinGroup: async (data: ApiTypes.Groups.RequestJoin) => {
+    return await axiosInstance.post('/rpc.GroupService/RequestJoin', data).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  }, 
 }

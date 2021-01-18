@@ -44,7 +44,15 @@ export const AvatarStyled = styled(Avatar)`
   }
 `
 
-export const GroupName = styled(Link)`
+export const GroupName = styled.span`
+  display: inline-block;
+  color: #262626;
+  font-family: 'SFUITextSemibold';
+  margin: 5px 0;
+  text-decoration: none;
+`
+
+export const GroupNameLink = styled(Link)`
   display: inline-block;
   color: #262626;
   font-family: 'SFUITextSemibold';
@@ -72,4 +80,14 @@ export const GroupDescription = styled.p`
   height: 60px;
   margin: 10px 0 0;
   overflow: hidden;
+`
+
+export const TextareaStyled = styled.textarea`
+  width: 450px;
+  margin: 10px auto 0;
+  border: 1px solid #C8CFD4;
+  box-sizing: border-box;
+  border-radius: 4px;
+  height: 70px;
+  resize: none;
 `

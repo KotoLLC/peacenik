@@ -63,3 +63,14 @@ export function* watchDeleteGroup(action: { type: string, payload: string }) {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
+
+export function* watchRequestJounGroup(action: { type: string, payload: ApiTypes.Groups.RequestJoin }) {
+  const response = yield API.groups.requestJoinGroup(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.groups.joinToGroupSuccess(true))
+    yield put(Actions.groups.getPublicGroupsRequest())
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}

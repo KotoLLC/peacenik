@@ -19,6 +19,9 @@ export enum Types {
   
   DELETE_GROUP_REQUEST = 'DELETE_GROUP_REQUEST',
   DELETE_GROUP_SUCCESS = 'DELETE_GROUP_SUCCESS',
+  
+  JOIN_TO_GROUP_REQUEST = 'JOIN_TO_GROUP_REQUEST',
+  JOIN_TO_GROUP_SUCCESS = 'JOIN_TO_GROUP_SUCCESS',
 }
 
 const addGroupRequest = (payload: ApiTypes.Groups.AddGroup) => ({
@@ -79,6 +82,16 @@ const deleteGroupSuccess = (payload: boolean) => ({
   payload
 })
 
+const joinToGroupRequest = (payload: ApiTypes.Groups.RequestJoin) => ({
+  type: Types.JOIN_TO_GROUP_REQUEST,
+  payload
+})
+
+const joinToGroupSuccess = (payload: boolean) => ({
+  type: Types.JOIN_TO_GROUP_SUCCESS,
+  payload
+})
+
 export default {
   addGroupRequest,
   addGroupSucces,
@@ -92,4 +105,6 @@ export default {
   getGroupDetailsSuccess,
   deleteGroupRequest,
   deleteGroupSuccess,
+  joinToGroupRequest,
+  joinToGroupSuccess
 }
