@@ -377,6 +377,18 @@ export declare namespace ApiTypes {
       avatar_id?: string
       background_id?: string
     }
+    
+    export interface EditGroup {
+      group_id: string
+      description_changed: boolean
+      description: string
+      avatar_changed: boolean
+      avatar_id: string
+      is_public_changed: boolean
+      is_public: boolean
+      background_changed: boolean
+      background_id: string
+    }
 
     export interface GroupAdmin {
       avatar_original: string

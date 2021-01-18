@@ -9,6 +9,7 @@ import { ApiTypes, StoreTypes } from 'src/types'
 import { Link, RouteComponentProps } from 'react-router-dom'
 import selectors from '@selectors/index'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import queryString from 'query-string'
 import { ErrorMessage, ButtonContained, ButtonOutlined } from '@view/shared/styles'
 import {
   CreateGroupContainer,
@@ -28,29 +29,41 @@ import {
   RadioStyled,
   FormControlLabelStyled,
   RadiosWrapper,
-} from './styles'
+} from './../CreateGroupPage/styles'
 
 interface Props extends RouteComponentProps {
-  isGroupAddedSuccessfully: boolean
+  isGroupEditedSuccessfully: boolean
   errorMessage: string
+  myGroups: ApiTypes.Groups.RecievedGroup[]
 
-  addGroupSucces: (value: boolean) => void
-  onAddGroup: (data: ApiTypes.Groups.AddGroup) => void
+  editGroupSuccess: (value: boolean) => void
+  onEditGroup: (data: ApiTypes.Groups.EditGroup) => void
+  onGetMyGroupsRequest: () => void
 }
 
-const CreateGroupPage: React.FC<Props> = (props) => {
+const EditGroupPage: React.FC<Props> = (props) => {
   const { 
-    onAddGroup, 
-    isGroupAddedSuccessfully, 
-    addGroupSucces, 
+    onEditGroup, 
+    editGroupSuccess, 
+    onGetMyGroupsRequest,
+    isGroupEditedSuccessfully, 
     history, 
+    location,
     errorMessage, 
+    myGroups,
   } = props
 
+  const url = location.search
+  const params = queryString.parse(url)
+  const groupId = params.id ? params.id : ''
+
+  const currentGroup = myGroups?.length && myGroups.filter(item => item.group.id === groupId)[0]
+  const initialGroup = currentGroup ? currentGroup.group : null
+
   const [isRequested, setRequested] = useState<boolean>(false)
-  const [isPublic, setPublic] = useState<boolean>(false)
-  const [groupName, setGroupName] = useState<string>('')
-  const [groupDescription, setGroupDescription] = useState<string>('')
+  const [isPublic, setPublic] = useState<boolean>(initialGroup ? initialGroup.is_public : false)
+  const [groupName, setGroupName] = useState<string>(initialGroup ? initialGroup.name : '')
+  const [groupDescription, setGroupDescription] = useState<string>(initialGroup ? initialGroup.description : '')
   const [invalideMessage, setInvalideMessage] = useState<string>('')
 
   const isDataValid = (): boolean => {
@@ -74,30 +87,53 @@ const CreateGroupPage: React.FC<Props> = (props) => {
     if (isDataValid()) {
 
       const data = {
-        name: groupName,
+        group_id: initialGroup?.id ? initialGroup?.id : '',
         description: groupDescription,
+        description_changed: true,
         is_public: isPublic,
+        is_public_changed: true,
         avatar_id: '',
+        avatar_changed: true,
         background_id: '',
+        background_changed: true,
       }
 
-      onAddGroup(data)
+      onEditGroup(data)
       setRequested(true)
     }
 
   }
 
   useEffect(() => {
-    if (isGroupAddedSuccessfully) {
+
+    if (!initialGroup) {
+      onGetMyGroupsRequest()
+    }
+
+    if (isGroupEditedSuccessfully) {
       setRequested(false)
       history.push('/groups')
-      addGroupSucces(false)
+      editGroupSuccess(false)
     }
 
     if (errorMessage) {
       setRequested(false)
     }
-  }, [isGroupAddedSuccessfully, errorMessage])
+
+    if (initialGroup) {
+      // setPublic(isPublic ? isPublic : initialGroup.is_public)
+      setGroupName(groupName ? groupName : initialGroup.name)
+      setGroupDescription(groupDescription ? groupDescription : initialGroup.description)
+    }
+
+  }, [
+    isGroupEditedSuccessfully, 
+    errorMessage, 
+    myGroups,
+    isPublic,
+    groupDescription,
+    initialGroup,
+  ])
 
   return (
     <PageLayout>
@@ -136,7 +172,7 @@ const CreateGroupPage: React.FC<Props> = (props) => {
           </FieldWrapper>
           <FieldWrapper>
             <FieldPlaceholder>Group Name</FieldPlaceholder>
-            <InputField value={groupName} onChange={(event) => setGroupName(event.target.value)} />
+            <InputField disabled value={groupName} onChange={(event) => setGroupName(event.target.value)} />
           </FieldWrapper>
           <FieldWrapper>
             <FieldPlaceholder>Description</FieldPlaceholder>
@@ -157,16 +193,18 @@ const CreateGroupPage: React.FC<Props> = (props) => {
   )
 }
 
-type StateProps = Pick<Props, 'isGroupAddedSuccessfully' | 'errorMessage'>
+type StateProps = Pick<Props, 'isGroupEditedSuccessfully' | 'errorMessage' | 'myGroups'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  isGroupAddedSuccessfully: selectors.groups.isGroupAddedSuccessfully(state),
+  isGroupEditedSuccessfully: selectors.groups.isGroupEditedSuccessfully(state),
   errorMessage: state.common.errorMessage,
+  myGroups: selectors.groups.myGroups(state),
 })
 
-type DispatchProps = Pick<Props, 'onAddGroup' | 'addGroupSucces'>
+type DispatchProps = Pick<Props, 'onEditGroup' | 'editGroupSuccess' | 'onGetMyGroupsRequest'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onAddGroup: (data: ApiTypes.Groups.AddGroup) => dispatch(Actions.groups.addGroupRequest(data)),
-  addGroupSucces: (value: boolean) => dispatch(Actions.groups.addGroupSucces(value)),
+  onEditGroup: (data: ApiTypes.Groups.EditGroup) => dispatch(Actions.groups.editGroupRequest(data)),
+  editGroupSuccess: (value: boolean) => dispatch(Actions.groups.editGroupSuccess(value)),
+  onGetMyGroupsRequest: () => dispatch(Actions.groups.getMyGroupsRequest()),
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(CreateGroupPage)
+export default connect(mapStateToProps, mapDispatchToProps)(EditGroupPage)

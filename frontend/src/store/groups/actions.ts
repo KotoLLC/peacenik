@@ -5,6 +5,9 @@ export enum Types {
   ADD_GROUP_REQUEST = 'ADD_GROUP_REQUEST',
   ADD_GROUP_SUCCESS = 'ADD_GROUP_SUCCESS',
   
+  EDIT_GROUP_REQUEST = 'EDIT_GROUP_REQUEST',
+  EDIT_GROUP_SUCCESS = 'EDIT_GROUP_SUCCESS',
+  
   GET_MY_GROUPS_REQUEST = 'GET_MY_GROUPS_REQUEST',
   GET_MY_GROUPS_SUCCESS = 'GET_MY_GROUPS_SUCCESS',
   
@@ -19,6 +22,16 @@ const addGroupRequest = (payload: ApiTypes.Groups.AddGroup) => ({
 
 const addGroupSucces = (payload: boolean) => ({
   type: Types.ADD_GROUP_SUCCESS,
+  payload
+})
+
+const editGroupRequest = (payload: ApiTypes.Groups.EditGroup) => ({
+  type: Types.EDIT_GROUP_REQUEST,
+  payload
+})
+
+const editGroupSuccess = (payload: boolean) => ({
+  type: Types.EDIT_GROUP_SUCCESS,
   payload
 })
 
@@ -47,4 +60,6 @@ export default {
   getMyGroupsSuccess,
   getPublicGroupsRequest,
   getPublicGroupsSuccess,
+  editGroupRequest,
+  editGroupSuccess,
 }

@@ -28,7 +28,11 @@ const GroupsListItem: React.FC<Props> = React.memo((props) => {
 
   const renderCurrentButton = () => {
     if (userId === admin.id) {
-      return <ButtonOutlined className="extra-small">Edit group</ButtonOutlined>
+      return (
+        <Link to={`/groups/edit?id=${id}`}>
+          <ButtonOutlined className="extra-small">Edit group</ButtonOutlined>
+        </Link>
+      ) 
     }
 
     if (userId !== admin.id && status === '') {

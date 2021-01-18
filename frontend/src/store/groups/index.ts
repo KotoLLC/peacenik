@@ -3,12 +3,14 @@ import { ApiTypes } from 'src/types'
 
 export interface State  {
   isGroupAddedSuccessfully: boolean
+  isGroupEditedSuccessfully: boolean
   publicGroups: ApiTypes.Groups.RecievedGroup[]
   myGroups: ApiTypes.Groups.RecievedGroup[]
 }
 
 const initialState: State = {
   isGroupAddedSuccessfully: false,
+  isGroupEditedSuccessfully: false,
   publicGroups: [],
   myGroups: [],
 }
@@ -19,6 +21,13 @@ const reducer = (state = initialState, action) => {
       return {
         ...state, ...{
           isGroupAddedSuccessfully: action.payload
+        }
+      }
+    }
+    case Types.EDIT_GROUP_SUCCESS: {
+      return {
+        ...state, ...{
+          isGroupEditedSuccessfully: action.payload
         }
       }
     }
