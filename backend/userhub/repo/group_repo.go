@@ -24,6 +24,7 @@ type Group struct {
 	CreatedAt         time.Time `json:"created_at,omitempty" db:"created_at"`
 	UpdatedAt         time.Time `json:"updated_at,omitempty" db:"updated_at"`
 	BackgroundID      string    `json:"background_id" db:"background_id"`
+	MemberCount       int       `json:"member_count" db:"member_count"`
 }
 
 type GroupInvite struct {
@@ -93,7 +94,8 @@ func (r *groupRepo) FindGroupByIDOrName(value string) *Group {
 	var group Group
 	err := r.db.Get(&group, `
 		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
-		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id,
+		       (select count(*) from group_users where group_id = g.id) member_count
 		from groups g
 			inner join users u on u.id = g.admin_id
 		where g.id = $1 or lower(g.name) = $2`,
@@ -111,7 +113,8 @@ func (r *groupRepo) FindGroupByID(id string) *Group {
 	var group Group
 	err := r.db.Get(&group, `
 		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
-		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id,
+		       (select count(*) from group_users where group_id = g.id) member_count
 		from groups g
 			inner join users u on u.id = g.admin_id
 		where g.id = $1`, id)
@@ -128,7 +131,8 @@ func (r *groupRepo) FindGroupByName(name string) *Group {
 	var group Group
 	err := r.db.Get(&group, `
 		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
-		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id,
+		       (select count(*) from group_users where group_id = g.id) member_count
 		from groups g
 			inner join users u on u.id = g.admin_id
 		where lower(g.name) = $1`,
@@ -474,7 +478,8 @@ func (r *groupRepo) ManagedGroups(adminID string) []Group {
 	var groups []Group
 	err := r.db.Select(&groups, `
 		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
-		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id,
+		       (select count(*) from group_users where group_id = g.id) member_count
 		from groups g
 			inner join users u on u.id = g.admin_id
 		where g.admin_id = $1
@@ -574,7 +579,8 @@ func (r *groupRepo) PublicGroups() []Group {
 	var groups []Group
 	err := r.db.Select(&groups, `
 		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
-		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id,
+		       (select count(*) from group_users where group_id = g.id) member_count
 		from groups g
 			inner join users u on u.id = g.admin_id
 		where g.is_public = true
@@ -615,7 +621,8 @@ func (r *groupRepo) UserGroups(userID string) []Group {
 	var groups []Group
 	err := r.db.Select(&groups, `
 		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
-		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id
+		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id,
+		       (select count(*) from group_users where group_id = g.id) member_count
 		from groups g
 			inner join users u on u.id = g.admin_id
 		where exists(select * from group_users where user_id = $1 and group_id = g.id)
