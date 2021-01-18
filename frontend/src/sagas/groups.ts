@@ -2,6 +2,7 @@ import { put } from 'redux-saga/effects'
 import Actions from '@store/actions'
 import { API } from '@services/api'
 import { ApiTypes } from 'src/types'
+import { myGroupsFromBackToFront } from '@services/dataTransforms/myGroupsFromBackToFront'
 
 export function* watchAddGroup(action: { type: string, payload: ApiTypes.Groups.AddGroup }) {
   const response = yield API.groups.addGroup(action.payload)
@@ -14,10 +15,10 @@ export function* watchAddGroup(action: { type: string, payload: ApiTypes.Groups.
 }
 
 export function* watchGetMyGroups() {
-  const response = yield API.groups.getMyGroups()
+  const response = yield API.profile.getProfile()
 
   if (response.status === 200) {
-    yield put(Actions.groups.getMyGroupsSuccess(response.data))
+    yield put(Actions.groups.getMyGroupsSuccess(myGroupsFromBackToFront(response.data?.groups || [])))
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }

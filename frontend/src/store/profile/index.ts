@@ -22,7 +22,7 @@ const initialState: State = {
   uploadLink: null,
   profileErrorMessage: '',
   owned_hubs: [],
-  users: []
+  users: [],
 }
 
 const reducer = (state = initialState, action) => {

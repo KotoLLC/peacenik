@@ -13,6 +13,7 @@ const userId = createSelector(user, data => data.id)
 const uploadLink = deepEqualSelector(profile, data => data.uploadLink)
 const profileErrorMessage = deepEqualSelector(profile, data => data.profileErrorMessage)
 const users = deepEqualSelector(profile, data => data.users)
+const myGroups = deepEqualSelector(profile, data => data.groups)
 
 export default {
     profile,
@@ -26,4 +27,5 @@ export default {
     profileErrorMessage,
     ownedHubs,
     users,
+    myGroups,
 }

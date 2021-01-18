@@ -54,7 +54,7 @@ const GroupsListItem: React.FC<Props> = React.memo((props) => {
         </ItemHeader>
         <GroupName to={`/groups/group?id=${id}`}>{name}</GroupName>
         <GroupCounter>123 participants</GroupCounter>
-        <GroupPublicity>{is_public ? 'Public' : 'Private'}</GroupPublicity>
+        <GroupPublicity>{is_public ? 'Public' : 'Private'} {userId === admin.id && '- My group'}</GroupPublicity>
         <GroupDescription>{description}</GroupDescription>
       </ItemContentWraper>
     </GroupsListItemWrapper>

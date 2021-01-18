@@ -62,6 +62,7 @@ export declare namespace ApiTypes {
     export interface UserProfile {
       user: User
       is_admin?: boolean
+      groups: Groups.RecievedGroup[]
     }
 
     export interface EditProfile {
@@ -399,5 +400,6 @@ export declare namespace ApiTypes {
       group: Group
       status: 'member' | ''
     }
+    
   }
 }
