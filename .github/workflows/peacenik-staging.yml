@@ -16,13 +16,23 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and Publish Backend 
+      - name: Build and Publish User Hub 
         uses: whoan/docker-build-with-cache-action@v5
         with:
-          image_name: peacenikapp/backend
+          image_name: peacenikapp/userhub
           image_tag: v0.${{ env.RUN_ID }},latest
           context: ./backend
           dockerfile: userhub/Dockerfile
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Publish Message Hub 
+        uses: whoan/docker-build-with-cache-action@v5
+        with:
+          image_name: peacenikapp/messagehub
+          image_tag: v0.${{ env.RUN_ID }},latest
+          directory: ./backend
+          dockerfile: ./backend/messagehub/Dockerfile
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
   deploy-to-staging:
