@@ -39,7 +39,7 @@ spec:
           emptyDir: {}
       containers:
       - name: user-hub
-        image: peacenikapp/frontend:<TAG>
+        image: docker.pkg.github.com/kotollc/koto/userhub:<TAG>
         imagePullPolicy: Always
         ports:
         - containerPort: 12001
