@@ -518,15 +518,13 @@ func (s *groupService) PublicGroups(ctx context.Context, _ *rpc.Empty) (*rpc.Gro
 
 func (s *groupService) GroupDetails(ctx context.Context, r *rpc.GroupGroupDetailsRequest) (*rpc.GroupGroupDetailsResponse, error) {
 	user := s.getUser(ctx)
-	group, isGroupAdmin := s.getGroup(ctx, r.GroupId)
+	group, _ := s.getGroup(ctx, r.GroupId)
 	if group == nil {
 		return nil, twirp.NotFoundError("group not found")
 	}
-	if !isGroupAdmin {
-		isMember := s.repos.Group.IsGroupMember(r.GroupId, user.ID)
-		if !isMember {
-			return nil, twirp.NewError(twirp.PermissionDenied, "")
-		}
+	isMember := s.repos.Group.IsGroupMember(r.GroupId, user.ID)
+	if !group.IsPublic && !isMember {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 	backgroundLink, err := s.createBlobLink(ctx, group.BackgroundID)
 	if err != nil {
@@ -545,6 +543,13 @@ func (s *groupService) GroupDetails(ctx context.Context, r *rpc.GroupGroupDetail
 			FullName: group.AdminFullName,
 		},
 	}
+
+	if !isMember {
+		return &rpc.GroupGroupDetailsResponse{
+			Group: rpcGroup,
+		}, nil
+	}
+
 	members := s.repos.Group.GroupMembers(r.GroupId)
 	rpcMembers := make([]*rpc.User, 0, len(members))
 	for _, member := range members {
