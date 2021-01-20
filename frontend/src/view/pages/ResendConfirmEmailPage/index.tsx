@@ -57,7 +57,7 @@ export const ResendConfirmEmail: React.SFC<Props> = React.memo((props) => {
       <PageWrapper>
         <PaperStyled>
           <Typography variant="h5" component="h5" gutterBottom align="center">
-            Welcome to Koto!
+            Welcome to Peacenik!
         </Typography>
           <Typography variant="body1" gutterBottom align="center">
           Please check your mail, we sent you an e-mail to confirm your registration. If the email doesn't come, please click on the button below.

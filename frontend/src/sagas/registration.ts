@@ -30,7 +30,7 @@ export function* watchRegisterUser(action: { type: string, payload: ApiTypes.Reg
   if (response.status === 200) {
     yield put(Actions.registration.registerUserSucces())
     yield put(Actions.authorization.loginSucces())
-    localStorage.setItem('kotoIsLogged', 'true')
+    localStorage.setItem('peacenikIsLogged', 'true')
   } else {
     yield put(Actions.registration.registerUserFailed(response?.error?.response?.data?.msg || 'Server error'))
   }

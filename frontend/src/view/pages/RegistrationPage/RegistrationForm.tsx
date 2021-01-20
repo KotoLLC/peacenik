@@ -136,7 +136,7 @@ export const RegistrationForm: React.SFC<Props> = (props) => {
     <ContainerStyled maxWidth="sm">
       <Header>
         <Logo src={logo} />
-        <Typography variant="subtitle1" gutterBottom>Koto is an ad-free, friendly, distributed social network.Koto is an ad-free, friendly, distributed social network..</Typography>
+        <Typography variant="subtitle1" gutterBottom>Peacenik is an ad-free, friendly, distributed social network. Peacenik is an ad-free, friendly, distributed social network..</Typography>
       </Header>
       <FormWrapper onSubmit={onFormSubmit}>
         <FormControlStyled variant="outlined">
@@ -214,7 +214,7 @@ export const RegistrationForm: React.SFC<Props> = (props) => {
             name="rememberMe"
             color="primary"
           />
-          <CheckBoxLabel to={'/docs/code-of-conduct'}>I agree to koto's End User License Agreement (EULA)</CheckBoxLabel>
+          <CheckBoxLabel to={'/docs/code-of-conduct'}>I agree to peacenik's End User License Agreement (EULA)</CheckBoxLabel>
         </CheckBoxWrapper>
         <ButtonStyled
           disabled={isLicenseChecked ? false : true}
@@ -230,11 +230,11 @@ export const RegistrationForm: React.SFC<Props> = (props) => {
       </FormWrapper>
       <FooterMenu menuItems={[
         {
-          title: 'Login for Koto',
+          title: 'Login for Peacenik',
           to: '/login'
         },
         {
-          title: 'About Koto',
+          title: 'About Peacenik',
           href: 'https://docs.koto.at',
         },
         {

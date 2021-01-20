@@ -16,7 +16,7 @@ export function* watchGetProfile() {
       yield put(Actions.profile.getProfileSucces(response.data))
       const user = Object.assign({}, response.data.user)
       delete user.email
-      localStorage.setItem('kotoProfile', JSON.stringify({user}))
+      localStorage.setItem('peacenikProfile', JSON.stringify({user}))
     } else if (response.error.response.status === 401) {
       localStorage.clear()
       window.location.reload()

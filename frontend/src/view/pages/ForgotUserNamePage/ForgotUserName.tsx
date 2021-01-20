@@ -93,11 +93,11 @@ export const ForgotUserName = (props) => {
       </FormWrapper>
       <FooterMenu menuItems={[
         {
-          title: 'Login for Koto',
+          title: 'Login for Peacenik',
           to: '/login'
         },
         {
-          title: 'Register for Koto',
+          title: 'Register for Peacenik',
           to: '/registration',
         },
       ]} />

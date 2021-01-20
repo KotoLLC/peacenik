@@ -24,14 +24,14 @@ export const BottomBar = React.memo(() => {
             <FooterMenuALink href="https://docs.koto.at/#/help">CONTACT US</FooterMenuALink>
           </FooterMenuItem>
           <FooterMenuItem>
-            <FooterMenuALink href="https://docs.koto.at">ABOUT KOTO</FooterMenuALink>
+            <FooterMenuALink href="https://docs.koto.at">ABOUT Peacenik</FooterMenuALink>
           </FooterMenuItem>
           <FooterMenuItem>
             <FooterMenuLink to="/docs/code-of-conduct">TERMS OF USE</FooterMenuLink>
           </FooterMenuItem>
         </FooterMenu>
       </FooterWrapper>
-      <CopyrightWrapper>Koto © Copyright 2021 | All Rights Reserved</CopyrightWrapper>
+      <CopyrightWrapper>Koto LLC © Copyright 2021 | All Rights Reserved</CopyrightWrapper>
     </BottomBarWrapper>
   )
 })

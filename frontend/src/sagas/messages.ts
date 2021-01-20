@@ -16,10 +16,10 @@ export function* watchGetMessages() {
       const messageTokens = hubsForMessagesBack2Front(response.data?.tokens)
       yield put(Actions.messages.getMessagesSuccess(messageTokens))
   
-      const kotoMessageTokens = {
+      const peacenikMessageTokens = {
         tokens: messageTokens
       }
-      localStorage.setItem('kotoMessageTokens', JSON.stringify(kotoMessageTokens))
+      localStorage.setItem('peacenikMessageTokens', JSON.stringify(peacenikMessageTokens))
   
       const state = yield select()
       const hubsWithMessages = selectors.messages.hubsWithMessages(state)

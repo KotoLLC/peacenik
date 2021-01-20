@@ -9,7 +9,7 @@ export function* watchlogin(action: { type: string, payload: ApiTypes.Login }) {
   if (response.status === 200) {
     yield put(Actions.profile.getProfileRequest())
     yield put(Actions.authorization.loginSucces())
-    localStorage.setItem('kotoIsLogged', 'true')
+    localStorage.setItem('peacenikIsLogged', 'true')
   } else {
     yield put(Actions.authorization.loginFailed(response?.error?.response?.data?.msg || 'Server error'))
   }
@@ -33,8 +33,8 @@ export function* watchGetAuthToken() {
 
   if (response.status === 200) {
     if (response.data?.token) {
-      localStorage.setItem('kotoAuthToken', JSON.stringify(response.data?.token))
-      localStorage.setItem('kotoAuthTokenDate', JSON.stringify(new Date()))
+      localStorage.setItem('peacenikAuthToken', JSON.stringify(response.data?.token))
+      localStorage.setItem('peacenikAuthTokenDate', JSON.stringify(new Date()))
       yield put(Actions.authorization.getAuthTokenSucces(response.data?.token))
     }
   } else if (response.error.response.status === 401) {

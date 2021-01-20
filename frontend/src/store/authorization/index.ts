@@ -10,8 +10,8 @@ export interface State {
   authToken: string
 }
 
-const isLogged = localStorage.getItem('kotoIsLogged')
-const authToken = localStorage.getItem('kotoAuthToken')
+const isLogged = localStorage.getItem('peacenikIsLogged')
+const authToken = localStorage.getItem('peacenikAuthToken')
 
 const initialState: State = {
   isLogged: (isLogged === 'true') ? true : false,

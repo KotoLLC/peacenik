@@ -51,7 +51,7 @@ export const NoHubs: React.FC<Props> = (props) => {
       <ContainerStyled maxWidth="md">
         <ReactMarkdown>{`
 
-# Welcome to Koto!
+# Welcome to Peacenik!
 
 ## Good news. 
 
@@ -92,13 +92,13 @@ Another way is to create your own hub.
 
 ### Sponsored hubs
 
-If you want someone from the Koto team to create and sponsor your hub, send an email to **admin@koto.at** and we'll get to work. This is the easiest way to get started. For now we're offering this for free but that will inevitably change. Hosting is expensive!
+If you want someone from the Peacenik team to create and sponsor your hub, send an email to **admin@koto.at** and we'll get to work. This is the easiest way to get started. For now we're offering this for free but that will inevitably change. Hosting is expensive!
 
 ![](${fifthPicture})
 
 ### Host it yourself
 
-You can host your own hub on Amazon, Google, Digital Ocean, etc. Of course, this requires some technical skills on your part. Visit the Koto documentation to learn how it works.
+You can host your own hub on Amazon, Google, Digital Ocean, etc. Of course, this requires some technical skills on your part. Visit the Peacenik documentation to learn how it works.
 
 ![](${fourthPicture})
 

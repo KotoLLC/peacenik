@@ -114,7 +114,7 @@ export const LoginForm = (props) => {
     <ContainerStyled maxWidth="sm">
       <Header>
         <Logo src={logo} />
-        <Typography variant="subtitle1" gutterBottom>Koto is an ad-free, friendly, distributed social network.</Typography>
+        <Typography variant="subtitle1" gutterBottom>Peacenik is an ad-free, friendly, distributed social network.</Typography>
       </Header>
       <FormWrapper onSubmit={onFormSubmit}>
         <FormControlStyled variant="outlined">
@@ -192,11 +192,11 @@ export const LoginForm = (props) => {
           to: '/forgot-username'
         },
         {
-          title: 'Register for Koto',
+          title: 'Register for Peacenik',
           to: '/registration',
         },
         {
-          title: 'About Koto',
+          title: 'About Peacenik',
           href: 'https://docs.koto.at',
         },
         {

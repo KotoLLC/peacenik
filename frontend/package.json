@@ -1,5 +1,5 @@
 {
-	"name": "koto-frontend",
+	"name": "peacenik-frontend",
 	"version": "0.1.0",
 	"scripts": {
 		"start": "react-app-rewired start",

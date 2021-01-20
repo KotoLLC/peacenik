@@ -15,7 +15,7 @@ export default {
   },
  
   postMessage: async (data: ApiTypes.Messages.PostMessage) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {
@@ -28,7 +28,7 @@ export default {
   },
  
   deleteMessage: async (data: ApiTypes.Messages.DeleteMessage) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {
@@ -41,7 +41,7 @@ export default {
   },
   
   editMessage: async (data: ApiTypes.Messages.EditMessage) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {
@@ -54,7 +54,7 @@ export default {
   },
   
   getMessagesFromHub: async (data: ApiTypes.Messages.MessagesFromHub) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {
@@ -67,7 +67,7 @@ export default {
   },
 
   getMessageById: async (data: ApiTypes.Messages.MessagesById) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {
@@ -80,7 +80,7 @@ export default {
   },
 
   postComment: async (data: ApiTypes.Messages.PostComment) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {
@@ -93,7 +93,7 @@ export default {
   },
 
   editComment: async (data: ApiTypes.Messages.EditComment) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {
@@ -106,7 +106,7 @@ export default {
   },
   
   deleteComment: async (data: ApiTypes.Messages.DeleteComment) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {
@@ -119,7 +119,7 @@ export default {
   },
 
   getUploadLink: async (data: ApiTypes.Messages.UploadLinkRequest) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {
@@ -147,7 +147,7 @@ export default {
   },
   
   likeMessage: async (data: ApiTypes.Messages.Like) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {
@@ -164,7 +164,7 @@ export default {
   },
   
   likeComment: async (data: ApiTypes.Messages.Like) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {
@@ -180,7 +180,7 @@ export default {
   },
 
   hideMessage: async (data: ApiTypes.Messages.Hide) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {
@@ -196,7 +196,7 @@ export default {
   },
   
   hideComment: async (data: ApiTypes.Messages.Hide) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {
@@ -212,7 +212,7 @@ export default {
   },
   
   getlikesForMessage: async (data: ApiTypes.Messages.Like) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {
@@ -227,7 +227,7 @@ export default {
   },
  
   getlikesForComment: async (data: ApiTypes.Messages.Like) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {
@@ -242,7 +242,7 @@ export default {
   },
  
   reportMessageHub: async (data: ApiTypes.Messages.ReportMessageHub) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {

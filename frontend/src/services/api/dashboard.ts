@@ -3,7 +3,7 @@ import { ApiTypes } from 'src/types'
 
 export default {
   getMessageReports: async (host: string) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {
@@ -17,7 +17,7 @@ export default {
   },
 
   resolveReport: async (data: ApiTypes.Dashboard.ResolveReport) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {
@@ -31,7 +31,7 @@ export default {
   },
 
   deleteReportedMessage: async (data: ApiTypes.Dashboard.DeleteReportedMessage) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {
@@ -45,7 +45,7 @@ export default {
   },
 
   blockReportedUser: async (data: ApiTypes.Dashboard.EjectUser) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {

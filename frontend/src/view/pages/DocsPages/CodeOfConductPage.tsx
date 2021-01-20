@@ -58,8 +58,8 @@ export const CodeOfConductPage = React.memo(() => (
 
     <Typography variant="h6" component="h6" gutterBottom>NO BULLYING.</Typography>
     <Typography variant="body1" gutterBottom paragraph>
-      Koto is for sharing and belonging, not for attacking marginalized or vulnerable groups of people. Everyone has
-      a right to use Koto free of harassment, bullying, and threats of violence. Users that incite violence or that
+      Peacenik is for sharing and belonging, not for attacking marginalized or vulnerable groups of people. Everyone has
+      a right to use Peacenik free of harassment, bullying, and threats of violence. Users that incite violence or that
       promote hate based on identity or vulnerability will be ejected.
     </Typography>
 

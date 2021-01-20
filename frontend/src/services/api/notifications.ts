@@ -3,7 +3,7 @@ import { CommonTypes } from 'src/types'
 
 export default {
   getNotificationsFromHub: async (host: string) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {
@@ -30,7 +30,7 @@ export default {
   },
   
   cleanNotificationsInHub: async (data: CommonTypes.NotificationTypes.LastKnown) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {
@@ -53,7 +53,7 @@ export default {
   },
   
   markAsReadNotificationsInHub: async (data: CommonTypes.NotificationTypes.LastKnown) => {
-    const authToken = JSON.parse(localStorage.getItem('kotoAuthToken')!)
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
       headers: {

@@ -7,12 +7,12 @@ export interface State {
   isConnectionError: boolean
 }
 
-const kotoIsAboutUsViewed = localStorage.getItem('kotoIsAboutUsViewed')
+const peacenikIsAboutUsViewed = localStorage.getItem('peacenikIsAboutUsViewed')
 
 const initialState: State = {
   errorMessage: '',
   successMessage: '',
-  isAboutUsViewed: (kotoIsAboutUsViewed) ? JSON.parse(kotoIsAboutUsViewed) : false,
+  isAboutUsViewed: (peacenikIsAboutUsViewed) ? JSON.parse(peacenikIsAboutUsViewed) : false,
   isConnectionError: false,
 }
 

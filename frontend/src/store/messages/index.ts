@@ -19,10 +19,10 @@ export interface State {
   messageById: ApiTypes.Messages.Message | null | undefined
 }
 
-const kotoMessageTokens = localStorage.getItem('kotoMessageTokens') 
+const peacenikMessageTokens = localStorage.getItem('peacenikMessageTokens') 
 let messageTokensLocal
-if (kotoMessageTokens !== 'undefined' && kotoMessageTokens !== null) {
-  messageTokensLocal = JSON.parse(kotoMessageTokens)?.tokens
+if (peacenikMessageTokens !== 'undefined' && peacenikMessageTokens !== null) {
+  messageTokensLocal = JSON.parse(peacenikMessageTokens)?.tokens
 }
 
 const initialState: State = {
