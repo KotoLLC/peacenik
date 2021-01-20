@@ -6,13 +6,13 @@ import CustomDropdownMenu from '../CustomDropdownMenu'
 import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive'
 import selectors from '@selectors/index'
 import { StoreTypes, ApiTypes } from 'src/types'
-import logo from './../../../assets/images/logo-black.svg'
-import logoMobile from './../../../assets/images/logo-icon.svg'
+import logo from './../../../assets/images/logo-1.png'
 import { Link } from 'react-router-dom'
 import HomeIcon from '@material-ui/icons/Home'
 import ChatBubbleIcon from '@material-ui/icons/ChatBubble'
 import PersonIcon from '@material-ui/icons/Person'
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt'
+import logoMobile from '@assets/images/icon.png'
 
 import {
   NavigationsWrapper,

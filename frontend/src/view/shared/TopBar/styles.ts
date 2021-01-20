@@ -25,7 +25,7 @@ export const LogoMobile = styled.img`
 `
 
 export const Logo = styled.img`
-  max-height: 42px;
+  max-width: 142px;
   position: relative;
   top: 3px;
 

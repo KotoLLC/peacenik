@@ -45,7 +45,7 @@ export const LogoIcon = styled.img`
   max-width: 44px;
   
   @media (max-width: 600px){
-    max-width: 36px;
+    max-width: 40px;
   }
 `
 

@@ -39,7 +39,7 @@ export const Header = styled.div`
 `
 
 export const Logo = styled.img`
-  max-height: 55px;
+  max-height: 155px;
   position: relative;
   margin-bottom: 20px;
 `
