@@ -13,6 +13,7 @@ import (
 
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/token"
+	"github.com/mreider/koto/backend/userhub/caches"
 	"github.com/mreider/koto/backend/userhub/config"
 	"github.com/mreider/koto/backend/userhub/repo"
 
@@ -21,6 +22,7 @@ import (
 
 type BaseService struct {
 	repos              repo.Repos
+	userCache          caches.Users
 	s3Storage          *common.S3Storage
 	tokenGenerator     token.Generator
 	tokenParser        token.Parser
@@ -29,10 +31,11 @@ type BaseService struct {
 	notificationSender NotificationSender
 }
 
-func NewBase(repos repo.Repos, s3Storage *common.S3Storage, tokenGenerator token.Generator, tokenParser token.Parser,
+func NewBase(repos repo.Repos, userCache caches.Users, s3Storage *common.S3Storage, tokenGenerator token.Generator, tokenParser token.Parser,
 	mailSender *common.MailSender, cfg config.Config, notificationSender NotificationSender) *BaseService {
 	return &BaseService{
 		repos:              repos,
+		userCache:          userCache,
 		s3Storage:          s3Storage,
 		tokenGenerator:     tokenGenerator,
 		tokenParser:        tokenParser,
@@ -42,11 +45,11 @@ func NewBase(repos repo.Repos, s3Storage *common.S3Storage, tokenGenerator token
 	}
 }
 
-func (s *BaseService) getUser(ctx context.Context) repo.User {
+func (s *BaseService) getMe(ctx context.Context) repo.User {
 	return ctx.Value(ContextUserKey).(repo.User)
 }
 
-func (s *BaseService) hasUser(ctx context.Context) bool {
+func (s *BaseService) hasMe(ctx context.Context) bool {
 	_, ok := ctx.Value(ContextUserKey).(repo.User)
 	return ok
 }
@@ -61,8 +64,8 @@ func (s *BaseService) getGroup(ctx context.Context, groupID string) (*repo.Group
 	if group == nil {
 		return nil, false
 	}
-	user := s.getUser(ctx)
-	return group, group.AdminID == user.ID
+	me := s.getMe(ctx)
+	return group, group.AdminID == me.ID
 }
 
 func (s *BaseService) createBlobLink(ctx context.Context, blobID string) (string, error) {
@@ -73,12 +76,14 @@ func (s *BaseService) createBlobLink(ctx context.Context, blobID string) (string
 }
 
 func (s *BaseService) GetUserAttachments(ctx context.Context, user repo.User) common.MailAttachmentList {
-	if user.AvatarThumbnailID == "" {
+	me := s.getMe(ctx)
+	userInfo := s.userCache.User(user.ID, me.ID)
+	if userInfo.AvatarThumbnailID == "" {
 		return nil
 	}
 
 	var b bytes.Buffer
-	err := s.s3Storage.Read(ctx, user.AvatarThumbnailID, &b)
+	err := s.s3Storage.Read(ctx, userInfo.AvatarThumbnailID, &b)
 	if err != nil {
 		log.Println("can't read user avatar:", err)
 		return nil

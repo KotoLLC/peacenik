@@ -16,8 +16,6 @@ type Group struct {
 	Name              string    `json:"name" db:"name"`
 	Description       string    `json:"description" db:"description"`
 	AdminID           string    `json:"admin_id" db:"admin_id"`
-	AdminName         string    `json:"admin_name" db:"admin_name"`
-	AdminFullName     string    `json:"admin_full_name" db:"admin_full_name"`
 	AvatarOriginalID  string    `json:"avatar_original_id,omitempty" db:"avatar_original_id"`
 	AvatarThumbnailID string    `json:"avatar_thumbnail_id,omitempty" db:"avatar_thumbnail_id"`
 	IsPublic          bool      `json:"is_public" db:"is_public"`
@@ -34,13 +32,8 @@ type GroupInvite struct {
 	GroupDescription  string       `db:"group_description"`
 	GroupIsPublic     bool         `db:"group_is_public"`
 	InviterID         string       `db:"inviter_id"`
-	InviterName       string       `db:"inviter_name"`
-	InviterFullName   string       `db:"inviter_full_name"`
-	InviterEmail      string       `db:"inviter_email"`
 	InviterAvatarID   string       `db:"inviter_avatar_id"`
 	InvitedID         string       `db:"invited_id"`
-	InvitedName       string       `db:"invited_name"`
-	InvitedFullName   string       `db:"invited_full_name"`
 	InvitedEmail      string       `db:"invited_email"`
 	InvitedAvatarID   string       `db:"invited_avatar_id"`
 	CreatedAt         time.Time    `db:"created_at"`
@@ -93,11 +86,10 @@ type groupRepo struct {
 func (r *groupRepo) FindGroupByIDOrName(value string) *Group {
 	var group Group
 	err := r.db.Get(&group, `
-		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
+		select g.id, g.name, g.description, g.admin_id,
 		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id,
 		       (select count(*) from group_users where group_id = g.id) member_count
 		from groups g
-			inner join users u on u.id = g.admin_id
 		where g.id = $1 or lower(g.name) = $2`,
 		value, strings.ToLower(value))
 	if err != nil {
@@ -112,11 +104,10 @@ func (r *groupRepo) FindGroupByIDOrName(value string) *Group {
 func (r *groupRepo) FindGroupByID(id string) *Group {
 	var group Group
 	err := r.db.Get(&group, `
-		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
+		select g.id, g.name, g.description, g.admin_id,
 		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id,
 		       (select count(*) from group_users where group_id = g.id) member_count
 		from groups g
-			inner join users u on u.id = g.admin_id
 		where g.id = $1`, id)
 	if err != nil {
 		if merry.Is(err, sql.ErrNoRows) {
@@ -130,11 +121,10 @@ func (r *groupRepo) FindGroupByID(id string) *Group {
 func (r *groupRepo) FindGroupByName(name string) *Group {
 	var group Group
 	err := r.db.Get(&group, `
-		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
+		select g.id, g.name, g.description, g.admin_id,
 		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id,
 		       (select count(*) from group_users where group_id = g.id) member_count
 		from groups g
-			inner join users u on u.id = g.admin_id
 		where lower(g.name) = $1`,
 		strings.ToLower(name))
 	if err != nil {
@@ -412,12 +402,10 @@ func (r *groupRepo) InvitesFromMe(user User) []GroupInvite {
 	var invites []GroupInvite
 	err := r.db.Select(&invites, `
 		select i.id, g.id as group_id, g.name group_name, g.description group_description, g.is_public group_is_public,
-		       i.inviter_id, coalesce(u.id, '') as invited_id, coalesce(u.name, '') invited_name, coalesce(u.full_name, '') invited_full_name, coalesce(u.email, i.invited_email) as invited_email,
-		       coalesce(u.avatar_thumbnail_id, '') invited_avatar_id,
+		       i.inviter_id, coalesce(i.invited_id, '') as invited_id, i.invited_email,
 		       i.created_at, i.accepted_at, i.rejected_at, i.accepted_by_admin_at, i.rejected_by_admin_at, i.message
 		from group_invites i
 		    inner join groups g on g.id = i.group_id
-			left join users u on u.id = i.invited_id 
 		where i.inviter_id = $1
 			and not exists(select * from blocked_users
 						   where (user_id = $1 and blocked_user_id = i.invited_id)
@@ -434,11 +422,10 @@ func (r *groupRepo) InvitesForMe(user User) []GroupInvite {
 	var invites []GroupInvite
 	err := r.db.Select(&invites, `
 		select i.id, g.id as group_id, g.name group_name, g.description group_description, g.is_public group_is_public,
-		       i.inviter_id, u.name inviter_name, u.full_name inviter_full_name, u.email inviter_email, u.avatar_thumbnail_id inviter_avatar_id,
+		       i.inviter_id,
 		       i.created_at, i.accepted_at, i.rejected_at, i.accepted_by_admin_at, i.rejected_by_admin_at, i.message
 		from group_invites i
 		    inner join groups g on g.id = i.group_id
-			inner join users u on u.id = i.inviter_id
 		where i.invited_id = $1
 			and not exists(select * from blocked_users
 						   where (user_id = $1 and blocked_user_id = i.inviter_id)
@@ -464,7 +451,7 @@ func (r *groupRepo) RemoveUserFromGroup(groupID, userID string) {
 func (r *groupRepo) GroupMembers(groupID string) []User {
 	var users []User
 	err := r.db.Select(&users, `
-		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at
+		select id, password_hash, created_at, updated_at, confirmed_at
 		from users
 		where id in (select user_id from group_users where group_id = $1)`,
 		groupID)
@@ -477,11 +464,10 @@ func (r *groupRepo) GroupMembers(groupID string) []User {
 func (r *groupRepo) ManagedGroups(adminID string) []Group {
 	var groups []Group
 	err := r.db.Select(&groups, `
-		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
+		select g.id, g.name, g.description, g.admin_id,
 		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id,
 		       (select count(*) from group_users where group_id = g.id) member_count
 		from groups g
-			inner join users u on u.id = g.admin_id
 		where g.admin_id = $1
 		order by g.name;`,
 		adminID)
@@ -559,13 +545,10 @@ func (r *groupRepo) InvitesToConfirm(adminID string) []GroupInvite {
 	var invites []GroupInvite
 	err := r.db.Select(&invites, `
 		select i.id, g.id as group_id, g.name group_name, g.description group_description, g.is_public group_is_public,
-		       i.inviter_id, ur.name inviter_name, ur.full_name inviter_full_name, ur.avatar_thumbnail_id inviter_avatar_id,
-		       i.invited_id, ud.name invited_name, ud.full_name invited_full_name, ud.avatar_thumbnail_id inviter_avatar_id,
+		       i.inviter_id, i.invited_id,
 		       i.created_at, i.accepted_at, i.rejected_at, i.accepted_by_admin_at, i.rejected_by_admin_at, i.message
 		from group_invites i
 		    inner join groups g on g.id = i.group_id
-			inner join users ur on ur.id = i.inviter_id
-			inner join users ud on ud.id = i.invited_id
 		where g.admin_id = $1 and i.accepted_by_admin_at is null and rejected_by_admin_at is null
 		order by g.name, i.created_at desc;`,
 		adminID)
@@ -578,11 +561,10 @@ func (r *groupRepo) InvitesToConfirm(adminID string) []GroupInvite {
 func (r *groupRepo) PublicGroups() []Group {
 	var groups []Group
 	err := r.db.Select(&groups, `
-		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
+		select g.id, g.name, g.description, g.admin_id,
 		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id,
 		       (select count(*) from group_users where group_id = g.id) member_count
 		from groups g
-			inner join users u on u.id = g.admin_id
 		where g.is_public = true
 		order by g.name;`)
 	if err != nil {
@@ -620,11 +602,10 @@ func (r *groupRepo) JoinStatuses(userID string) map[string]string {
 func (r *groupRepo) UserGroups(userID string) []Group {
 	var groups []Group
 	err := r.db.Select(&groups, `
-		select g.id, g.name, g.description, g.admin_id, u.name admin_name, u.full_name admin_full_name,
+		select g.id, g.name, g.description, g.admin_id,
 		       g.avatar_original_id, g.avatar_thumbnail_id, g.is_public, g.created_at, g.updated_at, g.background_id,
 		       (select count(*) from group_users where group_id = g.id) member_count
 		from groups g
-			inner join users u on u.id = g.admin_id
 		where exists(select * from group_users where user_id = $1 and group_id = g.id)
 		order by g.name;`,
 		userID)

@@ -39,7 +39,7 @@ spec:
           emptyDir: {}
       containers:
       - name: user-hub
-        image: docker.pkg.github.com/kotollc/koto/userhub:<TAG>
+        image: ghcr.io/kotollc/koto/userhub:<TAG>
         imagePullPolicy: Always
         ports:
         - containerPort: 12001

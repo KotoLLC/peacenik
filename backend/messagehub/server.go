@@ -202,11 +202,12 @@ func (s *Server) checkAuth(next http.Handler) http.Handler {
 			}
 		}
 
-		user := s.repos.User.AddUser(userID, userName, userFullName)
+		user := s.repos.User.AddUser(userID)
 
 		ctx := context.WithValue(r.Context(), services.ContextUserKey, services.User{
 			ID:           userID,
 			Name:         userName,
+			FullName:     userFullName,
 			IsHubAdmin:   isHubAdmin,
 			IsBlocked:    user.BlockedAt.Valid,
 			BlockedUsers: blockedUsers,

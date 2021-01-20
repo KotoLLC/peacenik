@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/mreider/koto/backend/testutils"
+	"github.com/mreider/koto/backend/userhub/caches"
 	"github.com/mreider/koto/backend/userhub/config"
 	"github.com/mreider/koto/backend/userhub/migrate"
 	"github.com/mreider/koto/backend/userhub/repo"
@@ -28,7 +29,8 @@ func TestGroupServiceTestSuite(t *testing.T) {
 func (s *GroupServiceTestSuite) SetupSuite() {
 	s.te = testutils.NewTestEnvironment("group_service", migrate.Migrate)
 	s.repos = repo.NewRepos(s.te.DB)
-	base := services.NewBase(s.repos, s.te.Storage, nil, nil, nil, config.Config{}, nil)
+	userCache := caches.NewUsers(s.te.DB)
+	base := services.NewBase(s.repos, userCache, s.te.Storage, nil, nil, nil, config.Config{}, nil)
 	s.service = services.NewGroup(base)
 }
 
@@ -884,15 +886,13 @@ func (s *GroupServiceTestSuite) Test_DeleteGroup() {
 
 func (s *GroupServiceTestSuite) userContext(name string) context.Context {
 	ctx := context.WithValue(context.Background(), services.ContextUserKey, repo.User{
-		ID:       name,
-		Name:     name + "-name",
-		FullName: name + " " + name,
+		ID: name,
 	})
 	return context.WithValue(ctx, services.ContextIsAdminKey, false)
 }
 
 func (s *GroupServiceTestSuite) addUser(name string) {
-	s.repos.User.AddUser(name, name+"-name", name+"@mail.org", name+" "+name, "")
+	s.repos.User.AddUser(name, name+"-name", name+"@mail.org", name+" "+name, "", false)
 }
 
 func (s *GroupServiceTestSuite) addPublicGroup(name, adminName string) string {

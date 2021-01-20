@@ -19,6 +19,7 @@ import (
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/token"
 	"github.com/mreider/koto/backend/userhub/bcrypt"
+	"github.com/mreider/koto/backend/userhub/caches"
 	"github.com/mreider/koto/backend/userhub/config"
 	"github.com/mreider/koto/backend/userhub/repo"
 	"github.com/mreider/koto/backend/userhub/routers"
@@ -37,6 +38,7 @@ type Server struct {
 	cfg            config.Config
 	pubKeyPEM      string
 	repos          repo.Repos
+	userCache      caches.Users
 	tokenGenerator token.Generator
 	tokenParser    token.Parser
 	s3Storage      *common.S3Storage
@@ -44,7 +46,7 @@ type Server struct {
 	staticFS       http.FileSystem
 }
 
-func NewServer(cfg config.Config, pubKeyPEM string, repos repo.Repos, tokenGenerator token.Generator, tokenParser token.Parser, s3Storage *common.S3Storage,
+func NewServer(cfg config.Config, pubKeyPEM string, repos repo.Repos, userCache caches.Users, tokenGenerator token.Generator, tokenParser token.Parser, s3Storage *common.S3Storage,
 	staticFS http.FileSystem) *Server {
 	sessionStore := sessions.NewCookieStore([]byte(cookieAuthenticationKey))
 	sessionStore.Options.HttpOnly = true
@@ -54,6 +56,7 @@ func NewServer(cfg config.Config, pubKeyPEM string, repos repo.Repos, tokenGener
 		cfg:            cfg,
 		pubKeyPEM:      pubKeyPEM,
 		repos:          repos,
+		userCache:      userCache,
 		tokenGenerator: tokenGenerator,
 		tokenParser:    tokenParser,
 		s3Storage:      s3Storage,
@@ -66,7 +69,7 @@ func (s *Server) Run() error {
 	r := chi.NewRouter()
 	s.setupMiddlewares(r)
 
-	r.Mount("/image", routers.Image(s.repos, s.s3Storage, s.staticFS))
+	r.Mount("/image", s.checkAuth(routers.Image(s.repos, s.userCache, s.s3Storage, s.staticFS)))
 
 	rpcOptions := []interface{}{
 		&twirp.ServerHooks{
@@ -99,9 +102,9 @@ func (s *Server) Run() error {
 			return merry.Prepend(err, "can't create Firebase client")
 		}
 	}
-	notificationSender := services.NewNotificationSender(s.repos, firebaseClient, mailSender)
+	notificationSender := services.NewNotificationSender(s.repos, s.userCache, firebaseClient, mailSender)
 	notificationSender.Start()
-	baseService := services.NewBase(s.repos, s.s3Storage, s.tokenGenerator, s.tokenParser, mailSender,
+	baseService := services.NewBase(s.repos, s.userCache, s.s3Storage, s.tokenGenerator, s.tokenParser, mailSender,
 		s.cfg, notificationSender)
 	notificationSender.SetGetUserAttachments(baseService.GetUserAttachments)
 
@@ -192,7 +195,8 @@ func (s *Server) findSessionUser(next http.Handler) http.Handler {
 			return
 		}
 
-		isAdmin := s.cfg.IsAdmin(user.Name)
+		userInfo := s.userCache.UserFullAccess(user.ID)
+		isAdmin := s.cfg.IsAdmin(userInfo.Name)
 
 		ctx := context.WithValue(r.Context(), services.ContextUserKey, *user)
 		ctx = context.WithValue(ctx, services.ContextIsAdminKey, isAdmin)
@@ -216,7 +220,8 @@ func (s *Server) checkAuth(next http.Handler) http.Handler {
 			http.Error(w, "", http.StatusUnauthorized)
 			return
 		}
-		isAdmin := s.cfg.IsAdmin(user.Name) || s.cfg.IsAdmin(user.Email)
+		userInfo := s.userCache.UserFullAccess(user.ID)
+		isAdmin := s.cfg.IsAdmin(userInfo.Name) || s.cfg.IsAdmin(userInfo.Email)
 		if !isAdmin && !user.ConfirmedAt.Valid && r.URL.Path != "/rpc.UserService/Me" {
 			http.Error(w, "", http.StatusForbidden)
 			return

@@ -59,6 +59,8 @@ message UserEditProfileRequest {
     string full_name = 9;
     bool background_changed = 10;
     string background_id = 11;
+    bool hide_identity_changed = 12;
+    bool hide_identity = 13;
 }
 
 message UserUsersRequest {
@@ -71,7 +73,6 @@ message UserUsersResponse {
 
 message UserUserRequest {
     string user_id = 1;
-    string user_name = 2;
 }
 
 message UserUserResponse {

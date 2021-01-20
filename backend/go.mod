@@ -6,7 +6,7 @@ require (
 	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/ansel1/merry v1.5.1
 	github.com/appleboy/go-fcm v0.1.5
-	github.com/aws/aws-sdk-go v1.36.21
+	github.com/aws/aws-sdk-go v1.36.29
 	github.com/containerd/containerd v1.4.3 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/disintegration/imaging v1.6.2
@@ -24,7 +24,7 @@ require (
 	github.com/jinzhu/configor v1.2.1
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/lib/pq v1.9.0
-	github.com/minio/minio-go/v7 v7.0.6
+	github.com/minio/minio-go/v7 v7.0.7
 	github.com/moby/term v0.0.0-20201110203204-bea5bbe245bf // indirect
 	github.com/morikuni/aec v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
@@ -32,13 +32,13 @@ require (
 	github.com/rakyll/statik v0.1.7
 	github.com/rubenv/sql-migrate v0.0.0-20200616145509-8d140a17f351
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
-	github.com/stretchr/testify v1.6.1
+	github.com/stretchr/testify v1.7.0
 	github.com/twitchtv/twirp v7.1.0+incompatible
 	github.com/vmware-labs/yaml-jsonpointer v0.1.1
 	github.com/xhit/go-simple-mail/v2 v2.7.0
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
 	golang.org/x/net v0.0.0-20201202161906-c7110b5ffcbb // indirect
 	google.golang.org/protobuf v1.25.0
-	gopkg.in/yaml.v3 v3.0.0-20210105161348-2e78108cf5f8
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 	gotest.tools/v3 v3.0.3 // indirect
 )

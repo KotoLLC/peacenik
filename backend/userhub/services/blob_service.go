@@ -26,7 +26,7 @@ func NewBlob(base *BaseService) rpc.BlobService {
 }
 
 func (s *blobService) UploadLink(ctx context.Context, r *rpc.BlobUploadLinkRequest) (*rpc.BlobUploadLinkResponse, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 
 	blobID, err := common.GenerateRandomString(blobIDLength)
 	if err != nil {
@@ -38,10 +38,11 @@ func (s *blobService) UploadLink(ctx context.Context, r *rpc.BlobUploadLinkReque
 		blobID = strings.TrimSuffix(r.FileName, ext) + "-" + blobID + ext
 	}
 
+	meInfo := s.userCache.UserFullAccess(me.ID)
 	uploadLink, formData, err := s.s3Storage.CreateUploadLink(ctx, blobID, r.ContentType,
 		map[string]string{
-			"user-id":   user.ID,
-			"user-name": user.Name,
+			"user-id":   me.ID,
+			"user-name": meInfo.Name,
 		})
 	if err != nil {
 		return nil, merry.Wrap(err)

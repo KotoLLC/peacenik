@@ -22,6 +22,7 @@ message AuthRegisterRequest {
     string full_name = 3;
     string password = 4;
     string invite_token = 5;
+    bool hide_identity = 6;
 }
 
 message AuthLoginRequest {

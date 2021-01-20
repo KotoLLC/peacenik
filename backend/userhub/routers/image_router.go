@@ -11,12 +11,15 @@ import (
 	"github.com/go-chi/chi"
 
 	"github.com/mreider/koto/backend/common"
+	"github.com/mreider/koto/backend/userhub/caches"
 	"github.com/mreider/koto/backend/userhub/repo"
+	"github.com/mreider/koto/backend/userhub/services"
 )
 
-func Image(repos repo.Repos, s3Storage *common.S3Storage, staticFS http.FileSystem) http.Handler {
+func Image(repos repo.Repos, userCache caches.Users, s3Storage *common.S3Storage, staticFS http.FileSystem) http.Handler {
 	h := &imageRouter{
 		repos:     repos,
+		userCache: userCache,
 		s3Storage: s3Storage,
 		staticFS:  staticFS,
 	}
@@ -28,6 +31,7 @@ func Image(repos repo.Repos, s3Storage *common.S3Storage, staticFS http.FileSyst
 
 type imageRouter struct {
 	repos     repo.Repos
+	userCache caches.Users
 	s3Storage *common.S3Storage
 	staticFS  http.FileSystem
 
@@ -49,13 +53,16 @@ func (ir *imageRouter) UserAvatar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user.AvatarThumbnailID == "" {
+	me := r.Context().Value(services.ContextUserKey).(repo.User)
+	userInfo := ir.userCache.User(user.ID, me.ID)
+
+	if userInfo.AvatarThumbnailID == "" || (me.ID != userID && !ir.repos.Friend.AreFriends(me.ID, userID)) {
 		ir.loadNoAvatarImage()
 		w.Header().Set("Cache-Control", "max-age=60")
 		http.ServeContent(w, r, "no-avatar.png", ir.noAvatarModTime, bytes.NewReader(ir.noAvatarImage))
 		return
 	}
-	link, err := ir.s3Storage.CreateLink(r.Context(), user.AvatarThumbnailID, time.Hour*24)
+	link, err := ir.s3Storage.CreateLink(r.Context(), userInfo.AvatarThumbnailID, time.Hour*24)
 	if err != nil {
 		log.Println("can't create s3 link: ", err)
 		w.WriteHeader(http.StatusInternalServerError)

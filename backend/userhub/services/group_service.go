@@ -28,8 +28,8 @@ type groupService struct {
 }
 
 func (s *groupService) ManagedGroup(ctx context.Context, _ *rpc.Empty) (*rpc.GroupManagedGroupsResponse, error) {
-	user := s.getUser(ctx)
-	groups := s.repos.Group.ManagedGroups(user.ID)
+	me := s.getMe(ctx)
+	groups := s.repos.Group.ManagedGroups(me.ID)
 	rpcGroups := make([]*rpc.Group, len(groups))
 	for i, group := range groups {
 		rpcGroups[i] = &rpc.Group{
@@ -47,7 +47,7 @@ func (s *groupService) ManagedGroup(ctx context.Context, _ *rpc.Empty) (*rpc.Gro
 }
 
 func (s *groupService) AddGroup(ctx context.Context, r *rpc.GroupAddGroupRequest) (*rpc.GroupAddGroupResponse, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 
 	if r.Name == "" {
 		return nil, twirp.InvalidArgumentError("name", "shouldn't be empty")
@@ -67,7 +67,7 @@ func (s *groupService) AddGroup(ctx context.Context, r *rpc.GroupAddGroupRequest
 
 	groupID := common.GenerateUUID()
 
-	s.repos.Group.AddGroup(groupID, r.Name, r.Description, user.ID, r.IsPublic)
+	s.repos.Group.AddGroup(groupID, r.Name, r.Description, me.ID, r.IsPublic)
 
 	group = s.repos.Group.FindGroupByID(groupID)
 	if group == nil {
@@ -170,8 +170,8 @@ func (s *groupService) setAvatar(ctx context.Context, group repo.Group, avatarID
 }
 
 func (s *groupService) AddUser(ctx context.Context, r *rpc.GroupAddUserRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
-	if user.ID == r.UserId {
+	me := s.getMe(ctx)
+	if me.ID == r.UserId {
 		return nil, twirp.InvalidArgumentError("user_id", "")
 	}
 
@@ -184,7 +184,7 @@ func (s *groupService) AddUser(ctx context.Context, r *rpc.GroupAddUserRequest) 
 		return nil, twirp.NewError(twirp.AlreadyExists, "already in the group.")
 	}
 
-	if s.repos.Friend.AreFriends(user.ID, r.UserId) {
+	if s.repos.Friend.AreFriends(me.ID, r.UserId) {
 		s.repos.Group.AddUserToGroup(r.GroupId, r.UserId)
 	} else {
 		_, err := s.CreateInvite(ctx, &rpc.GroupCreateInviteRequest{
@@ -200,16 +200,16 @@ func (s *groupService) AddUser(ctx context.Context, r *rpc.GroupAddUserRequest) 
 }
 
 func (s *groupService) RequestJoin(ctx context.Context, r *rpc.GroupRequestJoinRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 	return s.CreateInvite(ctx, &rpc.GroupCreateInviteRequest{
 		GroupId: r.GroupId,
-		Invited: user.ID,
+		Invited: me.ID,
 		Message: r.Message,
 	})
 }
 
 func (s *groupService) CreateInvite(ctx context.Context, r *rpc.GroupCreateInviteRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 
 	if r.GroupId == "" {
 		return nil, twirp.NewError(twirp.InvalidArgument, "group_id")
@@ -223,7 +223,7 @@ func (s *groupService) CreateInvite(ctx context.Context, r *rpc.GroupCreateInvit
 		return nil, twirp.NotFoundError("group not found")
 	}
 
-	if user.ID != r.Invited && !s.repos.Group.IsGroupMember(group.ID, user.ID) {
+	if me.ID != r.Invited && !s.repos.Group.IsGroupMember(group.ID, me.ID) {
 		return nil, twirp.NewError(twirp.PermissionDenied, "not a group member")
 	}
 
@@ -242,7 +242,7 @@ func (s *groupService) CreateInvite(ctx context.Context, r *rpc.GroupCreateInvit
 	}
 
 	if invitedUser != nil {
-		areBlocked := s.repos.User.AreBlocked(user.ID, invitedUser.ID)
+		areBlocked := s.repos.User.AreBlocked(me.ID, invitedUser.ID)
 		if areBlocked {
 			return nil, twirp.NotFoundError("user not found")
 		}
@@ -251,11 +251,12 @@ func (s *groupService) CreateInvite(ctx context.Context, r *rpc.GroupCreateInvit
 			return nil, twirp.NewError(twirp.AlreadyExists, "already in the group")
 		}
 
-		s.repos.Group.AddInvite(group.ID, user.ID, invitedUser.ID, r.Message)
+		s.repos.Group.AddInvite(group.ID, me.ID, invitedUser.ID, r.Message)
 		if s.notificationSender != nil {
-			s.notificationSender.SendNotification([]string{invitedUser.ID}, user.DisplayName()+" invited you to the group "+group.Name+"", "group-invite/add", map[string]interface{}{
+			meInfo := s.userCache.UserFullAccess(me.ID)
+			s.notificationSender.SendNotification([]string{invitedUser.ID}, meInfo.DisplayName+" invited you to the group "+group.Name+"", "group-invite/add", map[string]interface{}{
 				"group_id": group.ID,
-				"user_id":  user.ID,
+				"user_id":  me.ID,
 			})
 		}
 		// TODO:
@@ -264,7 +265,7 @@ func (s *groupService) CreateInvite(ctx context.Context, r *rpc.GroupCreateInvit
 		//	log.Println("can't invite by email:", err)
 		//}
 	} else {
-		s.repos.Group.AddInviteByEmail(group.ID, user.ID, r.Invited, r.Message)
+		s.repos.Group.AddInviteByEmail(group.ID, me.ID, r.Invited, r.Message)
 
 		// TODO
 		//err = s.sendInviteLinkToUnregisteredUser(ctx, user, r.Invited)
@@ -277,7 +278,7 @@ func (s *groupService) CreateInvite(ctx context.Context, r *rpc.GroupCreateInvit
 }
 
 func (s *groupService) AcceptInvite(ctx context.Context, r *rpc.GroupAcceptInviteRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 
 	if r.GroupId == "" {
 		return nil, twirp.NewError(twirp.InvalidArgument, "group_id")
@@ -288,50 +289,37 @@ func (s *groupService) AcceptInvite(ctx context.Context, r *rpc.GroupAcceptInvit
 		return nil, twirp.NotFoundError("group not found")
 	}
 
-	if !s.repos.Group.AcceptInvite(r.GroupId, r.InviterId, user.ID) {
+	if !s.repos.Group.AcceptInvite(r.GroupId, r.InviterId, me.ID) {
 		return nil, twirp.NotFoundError("invite not found")
 	}
 
 	if r.InviterId == group.AdminID {
-		s.repos.Group.ConfirmInvite(r.GroupId, r.InviterId, user.ID)
+		s.repos.Group.ConfirmInvite(r.GroupId, r.InviterId, me.ID)
 	}
 
-	// TODO
-	if s.notificationSender != nil {
-		s.notificationSender.SendNotification([]string{r.InviterId}, user.DisplayName()+" accepted your invite!", "group-invite/accept", map[string]interface{}{
-			"group_id": r.GroupId,
-			"user_id":  user.ID,
-		})
-	}
 	return &rpc.Empty{}, nil
 }
 
 func (s *groupService) RejectInvite(ctx context.Context, r *rpc.GroupRejectInviteRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 
 	if r.GroupId == "" {
 		return nil, twirp.NewError(twirp.InvalidArgument, "group_id")
 	}
 
-	if !s.repos.Group.RejectInvite(r.GroupId, r.InviterId, user.ID) {
+	if !s.repos.Group.RejectInvite(r.GroupId, r.InviterId, me.ID) {
 		return nil, twirp.NotFoundError("invite not found")
-	}
-	// TODO
-	if s.notificationSender != nil {
-		s.notificationSender.SendNotification([]string{r.InviterId}, user.DisplayName()+" rejected your invite", "group-invite/reject", map[string]interface{}{
-			"group_id": r.GroupId,
-			"user_id":  user.ID,
-		})
 	}
 	return &rpc.Empty{}, nil
 }
 
 func (s *groupService) InvitesFromMe(ctx context.Context, _ *rpc.Empty) (*rpc.GroupInvitesFromMeResponse, error) {
-	user := s.getUser(ctx)
-	invites := s.repos.Group.InvitesFromMe(user)
+	me := s.getMe(ctx)
+	invites := s.repos.Group.InvitesFromMe(me)
 	rpcInvites := make([]*rpc.GroupInvite, len(invites))
 	for i, invite := range invites {
-		invitedName, invitedFullName := invite.InvitedName, invite.InvitedFullName
+		invitedInfo := s.userCache.User(invite.InvitedID, me.ID)
+		invitedName, invitedFullName := invitedInfo.Name, invitedInfo.FullName
 		if invite.InvitedID == "" {
 			invitedName = invite.InvitedEmail
 			invitedFullName = ""
@@ -359,17 +347,18 @@ func (s *groupService) InvitesFromMe(ctx context.Context, _ *rpc.Empty) (*rpc.Gr
 }
 
 func (s *groupService) InvitesForMe(ctx context.Context, _ *rpc.Empty) (*rpc.GroupInvitesForMeResponse, error) {
-	user := s.getUser(ctx)
-	invites := s.repos.Group.InvitesForMe(user)
+	me := s.getMe(ctx)
+	invites := s.repos.Group.InvitesForMe(me)
 	rpcInvites := make([]*rpc.GroupInvite, len(invites))
 	for i, invite := range invites {
+		inviterInfo := s.userCache.UserFullAccess(invite.InviterID)
 		rpcInvites[i] = &rpc.GroupInvite{
 			GroupId:           invite.GroupID,
 			GroupName:         invite.GroupName,
 			GroupDescription:  invite.GroupDescription,
 			InviterId:         invite.InviterID,
-			InviterName:       invite.InviterName,
-			InviterFullName:   invite.InviterFullName,
+			InviterName:       inviterInfo.Name,
+			InviterFullName:   inviterInfo.FullName,
 			CreatedAt:         common.TimeToRPCString(invite.CreatedAt),
 			AcceptedAt:        common.NullTimeToRPCString(invite.AcceptedAt),
 			RejectedAt:        common.NullTimeToRPCString(invite.RejectedAt),
@@ -385,7 +374,7 @@ func (s *groupService) InvitesForMe(ctx context.Context, _ *rpc.Empty) (*rpc.Gro
 }
 
 func (s *groupService) LeaveGroup(ctx context.Context, r *rpc.GroupLeaveGroupRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 
 	group, isGroupAdmin := s.getGroup(ctx, r.GroupId)
 	if group == nil {
@@ -395,12 +384,12 @@ func (s *groupService) LeaveGroup(ctx context.Context, r *rpc.GroupLeaveGroupReq
 		return nil, twirp.NewError(twirp.InvalidArgument, "admin can't leave the group")
 	}
 
-	s.repos.Group.RemoveUserFromGroup(r.GroupId, user.ID)
+	s.repos.Group.RemoveUserFromGroup(r.GroupId, me.ID)
 	return &rpc.Empty{}, nil
 }
 
 func (s *groupService) RemoveUser(ctx context.Context, r *rpc.GroupRemoveUserRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 	group, isGroupAdmin := s.getGroup(ctx, r.GroupId)
 	if group == nil {
 		return nil, twirp.NotFoundError("group not found")
@@ -408,7 +397,7 @@ func (s *groupService) RemoveUser(ctx context.Context, r *rpc.GroupRemoveUserReq
 	if !isGroupAdmin {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
-	if user.ID == r.UserId {
+	if me.ID == r.UserId {
 		return nil, twirp.NewError(twirp.InvalidArgument, "can't delete himself")
 	}
 
@@ -443,19 +432,21 @@ func (s *groupService) DenyInvite(ctx context.Context, r *rpc.GroupDenyInviteReq
 }
 
 func (s *groupService) InvitesToConfirm(ctx context.Context, _ *rpc.Empty) (*rpc.GroupInvitesToConfirmResponse, error) {
-	user := s.getUser(ctx)
-	invites := s.repos.Group.InvitesToConfirm(user.ID)
+	me := s.getMe(ctx)
+	invites := s.repos.Group.InvitesToConfirm(me.ID)
 
 	groupSet := make(map[string]*rpc.GroupInvites)
 	var groups []*rpc.GroupInvites
 	for _, invite := range invites {
+		inviterInfo := s.userCache.User(invite.InviterID, me.ID)
+		invitedInfo := s.userCache.User(invite.InvitedID, me.ID)
 		rpcInvite := &rpc.GroupInvite{
 			InviterId:         invite.InviterID,
-			InviterName:       invite.InviterName,
-			InviterFullName:   invite.InviterFullName,
+			InviterName:       inviterInfo.Name,
+			InviterFullName:   inviterInfo.FullName,
 			InvitedId:         invite.InvitedID,
-			InvitedName:       invite.InvitedName,
-			InvitedFullName:   invite.InvitedFullName,
+			InvitedName:       invitedInfo.Name,
+			InvitedFullName:   invitedInfo.FullName,
 			CreatedAt:         common.TimeToRPCString(invite.CreatedAt),
 			AcceptedAt:        common.NullTimeToRPCString(invite.AcceptedAt),
 			RejectedAt:        common.NullTimeToRPCString(invite.RejectedAt),
@@ -487,13 +478,14 @@ func (s *groupService) InvitesToConfirm(ctx context.Context, _ *rpc.Empty) (*rpc
 }
 
 func (s *groupService) PublicGroups(ctx context.Context, _ *rpc.Empty) (*rpc.GroupPublicGroupsResponse, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 
 	groups := s.repos.Group.PublicGroups()
-	statuses := s.repos.Group.JoinStatuses(user.ID)
+	statuses := s.repos.Group.JoinStatuses(me.ID)
 
 	rpcGroups := make([]*rpc.GroupPublicGroupsResponseItem, len(groups))
 	for i, group := range groups {
+		adminInfo := s.userCache.User(group.AdminID, me.ID)
 		rpcGroups[i] = &rpc.GroupPublicGroupsResponseItem{
 			Group: &rpc.Group{
 				Id:          group.ID,
@@ -502,9 +494,10 @@ func (s *groupService) PublicGroups(ctx context.Context, _ *rpc.Empty) (*rpc.Gro
 				IsPublic:    group.IsPublic,
 				MemberCount: int32(group.MemberCount),
 				Admin: &rpc.User{
-					Id:       group.AdminID,
-					Name:     group.AdminName,
-					FullName: group.AdminFullName,
+					Id:           group.AdminID,
+					Name:         adminInfo.Name,
+					FullName:     adminInfo.FullName,
+					HideIdentity: adminInfo.HideIdentity,
 				},
 			},
 			Status: statuses[group.ID],
@@ -517,21 +510,20 @@ func (s *groupService) PublicGroups(ctx context.Context, _ *rpc.Empty) (*rpc.Gro
 }
 
 func (s *groupService) GroupDetails(ctx context.Context, r *rpc.GroupGroupDetailsRequest) (*rpc.GroupGroupDetailsResponse, error) {
-	user := s.getUser(ctx)
-	group, isGroupAdmin := s.getGroup(ctx, r.GroupId)
+	me := s.getMe(ctx)
+	group, _ := s.getGroup(ctx, r.GroupId)
 	if group == nil {
 		return nil, twirp.NotFoundError("group not found")
 	}
-	if !isGroupAdmin {
-		isMember := s.repos.Group.IsGroupMember(r.GroupId, user.ID)
-		if !isMember {
-			return nil, twirp.NewError(twirp.PermissionDenied, "")
-		}
+	isMember := s.repos.Group.IsGroupMember(r.GroupId, me.ID)
+	if !group.IsPublic && !isMember {
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 	backgroundLink, err := s.createBlobLink(ctx, group.BackgroundID)
 	if err != nil {
 		return nil, err
 	}
+	adminInfo := s.userCache.User(group.AdminID, me.ID)
 	rpcGroup := &rpc.Group{
 		Id:          group.ID,
 		Name:        group.Name,
@@ -540,21 +532,31 @@ func (s *groupService) GroupDetails(ctx context.Context, r *rpc.GroupGroupDetail
 		Background:  backgroundLink,
 		MemberCount: int32(group.MemberCount),
 		Admin: &rpc.User{
-			Id:       group.AdminID,
-			Name:     group.AdminName,
-			FullName: group.AdminFullName,
+			Id:           group.AdminID,
+			Name:         adminInfo.Name,
+			FullName:     adminInfo.FullName,
+			HideIdentity: adminInfo.HideIdentity,
 		},
 	}
+
+	if !isMember {
+		return &rpc.GroupGroupDetailsResponse{
+			Group: rpcGroup,
+		}, nil
+	}
+
 	members := s.repos.Group.GroupMembers(r.GroupId)
 	rpcMembers := make([]*rpc.User, 0, len(members))
 	for _, member := range members {
 		if member.ID == group.AdminID {
 			continue
 		}
+		memberInfo := s.userCache.User(member.ID, me.ID)
 		rpcMembers = append(rpcMembers, &rpc.User{
-			Id:       member.ID,
-			Name:     member.Name,
-			FullName: member.FullName,
+			Id:           member.ID,
+			Name:         memberInfo.Name,
+			FullName:     memberInfo.FullName,
+			HideIdentity: memberInfo.HideIdentity,
 		})
 	}
 
