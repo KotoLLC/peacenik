@@ -74,3 +74,33 @@ export function* watchRequestJounGroup(action: { type: string, payload: ApiTypes
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
+
+export function* watchGetInvitesToConfirmRequest() {
+  const response = yield API.groups.getInvitesToConfirm()
+
+  if (response.status === 200) {
+    yield put(Actions.groups.getInvitesToConfirmSuccess(response.data?.groups))
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
+export function* watchConfirmInviteRequest(action: { type: string, payload: ApiTypes.Groups.ConfirmDenyInvite }) {
+  const response = yield API.groups.сonfirmInvite(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.groups.getInvitesToConfirmRequest())
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
+export function* watchDenyInviteRequest(action: { type: string, payload: ApiTypes.Groups.ConfirmDenyInvite }) {
+  const response = yield API.groups.denyInvite(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.groups.getInvitesToConfirmRequest())
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}

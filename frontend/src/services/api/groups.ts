@@ -41,4 +41,22 @@ export default {
       return response
     }).catch(error => ({ error }))
   }, 
+  
+  getInvitesToConfirm: async () => {
+    return await axiosInstance.post('/rpc.GroupService/InvitesToConfirm', {}).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  }, 
+ 
+  сonfirmInvite: async (data: ApiTypes.Groups.ConfirmDenyInvite) => {
+    return await axiosInstance.post('/rpc.GroupService/ConfirmInvite', data).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  }, 
+  
+  denyInvite: async (data: ApiTypes.Groups.ConfirmDenyInvite) => {
+    return await axiosInstance.post('/rpc.GroupService/DenyInvite', data).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  }, 
 }

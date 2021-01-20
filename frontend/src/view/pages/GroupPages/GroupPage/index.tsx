@@ -16,10 +16,10 @@ interface Props extends RouteComponentProps {
 
 const GroupPage: React.FC<Props> = (props) => {
   const { 
-    onGetGroupDetailsRequest, 
     location, 
     groupDetails, 
     userId,
+    onGetGroupDetailsRequest, 
   } = props
 
   const url = location.search

@@ -22,6 +22,15 @@ export enum Types {
   
   JOIN_TO_GROUP_REQUEST = 'JOIN_TO_GROUP_REQUEST',
   JOIN_TO_GROUP_SUCCESS = 'JOIN_TO_GROUP_SUCCESS',
+
+  GET_INVITES_TO_CONFIRM_REQUEST = 'GET_INVITES_TO_CONFIRM_REQUEST',
+  GET_INVITES_TO_CONFIRM_SUCCESS = 'GET_INVITES_TO_CONFIRM_SUCCESS',
+  
+  CONFIRM_INVITE_REQUEST = 'CONFIRM_INVITE_REQUEST',
+  CONFIRM_INVITE_SUCCESS = 'CONFIRM_INVITE_SUCCESS',
+  
+  DENY_INVITE_REQUEST = 'DENY_INVITE_REQUEST',
+  DENY_INVITE_SUCCESS = 'DENY_INVITE_SUCCESS',
 }
 
 const addGroupRequest = (payload: ApiTypes.Groups.AddGroup) => ({
@@ -92,6 +101,35 @@ const joinToGroupSuccess = (payload: boolean) => ({
   payload
 })
 
+const getInvitesToConfirmRequest = () => ({
+  type: Types.GET_INVITES_TO_CONFIRM_REQUEST,
+})
+
+const getInvitesToConfirmSuccess = (payload: ApiTypes.Groups.InviteToConfirm[]) => ({
+  type: Types.GET_INVITES_TO_CONFIRM_SUCCESS,
+  payload
+})
+
+const confirmInviteRequest = (payload: ApiTypes.Groups.ConfirmDenyInvite) => ({
+  type: Types.CONFIRM_INVITE_REQUEST,
+  payload
+})
+
+const confirmInviteSuccess = (payload: boolean) => ({
+  type: Types.CONFIRM_INVITE_SUCCESS,
+  payload
+})
+
+const denyInviteRequest = (payload: ApiTypes.Groups.ConfirmDenyInvite) => ({
+  type: Types.DENY_INVITE_REQUEST,
+  payload
+})
+
+const denyInviteSuccess = (payload: boolean) => ({
+  type: Types.DENY_INVITE_SUCCESS,
+  payload
+})
+
 export default {
   addGroupRequest,
   addGroupSucces,
@@ -106,5 +144,11 @@ export default {
   deleteGroupRequest,
   deleteGroupSuccess,
   joinToGroupRequest,
-  joinToGroupSuccess
+  joinToGroupSuccess,
+  getInvitesToConfirmRequest,
+  getInvitesToConfirmSuccess,
+  confirmInviteRequest,
+  confirmInviteSuccess,
+  denyInviteRequest,
+  denyInviteSuccess,
 }

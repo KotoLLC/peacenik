@@ -1,14 +1,15 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { PageLayout } from '@view/shared/PageLayout'
 import { GroupTopBar } from './GroupTopBar'
-import { GroupMember } from './GroupMember'
-import { GroupMemberPotential } from './GroupMemberPotential'
+import { Member } from './Member'
+import MemberInvited from './MemberInvited'
 import AvatarIcon from '@assets/images/groups-avatar-icon.svg'
 import DeleteGroupDialog from './DeleteGroupDialog'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'
 import { ApiTypes, StoreTypes } from 'src/types'
+import { v4 as uuidv4 } from 'uuid'
 import {
   GroupCover,
   GroupContainer,
@@ -26,10 +27,54 @@ import {
 
 interface Props {
   groupDetails?: ApiTypes.Groups.GroupDetails | null
+  invitesToConfirm: ApiTypes.Groups.InviteToConfirm[]
+
+  onGetInvitesToConfirmRequest: () => void
 }
 
-const AdminLauout: React.FC<Props> = (props) => {
-  const { groupDetails } = props
+const AdminLauout: React.FC<Props> = React.memo((props) => {
+  const [groupInvites, setGroupInvites] = useState<ApiTypes.Groups.Invite[] | null>(null)
+  const [isRequested, setRequested] = useState(false)
+
+  const {
+    groupDetails,
+    onGetInvitesToConfirmRequest,
+    invitesToConfirm,
+  } = props
+
+  useEffect(() => {
+    if (groupInvites === null && !isRequested) {
+      onGetInvitesToConfirmRequest()
+      setRequested(true)
+    }
+
+    if (invitesToConfirm?.length && isRequested) {
+      setGroupInvites(getCurrentGroupInvites(invitesToConfirm))
+      setRequested(false)
+    }
+  }, [invitesToConfirm, groupInvites, isRequested])
+
+  const removeUserFromGroupInvites = (data: ApiTypes.Groups.ConfirmDenyInvite) => {
+    const result = groupInvites!.filter(item => item.invited_id !== data.invited_id)
+    setGroupInvites(result)
+    // onGetInvitesToConfirmRequest()
+    // setRequested(true)
+  }
+
+  const getCurrentGroupInvites = (invites) => {
+    if (!invites?.length) return []
+    const currentGroup = invites.filter(item => item.group.id === groupDetails?.group?.id)[0]
+    let result: ApiTypes.Groups.Invite[] = []
+
+    if (currentGroup?.group && currentGroup?.invites?.length) {
+      result = currentGroup.invites.map(item => {
+        item.group_id = currentGroup.group.id
+        return item
+      })
+    }
+
+    return result
+  }
 
   if (!groupDetails) return null
 
@@ -38,7 +83,7 @@ const AdminLauout: React.FC<Props> = (props) => {
   return (
     <PageLayout>
       <GroupCover />
-      <GroupTopBar membersCounter={members?.length} invitesCounter={0} groupId={group?.id} />
+      <GroupTopBar membersCounter={members?.length} invitesCounter={groupInvites?.length || 0} groupId={group?.id} />
       <GroupContainer>
         <GroupMainWrapper>
           <LeftSideBar>
@@ -52,28 +97,33 @@ const AdminLauout: React.FC<Props> = (props) => {
           </LeftSideBar>
           <CentralBar>
             <BarTitle>Members ({members?.length})</BarTitle>
-            {/* {members?.length && members.map(item => <GroupMember {...item) />)} */}
+            {Boolean(members?.length) && members.map(item => <Member key={uuidv4()} {...item}/>)}
             {/* <ViewMoreButton>View more</ViewMoreButton> */}
           </CentralBar>
           <RightSideBar>
-            <BarTitle>Waiting for approval (14)</BarTitle>
-            {/* <GroupMemberPotential /> */}
+            <BarTitle>Waiting for approval ({groupInvites?.length || 0})</BarTitle>
+            {Boolean(groupInvites?.length) && groupInvites?.map(item => <MemberInvited
+              calback={removeUserFromGroupInvites}
+              key={uuidv4()}
+              {...item}
+            />)}
             {/* <ViewMoreButton>View more</ViewMoreButton> */}
           </RightSideBar>
         </GroupMainWrapper>
       </GroupContainer>
     </PageLayout>
   )
-}
-
-type StateProps = Pick<Props, 'groupDetails'>
-const mapStateToProps = (state: StoreTypes): StateProps => ({
-  groupDetails: selectors.groups.groupDetails(state),
 })
 
-// type DispatchProps = Pick<Props, 'onGetGroupDetailsRequest'>
-// const mapDispatchToProps = (dispatch): DispatchProps => ({
-//   onGetGroupDetailsRequest: (value: string) => dispatch(Actions.groups.getGroupDetailsRequest(value)),
-// })
+type StateProps = Pick<Props, 'groupDetails' | 'invitesToConfirm'>
+const mapStateToProps = (state: StoreTypes): StateProps => ({
+  groupDetails: selectors.groups.groupDetails(state),
+  invitesToConfirm: selectors.groups.invitesToConfirm(state),
+})
 
-export default connect(mapStateToProps, null)(AdminLauout)
+type DispatchProps = Pick<Props, 'onGetInvitesToConfirmRequest'>
+const mapDispatchToProps = (dispatch): DispatchProps => ({
+  onGetInvitesToConfirmRequest: () => dispatch(Actions.groups.getInvitesToConfirmRequest()),
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(AdminLauout)

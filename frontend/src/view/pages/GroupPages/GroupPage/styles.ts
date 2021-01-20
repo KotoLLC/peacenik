@@ -203,19 +203,26 @@ export const DangerZoneTitle = styled.h3`
   margin-bottom: 20px;
 `
 
-export const GroupMemberWrapper = styled.li`
+export const MemberInvitedHeader = styled.div`
   display: flex;
-  align-items: center;
+  /* align-items: center; */
+`
+
+export const MemberWrapper = styled.li`
+  list-style: none;
   min-height: 87px;
   padding: 15px 20px;
   background: #fff;
   border-bottom: 1px solid rgba(200, 207, 212, 0.6);
+  display: flex;
+  align-items: center;
 
   &:last-child {
     border: none;
   }
 
   &.potential {
+    display: block;
     padding: 15px;
   }
 `
@@ -233,23 +240,41 @@ export const MemberAvatar = styled(Avatar)`
 `
 
 export const MemberName = styled(Link)`
+  display: block;
   text-decoration: none;
   font-family: 'SFUITextMedium';
   color: #000;
 
   &.potential {
     font-size: 14px;
-    margin-bottom: 10px;
+    width: 100%;
+    margin-bottom: 5px;
     display: block;
   }
 `
 
-export const MemberNameWrapper = styled.div`
+export const MemberInvitedNameWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+`
 
+export const MemberInvitedMessage = styled.div`
+  font-size: 12px;
+  color: #A1AEC8;
+  width: 100%;
+`
+
+export const MemberInvitedButtonsWrapper = styled.div`
+  width: 100%;
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
 `
 
 export const MemberButtonOutlined = styled(ButtonOutlined)`
   margin-left: auto;
+  margin-right: 0;
 `
 
 export const TopBarButtonOutlined = styled(ButtonOutlined)`

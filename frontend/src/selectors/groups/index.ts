@@ -9,6 +9,7 @@ const joinToGroupRequestSuccessfully = createSelector(self, data => data.joinToG
 const publicGroups = deepEqualSelector(self, data => data.publicGroups)
 const myGroups = deepEqualSelector(self, data => data.myGroups)
 const groupDetails = deepEqualSelector(self, data => data.groupDetails)
+const invitesToConfirm = deepEqualSelector(self, data => data.invitesToConfirm)
 
 export default {
   isGroupAddedSuccessfully,
@@ -18,4 +19,5 @@ export default {
   publicGroups,
   myGroups,
   groupDetails,
+  invitesToConfirm,
 }

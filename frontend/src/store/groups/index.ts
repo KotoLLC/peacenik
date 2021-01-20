@@ -9,6 +9,7 @@ export interface State  {
   publicGroups: ApiTypes.Groups.RecievedGroup[]
   myGroups: ApiTypes.Groups.RecievedGroup[]
   groupDetails: ApiTypes.Groups.GroupDetails | null
+  invitesToConfirm: ApiTypes.Groups.InviteToConfirm[]
 }
 
 const initialState: State = {
@@ -18,7 +19,8 @@ const initialState: State = {
   joinToGroupRequestSuccessfully: false,
   publicGroups: [],
   myGroups: [],
-  groupDetails: null
+  groupDetails: null,
+  invitesToConfirm: [],
 }
 
 const reducer = (state = initialState, action) => {
@@ -69,6 +71,13 @@ const reducer = (state = initialState, action) => {
       return {
         ...state, ...{
           joinToGroupRequestSuccessfully: action.payload
+        }
+      }
+    }
+    case Types.GET_INVITES_TO_CONFIRM_SUCCESS: {
+      return {
+        ...state, ...{
+          invitesToConfirm: action.payload
         }
       }
     }

@@ -410,7 +410,16 @@ export declare namespace ApiTypes {
     
     export interface GroupDetails {
       group: Group
-      members: []
+      members: GroupMember[]
+    }
+
+    export interface GroupMember {
+      avatar_original: string
+      email: string
+      full_name: string
+      id: string
+      is_confirmed: boolean
+      name: string
     }
 
     export interface RecievedGroup {
@@ -421,6 +430,41 @@ export declare namespace ApiTypes {
     export interface RequestJoin {
       group_id: string
       message: string
+    }
+    
+    export interface Invite {
+      accepted_at: string
+      accepted_by_admin_at: string
+      created_at: string
+      group_description: string
+      group_id: string
+      group_name: string
+      invited_full_name: string
+      invited_id: string
+      invited_name: string
+      inviter_full_name: string
+      inviter_id: string
+      inviter_name: string
+      message: string
+      rejected_at: string
+      rejected_by_admin_at: string
+    }
+
+    export interface InviteToConfirm {
+      group: {
+        avatar_original: string
+        description: string
+        id: string
+        is_public: boolean
+        name: string
+      }
+      invites: Invite[]
+    }
+
+    export interface ConfirmDenyInvite {
+      group_id: string
+      inviter_id: string
+      invited_id: string
     }
     
   }
