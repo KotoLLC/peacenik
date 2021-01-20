@@ -27,7 +27,8 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import MyGroups from '@view/pages/GroupPages/MyGroups'
 import PublicGroups from '@view/pages/GroupPages/PublicGroups'
 import CreateGroupPage from '@view/pages/GroupPages/CreateGroupPage'
-import { GroupPage } from '@view/pages/GroupPages/GroupPage'
+import EditGroupPage from '@view/pages/GroupPages/EditGroupPage'
+import GroupPage from '@view/pages/GroupPages/GroupPage'
 
 export const history = createBrowserHistory()
 
@@ -114,6 +115,7 @@ export const Routes = () => {
             <PrivateRoute path="/groups/public" component={PublicGroups} />
             <PrivateRoute path="/groups/group" exact component={GroupPage} />
             <PrivateRoute path="/groups/create" exact component={CreateGroupPage} />
+            <PrivateRoute path="/groups/edit" exact component={EditGroupPage} />
             <PrivateRoute path="/hubs" component={HubPages} />
             <PrivateRoute path="/messages" component={MessagesPage} />
             <PrivateRoute path="/notifications" component={NotificationsPage} />

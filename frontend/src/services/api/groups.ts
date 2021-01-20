@@ -7,15 +7,37 @@ export default {
       return response
     }).catch(error => ({ error }))
   }, 
-  
-  getMyGroups: async () => {
-    return await axiosInstance.post('/rpc.GroupService/PublicGroups').then(response => {
+ 
+  editGroup: async (data: ApiTypes.Groups.EditGroup) => {
+    return await axiosInstance.post('/rpc.GroupService/EditGroup', data).then(response => {
       return response
     }).catch(error => ({ error }))
   }, 
   
   getPublicGroups: async () => {
     return await axiosInstance.post('/rpc.GroupService/PublicGroups', {}).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  }, 
+  
+  getGroupDetails: async (id: string) => {
+    return await axiosInstance.post('/rpc.GroupService/GroupDetails', {
+      group_id: id
+    }).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  }, 
+  
+  deleteGroup: async (id: string) => {
+    return await axiosInstance.post('/rpc.GroupService/DeleteGroup', {
+      group_id: id
+    }).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  }, 
+  
+  requestJoinGroup: async (data: ApiTypes.Groups.RequestJoin) => {
+    return await axiosInstance.post('/rpc.GroupService/RequestJoin', data).then(response => {
       return response
     }).catch(error => ({ error }))
   }, 

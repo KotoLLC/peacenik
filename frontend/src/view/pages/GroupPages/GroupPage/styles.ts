@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import Avatar from '@material-ui/core/Avatar'
 import { Link } from 'react-router-dom'
 import { ButtonOutlined } from '@view/shared/styles'
+import DialogContent from '@material-ui/core/DialogContent'
 import Dialog from '@material-ui/core/Dialog'
 
 export const GroupCover = styled.div`
@@ -253,4 +254,16 @@ export const MemberButtonOutlined = styled(ButtonOutlined)`
 
 export const TopBarButtonOutlined = styled(ButtonOutlined)`
   width: 162px;
+`
+
+export const DialogContentStyled = styled(DialogContent)`
+  && {
+    min-width: 555px;
+    display: block;
+    text-align: center;
+
+    @media (max-width: 600px) {
+      width: 90%;
+    }    
+  }
 `

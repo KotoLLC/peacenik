@@ -1,0 +1,84 @@
+on: [workflow_dispatch]
+jobs:
+  build-and-publish:
+    name: Build and Publish images
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.3.2
+        name: Check out code
+
+      - uses: mr-smithers-excellent/docker-build-push@v5
+        name: Build and Publish Frontend
+        with:
+          image: kotollc/koto/frontend
+          tags: ${{ github.run_number }},latest
+          registry: ghcr.io
+          githubOrg: kotollc
+          username: ${{ github.actor }}
+          password: ${{ secrets.GH_TOKEN }} 
+          directory: ./frontend
+
+          dockerfile: ./frontend/Dockerfile.production
+
+      - uses: mr-smithers-excellent/docker-build-push@v5
+        name: Build and Publish Userhub
+        with:
+          image: kotollc/koto/userhub
+          tags: ${{ github.run_number }},latest 
+          registry: ghcr.io
+          githubOrg: kotollc
+          username: ${{ github.actor }}
+          password: ${{ secrets.GH_TOKEN }}
+          directory: ./backend
+          dockerfile: ./backend/userhub/Dockerfile
+
+      - uses: mr-smithers-excellent/docker-build-push@v5
+        name: Build and Publish Messagehub
+        with:
+          image: kotollc/koto/messagehub
+          tags: ${{ github.run_number }},latest
+          registry: ghcr.io
+          githubOrg: kotollc
+          username: ${{ github.actor }}
+          password: ${{ secrets.GH_TOKEN }} 
+          directory: ./backend
+          dockerfile: ./backend/messagehub/Dockerfile
+
+
+  deploy-to-staging:
+    runs-on: ubuntu-latest
+    needs: build-and-publish
+    env:
+      DO_CLUSTER_ID: "b68876cd-8a1d-4073-bb00-0ac36beacc0c"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - name: Save DigitalOcean kubeconfig
+        run: doctl kubernetes cluster kubeconfig save ${{ env.DO_CLUSTER_ID }}
+
+      - name: Update deployment file (staging)
+        run: |
+          sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/backend-staging/user-hub.yaml
+          sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/frontend-staging/frontend.yaml
+          sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/backend-staging/message-hub.yaml
+
+      - name: Deploy Frontend and User-hub to DigitalOcean Kubernetes (staging)
+        run: |
+          kubectl apply -f $GITHUB_WORKSPACE/.k8s/backend-staging/user-hub.yaml --force
+          kubectl apply -f $GITHUB_WORKSPACE/.k8s/frontend-staging/frontend.yaml --force
+          kubectl apply -f $GITHUB_WORKSPACE/.k8s/backend-staging/message-hub.yaml --force
+
+      - name: Staging Push
+        uses: rjstone/discord-webhook-notify@v1
+        if: success()
+        with:
+          severity: info
+          color: '#ff00aa'
+          avatarUrl: https://user-images.githubusercontent.com/118036/104819208-50108f80-582c-11eb-830d-ced2ea30ce0f.png
+          description: Build ${{ github.run_number }} pushed to ghcr.io
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          details: Staging updated successfully

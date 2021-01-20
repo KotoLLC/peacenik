@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { 
   GroupHeader,
   HeaderContainer,
@@ -9,21 +10,31 @@ import {
   TopBarButtonOutlined,
 } from './styles'
 
-export const GroupTopBar = () => {
+interface Props {
+  membersCounter: number
+  invitesCounter: number
+  groupId: string
+}
+
+export const GroupTopBar: React.FC<Props> = (props) => {
+  const { membersCounter, invitesCounter, groupId } = props
+
   return (
     <GroupHeader>
       <HeaderContainer>
         <CountersWrapper>
           <HeaderCounterWrapper>
             <HeaderCounterName>INVITES</HeaderCounterName>
-            <HeaderCounter>14</HeaderCounter>
+            <HeaderCounter>{invitesCounter}</HeaderCounter>
           </HeaderCounterWrapper>
           <HeaderCounterWrapper>
             <HeaderCounterName>MEMBERS</HeaderCounterName>
-            <HeaderCounter>300</HeaderCounter>
+            <HeaderCounter>{membersCounter}</HeaderCounter>
           </HeaderCounterWrapper>
         </CountersWrapper>
-        <TopBarButtonOutlined>Edit group</TopBarButtonOutlined>
+        <Link to={`/groups/edit?id=${groupId}`}>
+          <TopBarButtonOutlined>Edit group</TopBarButtonOutlined>
+        </Link>
       </HeaderContainer>
     </GroupHeader>
   )

@@ -3,14 +3,22 @@ import { ApiTypes } from 'src/types'
 
 export interface State  {
   isGroupAddedSuccessfully: boolean
+  isGroupEditedSuccessfully: boolean
+  isGroupDeletedSuccessfully: boolean
+  joinToGroupRequestSuccessfully: boolean
   publicGroups: ApiTypes.Groups.RecievedGroup[]
   myGroups: ApiTypes.Groups.RecievedGroup[]
+  groupDetails: ApiTypes.Groups.GroupDetails | null
 }
 
 const initialState: State = {
   isGroupAddedSuccessfully: false,
+  isGroupEditedSuccessfully: false,
+  isGroupDeletedSuccessfully: false,
+  joinToGroupRequestSuccessfully: false,
   publicGroups: [],
   myGroups: [],
+  groupDetails: null
 }
 
 const reducer = (state = initialState, action) => {
@@ -19,6 +27,13 @@ const reducer = (state = initialState, action) => {
       return {
         ...state, ...{
           isGroupAddedSuccessfully: action.payload
+        }
+      }
+    }
+    case Types.EDIT_GROUP_SUCCESS: {
+      return {
+        ...state, ...{
+          isGroupEditedSuccessfully: action.payload
         }
       }
     }
@@ -33,6 +48,27 @@ const reducer = (state = initialState, action) => {
       return {
         ...state, ...{
           myGroups: action.payload
+        }
+      }
+    }
+    case Types.GET_GROUP_DETAILS_SUCCESS: {
+      return {
+        ...state, ...{
+          groupDetails: action.payload
+        }
+      }
+    }
+    case Types.DELETE_GROUP_SUCCESS: {
+      return {
+        ...state, ...{
+          isGroupDeletedSuccessfully: action.payload
+        }
+      }
+    }
+    case Types.JOIN_TO_GROUP_SUCCESS: {
+      return {
+        ...state, ...{
+          joinToGroupRequestSuccessfully: action.payload
         }
       }
     }

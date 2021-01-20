@@ -6,6 +6,7 @@ import { ApiTypes, StoreTypes } from 'src/types'
 import { connect } from 'react-redux'
 import selectors from '@selectors/index'
 // import Actions from '@store/actions'
+import JoinGroupDialog from './JoinGroupDialog'
 import {
   GroupsListItemWrapper,
   ItemCover,
@@ -13,6 +14,7 @@ import {
   ItemHeader,
   AvatarStyled,
   GroupName,
+  GroupNameLink,
   GroupCounter,
   GroupPublicity,
   GroupDescription,
@@ -28,15 +30,23 @@ const GroupsListItem: React.FC<Props> = React.memo((props) => {
 
   const renderCurrentButton = () => {
     if (userId === admin.id) {
-      return <ButtonOutlined className="extra-small">Edit group</ButtonOutlined>
+      return (
+        <Link to={`/groups/edit?id=${id}`}>
+          <ButtonOutlined className="extra-small">Edit group</ButtonOutlined>
+        </Link>
+      )
     }
 
     if (userId !== admin.id && status === '') {
-      return <ButtonContained className="extra-small">Join</ButtonContained>
+      return <JoinGroupDialog groupId={id} />
     }
 
     if (userId !== admin.id && status === 'member') {
-      return <ButtonContained className="extra-small">Remove invite</ButtonContained>
+      return <ButtonOutlined className="extra-small">Remove invite</ButtonOutlined>
+    }
+    
+    if (userId !== admin.id && status === 'pending') {
+      return <ButtonOutlined className="extra-small">Remove invite</ButtonOutlined>
     }
   }
 
@@ -45,16 +55,24 @@ const GroupsListItem: React.FC<Props> = React.memo((props) => {
       <ItemCover style={{ backgroundImage: avatar_original }} />
       <ItemContentWraper>
         <ItemHeader>
-          <Link to="/groups/group">
+          {status === 'member' ?
+            <Link to={`/groups/group?id=${id}`}>
+              <AvatarStyled>
+                <img src={AvatarIcon} alt="icon" />
+              </AvatarStyled>
+            </Link> :
             <AvatarStyled>
               <img src={AvatarIcon} alt="icon" />
             </AvatarStyled>
-          </Link>
+          }
           {renderCurrentButton()}
         </ItemHeader>
-        <GroupName to={`/groups/group?id=${id}`}>{name}</GroupName>
+        {status === 'member' ?
+          <GroupNameLink to={`/groups/group?id=${id}`}>{name}</GroupNameLink> :
+          <GroupName>{name}</GroupName>
+        }
         <GroupCounter>123 participants</GroupCounter>
-        <GroupPublicity>{is_public ? 'Public' : 'Private'}</GroupPublicity>
+        <GroupPublicity>{is_public ? 'Public' : 'Private'} {userId === admin.id && '- My group'}</GroupPublicity>
         <GroupDescription>{description}</GroupDescription>
       </ItemContentWraper>
     </GroupsListItemWrapper>
@@ -65,10 +83,5 @@ type StateProps = Pick<Props, 'userId'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   userId: selectors.profile.userId(state),
 })
-
-// type DispatchProps = Pick<Props, 'onGetMyGroupsRequest'>
-// const mapDispatchToProps = (dispatch): DispatchProps => ({
-//   onGetMyGroupsRequest: () => dispatch(Actions.groups.getMyGroupsRequest()),
-// })
 
 export default connect(mapStateToProps, null)(GroupsListItem)

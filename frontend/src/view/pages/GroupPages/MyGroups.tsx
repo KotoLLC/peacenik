@@ -26,7 +26,7 @@ const MyGroups: React.FC<Props> = (props) => {
   const { onGetMyGroupsRequest, myGroups } = props
 
   useEffect(() => {
-    // onGetMyGroupsRequest()
+    onGetMyGroupsRequest()
   }, [])
 
   const renderGroups = () => (

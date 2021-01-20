@@ -62,6 +62,7 @@ export declare namespace ApiTypes {
     export interface UserProfile {
       user: User
       is_admin?: boolean
+      groups: Groups.RecievedGroup[]
     }
 
     export interface EditProfile {
@@ -376,6 +377,18 @@ export declare namespace ApiTypes {
       avatar_id?: string
       background_id?: string
     }
+    
+    export interface EditGroup {
+      group_id: string
+      description_changed: boolean
+      description: string
+      avatar_changed: boolean
+      avatar_id: string
+      is_public_changed: boolean
+      is_public: boolean
+      background_changed: boolean
+      background_id: string
+    }
 
     export interface GroupAdmin {
       avatar_original: string
@@ -394,10 +407,21 @@ export declare namespace ApiTypes {
       is_public: boolean
       name: string
     }
+    
+    export interface GroupDetails {
+      group: Group
+      members: []
+    }
 
     export interface RecievedGroup {
       group: Group
-      status: 'member' | ''
+      status: 'member' | 'pending' | ''
     }
+    
+    export interface RequestJoin {
+      group_id: string
+      message: string
+    }
+    
   }
 }
