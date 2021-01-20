@@ -50,16 +50,6 @@ func (s *tokenService) Auth(ctx context.Context, _ *rpc.Empty) (*rpc.TokenAuthRe
 		"hide_identity": meInfo.HideIdentity,
 	}
 
-	if meInfo.HideIdentity {
-		friends := s.repos.Friend.Friends(me)
-		friendIDs := make([]string, len(friends))
-		for i, friend := range friends {
-			friendIDs[i] = friend.ID
-		}
-		sort.Strings(friendIDs)
-		claims["friends"] = friendIDs
-	}
-
 	authToken, err := s.tokenGenerator.Generate(me.ID, "auth", time.Now().Add(s.tokenDuration), claims)
 	if err != nil {
 		return nil, err
