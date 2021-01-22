@@ -2,17 +2,27 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { ApiTypes } from 'src/types'
 import { getAvatarUrl } from '@services/avatarUrl'
+import DeleteMemberDialog from './DeleteMemberDialog'
 import {
   MemberWrapper,
   MemberAvatar,
   MemberName,
-  MemberButtonOutlined,
 } from './styles'
 
-interface Props extends ApiTypes.Groups.GroupMember {}
+interface Props extends ApiTypes.Groups.GroupMember {
+  isAdminLayout: boolean
+  groupId: string
+}
 
 export const Member: React.FC<Props> = (props) => {
-  const { full_name, name, id, is_confirmed } = props
+  const {
+    full_name,
+    name,
+    id,
+    is_confirmed,
+    isAdminLayout,
+    groupId,
+  } = props
 
   return (
     <MemberWrapper>
@@ -20,7 +30,7 @@ export const Member: React.FC<Props> = (props) => {
         <MemberAvatar src={getAvatarUrl(id)} />
       </Link>
       <MemberName to={`/profile/user?id=${id}`}>{full_name || name}</MemberName>
-      {/* <MemberButtonOutlined className="gray">Remove</MemberButtonOutlined> */}
+      {isAdminLayout && <DeleteMemberDialog groupId={groupId} memberId={id} />}
     </MemberWrapper>
   )
 }

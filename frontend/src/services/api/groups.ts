@@ -59,4 +59,10 @@ export default {
       return response
     }).catch(error => ({ error }))
   }, 
+
+  deleteMember: async (data: ApiTypes.Groups.DeleteMember) => {
+    return await axiosInstance.post('/rpc.GroupService/RemoveUser', data).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  }, 
 }

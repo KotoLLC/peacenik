@@ -97,7 +97,14 @@ const AdminLauout: React.FC<Props> = React.memo((props) => {
           </LeftSideBar>
           <CentralBar>
             <BarTitle>Members ({members?.length})</BarTitle>
-            {Boolean(members?.length) && members.map(item => <Member key={uuidv4()} {...item}/>)}
+            {Boolean(members?.length) && members.map(item => (
+              <Member
+                groupId={group?.id}
+                isAdminLayout={true}
+                key={uuidv4()}
+                {...item}
+              />
+            ))}
             {/* <ViewMoreButton>View more</ViewMoreButton> */}
           </CentralBar>
           <RightSideBar>

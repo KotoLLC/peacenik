@@ -31,6 +31,9 @@ export enum Types {
   
   DENY_INVITE_REQUEST = 'DENY_INVITE_REQUEST',
   DENY_INVITE_SUCCESS = 'DENY_INVITE_SUCCESS',
+
+  DELETE_MEMBER_REQUEST = 'DELETE_MEMBER_REQUEST',
+  DELETE_MEMBER_SUCCESS = 'DELETE_MEMBER_SUCCESS',
 }
 
 const addGroupRequest = (payload: ApiTypes.Groups.AddGroup) => ({
@@ -130,6 +133,16 @@ const denyInviteSuccess = (payload: boolean) => ({
   payload
 })
 
+const deleteMemberRequest = (payload: ApiTypes.Groups.DeleteMember) => ({
+  type: Types.DELETE_MEMBER_REQUEST,
+  payload
+})
+
+const deleteMemberSuccess = (payload: boolean) => ({
+  type: Types.DELETE_MEMBER_SUCCESS,
+  payload
+})
+
 export default {
   addGroupRequest,
   addGroupSucces,
@@ -151,4 +164,6 @@ export default {
   confirmInviteSuccess,
   denyInviteRequest,
   denyInviteSuccess,
+  deleteMemberRequest,
+  deleteMemberSuccess,
 }

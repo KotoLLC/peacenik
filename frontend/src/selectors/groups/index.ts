@@ -5,6 +5,7 @@ const self = createSelector(selector, data => data.groups)
 const isGroupAddedSuccessfully = createSelector(self, data => data.isGroupAddedSuccessfully)
 const isGroupEditedSuccessfully = createSelector(self, data => data.isGroupEditedSuccessfully)
 const isGroupDeletedSuccessfully = createSelector(self, data => data.isGroupDeletedSuccessfully)
+const isMemberDeletedSuccessfully = createSelector(self, data => data.isMemberDeletedSuccessfully)
 const joinToGroupRequestSuccessfully = createSelector(self, data => data.joinToGroupRequestSuccessfully)
 const publicGroups = deepEqualSelector(self, data => data.publicGroups)
 const myGroups = deepEqualSelector(self, data => data.myGroups)
@@ -15,6 +16,7 @@ export default {
   isGroupAddedSuccessfully,
   isGroupEditedSuccessfully,
   isGroupDeletedSuccessfully,
+  isMemberDeletedSuccessfully,
   joinToGroupRequestSuccessfully,
   publicGroups,
   myGroups,

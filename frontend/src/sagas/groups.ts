@@ -104,3 +104,13 @@ export function* watchDenyInviteRequest(action: { type: string, payload: ApiType
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
+
+export function* watchDeleteMemberRequest(action: { type: string, payload: ApiTypes.Groups.DeleteMember }) {
+  const response = yield API.groups.deleteMember(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.groups.deleteMemberSuccess(true))
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
