@@ -11,31 +11,45 @@ import {
 } from './styles'
 
 interface Props {
-  membersCounter: number
-  invitesCounter: number
   groupId: string
+  isAdminLayout: boolean
+  membersCounter?: number
+  invitesCounter?: number
 }
 
 export const GroupTopBar: React.FC<Props> = (props) => {
-  const { membersCounter, invitesCounter, groupId } = props
+  const { 
+    membersCounter, 
+    invitesCounter, 
+    groupId, 
+    isAdminLayout,
+  } = props
 
-  return (
-    <GroupHeader>
-      <HeaderContainer>
-        <CountersWrapper>
-          <HeaderCounterWrapper>
-            <HeaderCounterName>INVITES</HeaderCounterName>
-            <HeaderCounter>{invitesCounter}</HeaderCounter>
-          </HeaderCounterWrapper>
-          <HeaderCounterWrapper>
-            <HeaderCounterName>MEMBERS</HeaderCounterName>
-            <HeaderCounter>{membersCounter}</HeaderCounter>
-          </HeaderCounterWrapper>
-        </CountersWrapper>
-        <Link to={`/groups/edit?id=${groupId}`}>
-          <TopBarButtonOutlined>Edit group</TopBarButtonOutlined>
-        </Link>
-      </HeaderContainer>
-    </GroupHeader>
-  )
+  if (isAdminLayout) {
+    return (
+      <GroupHeader>
+        <HeaderContainer>
+          <CountersWrapper>
+            <HeaderCounterWrapper>
+              <HeaderCounterName>INVITES</HeaderCounterName>
+              <HeaderCounter>{invitesCounter}</HeaderCounter>
+            </HeaderCounterWrapper>
+            <HeaderCounterWrapper>
+              <HeaderCounterName>MEMBERS</HeaderCounterName>
+              <HeaderCounter>{membersCounter}</HeaderCounter>
+            </HeaderCounterWrapper>
+          </CountersWrapper>
+          <Link to={`/groups/edit?id=${groupId}`}>
+            <TopBarButtonOutlined>Edit group</TopBarButtonOutlined>
+          </Link>
+        </HeaderContainer>
+      </GroupHeader>
+    )
+  } else {
+    return (
+      <GroupHeader>
+        <HeaderContainer/>
+      </GroupHeader>
+    )
+  }
 }

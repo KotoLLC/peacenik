@@ -18,6 +18,7 @@ import {
   GroupCounter,
   GroupPublicity,
   GroupDescription,
+  NoButton,
 } from './styles'
 
 interface Props extends ApiTypes.Groups.RecievedGroup {
@@ -41,13 +42,9 @@ const GroupsListItem: React.FC<Props> = React.memo((props) => {
       return <JoinGroupDialog groupId={id} />
     }
 
-    if (userId !== admin.id && status === 'member') {
-      return <ButtonOutlined className="extra-small">Remove invite</ButtonOutlined>
-    }
-    
     if (userId !== admin.id && status === 'pending') {
       return <ButtonOutlined className="extra-small">Remove invite</ButtonOutlined>
-    }
+    } else return <NoButton />
   }
 
   return (
@@ -55,7 +52,12 @@ const GroupsListItem: React.FC<Props> = React.memo((props) => {
       <ItemCover style={{ backgroundImage: avatar_original }} />
       <ItemContentWraper>
         <ItemHeader>
-          {status === 'member' ?
+          <Link to={`/groups/group?id=${id}`}>
+            <AvatarStyled>
+              <img src={AvatarIcon} alt="icon" />
+            </AvatarStyled>
+          </Link>
+          {/* {status === 'member' ?
             <Link to={`/groups/group?id=${id}`}>
               <AvatarStyled>
                 <img src={AvatarIcon} alt="icon" />
@@ -64,13 +66,14 @@ const GroupsListItem: React.FC<Props> = React.memo((props) => {
             <AvatarStyled>
               <img src={AvatarIcon} alt="icon" />
             </AvatarStyled>
-          }
+          } */}
           {renderCurrentButton()}
         </ItemHeader>
-        {status === 'member' ?
+        <GroupNameLink to={`/groups/group?id=${id}`}>{name}</GroupNameLink> 
+        {/* {status === 'member' ?
           <GroupNameLink to={`/groups/group?id=${id}`}>{name}</GroupNameLink> :
           <GroupName>{name}</GroupName>
-        }
+        } */}
         <GroupCounter>123 participants</GroupCounter>
         <GroupPublicity>{is_public ? 'Public' : 'Private'} {userId === admin.id && '- My group'}</GroupPublicity>
         <GroupDescription>{description}</GroupDescription>

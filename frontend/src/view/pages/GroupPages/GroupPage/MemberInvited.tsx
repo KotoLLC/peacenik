@@ -9,10 +9,10 @@ import {
   MemberWrapper,
   MemberAvatar,
   MemberName,
-  MemberInvitedHeader,
-  MemberInvitedNameWrapper,
-  MemberInvitedMessage,
-  MemberInvitedButtonsWrapper,
+  MemberHeaderSidebar,
+  MemberNameWrapperSidebar,
+  MemberMessageSidebar,
+  MemberButtonsWrapperSidebar,
 } from './styles'
 
 interface Props extends ApiTypes.Groups.Invite {
@@ -51,24 +51,24 @@ const MemberInvited: React.FC<Props> = (props) => {
   }
 
   return (
-    <MemberWrapper className="potential">
-      <MemberInvitedHeader>
-        <Link to={`/profile/user`}>
-          <MemberAvatar src={getAvatarUrl(invited_id)} className="potential" />
+    <MemberWrapper className="sidebar">
+      <MemberHeaderSidebar>
+        <Link to={`/profile/user?id=${invited_id}`}>
+          <MemberAvatar src={getAvatarUrl(invited_id)} className="sidebar" />
         </Link>
-        <MemberInvitedNameWrapper>
+        <MemberNameWrapperSidebar>
           <MemberName
-            className="potential"
-            to={`/profile/user`}>
+            className="sidebar"
+            to={`/profile/user?id=${invited_id}`}>
             {invited_full_name || invited_name}
           </MemberName>
-          <MemberInvitedMessage>{message}</MemberInvitedMessage>
-        </MemberInvitedNameWrapper>
-      </MemberInvitedHeader>
-      <MemberInvitedButtonsWrapper>
+          <MemberMessageSidebar>{message}</MemberMessageSidebar>
+        </MemberNameWrapperSidebar>
+      </MemberHeaderSidebar>
+      <MemberButtonsWrapperSidebar>
         <ButtonOutlined onClick={onDeny} className="small gray">Ignore</ButtonOutlined>
         <ButtonContained onClick={onConfirm} className="small">Approve</ButtonContained>
-      </MemberInvitedButtonsWrapper>
+      </MemberButtonsWrapperSidebar>
     </MemberWrapper>
   )
 }

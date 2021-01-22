@@ -83,7 +83,12 @@ const AdminLauout: React.FC<Props> = React.memo((props) => {
   return (
     <PageLayout>
       <GroupCover />
-      <GroupTopBar membersCounter={members?.length} invitesCounter={groupInvites?.length || 0} groupId={group?.id} />
+      <GroupTopBar 
+        membersCounter={members?.length} 
+        invitesCounter={groupInvites?.length || 0} 
+        groupId={group?.id} 
+        isAdminLayout={true}
+      />
       <GroupContainer>
         <GroupMainWrapper>
           <LeftSideBar>

@@ -203,7 +203,7 @@ export const DangerZoneTitle = styled.h3`
   margin-bottom: 20px;
 `
 
-export const MemberInvitedHeader = styled.div`
+export const MemberHeaderSidebar = styled.div`
   display: flex;
   /* align-items: center; */
 `
@@ -221,7 +221,7 @@ export const MemberWrapper = styled.li`
     border: none;
   }
 
-  &.potential {
+  &.sidebar {
     display: block;
     padding: 15px;
   }
@@ -233,7 +233,7 @@ export const MemberAvatar = styled(Avatar)`
   background: #DEE5F2;
   margin-right: 16px;
 
-  &.potential {
+  &.sidebar {
     height: 40px;
     width: 40px;
   }
@@ -245,7 +245,7 @@ export const MemberName = styled(Link)`
   font-family: 'SFUITextMedium';
   color: #000;
 
-  &.potential {
+  &.sidebar {
     font-size: 14px;
     width: 100%;
     margin-bottom: 5px;
@@ -253,19 +253,19 @@ export const MemberName = styled(Link)`
   }
 `
 
-export const MemberInvitedNameWrapper = styled.div`
+export const MemberNameWrapperSidebar = styled.div`
   display: flex;
   align-items: center;
   flex-wrap: wrap;
 `
 
-export const MemberInvitedMessage = styled.div`
+export const MemberMessageSidebar = styled.div`
   font-size: 12px;
   color: #A1AEC8;
   width: 100%;
 `
 
-export const MemberInvitedButtonsWrapper = styled.div`
+export const MemberButtonsWrapperSidebar = styled.div`
   width: 100%;
   margin-top: 12px;
   display: flex;

@@ -57,7 +57,8 @@ export const FooterMenu = styled.nav`
 
 export const FooterMenuItem = styled.span`
   font-size: 14px;
-  
+  text-transform: uppercase;
+
   &:after {
     display: inline-block;
     margin: 0 30px;

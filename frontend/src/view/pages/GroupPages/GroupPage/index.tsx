@@ -6,6 +6,7 @@ import selectors from '@selectors/index'
 import queryString from 'query-string'
 import { ApiTypes, StoreTypes } from 'src/types'
 import AdminLauout from './AdminLauout'
+import MemberLauout from './MemberLauout'
 
 interface Props extends RouteComponentProps {
   groupDetails: ApiTypes.Groups.GroupDetails | null
@@ -35,7 +36,7 @@ const GroupPage: React.FC<Props> = (props) => {
   if (groupDetails && groupDetails?.group?.admin?.id === userId) {
     return <AdminLauout/>
   } else {
-    return <>Member layput</>
+    return <MemberLauout/>
   }
 }
 

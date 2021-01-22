@@ -91,3 +91,8 @@ export const TextareaStyled = styled.textarea`
   height: 70px;
   resize: none;
 `
+
+export const NoButton = styled.div`
+  height: 32px;
+  width: 100%;
+`
