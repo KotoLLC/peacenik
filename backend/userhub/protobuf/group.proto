@@ -161,4 +161,5 @@ message GroupGroupDetailsRequest {
 message GroupGroupDetailsResponse {
     Group group = 1;
     repeated User members = 2;
+    repeated GroupInvite invites = 3;
 }

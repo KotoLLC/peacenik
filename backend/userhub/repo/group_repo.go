@@ -67,7 +67,8 @@ type GroupRepo interface {
 	ManagedGroups(adminID string) []Group
 	ConfirmInvite(groupID, inviterID, invitedID string)
 	DenyInvite(groupID, inviterID, invitedID string)
-	InvitesToConfirm(adminID string) []GroupInvite
+	AdminInvitesToConfirm(adminID string) []GroupInvite
+	GroupInvitesToConfirm(groupID string) []GroupInvite
 	PublicGroups() []Group
 	JoinStatuses(userID string) map[string]string
 	UserGroups(userID string) []Group
@@ -541,7 +542,7 @@ func (r *groupRepo) DenyInvite(groupID, inviterID, invitedID string) {
 	}
 }
 
-func (r *groupRepo) InvitesToConfirm(adminID string) []GroupInvite {
+func (r *groupRepo) AdminInvitesToConfirm(adminID string) []GroupInvite {
 	var invites []GroupInvite
 	err := r.db.Select(&invites, `
 		select i.id, g.id as group_id, g.name group_name, g.description group_description, g.is_public group_is_public,
@@ -552,6 +553,23 @@ func (r *groupRepo) InvitesToConfirm(adminID string) []GroupInvite {
 		where g.admin_id = $1 and i.accepted_by_admin_at is null and rejected_by_admin_at is null
 		order by g.name, i.created_at desc;`,
 		adminID)
+	if err != nil {
+		panic(err)
+	}
+	return invites
+}
+
+func (r *groupRepo) GroupInvitesToConfirm(groupID string) []GroupInvite {
+	var invites []GroupInvite
+	err := r.db.Select(&invites, `
+		select i.id, g.id as group_id, g.name group_name, g.description group_description, g.is_public group_is_public,
+		       i.inviter_id, i.invited_id,
+		       i.created_at, i.accepted_at, i.rejected_at, i.accepted_by_admin_at, i.rejected_by_admin_at, i.message
+		from group_invites i
+		    inner join groups g on g.id = i.group_id
+		where g.id = $1 and i.accepted_by_admin_at is null and rejected_by_admin_at is null
+		order by g.name, i.created_at desc;`,
+		groupID)
 	if err != nil {
 		panic(err)
 	}

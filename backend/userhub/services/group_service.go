@@ -433,7 +433,7 @@ func (s *groupService) DenyInvite(ctx context.Context, r *rpc.GroupDenyInviteReq
 
 func (s *groupService) InvitesToConfirm(ctx context.Context, _ *rpc.Empty) (*rpc.GroupInvitesToConfirmResponse, error) {
 	me := s.getMe(ctx)
-	invites := s.repos.Group.InvitesToConfirm(me.ID)
+	invites := s.repos.Group.AdminInvitesToConfirm(me.ID)
 
 	groupSet := make(map[string]*rpc.GroupInvites)
 	var groups []*rpc.GroupInvites
@@ -511,7 +511,7 @@ func (s *groupService) PublicGroups(ctx context.Context, _ *rpc.Empty) (*rpc.Gro
 
 func (s *groupService) GroupDetails(ctx context.Context, r *rpc.GroupGroupDetailsRequest) (*rpc.GroupGroupDetailsResponse, error) {
 	me := s.getMe(ctx)
-	group, _ := s.getGroup(ctx, r.GroupId)
+	group, isGroupAdmin := s.getGroup(ctx, r.GroupId)
 	if group == nil {
 		return nil, twirp.NotFoundError("group not found")
 	}
@@ -548,9 +548,6 @@ func (s *groupService) GroupDetails(ctx context.Context, r *rpc.GroupGroupDetail
 	members := s.repos.Group.GroupMembers(r.GroupId)
 	rpcMembers := make([]*rpc.User, 0, len(members))
 	for _, member := range members {
-		if member.ID == group.AdminID {
-			continue
-		}
 		memberInfo := s.userCache.User(member.ID, me.ID)
 		rpcMembers = append(rpcMembers, &rpc.User{
 			Id:           member.ID,
@@ -560,8 +557,34 @@ func (s *groupService) GroupDetails(ctx context.Context, r *rpc.GroupGroupDetail
 		})
 	}
 
+	var rpcInvites []*rpc.GroupInvite
+	if isGroupAdmin {
+		invites := s.repos.Group.GroupInvitesToConfirm(r.GroupId)
+
+		for _, invite := range invites {
+			inviterInfo := s.userCache.User(invite.InviterID, me.ID)
+			invitedInfo := s.userCache.User(invite.InvitedID, me.ID)
+			rpcInvite := &rpc.GroupInvite{
+				InviterId:         invite.InviterID,
+				InviterName:       inviterInfo.Name,
+				InviterFullName:   inviterInfo.FullName,
+				InvitedId:         invite.InvitedID,
+				InvitedName:       invitedInfo.Name,
+				InvitedFullName:   invitedInfo.FullName,
+				CreatedAt:         common.TimeToRPCString(invite.CreatedAt),
+				AcceptedAt:        common.NullTimeToRPCString(invite.AcceptedAt),
+				RejectedAt:        common.NullTimeToRPCString(invite.RejectedAt),
+				AcceptedByAdminAt: common.NullTimeToRPCString(invite.AcceptedByAdminAt),
+				RejectedByAdminAt: common.NullTimeToRPCString(invite.RejectedByAdminAt),
+				Message:           invite.Message,
+			}
+			rpcInvites = append(rpcInvites, rpcInvite)
+		}
+	}
+
 	return &rpc.GroupGroupDetailsResponse{
 		Group:   rpcGroup,
 		Members: rpcMembers,
+		Invites: rpcInvites,
 	}, nil
 }
