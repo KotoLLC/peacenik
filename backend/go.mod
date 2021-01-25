@@ -16,13 +16,12 @@ require (
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/cors v1.1.1
-	github.com/go-sql-driver/mysql v1.5.0 // indirect
 	github.com/gofrs/uuid v4.0.0+incompatible
 	github.com/golang/protobuf v1.4.3
 	github.com/gorilla/sessions v1.2.1
-	github.com/h2non/filetype v1.1.0
+	github.com/h2non/filetype v1.1.1
 	github.com/jinzhu/configor v1.2.1
-	github.com/jmoiron/sqlx v1.2.0
+	github.com/jmoiron/sqlx v1.3.0
 	github.com/lib/pq v1.9.0
 	github.com/minio/minio-go/v7 v7.0.7
 	github.com/moby/term v0.0.0-20201110203204-bea5bbe245bf // indirect
