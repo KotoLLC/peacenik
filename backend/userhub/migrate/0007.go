@@ -4,14 +4,13 @@ import (
 	migrate "github.com/rubenv/sql-migrate"
 )
 
-func m0002j() *migrate.Migration {
+func m0007a() *migrate.Migration {
 	return &migrate.Migration{
-		Id: "0002j",
+		Id: "0007a",
 		Up: []string{
 			`
-drop index users_email_uindex;
+alter table users add hide_identity boolean default false not null;
 `,
 		},
-		Down: []string{},
 	}
 }

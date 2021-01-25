@@ -61,10 +61,14 @@ func (s *tokenService) Auth(ctx context.Context, _ *rpc.Empty) (*rpc.TokenAuthRe
 }
 
 func (s *tokenService) PostMessage(ctx context.Context, r *rpc.TokenPostMessageRequest) (*rpc.TokenPostMessageResponse, error) {
-	if r.GroupId == "" {
+	switch {
+	case r.GroupId != "":
+		return s.postMessageForGroup(ctx, r.GroupId)
+	case r.UserId != "":
+		return s.postMessageForUser(ctx, r.UserId)
+	default:
 		return s.postMessage(ctx)
 	}
-	return s.postMessageForGroup(ctx, r.GroupId)
 }
 
 func (s *tokenService) postMessage(ctx context.Context) (*rpc.TokenPostMessageResponse, error) {
@@ -154,6 +158,35 @@ func (s *tokenService) postMessageForGroup(ctx context.Context, groupID string) 
 			return nil, merry.Wrap(err)
 		}
 		tokens[adminHub] = hubToken
+	}
+	return &rpc.TokenPostMessageResponse{
+		Tokens: tokens,
+	}, nil
+}
+
+func (s *tokenService) postMessageForUser(ctx context.Context, userID string) (*rpc.TokenPostMessageResponse, error) {
+	me := s.getMe(ctx)
+	user, isFriend := s.getUser(ctx, userID)
+	if user == nil || !isFriend {
+		return nil, twirp.NotFoundError("user not found")
+	}
+
+	// Force create a key for users
+	_ = s.repos.User.UsersKey(me.ID, user.ID)
+
+	hub := s.repos.MessageHubs.GroupHub(me.ID)
+	tokens := make(map[string]string)
+	if hub != "" {
+		exp := time.Now().Add(s.tokenDuration)
+		claims := map[string]interface{}{
+			"hub":     hub,
+			"user_id": userID,
+		}
+		hubToken, err := s.tokenGenerator.Generate(me.ID, "post-message", exp, claims)
+		if err != nil {
+			return nil, merry.Wrap(err)
+		}
+		tokens[hub] = hubToken
 	}
 	return &rpc.TokenPostMessageResponse{
 		Tokens: tokens,

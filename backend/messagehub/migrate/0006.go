@@ -9,9 +9,10 @@ func m0006a() *migrate.Migration {
 		Id: "0006a",
 		Up: []string{
 			`
-alter table users add background_id text default '' not null;
+alter table users drop column name;
+alter table users drop column full_name;
+alter table messages drop column user_name;
 `,
 		},
-		Down: []string{},
 	}
 }

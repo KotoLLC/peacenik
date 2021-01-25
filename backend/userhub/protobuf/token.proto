@@ -17,6 +17,7 @@ message TokenAuthResponse {
 
 message TokenPostMessageRequest {
     string group_id = 1;
+    string user_id = 2;
 }
 
 message TokenPostMessageResponse {
