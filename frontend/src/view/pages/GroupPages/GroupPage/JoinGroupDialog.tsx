@@ -18,6 +18,8 @@ interface Props {
   groupId: string
   errorMessage: string
   joinToGroupRequestSuccessfully: boolean
+  buttonText: string
+  buttonClassName?: string
 
   onJoinToGroupRequest: (data: ApiTypes.Groups.RequestJoin) => void
   onJoinToGroupSuccess: (value: boolean) => void
@@ -30,6 +32,8 @@ const JoinGroupDialog: React.FC<Props> = (props) => {
     onJoinToGroupRequest,
     onJoinToGroupSuccess,
     joinToGroupRequestSuccessfully,
+    buttonText,
+    buttonClassName,
   } = props
 
   const [isReqeted, setRequested] = useState<boolean>(false)
@@ -57,7 +61,11 @@ const JoinGroupDialog: React.FC<Props> = (props) => {
 
   return (
     <>
-      <ButtonContained onClick={() => setOpen(true)} className="extra-small">Join</ButtonContained>
+      <ButtonContained 
+        onClick={() => setOpen(true)} 
+        className={buttonClassName}>
+        {buttonText}
+      </ButtonContained>
       <ModalDialog
         title="Join group"
         isModalOpen={isOpen}
@@ -71,7 +79,7 @@ const JoinGroupDialog: React.FC<Props> = (props) => {
         </TextFieldWrapper>
         <ModalButtonsGroup>
           <ModalCancelButton
-            className="gray"
+            className="grey"
             onClick={() => setOpen(false)}>
             Cancel
           </ModalCancelButton>

@@ -308,9 +308,13 @@ export const ButtonContained = styled.button`
   font-size: 14px;
   transition: 0.15s;
   text-decoration: none;
+  outline: none;
   cursor: pointer;
-  
 
+  &.large {
+    min-width: 160px;
+  }
+  
   &.small {
     height: 30px;
     min-width: 110px;
@@ -328,7 +332,7 @@ export const ButtonContained = styled.button`
     background: #4e8c07;
   }
 
-  &.gray {
+  &.grey {
     background: #A1AEC8;
 
     &:hover {
@@ -338,13 +342,14 @@ export const ButtonContained = styled.button`
   
 `
 
-export const ButtonOutlined = styled.span`
+export const ButtonOutlined = styled.button`
   display: inline-flex;
   justify-content: center;
   align-items: center;
   margin-right: 10px;
   min-width: 120px;
   height: 32px;
+  outline: none;
   background: #fff;
   border-radius: 16px;
   font-family: 'SFUITextMedium';
@@ -355,6 +360,10 @@ export const ButtonOutlined = styled.span`
   transition: 0.15s;
   text-decoration: none;
   cursor: pointer;
+
+  &.large {
+    min-width: 160px;
+  }
 
   &.small {
     height: 30px;
@@ -369,7 +378,7 @@ export const ButtonOutlined = styled.span`
     border-radius: 13px;
   }
 
-  &.gray {
+  &.grey {
     border-color: #A1AEC8;
     color: #A1AEC8;
 

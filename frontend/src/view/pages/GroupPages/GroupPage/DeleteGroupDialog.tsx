@@ -57,7 +57,7 @@ const DeleteGroupDialog: React.FC<Props> = (props) => {
   return (
     <DangerZoneWrapper>
       <DangerZoneTitle>Danger Zone</DangerZoneTitle>
-      <ButtonContained onClick={() => setOpen(true)} className="small gray">Destroy</ButtonContained>
+      <ButtonContained onClick={() => setOpen(true)} className="grey small">Destroy</ButtonContained>
       <ModalDialog
         title="Destroy"
         isModalOpen={Boolean(isOpen)}
@@ -66,7 +66,7 @@ const DeleteGroupDialog: React.FC<Props> = (props) => {
         <ModalSubTitle>Are you sure? <br />This action can`t be undone.</ModalSubTitle>
         <DialogActions>
           <ModalButtonsGroup>
-            <ModalCancelButton className="gray" onClick={() => setOpen(false)}>Cancel</ModalCancelButton>
+            <ModalCancelButton className="grey" onClick={() => setOpen(false)}>Cancel</ModalCancelButton>
             <ModalAllowButton disabled={isReqeted} onClick={onDestroy}>Yes</ModalAllowButton>
           </ModalButtonsGroup>
         </DialogActions>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { PageLayout } from '@view/shared/PageLayout'
-import { GroupTopBar } from './GroupTopBar'
+import GroupTopBar from './GroupTopBar'
 import { Member } from './Member'
 import MemberInvited from './MemberInvited'
 import AvatarIcon from '@assets/images/groups-avatar-icon.svg'
@@ -78,12 +78,13 @@ const AdminLauout: React.FC<Props> = React.memo((props) => {
 
   if (!groupDetails) return null
 
-  const { group, members } = groupDetails
+  const { group, members, status } = groupDetails
 
   return (
     <PageLayout>
       <GroupCover />
       <GroupTopBar 
+        memberStatus={status}
         membersCounter={members?.length} 
         invitesCounter={groupInvites?.length || 0} 
         groupId={group?.id} 

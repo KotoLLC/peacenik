@@ -7,6 +7,7 @@ export interface State  {
   isGroupDeletedSuccessfully: boolean
   isMemberDeletedSuccessfully: boolean
   joinToGroupRequestSuccessfully: boolean
+  isGroupLeavedSuccess: boolean
   publicGroups: ApiTypes.Groups.RecievedGroup[]
   myGroups: ApiTypes.Groups.RecievedGroup[]
   groupDetails: ApiTypes.Groups.GroupDetails | null
@@ -19,6 +20,7 @@ const initialState: State = {
   isGroupDeletedSuccessfully: false,
   isMemberDeletedSuccessfully: false,
   joinToGroupRequestSuccessfully: false,
+  isGroupLeavedSuccess: false,
   publicGroups: [],
   myGroups: [],
   groupDetails: null,
@@ -87,6 +89,13 @@ const reducer = (state = initialState, action) => {
       return {
         ...state, ...{
           isMemberDeletedSuccessfully: action.payload
+        }
+      }
+    }
+    case Types.LEAVE_GROUP_SUCCESS: {
+      return {
+        ...state, ...{
+          isGroupLeavedSuccess: action.payload
         }
       }
     }

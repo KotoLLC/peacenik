@@ -114,3 +114,13 @@ export function* watchDeleteMemberRequest(action: { type: string, payload: ApiTy
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
+
+export function* watchLeaveGroupRequest(action: { type: string, payload: string }) {
+  const response = yield API.groups.leaveGroup(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.groups.leaveGroupSuccess(true))
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}

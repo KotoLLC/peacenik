@@ -370,6 +370,8 @@ export declare namespace ApiTypes {
 
   export namespace Groups {
 
+    export type MemberStatus = 'member' | 'pending' | ''
+
     export interface AddGroup {
       name: string
       description: string
@@ -412,6 +414,8 @@ export declare namespace ApiTypes {
     export interface GroupDetails {
       group: Group
       members: GroupMember[]
+      invites: Invite[]
+      status: MemberStatus
     }
 
     export interface GroupMember {
@@ -425,7 +429,7 @@ export declare namespace ApiTypes {
 
     export interface RecievedGroup {
       group: Group
-      status: 'member' | 'pending' | ''
+      status: MemberStatus
     }
     
     export interface RequestJoin {

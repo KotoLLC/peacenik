@@ -57,7 +57,7 @@ const DeleteMemberDialog: React.FC<Props> = (props) => {
 
   return (
     <>
-      <MemberButtonOutlined onClick={() => setOpen(true)} className="gray">Remove</MemberButtonOutlined>
+      <MemberButtonOutlined onClick={() => setOpen(true)} className="grey">Remove</MemberButtonOutlined>
       <ModalDialog
         title="Remove"
         isModalOpen={isOpen}
@@ -65,7 +65,7 @@ const DeleteMemberDialog: React.FC<Props> = (props) => {
         <ModalSubTitle>Are you sure? <br />This action can`t be undone.</ModalSubTitle>
         <ModalButtonsGroup>
           <ModalCancelButton
-            className="gray"
+            className="grey"
             onClick={() => setOpen(false)}>
             Cancel
           </ModalCancelButton>

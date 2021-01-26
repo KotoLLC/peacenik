@@ -6,7 +6,7 @@ import { ApiTypes, StoreTypes } from 'src/types'
 import { connect } from 'react-redux'
 import selectors from '@selectors/index'
 // import Actions from '@store/actions'
-import JoinGroupDialog from './JoinGroupDialog'
+import JoinGroupDialog from '../GroupPage/JoinGroupDialog'
 import {
   GroupsListItemWrapper,
   ItemCover,
@@ -38,7 +38,11 @@ const GroupsListItem: React.FC<Props> = React.memo((props) => {
     }
 
     if (userId !== admin.id && status === '') {
-      return <JoinGroupDialog groupId={id} />
+      return <JoinGroupDialog
+        groupId={id}
+        buttonClassName="extra-small"
+        buttonText="Join"
+      />
     }
 
     if (userId !== admin.id && status === 'pending') {
@@ -55,10 +59,10 @@ const GroupsListItem: React.FC<Props> = React.memo((props) => {
             <AvatarStyled>
               <img src={AvatarIcon} alt="icon" />
             </AvatarStyled>
-          </Link>          
+          </Link>
           {renderCurrentButton()}
         </ItemHeader>
-        <GroupNameLink to={`/groups/group?id=${id}`}>{name}</GroupNameLink> 
+        <GroupNameLink to={`/groups/group?id=${id}`}>{name}</GroupNameLink>
         <GroupCounter>{member_count} participants</GroupCounter>
         <GroupPublicity>{is_public ? 'Public' : 'Private'} {userId === admin.id && '- My group'}</GroupPublicity>
         <GroupDescription>{description}</GroupDescription>
