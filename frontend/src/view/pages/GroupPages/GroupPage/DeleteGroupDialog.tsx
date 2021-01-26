@@ -1,42 +1,40 @@
-import React, { useState, useEffect } from 'react'
-import Dialog from '@material-ui/core/Dialog'
+import React, { useState, useEffect, useRef } from 'react'
 import DialogActions from '@material-ui/core/DialogActions'
 import { connect } from 'react-redux'
-import Button from '@material-ui/core/Button'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'
 import { StoreTypes } from 'src/types'
 import { withRouter, RouteComponentProps } from 'react-router-dom'
-import { 
-  DialogTitleStyled, 
-  ButtonContained,
-} from '@view/shared/styles'
-import { 
-  DangerZoneWrapper, 
-  DangerZoneTitle,
-  DialogContentStyled,
- } from './styles'
+import { ModalDialog } from '@view/shared/ModalDialog'
+import {
+  ModalSubTitle,
+  ModalButtonsGroup,
+  ModalCancelButton,
+  ModalAllowButton,
+} from '@view/shared/ModalDialog/styles'
+import { ButtonContained } from '@view/shared/styles'
+import { DangerZoneWrapper, DangerZoneTitle } from './styles'
 
- interface Props extends RouteComponentProps {
-   groupId: string
-   errorMessage: string
-   isGroupDeletedSuccessfully: boolean
-   
-   onDeleteGroup: (value: string) => void
-   onDeleteGroupSuccess: (value: boolean) => void
- }
+interface Props extends RouteComponentProps {
+  groupId: string
+  errorMessage: string
+  isGroupDeletedSuccessfully: boolean
+
+  onDeleteGroup: (value: string) => void
+  onDeleteGroupSuccess: (value: boolean) => void
+}
 
 const DeleteGroupDialog: React.FC<Props> = (props) => {
-  const { 
-    groupId, 
+  const {
+    groupId,
     isGroupDeletedSuccessfully,
     errorMessage,
     onDeleteGroupSuccess,
-    onDeleteGroup, 
+    onDeleteGroup,
     history,
   } = props
-  const [ isReqeted, setRequested ] = useState(false)
-  const [open, setOpen] = useState(false)
+  const [isReqeted, setRequested] = useState(false)
+  const [isOpen, setOpen] = useState(false)
 
   const onDestroy = () => {
     setRequested(true)
@@ -60,25 +58,19 @@ const DeleteGroupDialog: React.FC<Props> = (props) => {
     <DangerZoneWrapper>
       <DangerZoneTitle>Danger Zone</DangerZoneTitle>
       <ButtonContained onClick={() => setOpen(true)} className="small gray">Destroy</ButtonContained>
-      <Dialog
-        open={open}
-        onClose={() => setOpen(false)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
+      <ModalDialog
+        title="Destroy"
+        isModalOpen={Boolean(isOpen)}
+        setOpenModal={() => setOpen(!isOpen)}
       >
-        <DialogTitleStyled id="alert-dialog-title">Destroy</DialogTitleStyled>
-        <DialogContentStyled>
-          Are you sure? <br/>This action can`t be undone.
-        </DialogContentStyled>
+        <ModalSubTitle>Are you sure? <br />This action can`t be undone.</ModalSubTitle>
         <DialogActions>
-          <Button onClick={() => setOpen(false)}>
-            Cancel
-          </Button>
-          <Button disabled={isReqeted} color="secondary" onClick={onDestroy} autoFocus>
-            Yes
-          </Button>
+          <ModalButtonsGroup>
+            <ModalCancelButton className="gray" onClick={() => setOpen(false)}>Cancel</ModalCancelButton>
+            <ModalAllowButton disabled={isReqeted} onClick={onDestroy}>Yes</ModalAllowButton>
+          </ModalButtonsGroup>
         </DialogActions>
-      </Dialog>
+      </ModalDialog>
     </DangerZoneWrapper>
   )
 }

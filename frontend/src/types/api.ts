@@ -406,6 +406,7 @@ export declare namespace ApiTypes {
       id: string
       is_public: boolean
       name: string
+      member_count: number
     }
     
     export interface GroupDetails {

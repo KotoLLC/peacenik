@@ -13,7 +13,6 @@ import {
   ItemContentWraper,
   ItemHeader,
   AvatarStyled,
-  GroupName,
   GroupNameLink,
   GroupCounter,
   GroupPublicity,
@@ -27,7 +26,7 @@ interface Props extends ApiTypes.Groups.RecievedGroup {
 
 const GroupsListItem: React.FC<Props> = React.memo((props) => {
   const { group, status, userId } = props
-  const { avatar_original, description, id, is_public, name, admin } = group
+  const { avatar_original, description, id, is_public, name, admin, member_count } = group
 
   const renderCurrentButton = () => {
     if (userId === admin.id) {
@@ -56,25 +55,11 @@ const GroupsListItem: React.FC<Props> = React.memo((props) => {
             <AvatarStyled>
               <img src={AvatarIcon} alt="icon" />
             </AvatarStyled>
-          </Link>
-          {/* {status === 'member' ?
-            <Link to={`/groups/group?id=${id}`}>
-              <AvatarStyled>
-                <img src={AvatarIcon} alt="icon" />
-              </AvatarStyled>
-            </Link> :
-            <AvatarStyled>
-              <img src={AvatarIcon} alt="icon" />
-            </AvatarStyled>
-          } */}
+          </Link>          
           {renderCurrentButton()}
         </ItemHeader>
         <GroupNameLink to={`/groups/group?id=${id}`}>{name}</GroupNameLink> 
-        {/* {status === 'member' ?
-          <GroupNameLink to={`/groups/group?id=${id}`}>{name}</GroupNameLink> :
-          <GroupName>{name}</GroupName>
-        } */}
-        <GroupCounter>123 participants</GroupCounter>
+        <GroupCounter>{member_count} participants</GroupCounter>
         <GroupPublicity>{is_public ? 'Public' : 'Private'} {userId === admin.id && '- My group'}</GroupPublicity>
         <GroupDescription>{description}</GroupDescription>
       </ItemContentWraper>

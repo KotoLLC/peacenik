@@ -89,7 +89,7 @@ export const LeftSideBar = styled.aside`
 
 export const RightSideBar = styled.aside`
   position: relative;
-  padding: 20px 0 30px;
+  padding: 20px 0 20px;
   width: 260px;
   margin-left: 30px;
   background: #fff;
@@ -99,7 +99,7 @@ export const RightSideBar = styled.aside`
 export const CentralBar = styled.section`
   background: #fff;
   flex-grow: 1;
-  padding: 20px 0 30px;
+  padding: 20px 0 20px;
   position: relative;
   border-radius: 0 0 4px 4px;
 `
