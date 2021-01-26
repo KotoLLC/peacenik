@@ -37,6 +37,8 @@ export enum Types {
 
   LEAVE_GROUP_REQUEST = 'LEAVE_GROUP_REQUEST',
   LEAVE_GROUP_SUCCESS = 'LEAVE_GROUP_SUCCESS',
+
+  SET_CURRENT_GROUP_ID = 'SET_CURRENT_GROUP_ID',
 }
 
 const addGroupRequest = (payload: ApiTypes.Groups.AddGroup) => ({
@@ -156,6 +158,11 @@ const leaveGroupSuccess = (payload: boolean) => ({
   payload
 })
 
+const setCurrentGroupId = (payload: string) => ({
+  type: Types.SET_CURRENT_GROUP_ID,
+  payload
+})
+
 export default {
   addGroupRequest,
   addGroupSucces,
@@ -181,4 +188,5 @@ export default {
   deleteMemberSuccess,
   leaveGroupRequest,
   leaveGroupSuccess,
+  setCurrentGroupId,
 }
