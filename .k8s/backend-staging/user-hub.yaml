@@ -16,13 +16,13 @@ spec:
       terminationGracePeriodSeconds: 5
       initContainers:
       - name: kubectl
-        image: mreider/kubectl:0.0.2
+        image: ghcr.io/kotollc/koto/kubectl:0.0.2
         volumeMounts:
         - name: kubectl
           mountPath: /data
         command: ["cp", "/usr/local/bin/kubectl", "/data/kubectl"]
       - name: doctl
-        image: mreider/doctl:0.0.1
+        image: ghcr.io/kotollc/koto/doctl:0.0.1
         volumeMounts:
         - name: doctl
           mountPath: /data

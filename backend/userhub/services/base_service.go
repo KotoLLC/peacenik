@@ -68,6 +68,16 @@ func (s *BaseService) getGroup(ctx context.Context, groupID string) (*repo.Group
 	return group, group.AdminID == me.ID
 }
 
+func (s *BaseService) getUser(ctx context.Context, userID string) (*repo.User, bool) {
+	user := s.repos.User.FindUserByID(userID)
+	if user == nil {
+		return nil, false
+	}
+	me := s.getMe(ctx)
+	isFriend := s.repos.Friend.AreFriends(me.ID, user.ID)
+	return user, isFriend
+}
+
 func (s *BaseService) createBlobLink(ctx context.Context, blobID string) (string, error) {
 	if blobID == "" {
 		return "", nil

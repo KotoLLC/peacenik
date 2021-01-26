@@ -187,8 +187,11 @@ func (s *authService) SendConfirmLink(ctx context.Context, _ *rpc.Empty) (*rpc.E
 
 func (s *authService) SendResetPasswordLink(_ context.Context, r *rpc.AuthSendResetPasswordLinkRequest) (*rpc.Empty, error) {
 	user := s.repos.User.FindUserByName(r.Name)
+	if user == nil {
+		return nil, twirp.NotFoundError("user not found")
+	}
 	userInfo := s.userCache.UserFullAccess(user.ID)
-	if user == nil || userInfo.Email != r.Email {
+	if userInfo.Email != r.Email {
 		return nil, twirp.NotFoundError("user not found")
 	}
 

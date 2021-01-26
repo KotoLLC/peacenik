@@ -13,14 +13,14 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		8BF33B0844445FF43475F999 /* libPods-Koto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B766453DC7D34DA6F0288B36 /* libPods-Koto.a */; };
-		9EF2068C2574398700DA3D68 /* (null) in Resources */ = {isa = PBXBuildFile; };
-		9EF2068F2574398800DA3D68 /* (null) in Resources */ = {isa = PBXBuildFile; };
-		9EF206922574398B00DA3D68 /* (null) in Resources */ = {isa = PBXBuildFile; };
-		9EF206952574398C00DA3D68 /* (null) in Resources */ = {isa = PBXBuildFile; };
-		9EF206982574398E00DA3D68 /* (null) in Resources */ = {isa = PBXBuildFile; };
-		9EF2069B2574398E00DA3D68 /* (null) in Resources */ = {isa = PBXBuildFile; };
-		9EF2069E2574399100DA3D68 /* (null) in Resources */ = {isa = PBXBuildFile; };
-		9EF206A12574399200DA3D68 /* (null) in Resources */ = {isa = PBXBuildFile; };
+		9EF2068C2574398700DA3D68 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
+		9EF2068F2574398800DA3D68 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
+		9EF206922574398B00DA3D68 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
+		9EF206952574398C00DA3D68 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
+		9EF206982574398E00DA3D68 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
+		9EF2069B2574398E00DA3D68 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
+		9EF2069E2574399100DA3D68 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
+		9EF206A12574399200DA3D68 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
 		9EF207D825744C0D00DA3D68 /* Koto.app in Resources */ = {isa = PBXBuildFile; fileRef = 13B07F961A680F5B00A75B9A /* Koto.app */; };
 		D7B39525DABD2606E906A1DE /* libPods-Koto-KotoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 38B5CE8C697B1625D4598CC8 /* libPods-Koto-KotoTests.a */; };
 		E6BCBAE124FC98CE00387064 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E6BCBAE024FC98CE00387064 /* GoogleService-Info.plist */; };
@@ -44,20 +44,20 @@
 		00E356F21AD99517003FC87E /* KotoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KotoTests.m; sourceTree = "<group>"; };
 		035C5360BE3063D0DEB14E24 /* Pods-Koto.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Koto.debug.xcconfig"; path = "Target Support Files/Pods-Koto/Pods-Koto.debug.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Koto.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Koto.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Koto/AppDelegate.h; sourceTree = "<group>"; };
-		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = Koto/AppDelegate.m; sourceTree = "<group>"; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Koto/Images.xcassets; sourceTree = "<group>"; };
-		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Koto/Info.plist; sourceTree = "<group>"; };
-		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Koto/main.m; sourceTree = "<group>"; };
+		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = AppDelegate.m; sourceTree = "<group>"; };
+		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Images.xcassets; sourceTree = "<group>"; };
+		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Info.plist; sourceTree = "<group>"; };
+		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = main.m; sourceTree = "<group>"; };
 		38B5CE8C697B1625D4598CC8 /* libPods-Koto-KotoTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Koto-KotoTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5629554171C9449CF6893447 /* Pods-Koto.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Koto.release.xcconfig"; path = "Target Support Files/Pods-Koto/Pods-Koto.release.xcconfig"; sourceTree = "<group>"; };
-		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Koto/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B766453DC7D34DA6F0288B36 /* libPods-Koto.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Koto.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BAA31B1060DA96352D925477 /* Pods-Koto-KotoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Koto-KotoTests.debug.xcconfig"; path = "Target Support Files/Pods-Koto-KotoTests/Pods-Koto-KotoTests.debug.xcconfig"; sourceTree = "<group>"; };
 		E6BCBAE024FC98CE00387064 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
-		FBFFCA4D250646E000B1B0E4 /* Koto.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Koto.entitlements; path = Koto/Koto.entitlements; sourceTree = "<group>"; };
+		FBFFCA4D250646E000B1B0E4 /* Koto.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Koto.entitlements; path = Koto.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,8 +83,8 @@
 		00E356EF1AD99517003FC87E /* KotoTests */ = {
 			isa = PBXGroup;
 			children = (
-				00E356F21AD99517003FC87E /* KotoTests.m */,
 				00E356F01AD99517003FC87E /* Supporting Files */,
+				00E356F21AD99517003FC87E /* KotoTests.m */,
 			);
 			path = KotoTests;
 			sourceTree = "<group>";
@@ -95,22 +95,24 @@
 				00E356F11AD99517003FC87E /* Info.plist */,
 			);
 			name = "Supporting Files";
+			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		13B07FAE1A68108700A75B9A /* Koto */ = {
 			isa = PBXGroup;
 			children = (
-				FBFFCA4D250646E000B1B0E4 /* Koto.entitlements */,
-				E6BCBAE024FC98CE00387064 /* GoogleService-Info.plist */,
-				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
+				E6BCBAE024FC98CE00387064 /* GoogleService-Info.plist */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
+				FBFFCA4D250646E000B1B0E4 /* Koto.entitlements */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
+				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FB71A68108700A75B9A /* main.m */,
 			);
 			name = Koto;
+			path = Koto;
 			sourceTree = "<group>";
 		};
 		298C5FF9A63AB1EB7F2737E8 /* Pods */ = {
@@ -145,12 +147,12 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				13B07FAE1A68108700A75B9A /* Koto */,
-				832341AE1AAA6A7D00B99B32 /* Libraries */,
-				00E356EF1AD99517003FC87E /* KotoTests */,
-				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
+				13B07FAE1A68108700A75B9A /* Koto */,
+				00E356EF1AD99517003FC87E /* KotoTests */,
+				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				298C5FF9A63AB1EB7F2737E8 /* Pods */,
+				83CBBA001A601CBA00E9B192 /* Products */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -253,10 +255,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9EF206952574398C00DA3D68 /* (null) in Resources */,
-				9EF2068F2574398800DA3D68 /* (null) in Resources */,
-				9EF2069B2574398E00DA3D68 /* (null) in Resources */,
-				9EF206A12574399200DA3D68 /* (null) in Resources */,
+				9EF206952574398C00DA3D68 /* BuildFile in Resources */,
+				9EF2068F2574398800DA3D68 /* BuildFile in Resources */,
+				9EF2069B2574398E00DA3D68 /* BuildFile in Resources */,
+				9EF206A12574399200DA3D68 /* BuildFile in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -264,14 +266,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9EF2068C2574398700DA3D68 /* (null) in Resources */,
-				9EF206922574398B00DA3D68 /* (null) in Resources */,
+				9EF2068C2574398700DA3D68 /* BuildFile in Resources */,
+				9EF206922574398B00DA3D68 /* BuildFile in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				E6BCBAE124FC98CE00387064 /* GoogleService-Info.plist in Resources */,
 				9EF207D825744C0D00DA3D68 /* Koto.app in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				9EF2069E2574399100DA3D68 /* (null) in Resources */,
-				9EF206982574398E00DA3D68 /* (null) in Resources */,
+				9EF2069E2574399100DA3D68 /* BuildFile in Resources */,
+				9EF206982574398E00DA3D68 /* BuildFile in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -439,7 +441,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = KotoTests/Info.plist;
+				INFOPLIST_FILE = "KotoTests/Supporting Files/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -463,7 +465,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				COPY_PHASE_STRIP = NO;
-				INFOPLIST_FILE = KotoTests/Info.plist;
+				INFOPLIST_FILE = "KotoTests/Supporting Files/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -498,7 +500,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4;
+				MARKETING_VERSION = 1.5;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -530,7 +532,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4;
+				MARKETING_VERSION = 1.5;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

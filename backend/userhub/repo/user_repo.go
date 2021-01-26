@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"crypto/rand"
 	"database/sql"
 	"strings"
 	"time"
@@ -37,16 +38,17 @@ type UserRepo interface {
 	BlockUser(userID, blockedUserID string)
 	AreBlocked(userID1, userID2 string) bool
 	BlockedUserIDs(userID string) []string
-}
-
-type userRepo struct {
-	db *sqlx.DB
+	UsersKey(userID1, userID2 string) []byte
 }
 
 func NewUsers(db *sqlx.DB) UserRepo {
 	return &userRepo{
 		db: db,
 	}
+}
+
+type userRepo struct {
+	db *sqlx.DB
 }
 
 func (r *userRepo) FindUserByIDOrName(value string) *User {
@@ -348,4 +350,42 @@ func (r *userRepo) BlockedUserIDs(userID string) []string {
 		panic(err)
 	}
 	return ids
+}
+
+func (r *userRepo) UsersKey(userID1, userID2 string) []byte {
+	var key []byte
+	err := r.db.Get(&key, `
+		select aes_key
+		from user_keys
+		where (user1_id = $1 and user2_id = $2) or (user1_id = $2 and user2_id = $1);`,
+		userID1, userID2)
+	if err == nil {
+		return key
+	}
+	if !merry.Is(err, sql.ErrNoRows) {
+		panic(err)
+	}
+	key = make([]byte, 32)
+	_, err = rand.Read(key)
+	if err != nil {
+		panic(err)
+	}
+	_, err = r.db.Exec(`
+		insert into user_keys(id, user1_id, user2_id, aes_key, created_at)
+		select $1, $2, $3, $4, $5
+		where not exists(select * from user_keys where user1_id = $2 and user2_id = $3)
+			and not exists(select * from user_keys where user2_id = $2 and user1_id = $3)`,
+		common.GenerateUUID(), userID1, userID2, key, common.CurrentTimestamp())
+	if err != nil {
+		panic(err)
+	}
+	err = r.db.Get(&key, `
+		select aes_key
+		from user_keys
+		where (user1_id = $1 and user2_id = $2) or (user1_id = $2 and user2_id = $1);`,
+		userID1, userID2)
+	if err != nil {
+		panic(err)
+	}
+	return key
 }

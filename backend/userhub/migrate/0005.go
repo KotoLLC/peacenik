@@ -11,6 +11,5 @@ func m0005a() *migrate.Migration {
 			`
 alter table user_message_hubs add min_distance integer default 0 not null;`,
 		},
-		Down: []string{},
 	}
 }
