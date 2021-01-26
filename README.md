@@ -13,7 +13,7 @@ API is documented [here](api.md).
 Koto can be tested as follows:
 
 1. install minikube
-2. run `minikube addons enable ingress`\
+2. run `minikube addons enable ingress`
 3. run `eval $(minikube docker-env)`
 4. run `minikube ip` and copy the ip address
 5. in /.k8s/minikube/backend replace hostAliases.ip with the ip address
