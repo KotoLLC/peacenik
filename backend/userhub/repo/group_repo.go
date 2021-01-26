@@ -71,6 +71,7 @@ type GroupRepo interface {
 	GroupInvitesToConfirm(groupID string) []GroupInvite
 	PublicGroups() []Group
 	JoinStatuses(userID string) map[string]string
+	JoinStatus(userID, groupID string) string
 	UserGroups(userID string) []Group
 }
 
@@ -615,6 +616,26 @@ func (r *groupRepo) JoinStatuses(userID string) map[string]string {
 		statuses[item.GroupID] = item.Status
 	}
 	return statuses
+}
+
+func (r *groupRepo) JoinStatus(userID, groupID string) string {
+	var status string
+	err := r.db.Get(&status, `
+		select
+			case
+			   when exists(select * from group_users where group_id = $1 and user_id = $2) then 'member'
+			   when exists(select * from group_invites where group_id = $1 and invited_id = $2 and (rejected_at is not null or rejected_by_admin_at is not null)) then 'rejected'
+			   when exists(select * from group_invites where group_id = $1 and invited_id = $2) then 'pending'
+			   else ''
+			end status;`,
+		groupID, userID)
+	if err != nil {
+		if merry.Is(err, sql.ErrNoRows) {
+			return ""
+		}
+		panic(err)
+	}
+	return status
 }
 
 func (r *groupRepo) UserGroups(userID string) []Group {

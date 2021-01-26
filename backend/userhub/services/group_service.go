@@ -539,9 +539,12 @@ func (s *groupService) GroupDetails(ctx context.Context, r *rpc.GroupGroupDetail
 		},
 	}
 
+	status := s.repos.Group.JoinStatus(me.ID, group.ID)
+
 	if !isMember {
 		return &rpc.GroupGroupDetailsResponse{
-			Group: rpcGroup,
+			Group:  rpcGroup,
+			Status: status,
 		}, nil
 	}
 
@@ -586,5 +589,6 @@ func (s *groupService) GroupDetails(ctx context.Context, r *rpc.GroupGroupDetail
 		Group:   rpcGroup,
 		Members: rpcMembers,
 		Invites: rpcInvites,
+		Status:  status,
 	}, nil
 }
