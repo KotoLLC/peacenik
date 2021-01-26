@@ -17,11 +17,12 @@ message TokenAuthResponse {
 
 message TokenPostMessageRequest {
     string group_id = 1;
-    string user_id = 2;
+    string friend_id = 2;
 }
 
 message TokenPostMessageResponse {
     map<string, string> tokens = 1;
+    string message_key = 2;
 }
 
 message TokenGetMessagesResponse {

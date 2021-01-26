@@ -6,7 +6,7 @@ require (
 	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/ansel1/merry v1.5.1
 	github.com/appleboy/go-fcm v0.1.5
-	github.com/aws/aws-sdk-go v1.36.29
+	github.com/aws/aws-sdk-go v1.36.31
 	github.com/containerd/containerd v1.4.3 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/disintegration/imaging v1.6.2
@@ -21,7 +21,7 @@ require (
 	github.com/gorilla/sessions v1.2.1
 	github.com/h2non/filetype v1.1.1
 	github.com/jinzhu/configor v1.2.1
-	github.com/jmoiron/sqlx v1.3.0
+	github.com/jmoiron/sqlx v1.3.1
 	github.com/lib/pq v1.9.0
 	github.com/minio/minio-go/v7 v7.0.7
 	github.com/moby/term v0.0.0-20201110203204-bea5bbe245bf // indirect
