@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import DialogActions from '@material-ui/core/DialogActions'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'

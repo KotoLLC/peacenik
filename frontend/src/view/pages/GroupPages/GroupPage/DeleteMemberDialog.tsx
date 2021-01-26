@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
 import { connect } from 'react-redux'
-import Button from '@material-ui/core/Button'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'
 import { StoreTypes, ApiTypes } from 'src/types'
 import { withRouter, RouteComponentProps } from 'react-router-dom'
-import { DialogTitleStyled } from '@view/shared/styles'
+import { MemberButtonOutlined } from './styles'
+import { ModalDialog } from '@view/shared/ModalDialog'
 import {
-  DialogContentStyled,
-  MemberButtonOutlined,
-} from './styles'
+  ModalSubTitle,
+  ModalButtonsGroup,
+  ModalCancelButton,
+  ModalAllowButton,
+} from '@view/shared/ModalDialog/styles'
 
 interface Props extends RouteComponentProps {
   groupId: string
@@ -33,7 +33,7 @@ const DeleteMemberDialog: React.FC<Props> = (props) => {
     memberId,
   } = props
   const [isReqeted, setRequested] = useState(false)
-  const [open, setOpen] = useState(false)
+  const [isOpen, setOpen] = useState(false)
 
   const onDelete = () => {
     setRequested(true)
@@ -58,29 +58,24 @@ const DeleteMemberDialog: React.FC<Props> = (props) => {
   return (
     <>
       <MemberButtonOutlined onClick={() => setOpen(true)} className="gray">Remove</MemberButtonOutlined>
-      <Dialog
-        open={open}
-        onClose={() => setOpen(false)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitleStyled id="alert-dialog-title">Remove</DialogTitleStyled>
-        <DialogContentStyled>
-          Are you sure? <br />This action can`t be undone.
-        </DialogContentStyled>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)}>
+      <ModalDialog
+        title="Remove"
+        isModalOpen={isOpen}
+        setOpenModal={() => setOpen(!isOpen)}>
+        <ModalSubTitle>Are you sure? <br />This action can`t be undone.</ModalSubTitle>
+        <ModalButtonsGroup>
+          <ModalCancelButton
+            className="gray"
+            onClick={() => setOpen(false)}>
             Cancel
-          </Button>
-          <Button 
-            color="secondary"
+          </ModalCancelButton>
+          <ModalAllowButton
             disabled={isReqeted}
-            onClick={onDelete}
-          >
+            onClick={onDelete}>
             Yes
-          </Button>
-        </DialogActions>
-      </Dialog>
+            </ModalAllowButton>
+        </ModalButtonsGroup>
+      </ModalDialog>
     </>
   )
 }

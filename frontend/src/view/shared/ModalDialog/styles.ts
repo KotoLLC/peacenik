@@ -92,3 +92,28 @@ export const ModalAllowButton = styled(ButtonContained)`
   font-size: 16px;
   line-height: 19px;
 `
+
+export const TextFieldWrapper = styled.div`
+  max-width: 460px;
+  width: 100%;
+`
+
+export const TextFieldLabel = styled.div`
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: #A1AEC8;
+  font-family: 'SFUITextRegular';
+`
+
+export const TextareaStyled = styled.textarea`
+  width: 100%;
+  border: 1px solid #C8CFD4;
+  outline: none;
+  box-sizing: border-box;
+  border-radius: 4px;
+  height: 70px;
+  resize: none;
+  font-family: 'SFUITextMedium';
+  color: #262626;
+  padding: 8px 10px;
+`

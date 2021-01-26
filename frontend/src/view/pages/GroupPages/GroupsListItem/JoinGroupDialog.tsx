@@ -1,38 +1,39 @@
 import React, { useState, useEffect } from 'react'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
 import { connect } from 'react-redux'
-import Button from '@material-ui/core/Button'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'
 import { StoreTypes, ApiTypes } from 'src/types'
-import { TextareaStyled } from './styles'
-import { DialogContentStyled } from '../GroupPage/styles'
-import { 
-  DialogTitleStyled, 
-  ButtonContained,
-} from '@view/shared/styles'
+import { ModalDialog } from '@view/shared/ModalDialog'
+import {
+  ModalButtonsGroup,
+  ModalCancelButton,
+  ModalAllowButton,
+  TextFieldWrapper,
+  TextFieldLabel,
+  TextareaStyled,
+} from '@view/shared/ModalDialog/styles'
+import { ButtonContained } from '@view/shared/styles'
 
- interface Props {
-   groupId: string
-   errorMessage: string
-   joinToGroupRequestSuccessfully: boolean
-   
-   onJoinToGroupRequest: (data: ApiTypes.Groups.RequestJoin) => void
-   onJoinToGroupSuccess: (value: boolean) => void
- }
+interface Props {
+  groupId: string
+  errorMessage: string
+  joinToGroupRequestSuccessfully: boolean
+
+  onJoinToGroupRequest: (data: ApiTypes.Groups.RequestJoin) => void
+  onJoinToGroupSuccess: (value: boolean) => void
+}
 
 const JoinGroupDialog: React.FC<Props> = (props) => {
-  const { 
-    groupId, 
+  const {
+    groupId,
     errorMessage,
     onJoinToGroupRequest,
     onJoinToGroupSuccess,
     joinToGroupRequestSuccessfully,
   } = props
-  
-  const [ isReqeted, setRequested ] = useState<boolean>(false)
-  const [open, setOpen] = useState<boolean>(false)
+
+  const [isReqeted, setRequested] = useState<boolean>(false)
+  const [isOpen, setOpen] = useState<boolean>(false)
   const [message, setMessage] = useState<string>('')
 
   const onJoin = () => {
@@ -55,28 +56,32 @@ const JoinGroupDialog: React.FC<Props> = (props) => {
   }, [joinToGroupRequestSuccessfully])
 
   return (
-      <>
+    <>
       <ButtonContained onClick={() => setOpen(true)} className="extra-small">Join</ButtonContained>
-      <Dialog
-        open={open}
-        onClose={() => setOpen(false)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitleStyled id="alert-dialog-title">Join group</DialogTitleStyled>
-        <DialogContentStyled>
-          Tell us about yourself
-          <TextareaStyled value={message} onChange={(event) => setMessage(event.target.value)} />
-        </DialogContentStyled>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)}>
+      <ModalDialog
+        title="Join group"
+        isModalOpen={isOpen}
+        setOpenModal={() => setOpen(!isOpen)}>
+        <TextFieldWrapper>
+          <TextFieldLabel>Tell us about yourself</TextFieldLabel>
+          <TextareaStyled
+          value={message}
+          onChange={(event) => setMessage(event.target.value)}
+        />
+        </TextFieldWrapper>
+        <ModalButtonsGroup>
+          <ModalCancelButton
+            className="gray"
+            onClick={() => setOpen(false)}>
             Cancel
-          </Button>
-          <Button disabled={isReqeted} color="secondary" onClick={onJoin} autoFocus>
+          </ModalCancelButton>
+          <ModalAllowButton
+            disabled={isReqeted}
+            onClick={onJoin}>
             Send
-          </Button>
-        </DialogActions>
-      </Dialog>
+            </ModalAllowButton>
+        </ModalButtonsGroup>
+      </ModalDialog>
     </>
   )
 }

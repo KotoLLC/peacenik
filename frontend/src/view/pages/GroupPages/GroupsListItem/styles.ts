@@ -82,16 +82,6 @@ export const GroupDescription = styled.p`
   overflow: hidden;
 `
 
-export const TextareaStyled = styled.textarea`
-  width: 450px;
-  margin: 10px auto 0;
-  border: 1px solid #C8CFD4;
-  box-sizing: border-box;
-  border-radius: 4px;
-  height: 70px;
-  resize: none;
-`
-
 export const NoButton = styled.div`
   height: 32px;
   width: 100%;
