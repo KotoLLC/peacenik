@@ -1,6 +1,5 @@
 import React, { ChangeEvent } from 'react'
 import ListItem from '@material-ui/core/ListItem'
-import Paper from '@material-ui/core/Paper'
 import Divider from '@material-ui/core/Divider'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemAvatar from '@material-ui/core/ListItemAvatar'
@@ -13,17 +12,16 @@ import Actions from '@store/actions'
 import { StoreTypes, ApiTypes } from 'src/types'
 import selectors from '@selectors/index'
 import { getAvatarUrl } from '@services/avatarUrl'
+import InputAdornment from '@material-ui/core/InputAdornment'
+import SearchIcon from '@material-ui/icons/Search'
 import {
-  UsersWrapper,
   ListStyled,
-  SearchWrapper,
   EmptyMessage,
   UserName,
   IconButtonGreen,
-  PageWrapper,
   AvatarStyled,
   SearchInput,
-  SearchIconStyled,
+  SearchInputWrapper,
 } from './styles'
 
 export interface Props {
@@ -122,25 +120,21 @@ export class Invitations extends React.Component<Props, State> {
     const { pendingInvitations, searchResult, searchValue } = this.state
 
     return (
-      <PageWrapper>
-        <UsersWrapper>
-          <Paper>
-            <SearchWrapper>
-              <SearchIconStyled onClick={() => this.searchInputRef?.current?.focus()} />
-              <SearchInput
-                ref={this.searchInputRef}
-                id="filter"
-                placeholder="Filter"
-                onChange={this.onSearch}
-                value={searchValue}
-              />
-            </SearchWrapper>
-            <ListStyled>
-              {this.mapInvitations((searchValue) ? searchResult : pendingInvitations)}
-            </ListStyled>
-          </Paper>
-        </UsersWrapper>
-      </PageWrapper>
+      <>
+        <SearchInputWrapper>
+          <SearchInput
+            id="outlined-adornment-amount"
+            ref={this.searchInputRef}
+            placeholder="Filter"
+            onChange={this.onSearch}
+            value={searchValue}
+            startAdornment={<InputAdornment position="start"><SearchIcon /></InputAdornment>}
+          />
+        </SearchInputWrapper>
+        <ListStyled>
+          {this.mapInvitations((searchValue) ? searchResult : pendingInvitations)}
+        </ListStyled>
+      </>
     )
   }
 }

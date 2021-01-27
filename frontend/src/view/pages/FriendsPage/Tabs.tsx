@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import Paper from '@material-ui/core/Paper'
-import { TabsWrapper, TabStyled, TabsStyled } from '@view/shared/styles'
 import { withRouter, RouteComponentProps } from 'react-router'
+import { ButtonContained } from '@view/shared/styles'
+import {
+  FriendsTabsWrapper,
+  FriendsTabs,
+  FriendsTab,
+} from './styles'
 
 const FriendTabs: React.SFC<RouteComponentProps> = React.memo((props) => {
   const [currentTab, onTabChange] = useState<number | boolean>(0)
@@ -21,19 +25,16 @@ const FriendTabs: React.SFC<RouteComponentProps> = React.memo((props) => {
   }, [location.pathname])
 
   return (
-    <TabsWrapper>
-      <Paper>
-        <TabsStyled
-          value={currentTab}
-          indicatorColor="primary"
-          textColor="primary"
-          onChange={(event, newTab) => onTabChange(newTab)}
-          centered>
-          <TabStyled label="Friends" onClick={() => history.push('/friends/all')} />
-          <TabStyled label="Invites" onClick={() => history.push('/friends/invitations')} />
-        </TabsStyled>
-      </Paper>
-    </TabsWrapper>
+    <FriendsTabsWrapper>
+      <FriendsTabs
+        value={currentTab}
+        onChange={(event, newTab) => onTabChange(newTab)}
+        centered>
+        <FriendsTab label="Friends (0)" onClick={() => history.push('/friends/all')} />
+        <FriendsTab label="Invites (0)" onClick={() => history.push('/friends/invitations')} />
+      </FriendsTabs>
+      <ButtonContained className="large mobile-none">Invite friends</ButtonContained>
+    </FriendsTabsWrapper>
   )
 })
 

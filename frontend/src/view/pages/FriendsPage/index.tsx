@@ -5,29 +5,22 @@ import FriendInvite from './FriendInvite'
 import FriendTabs from './Tabs'
 import { Switch, Route, RouteComponentProps } from 'react-router-dom'
 import { PageLayout } from '@view/shared/PageLayout'
-import { Header } from '@view/shared/styles'
-import GroupAddIcon from '@material-ui/icons/GroupAdd'
-import Button from '@material-ui/core/Button'
+import { PageNavigation } from './PageNavigation'
+import { FriendsWrapper } from './styles'
 
 export const FriendsPage: React.SFC<RouteComponentProps> = (props) => {
-
   return (
     <PageLayout>
-      <Header>
+      <PageNavigation />
+      <FriendsWrapper>
         <FriendTabs />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => props.history.push('/friends/invite')}
-          startIcon={<GroupAddIcon/>}
-        >Invite friend
-      </Button>
-      </Header>
-      <Switch>
-        <Route path="/friends/all" exact component={Friends} />
-        <Route path="/friends/invitations" exact component={Invitations} />
-        <Route path="/friends/invite" exact component={FriendInvite} />
-      </Switch>
+        <Switch>
+          <Route path="/friends" exact component={Friends} />
+          <Route path="/friends/all" exact component={Friends} />
+          <Route path="/friends/invitations" exact component={Invitations} />
+          <Route path="/friends/invite" exact component={FriendInvite} />
+        </Switch>
+      </FriendsWrapper>
     </PageLayout>
   )
 }

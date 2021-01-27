@@ -38,12 +38,12 @@ export const MenuButton = styled(Button)`
 `
 
 export const PageWrapper = styled.main`
-  display: flex;
-  flex-wrap: wrap;
-  padding: 0px 0px 170px;
+  /* display: flex; */
+  /* flex-wrap: wrap; */
+  padding: 0px 15px 170px;
 
-  @media (max-width: 600px) {
-    padding: 0px 0 120px;
+  @media (max-width: 760px) {
+    padding: 0px 15px 120px;
   }
 `
 
@@ -337,6 +337,33 @@ export const ButtonContained = styled.button`
 
     &:hover {
       background: #262626;
+    }
+  }
+
+  &.desktop-none {
+    display: none;
+  }
+
+  &.mobile-none {
+    @media (max-width: 760px) {
+      display: none;
+    }
+  }
+
+  &.mobile-empty {
+    @media (max-width: 760px) {
+      display: block;
+      margin-left: 15px;
+      margin-right: 15px;
+    }
+  }
+
+  &.mobile-full {
+    @media (max-width: 760px) {
+      display: block;
+      margin-right: auto;
+      margin-top: 10px;
+      margin-left: 15px;
     }
   }
   
