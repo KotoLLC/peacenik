@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom'
 import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
 import OutlinedInput from '@material-ui/core/OutlinedInput'
-import { ButtonOutlined } from '@view/shared/styles'
+import { ButtonOutlined, ButtonContained } from '@view/shared/styles'
 
 export const PageWrapper = styled.div`
   display: flex;
@@ -188,7 +188,7 @@ export const FriendsTabs = styled(Tabs)`
   display: flex;
   width: 500px;
 
-  .PrivateTabIndicator-colorSecondary-3 {
+  .MuiTabs-indicator {
     background: #599C0B;
   }
 
@@ -301,7 +301,6 @@ export const FriendCard = styled.div`
 export const UserInfo = styled.div`
   display: flex;
   align-items: center;
-  width: 250px;
 `
 
 export const UserInfoText = styled.div`
@@ -311,6 +310,7 @@ export const UserInfoText = styled.div`
 
 export const UserInfoDisplayName = styled(Link)`
   width: 100%;
+  max-width: 300px;
   display: block;
   font-family: SFUITextMedium;
   font-size: 18px;
@@ -318,6 +318,10 @@ export const UserInfoDisplayName = styled(Link)`
   color: #262626;
   text-decoration: none;
   margin-bottom: 10px;
+  text-overflow: ellipsis;
+  overflow: hidden; 
+  white-space: nowrap;
+
 
   @media (max-width: 760px) {
     font-size: 16px;
@@ -377,14 +381,12 @@ export const ButtonGroup = styled.div`
 export const FriendsButtonOutlined = styled(ButtonOutlined)`
   min-width: 140px;
 `
+export const FriendsButtonContained = styled(ButtonContained)`
+  min-width: 140px;
+`
 
 export const FriendsEmpty = styled.div`
   width: 100%;
-  padding-bottom: 75px;
-
-  @media (max-width: 760px) {
-    max-height: 480px;
-  }
 `
 
 export const FriendsEmptyWrapper = styled.div`
@@ -397,7 +399,7 @@ export const FriendsEmptyWrapper = styled.div`
   justify-content: center;
 
   @media (max-width: 760px) {
-    margin: 40px auto 0 auto;
+    margin: 100px auto 0 auto;
     flex-direction: column;
     align-items: center;
     width: 100%;

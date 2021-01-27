@@ -109,6 +109,7 @@ export declare namespace ApiTypes {
     export interface Invitation {
       friend_id: string
       friend_name: string
+      friend_full_name: string
       created_at: string
       accepted_at?: string
       rejected_at?: string

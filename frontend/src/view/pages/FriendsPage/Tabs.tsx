@@ -1,15 +1,24 @@
 import React, { useState, useEffect } from 'react'
 import { withRouter, RouteComponentProps } from 'react-router'
 import { ButtonContained } from '@view/shared/styles'
+import { connect } from 'react-redux'
+import { StoreTypes, ApiTypes } from 'src/types'
+import selectors from '@selectors/index'
+
 import {
   FriendsTabsWrapper,
   FriendsTabs,
   FriendsTab,
 } from './styles'
 
-const FriendTabs: React.SFC<RouteComponentProps> = React.memo((props) => {
+interface Props extends RouteComponentProps {
+  friends: ApiTypes.Friends.Friend[]
+  invitations: ApiTypes.Friends.Invitation[]
+}
+
+const FriendTabs: React.FC<Props> = React.memo((props) => {
   const [currentTab, onTabChange] = useState<number | boolean>(0)
-  const { history, location } = props
+  const { history, location, friends, invitations } = props
 
   useEffect(() => {
     if (location.pathname.indexOf('all') !== -1) {
@@ -30,12 +39,18 @@ const FriendTabs: React.SFC<RouteComponentProps> = React.memo((props) => {
         value={currentTab}
         onChange={(event, newTab) => onTabChange(newTab)}
         centered>
-        <FriendsTab label="Friends (0)" onClick={() => history.push('/friends/all')} />
-        <FriendsTab label="Invites (0)" onClick={() => history.push('/friends/invitations')} />
+        <FriendsTab label={`Friends (${friends?.length})`} onClick={() => history.push('/friends/all')} />
+        <FriendsTab label={`Invites (${invitations?.length})`} onClick={() => history.push('/friends/invitations')} />
       </FriendsTabs>
       <ButtonContained className="large mobile-none">Invite friends</ButtonContained>
     </FriendsTabsWrapper>
   )
 })
 
-export default withRouter(FriendTabs)
+type StateProps = Pick<Props, 'friends' | 'invitations'>
+const mapStateToProps = (state: StoreTypes): StateProps => ({
+  friends: selectors.friends.friends(state),
+  invitations: selectors.friends.invitations(state)
+})
+
+export default connect(mapStateToProps)(withRouter(FriendTabs))

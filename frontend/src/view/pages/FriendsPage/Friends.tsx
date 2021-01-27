@@ -1,6 +1,5 @@
 import React, { ChangeEvent } from 'react'
 import { connect } from 'react-redux'
-import Actions from '@store/actions'
 import { StoreTypes, ApiTypes } from 'src/types'
 import selectors from '@selectors/index'
 import InputAdornment from '@material-ui/core/InputAdornment'
@@ -16,14 +15,11 @@ import {
   IconWrapper,
   Text,
   SearchInput,
-  EmptyMessage,
   SearchInputWrapper,
 } from './styles'
 
 export interface Props {
   friends: ApiTypes.Friends.Friend[]
-  onGetFriends: () => void
-  onAddFriend: (data: ApiTypes.Friends.Request) => void
 }
 
 interface State {
@@ -50,7 +46,7 @@ class Friends extends React.Component<Props, State> {
             <PeopleAltRoundedIcon />
           </IconWrapper>
           {
-            !searchValue ? <Text>No one's been found.</Text> :
+            searchValue ? <Text>No one's been found.</Text> :
             <Text>No friends. You can <TextUnderlined>invite friends</TextUnderlined></Text>
           }
         </FriendsEmptyWrapper>
@@ -83,10 +79,6 @@ class Friends extends React.Component<Props, State> {
     })
   }
 
-  componentDidMount() {
-    this.props.onGetFriends()
-  }
-
   render() {
     const { friends } = this.props
     const { searchResult, searchValue } = this.state
@@ -115,10 +107,4 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   friends: selectors.friends.friends(state),
 })
 
-type DispatchProps = Pick<Props, 'onGetFriends' | 'onAddFriend'>
-const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onGetFriends: () => dispatch(Actions.friends.getFriendsRequest()),
-  onAddFriend: (data: ApiTypes.Friends.Request) => dispatch(Actions.friends.addFriendRequest(data)),
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(Friends)
+export default connect(mapStateToProps)(Friends)

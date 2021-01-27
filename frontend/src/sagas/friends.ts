@@ -47,6 +47,7 @@ export function* watchAddFriend(action: { type: string, payload: ApiTypes.Friend
   if (response.status === 200) {
     yield put(Actions.friends.addFriendSuccess())
     yield put(Actions.friends.getFriendsRequest())
+    yield put(Actions.friends.getInvitationsRequest())
   } else if (response.error.response.status === 401) {
     localStorage.clear()
     window.location.reload()
@@ -78,6 +79,7 @@ export function* watchAcceptInvitation(action: { type: string, payload: ApiTypes
   const response = yield API.friends.acceptInvitation(action.payload)
 
   if (response.status === 200) {
+    yield put(Actions.friends.getFriendsRequest())
     yield put(Actions.friends.getInvitationsRequest())
   } else if (response.error.response.status === 401) {
     localStorage.clear()
