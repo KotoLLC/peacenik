@@ -96,7 +96,7 @@ const JoinGroupDialog: React.FC<Props> = (props) => {
 
 type StateProps = Pick<Props, 'errorMessage' | 'joinToGroupRequestSuccessfully'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  errorMessage: state.common.errorMessage,
+  errorMessage: selectors.common.errorMessage(state),
   joinToGroupRequestSuccessfully: selectors.groups.joinToGroupRequestSuccessfully(state),
 })
 

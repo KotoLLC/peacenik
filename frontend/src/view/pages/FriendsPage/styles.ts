@@ -2,9 +2,6 @@ import styled from 'styled-components'
 import SearchIcon from '@material-ui/icons/Search'
 import Paper from '@material-ui/core/Paper'
 import IconButton from '@material-ui/core/IconButton'
-import Container from '@material-ui/core/Container'
-import FormControl from '@material-ui/core/FormControl'
-import Button from '@material-ui/core/Button'
 import Avatar from '@material-ui/core/Avatar'
 import { Link } from 'react-router-dom'
 import Tab from '@material-ui/core/Tab'
@@ -119,53 +116,13 @@ export const IconButtonGreen = styled(IconButton)`
   }
 `
 
-export const LinkWrapper = styled.div`
-  text-align: center;
-  margin-top: 10px;
-  width: 100%;
-`
-
-export const ContainerStyled = styled(Container)`
-  && {
-    display: flex;
-    flex-wrap: wrap;
-    align-content: center;
-    justify-content: center;
-    margin-top: 100px;
-  }
-`
-
-export const FormWrapper = styled.form`
-  width: 350px;
-  margin: 0 auto;
-`
-
-export const FormControlStyled = styled(FormControl)`
-  && {
-    margin: 0 0 15px; 
-    width: 100%;
-  }
-`
-
-export const ButtonStyled = styled(Button)`
-  && {
-    height: 42px;
-    min-width: 150px;
-  }
-`
-
-export const TitleWrapper = styled.div`
-  text-align: center;
-  margin-bottom: 20px;
-`
-
 export const ListItemWrapper = styled.div`
 `
 
 export const FriendsWrapper = styled.div`
   position: relative;
   width: 750px;
-  min-height: 700px;
+  min-height: calc(100vh - 150px);
   padding: 15px 30px;
   background: #FFFFFF;
   margin: 0 auto 31px auto;
@@ -173,7 +130,7 @@ export const FriendsWrapper = styled.div`
   @media (max-width: 760px) {
     width: 100%;
     padding: 15px 0 0 0;
-    height: initial;
+    min-height: calc(100vh - 100px);
   }
 `
 
@@ -208,7 +165,7 @@ export const FriendsTab = styled(Tab)`
     font-size: 14px;
     line-height: 16px;
     cursor: pointer;
-    font-family: SFUITextMedium;
+    font-family: 'SFUITextMedium';
     opacity: 0.5;
     transition: all 0.2s;
     color: #88909D;
@@ -218,7 +175,7 @@ export const FriendsTab = styled(Tab)`
   &.Mui-selected {
     font-weight: 600;
     color: #599C0B;
-    font-family: SFUITextBold;
+    font-family: 'SFUITextBold';
     opacity: 1;
   }
 
@@ -312,7 +269,7 @@ export const UserInfoDisplayName = styled(Link)`
   width: 100%;
   max-width: 300px;
   display: block;
-  font-family: SFUITextMedium;
+  font-family: 'SFUITextMedium';
   font-size: 18px;
   line-height: 21px;
   color: #262626;
@@ -331,7 +288,7 @@ export const UserInfoDisplayName = styled(Link)`
 `
 
 export const UserInfoDisplayEmail = styled.span`
-  font-family: SFUITextRegular;
+  font-family: 'SFUITextRegular';
   display: block;
   font-size: 16px;
   line-height: 19px;
@@ -380,9 +337,19 @@ export const ButtonGroup = styled.div`
 
 export const FriendsButtonOutlined = styled(ButtonOutlined)`
   min-width: 140px;
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.3;
+  }
 `
 export const FriendsButtonContained = styled(ButtonContained)`
   min-width: 140px;
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.3;
+  }
 `
 
 export const FriendsEmpty = styled.div`
@@ -392,8 +359,7 @@ export const FriendsEmpty = styled.div`
 export const FriendsEmptyWrapper = styled.div`
   margin: 80px auto 0 auto;
   padding: 28px 0 0 0;
-  width: 415px;
-  height: 289px;
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -402,11 +368,9 @@ export const FriendsEmptyWrapper = styled.div`
     margin: 100px auto 0 auto;
     flex-direction: column;
     align-items: center;
-    width: 100%;
     padding: 0;
     height: initial;
   }
-
 `
 
 export const IconWrapper = styled.div`
@@ -458,5 +422,76 @@ export const TextUnderlined = styled.span`
 
   &:hover {
     border-bottom: transparent;
+  }
+`
+
+export const GetEmailText = styled.span`
+  display: block;
+  font-size: 18px;
+  line-height: 21px;
+  text-align: center;
+  color: #A1AEC8;
+  margin-top: 15px;
+  margin-bottom: 30px;
+  font-family: 'SFUITextSemibold';
+
+  @media (max-width: 760px) {
+    font-size: 16px;
+    line-height: 19px;
+  }
+`
+
+export const DialogIconWrapper = styled.div`
+  width: 196px;
+  height: 196px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 30px auto 50px auto;
+
+  background: #FFFFFF;
+  box-shadow: 0px 1px 10px 2px rgba(216, 216, 216, 0.3);
+  border-radius: 38px;
+
+  svg {
+    width: 135px;
+    height: 130px;
+    color: #C8CFD4;
+    opacity: 0.4;
+  }
+
+  @media (max-width: 760px) {
+    width: 158px;
+    height: 158px;
+    margin: 24px auto 30px auto;
+
+    svg {
+      width: 110px;
+      height: 110px;
+      color: #C8CFD4;
+      opacity: 0.4;
+    }
+  }
+`
+
+export const InvitationsLink = styled.a`
+  display: block;
+  font-size: 18px;
+  line-height: 21px;
+  text-decoration: none;
+  text-align: center;
+  color: #A1AEC8;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  font-family: 'SFUITextSemibold';
+
+  &:hover {
+    color: #000;
+  }
+
+  @media (max-width: 760px) {
+    font-size: 16px;
+    line-height: 19px;
   }
 `

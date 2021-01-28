@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import Actions from '@store/actions'
 import { withRouter, RouteComponentProps } from 'react-router'
 import { ButtonContained } from '@view/shared/styles'
 import { connect } from 'react-redux'
@@ -14,11 +15,13 @@ import {
 interface Props extends RouteComponentProps {
   friends: ApiTypes.Friends.Friend[]
   invitations: ApiTypes.Friends.Invitation[]
+
+  onOpenInvitationsDialog: (value: boolean) => void
 }
 
 const FriendTabs: React.FC<Props> = React.memo((props) => {
   const [currentTab, onTabChange] = useState<number | boolean>(0)
-  const { history, location, friends, invitations } = props
+  const { history, location, friends, invitations, onOpenInvitationsDialog } = props
 
   useEffect(() => {
     if (location.pathname.indexOf('all') !== -1) {
@@ -42,7 +45,11 @@ const FriendTabs: React.FC<Props> = React.memo((props) => {
         <FriendsTab label={`Friends (${friends?.length})`} onClick={() => history.push('/friends/all')} />
         <FriendsTab label={`Invites (${invitations?.length})`} onClick={() => history.push('/friends/invitations')} />
       </FriendsTabs>
-      <ButtonContained className="large mobile-none">Invite friends</ButtonContained>
+      <ButtonContained 
+        className="large mobile-none"
+        onClick={() => onOpenInvitationsDialog(true)}>
+          Invite friends
+        </ButtonContained>
     </FriendsTabsWrapper>
   )
 })
@@ -53,4 +60,9 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   invitations: selectors.friends.invitations(state)
 })
 
-export default connect(mapStateToProps)(withRouter(FriendTabs))
+type DispatchProps = Pick<Props, 'onOpenInvitationsDialog'>
+const mapDispatchToProps = (dispatch): DispatchProps => ({
+  onOpenInvitationsDialog: (value: boolean) => dispatch(Actions.friends.openInvitationsDialog(value))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(FriendTabs))

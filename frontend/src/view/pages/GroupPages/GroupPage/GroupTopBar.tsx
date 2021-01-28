@@ -114,7 +114,7 @@ const GroupTopBar: React.FC<Props> = (props) => {
 
 type StateProps = Pick<Props, 'isGroupLeavedSuccess' | 'errorMessage'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  errorMessage: state.common.errorMessage,
+  errorMessage: selectors.common.errorMessage(state),
   isGroupLeavedSuccess: selectors.groups.isGroupLeavedSuccess(state),
 })
 

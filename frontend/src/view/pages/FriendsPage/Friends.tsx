@@ -1,6 +1,7 @@
 import React, { ChangeEvent } from 'react'
 import { connect } from 'react-redux'
 import { StoreTypes, ApiTypes } from 'src/types'
+import Actions from '@store/actions'
 import selectors from '@selectors/index'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import SearchIcon from '@material-ui/icons/Search'
@@ -20,6 +21,7 @@ import {
 
 export interface Props {
   friends: ApiTypes.Friends.Friend[]
+  onOpenInvitationsDialog: (value: boolean) => void
 }
 
 interface State {
@@ -38,6 +40,7 @@ class Friends extends React.Component<Props, State> {
 
   showEmptyListMessage = () => {
     const { searchValue } = this.state
+    const { onOpenInvitationsDialog } = this.props
 
     return (
       <FriendsEmpty>
@@ -47,7 +50,9 @@ class Friends extends React.Component<Props, State> {
           </IconWrapper>
           {
             searchValue ? <Text>No one's been found.</Text> :
-            <Text>No friends. You can <TextUnderlined>invite friends</TextUnderlined></Text>
+            <Text>No friends. You can <TextUnderlined onClick={() => onOpenInvitationsDialog(true)}>
+              invite friends</TextUnderlined>
+            </Text>
           }
         </FriendsEmptyWrapper>
       </FriendsEmpty>
@@ -80,7 +85,7 @@ class Friends extends React.Component<Props, State> {
   }
 
   render() {
-    const { friends } = this.props
+    const { friends, onOpenInvitationsDialog } = this.props
     const { searchResult, searchValue } = this.state
 
     return (
@@ -95,7 +100,11 @@ class Friends extends React.Component<Props, State> {
             startAdornment={<InputAdornment position="start"><SearchIcon /></InputAdornment>}
           />
         </SearchInputWrapper>
-        <ButtonContained className="mobile-empty desktop-none">Invite friends</ButtonContained>
+        <ButtonContained 
+          className="mobile-empty desktop-none"
+          onClick={() => onOpenInvitationsDialog(true)}>
+            Invite friends
+          </ButtonContained>
         {this.mapFriends((searchValue) ? searchResult : friends)}
       </>
     )
@@ -107,4 +116,9 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   friends: selectors.friends.friends(state),
 })
 
-export default connect(mapStateToProps)(Friends)
+type DispatchProps = Pick<Props, 'onOpenInvitationsDialog'>
+const mapDispatchToProps = (dispatch): DispatchProps => ({
+  onOpenInvitationsDialog: (value: boolean) => dispatch(Actions.friends.openInvitationsDialog(value))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Friends)

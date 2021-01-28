@@ -33,8 +33,8 @@ export const FriendItem: React.FC<Props> = (props) => {
         </UserInfoText>
       </UserInfo>
       <ButtonGroup>
-        <FriendsButtonOutlined className="grey">Unfriend</FriendsButtonOutlined>
-        <FriendsButtonOutlined>Send message</FriendsButtonOutlined>
+        <FriendsButtonOutlined className="grey disabled">Unfriend</FriendsButtonOutlined>
+        <FriendsButtonOutlined className="disabled">Send message</FriendsButtonOutlined>
       </ButtonGroup>
     </FriendCard>
   )

@@ -10,6 +10,7 @@ import DialogContent from '@material-ui/core/DialogContent'
 import { Link } from 'react-router-dom'
 import MenuItem from '@material-ui/core/MenuItem'
 import Menu from '@material-ui/core/Menu'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 export const TooltipStyle = styled(Tooltip)`
   && {
@@ -294,7 +295,7 @@ export const MenuStyled = styled(Menu)`
   border-radius: 6px;
 `
 
-export const ButtonContained = styled.button`
+export const ButtonContained = styled(Button)`
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -310,6 +311,7 @@ export const ButtonContained = styled.button`
   text-decoration: none;
   outline: none;
   cursor: pointer;
+  text-transform: none;
 
   &.large {
     min-width: 160px;
@@ -369,7 +371,7 @@ export const ButtonContained = styled.button`
   
 `
 
-export const ButtonOutlined = styled.button`
+export const ButtonOutlined = styled(Button)`
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -387,6 +389,11 @@ export const ButtonOutlined = styled.button`
   transition: 0.15s;
   text-decoration: none;
   cursor: pointer;
+  text-transform: none;
+
+  &:hover {
+    background: #fff;
+  }
 
   &.large {
     min-width: 160px;
@@ -414,4 +421,8 @@ export const ButtonOutlined = styled.button`
       color: #262626;
     }
   }
+`
+
+export const CircularProgressWhite = styled(CircularProgress)`
+  color: #fff;
 `

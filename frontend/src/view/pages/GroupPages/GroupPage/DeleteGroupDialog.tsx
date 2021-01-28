@@ -77,7 +77,7 @@ const DeleteGroupDialog: React.FC<Props> = (props) => {
 
 type StateProps = Pick<Props, 'errorMessage' | 'isGroupDeletedSuccessfully'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  errorMessage: state.common.errorMessage,
+  errorMessage: selectors.common.errorMessage(state),
   isGroupDeletedSuccessfully: selectors.groups.isGroupDeletedSuccessfully(state),
 })
 

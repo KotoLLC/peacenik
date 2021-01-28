@@ -19,6 +19,8 @@ export enum Types {
   
   ACCEPT_INVITATION_REQUEST = 'ACCEPT_INVITATION_REQUEST',
   REJECT_INVITATION_REQUEST = 'REJECT_INVITATION_REQUEST',
+
+  OPEN_INVITATIONS_DIALOG = 'OPEN_INVITATIONS_DIALOG',
 }
 
 const getFriendsRequest = () => ({
@@ -76,6 +78,10 @@ const inviteByEmailSuccess = (payload: boolean) => ({
   type: Types.INVITE_BY_EMAIL_SUCCESS,
   payload
 })
+const openInvitationsDialog = (payload: boolean) => ({
+  type: Types.OPEN_INVITATIONS_DIALOG,
+  payload
+})
 
 export default {
   getFriendsRequest,
@@ -90,4 +96,5 @@ export default {
   rejectInvitationRequest,
   inviteByEmailRequest,
   inviteByEmailSuccess,
+  openInvitationsDialog,
 }

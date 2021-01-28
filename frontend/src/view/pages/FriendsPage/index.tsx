@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import Friends from './Friends'
 import Invitations from './Invitations'
-import FriendInvite from './FriendInvite'
+import InviteFriendDialog from './InviteFriendDialog'
 import FriendTabs from './Tabs'
 import { Switch, Route, RouteComponentProps } from 'react-router-dom'
 import { PageLayout } from '@view/shared/PageLayout'
@@ -16,7 +16,10 @@ interface Props extends RouteComponentProps {
 }
 
 const FriendsPage: React.FC<Props> = (props) => {
-  const { onGetFriends, onGetInvitations } = props
+  const { 
+    onGetFriends, 
+    onGetInvitations,
+   } = props
 
   useEffect(() => {
     onGetFriends()
@@ -32,9 +35,9 @@ const FriendsPage: React.FC<Props> = (props) => {
           <Route path="/friends" exact component={Friends} />
           <Route path="/friends/all" exact component={Friends} />
           <Route path="/friends/invitations" exact component={Invitations} />
-          <Route path="/friends/invite" exact component={FriendInvite} />
         </Switch>
       </FriendsWrapper>
+      <InviteFriendDialog/>
     </PageLayout>
   )
 }

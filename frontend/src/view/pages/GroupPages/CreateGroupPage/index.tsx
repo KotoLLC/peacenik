@@ -160,7 +160,7 @@ const CreateGroupPage: React.FC<Props> = (props) => {
 type StateProps = Pick<Props, 'isGroupAddedSuccessfully' | 'errorMessage'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   isGroupAddedSuccessfully: selectors.groups.isGroupAddedSuccessfully(state),
-  errorMessage: state.common.errorMessage,
+  errorMessage: selectors.common.errorMessage(state),
 })
 
 type DispatchProps = Pick<Props, 'onAddGroup' | 'addGroupSucces'>

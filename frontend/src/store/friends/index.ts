@@ -6,6 +6,7 @@ export interface State {
   friendsOfFriends: ApiTypes.Friends.Potential[],
   invitations: ApiTypes.Friends.Invitation[],
   isInviteByEmailSuccess: boolean
+  isInvitationsDialogOpen: boolean
 }
 
 const initialState: State = {
@@ -13,6 +14,7 @@ const initialState: State = {
   friendsOfFriends: [],
   invitations: [],
   isInviteByEmailSuccess: false,
+  isInvitationsDialogOpen: false,
 }
 
 const reducer = (state = initialState, action) => {
@@ -42,6 +44,13 @@ const reducer = (state = initialState, action) => {
       return {
         ...state, ...{
           isInviteByEmailSuccess: action.payload,
+        }
+      }
+    }
+    case Types.OPEN_INVITATIONS_DIALOG: {
+      return {
+        ...state, ...{
+          isInvitationsDialogOpen: action.payload,
         }
       }
     }

@@ -59,7 +59,7 @@ class Notify extends React.PureComponent<Props> {
 type StateProps = Pick<Props, 'errorMessage' | 'successMessage' | 'isEmailConfirmed'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   isEmailConfirmed: selectors.profile.isEmailConfirmed(state) || false,
-  errorMessage: state.common.errorMessage,
+  errorMessage: selectors.common.errorMessage(state),
   successMessage: state.common.successMessage,
 })
 

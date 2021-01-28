@@ -82,7 +82,7 @@ const DeleteMemberDialog: React.FC<Props> = (props) => {
 
 type StateProps = Pick<Props, 'errorMessage' | 'isMemberDeletedSuccessfully'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  errorMessage: state.common.errorMessage,
+  errorMessage: selectors.common.errorMessage(state),
   isMemberDeletedSuccessfully: selectors.groups.isMemberDeletedSuccessfully(state),
 })
 
