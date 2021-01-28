@@ -45,11 +45,9 @@ const FriendTabs: React.FC<Props> = React.memo((props) => {
         <FriendsTab label={`Friends (${friends?.length})`} onClick={() => history.push('/friends/all')} />
         <FriendsTab label={`Invites (${invitations?.length})`} onClick={() => history.push('/friends/invitations')} />
       </FriendsTabs>
-      <ButtonContained 
-        className="large mobile-none"
-        onClick={() => onOpenInvitationsDialog(true)}>
-          Invite friends
-        </ButtonContained>
+      <ButtonContained className="large desktop-only" onClick={() => onOpenInvitationsDialog(true)}>
+        Invite friends
+      </ButtonContained>
     </FriendsTabsWrapper>
   )
 })

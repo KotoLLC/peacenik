@@ -101,7 +101,7 @@ class Friends extends React.Component<Props, State> {
           />
         </SearchInputWrapper>
         <ButtonContained 
-          className="mobile-empty desktop-none"
+          className="mobile-only desktop-none"
           onClick={() => onOpenInvitationsDialog(true)}>
             Invite friends
           </ButtonContained>

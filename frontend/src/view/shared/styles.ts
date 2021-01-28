@@ -342,30 +342,19 @@ export const ButtonContained = styled(Button)`
     }
   }
 
-  &.desktop-none {
-    display: none;
-  }
-
-  &.mobile-none {
-    @media (max-width: 760px) {
+  &.desktop-only {
+    @media (max-width: 760px){
       display: none;
     }
   }
 
-  &.mobile-empty {
+  &.mobile-only {
+    display: none;
+
     @media (max-width: 760px) {
-      display: block;
+      display: flex;
       margin-left: 15px;
       margin-right: 15px;
-    }
-  }
-
-  &.mobile-full {
-    @media (max-width: 760px) {
-      display: block;
-      margin-right: auto;
-      margin-top: 10px;
-      margin-left: 15px;
     }
   }
   
