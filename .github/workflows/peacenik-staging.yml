@@ -68,7 +68,7 @@ jobs:
 
       - name: Deploy Frontend and User-hub to DigitalOcean Kubernetes (staging)
         run: |
-          kubectl apply -f $GITHUB_WORKSPACE/.k8s/staging/ --force
+          kubectl apply --recursive -f $GITHUB_WORKSPACE/.k8s/staging/  --force
 
       - name: Staging Push
         uses: rjstone/discord-webhook-notify@v1
