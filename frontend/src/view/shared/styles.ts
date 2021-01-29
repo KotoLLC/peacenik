@@ -39,12 +39,10 @@ export const MenuButton = styled(Button)`
 `
 
 export const PageWrapper = styled.main`
-  /* display: flex; */
-  /* flex-wrap: wrap; */
-  padding: 0px 15px 170px;
+  padding: 0px 0px 170px;
 
   @media (max-width: 760px) {
-    padding: 0px 15px 120px;
+    padding: 0px 0px 120px;
   }
 `
 

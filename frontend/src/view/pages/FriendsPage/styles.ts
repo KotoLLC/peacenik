@@ -128,7 +128,7 @@ export const FriendsWrapper = styled.div`
   margin: 0 auto 31px auto;
 
   @media (max-width: 760px) {
-    width: 100%;
+    width: calc(100% - 30px);
     padding: 15px 0 0 0;
     min-height: calc(100vh - 100px);
   }
@@ -258,6 +258,10 @@ export const FriendCard = styled.div`
 export const UserInfo = styled.div`
   display: flex;
   align-items: center;
+
+  @media (max-width: 760px) {
+    width: 100%;
+  }
 `
 
 export const UserInfoText = styled.div`
