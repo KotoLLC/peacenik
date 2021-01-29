@@ -33,6 +33,7 @@ message MessageMessagesRequest {
     string from = 2;
     int32 count = 3;
     string group_id = 4;
+    string friend_id = 5;
 }
 
 message MessageMessagesResponse {

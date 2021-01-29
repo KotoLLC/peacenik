@@ -196,7 +196,7 @@ const EditGroupPage: React.FC<Props> = (props) => {
 type StateProps = Pick<Props, 'isGroupEditedSuccessfully' | 'errorMessage' | 'myGroups'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   isGroupEditedSuccessfully: selectors.groups.isGroupEditedSuccessfully(state),
-  errorMessage: state.common.errorMessage,
+  errorMessage: selectors.common.errorMessage(state),
   myGroups: selectors.groups.myGroups(state),
 })
 

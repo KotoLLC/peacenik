@@ -590,17 +590,7 @@ func (s *GroupServiceTestSuite) Test_AcceptInvite_FromGroupAdmin() {
 
 	respForUser3, err := s.service.InvitesForMe(ctx, &rpc.Empty{})
 	s.Nil(err)
-	s.Equal(1, len(respForUser3.Invites))
-	s.Equal(groupID, respForUser3.Invites[0].GroupId)
-	s.Equal("group-1", respForUser3.Invites[0].GroupName)
-	s.Equal("group-1 description", respForUser3.Invites[0].GroupDescription)
-	s.Equal("user-2", respForUser3.Invites[0].InviterId)
-	s.Equal("user-2-name", respForUser3.Invites[0].InviterName)
-	s.Equal("user-2 user-2", respForUser3.Invites[0].InviterFullName)
-	s.NotEmpty(respForUser3.Invites[0].CreatedAt)
-	s.NotEmpty(respForUser3.Invites[0].AcceptedAt)
-	s.Empty(respForUser3.Invites[0].RejectedAt)
-	s.NotEmpty(respForUser3.Invites[0].AcceptedByAdminAt)
+	s.Equal(0, len(respForUser3.Invites))
 
 	isMember := s.repos.Group.IsGroupMember(groupID, "user-3")
 	s.True(isMember)

@@ -1,11 +1,27 @@
 import React, { useState, useEffect } from 'react'
-import Paper from '@material-ui/core/Paper'
-import { TabsWrapper, TabStyled, TabsStyled } from '@view/shared/styles'
+import Actions from '@store/actions'
 import { withRouter, RouteComponentProps } from 'react-router'
+import { ButtonContained } from '@view/shared/styles'
+import { connect } from 'react-redux'
+import { StoreTypes, ApiTypes } from 'src/types'
+import selectors from '@selectors/index'
 
-const FriendTabs: React.SFC<RouteComponentProps> = React.memo((props) => {
+import {
+  FriendsTabsWrapper,
+  FriendsTabs,
+  FriendsTab,
+} from './styles'
+
+interface Props extends RouteComponentProps {
+  friends: ApiTypes.Friends.Friend[]
+  invitations: ApiTypes.Friends.Invitation[]
+
+  onOpenInvitationsDialog: (value: boolean) => void
+}
+
+const FriendTabs: React.FC<Props> = React.memo((props) => {
   const [currentTab, onTabChange] = useState<number | boolean>(0)
-  const { history, location } = props
+  const { history, location, friends, invitations, onOpenInvitationsDialog } = props
 
   useEffect(() => {
     if (location.pathname.indexOf('all') !== -1) {
@@ -21,20 +37,30 @@ const FriendTabs: React.SFC<RouteComponentProps> = React.memo((props) => {
   }, [location.pathname])
 
   return (
-    <TabsWrapper>
-      <Paper>
-        <TabsStyled
-          value={currentTab}
-          indicatorColor="primary"
-          textColor="primary"
-          onChange={(event, newTab) => onTabChange(newTab)}
-          centered>
-          <TabStyled label="Friends" onClick={() => history.push('/friends/all')} />
-          <TabStyled label="Invites" onClick={() => history.push('/friends/invitations')} />
-        </TabsStyled>
-      </Paper>
-    </TabsWrapper>
+    <FriendsTabsWrapper>
+      <FriendsTabs
+        value={currentTab}
+        onChange={(event, newTab) => onTabChange(newTab)}
+        centered>
+        <FriendsTab label={`Friends (${friends?.length})`} onClick={() => history.push('/friends/all')} />
+        <FriendsTab label={`Invites (${invitations?.length})`} onClick={() => history.push('/friends/invitations')} />
+      </FriendsTabs>
+      <ButtonContained className="large desktop-only" onClick={() => onOpenInvitationsDialog(true)}>
+        Invite friends
+      </ButtonContained>
+    </FriendsTabsWrapper>
   )
 })
 
-export default withRouter(FriendTabs)
+type StateProps = Pick<Props, 'friends' | 'invitations'>
+const mapStateToProps = (state: StoreTypes): StateProps => ({
+  friends: selectors.friends.friends(state),
+  invitations: selectors.friends.invitations(state)
+})
+
+type DispatchProps = Pick<Props, 'onOpenInvitationsDialog'>
+const mapDispatchToProps = (dispatch): DispatchProps => ({
+  onOpenInvitationsDialog: (value: boolean) => dispatch(Actions.friends.openInvitationsDialog(value))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(FriendTabs))

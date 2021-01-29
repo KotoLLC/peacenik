@@ -59,7 +59,7 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
             </MenuLink>
           </MenuItem>
           <MenuItem>
-            <MenuLink to="/friends/all">
+            <MenuLink to="/friends">
               <PeopleAltIcon />
             </MenuLink>
           </MenuItem>

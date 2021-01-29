@@ -6,10 +6,12 @@ const friends = deepEqualSelector(state, data => data.friends)
 const friendsOfFriends = deepEqualSelector(state, data => data.friendsOfFriends)
 const invitations = deepEqualSelector(state, data => data.invitations)
 const isInviteByEmailSuccess = deepEqualSelector(state, data => data.isInviteByEmailSuccess)
+const isInvitationsDialogOpen = deepEqualSelector(state, data => data.isInvitationsDialogOpen)
 
 export default {
     friends,
     friendsOfFriends,
     invitations,
     isInviteByEmailSuccess,
+    isInvitationsDialogOpen,
 }

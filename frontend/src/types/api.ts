@@ -109,6 +109,7 @@ export declare namespace ApiTypes {
     export interface Invitation {
       friend_id: string
       friend_name: string
+      friend_full_name: string
       created_at: string
       accepted_at?: string
       rejected_at?: string
@@ -370,6 +371,8 @@ export declare namespace ApiTypes {
 
   export namespace Groups {
 
+    export type MemberStatus = 'member' | 'pending' | ''
+
     export interface AddGroup {
       name: string
       description: string
@@ -406,11 +409,14 @@ export declare namespace ApiTypes {
       id: string
       is_public: boolean
       name: string
+      member_count: number
     }
     
     export interface GroupDetails {
       group: Group
       members: GroupMember[]
+      invites: Invite[]
+      status: MemberStatus
     }
 
     export interface GroupMember {
@@ -424,7 +430,7 @@ export declare namespace ApiTypes {
 
     export interface RecievedGroup {
       group: Group
-      status: 'member' | 'pending' | ''
+      status: MemberStatus
     }
     
     export interface RequestJoin {

@@ -4,7 +4,7 @@ import Actions from '@store/actions'
 import selectors from '@selectors/index'
 import { ApiTypes, StoreTypes } from 'src/types'
 import { PageLayout } from '@view/shared/PageLayout'
-import { GroupTopBar } from './GroupTopBar'
+import GroupTopBar from './GroupTopBar'
 import { Member } from './Member'
 import { Owner } from './Owner'
 import AvatarIcon from '@assets/images/groups-avatar-icon.svg'
@@ -29,19 +29,21 @@ interface Props {
 }
 
 const MemberLauout: React.FC<Props> = React.memo((props) => {
-  // const [isRequested, setRequested] = useState(false)
+  const [isRequested, setRequested] = useState(false)
   const { groupDetails } = props
-
-  // console.log(groupDetails)
 
   if (!groupDetails) return null
 
-  const { group, members } = groupDetails
+  const { group, members, status } = groupDetails
 
   return (
     <PageLayout>
       <GroupCover />
-      <GroupTopBar groupId={''} isAdminLayout={false}/>
+      <GroupTopBar 
+        groupId={group?.id} 
+        isAdminLayout={false} 
+        memberStatus={status}
+      />
       <GroupContainer>
         <GroupMainWrapper>
           <LeftSideBar>
