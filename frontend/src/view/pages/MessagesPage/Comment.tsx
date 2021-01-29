@@ -31,7 +31,7 @@ import {
 interface Props extends ApiTypes.Messages.Comment {
   userId: string
   currentCommentLikes: ApiTypes.Messages.LikesInfoData | null
-  friends: ApiTypes.Friends.Friend[]
+  friends: ApiTypes.Friends.Friend[] | null
 
   onCommentEdit: (data: ApiTypes.Messages.EditComment) => void
   onCommentDelete: (data: ApiTypes.Messages.DeleteComment) => void

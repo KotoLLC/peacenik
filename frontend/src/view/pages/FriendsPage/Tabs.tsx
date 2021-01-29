@@ -13,7 +13,7 @@ import {
 } from './styles'
 
 interface Props extends RouteComponentProps {
-  friends: ApiTypes.Friends.Friend[]
+  friends: ApiTypes.Friends.Friend[] | null
   invitations: ApiTypes.Friends.Invitation[]
 
   onOpenInvitationsDialog: (value: boolean) => void

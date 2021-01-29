@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
-import Actions from '@store/actions'
 import selectors from '@selectors/index'
 import { ApiTypes, StoreTypes } from 'src/types'
 import { PageLayout } from '@view/shared/PageLayout'
@@ -21,15 +20,13 @@ import {
   GroupPublicity,
   GroupDescriptopn,
   BarTitle,
-  ViewMoreButton,
 } from './styles'
 
 interface Props {
   groupDetails?: ApiTypes.Groups.GroupDetails | null
 }
 
-const MemberLauout: React.FC<Props> = React.memo((props) => {
-  const [isRequested, setRequested] = useState(false)
+const MemberLayout: React.FC<Props> = React.memo((props) => {
   const { groupDetails } = props
 
   if (!groupDetails) return null
@@ -81,9 +78,4 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   groupDetails: selectors.groups.groupDetails(state),
 })
 
-// type DispatchProps = Pick<Props, 'onGetInvitesToConfirmRequest'>
-// const mapDispatchToProps = (dispatch): DispatchProps => ({
-//   onGetInvitesToConfirmRequest: () => dispatch(Actions.groups.getInvitesToConfirmRequest()),
-// })
-
-export default connect(mapStateToProps, null)(MemberLauout)
+export default connect(mapStateToProps, null)(MemberLayout)

@@ -28,7 +28,7 @@ interface Props extends RouteComponentProps {
   isMoreMessagesRequested: boolean
   isMessagesRequested: boolean | null
   isAboutUsViewed: boolean
-  friends: ApiTypes.Friends.Friend[]
+  friends: ApiTypes.Friends.Friend[] | null
   
   onGetFriends: () => void
   onGetMessages: () => void
@@ -92,7 +92,7 @@ class MessageFeed extends React.Component<Props, State> {
       newProps.onGetMessages()
       newProps.onGetCurrentHub()
 
-      if (!newProps.friends.length) {
+      if (!newProps.friends?.length) {
         newProps.onGetFriends()
       }
       

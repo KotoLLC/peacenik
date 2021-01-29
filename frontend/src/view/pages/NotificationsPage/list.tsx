@@ -142,7 +142,7 @@ class NotificationsList extends React.PureComponent<Props, State> {
 
   componentWillUnmount() {
     // this.markAsReadNotification()
-    this.onClean()
+    // this.onClean()
   }
 
   onClean = () => {

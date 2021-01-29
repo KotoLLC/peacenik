@@ -22,20 +22,26 @@ import {
   GroupPublicity,
   GroupDescriptopn,
   BarTitle,
-  ViewMoreButton,
+  // ViewMoreButton,
 } from './styles'
 
 interface Props {
-  groupDetails?: ApiTypes.Groups.GroupDetails | null
-  invitesToConfirm: ApiTypes.Groups.InviteToConfirm[]
+  groupDetails: ApiTypes.Groups.GroupDetails | null
+  friends: ApiTypes.Friends.Friend[] | null
 
+  onGetFriends: () => void
   onGetInvitesToConfirmRequest: () => void
 }
 
-const AdminLauout: React.FC<Props> = React.memo((props) => {
+const AdminLayoutPrivate: React.FC<Props> = React.memo((props) => {
   const [groupInvites, setGroupInvites] = useState<ApiTypes.Groups.Invite[] | null>(null)
   const [isRequested, setRequested] = useState(false)
-  const { groupDetails, onGetInvitesToConfirmRequest } = props
+  const { 
+    groupDetails, 
+    onGetInvitesToConfirmRequest, 
+    onGetFriends,
+    friends,
+   } = props
 
   useEffect(() => {
     if (groupInvites === null && !isRequested) {
@@ -47,7 +53,12 @@ const AdminLauout: React.FC<Props> = React.memo((props) => {
       setGroupInvites(fixInvitesGroupId())
       setRequested(false)
     }
-  }, [groupInvites, isRequested])
+
+    if (friends === null) {
+      onGetFriends()
+    }
+
+  }, [groupInvites, isRequested, friends])
 
   const fixInvitesGroupId = () => {
     if (!groupDetails?.invites?.length) return []
@@ -96,9 +107,8 @@ const AdminLauout: React.FC<Props> = React.memo((props) => {
             {/* <ViewMoreButton>View more</ViewMoreButton> */}
           </CentralBar>
           <RightSideBar>
-            <BarTitle>Waiting for approval ({invites?.length || 0})</BarTitle>
+            <BarTitle>Invite friends</BarTitle>
             {Boolean(invites?.length) && invites?.map(item => <MemberInvited
-              // calback={removeUserFromGroupInvites}
               key={uuidv4()}
               {...item}
             />)}
@@ -110,15 +120,16 @@ const AdminLauout: React.FC<Props> = React.memo((props) => {
   )
 })
 
-type StateProps = Pick<Props, 'groupDetails' | 'invitesToConfirm'>
+type StateProps = Pick<Props, 'groupDetails' | 'friends'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   groupDetails: selectors.groups.groupDetails(state),
-  invitesToConfirm: selectors.groups.invitesToConfirm(state),
+  friends: selectors.friends.friends(state),
 })
 
-type DispatchProps = Pick<Props, 'onGetInvitesToConfirmRequest'>
+type DispatchProps = Pick<Props, 'onGetInvitesToConfirmRequest' | 'onGetFriends'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetInvitesToConfirmRequest: () => dispatch(Actions.groups.getInvitesToConfirmRequest()),
+  onGetFriends: () => dispatch(Actions.friends.getFriendsRequest()),
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(AdminLauout)
+export default connect(mapStateToProps, mapDispatchToProps)(AdminLayoutPrivate)

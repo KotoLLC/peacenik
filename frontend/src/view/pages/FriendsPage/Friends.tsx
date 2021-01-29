@@ -20,7 +20,7 @@ import {
 } from './styles'
 
 export interface Props {
-  friends: ApiTypes.Friends.Friend[]
+  friends: ApiTypes.Friends.Friend[] | null
   onOpenInvitationsDialog: (value: boolean) => void
 }
 
@@ -59,7 +59,7 @@ class Friends extends React.Component<Props, State> {
     )
   }
 
-  mapFriends = (friends: ApiTypes.Friends.Friend[]) => {
+  mapFriends = (friends: ApiTypes.Friends.Friend[] | null) => {
 
     if (!friends || !friends?.length) {
       return this.showEmptyListMessage()
@@ -78,9 +78,15 @@ class Friends extends React.Component<Props, State> {
     const { friends } = this.props
     const { value } = event.currentTarget
 
+    let result: ApiTypes.Friends.Friend[] = []
+
+    if (friends === null) {
+      result = friends!.filter(item => item.user.name.toLowerCase().includes(value.toLowerCase()))
+    }
+
     this.setState({
       searchValue: value,
-      searchResult: friends.filter(item => item.user.name.toLowerCase().includes(value.toLowerCase()))
+      searchResult: result
     })
   }
 

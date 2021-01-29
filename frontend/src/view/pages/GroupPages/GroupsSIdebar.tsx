@@ -9,8 +9,8 @@ import {
 export const GroupsSidebar = React.memo(() => {
   return (
     <SidebarWrapper>
-      <SidebarItem to="/groups/public">PUBLIC GROUPS</SidebarItem>
-      <SidebarItem exact to="/groups">MY GROUPS</SidebarItem>
+      <SidebarItem exact to="/groups">PUBLIC GROUPS</SidebarItem>
+      <SidebarItem to="/groups/my">MY GROUPS</SidebarItem>
       <SidebarButtonWrapper>
         <SidebarButton to="/groups/create">Create New Group</SidebarButton>
       </SidebarButtonWrapper>

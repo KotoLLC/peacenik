@@ -2,15 +2,15 @@ import { Types } from './actions'
 import { ApiTypes } from 'src/types'
 
 export interface State {
-  friends: ApiTypes.Friends.Friend[],
-  friendsOfFriends: ApiTypes.Friends.Potential[],
-  invitations: ApiTypes.Friends.Invitation[],
+  friends: ApiTypes.Friends.Friend[] | null
+  friendsOfFriends: ApiTypes.Friends.Potential[]
+  invitations: ApiTypes.Friends.Invitation[]
   isInviteByEmailSuccess: boolean
   isInvitationsDialogOpen: boolean
 }
 
 const initialState: State = {
-  friends: [],
+  friends: null,
   friendsOfFriends: [],
   invitations: [],
   isInviteByEmailSuccess: false,

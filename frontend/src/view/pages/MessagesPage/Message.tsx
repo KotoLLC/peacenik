@@ -59,7 +59,7 @@ interface Props extends ApiTypes.Messages.Message {
   currentHub: CommonTypes.HubTypes.CurrentHub
   currentMessageLikes: ApiTypes.Messages.LikesInfoData | null
   isCommentsOpenByDeafult?: boolean
-  friends: ApiTypes.Friends.Friend[]
+  friends: ApiTypes.Friends.Friend[] | null
 
   onMessageEdit: (data: ApiTypes.Messages.EditMessage) => void
   onCommentPost: (data: ApiTypes.Messages.PostComment) => void

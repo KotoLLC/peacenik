@@ -109,7 +109,7 @@ export const Routes = () => {
             <Route path="/resend-confirm-email" component={ResendConfirmEmailPage} />
             <Route path="/no-hubs" component={NoHubsPage} />
             <PrivateRoute path="/friends" component={FriendsPage} />
-            <PrivateRoute exact path="/groups" component={MyGroups} />
+            <PrivateRoute exact path="/groups" component={PublicGroups} />
             <PrivateRoute path="/groups/my" component={MyGroups} />
             <PrivateRoute path="/groups/public" component={PublicGroups} />
             <PrivateRoute path="/groups/group" exact component={GroupPage} />

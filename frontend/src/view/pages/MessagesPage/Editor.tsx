@@ -37,7 +37,7 @@ interface Props {
   isMessagePostedSuccess: boolean
   uploadLink: ApiTypes.UploadLink | null
   userId: string
-  friends: ApiTypes.Friends.Friend[]
+  friends: ApiTypes.Friends.Friend[] | null
 
   onMessagePost: (data: ApiTypes.Messages.PostMessage) => void
   onPostMessageSucces: (value: boolean) => void

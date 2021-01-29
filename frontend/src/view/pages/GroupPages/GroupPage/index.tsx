@@ -5,8 +5,9 @@ import Actions from '@store/actions'
 import selectors from '@selectors/index'
 import queryString from 'query-string'
 import { ApiTypes, StoreTypes } from 'src/types'
-import AdminLauout from './AdminLauout'
-import MemberLauout from './MemberLauout'
+import AdminLayoutPublic from './AdminLayoutPublic'
+import AdminLayoutPrivate from './AdminLayoutPrivate'
+import MemberLayout from './MemberLayout'
 
 interface Props extends RouteComponentProps {
   groupDetails: ApiTypes.Groups.GroupDetails | null
@@ -38,9 +39,9 @@ const GroupPage: React.FC<Props> = (props) => {
   }, [groupDetails, userId])
 
   if (groupDetails && groupDetails?.group?.admin?.id === userId) {
-    return <AdminLauout/>
+    return (groupDetails?.group?.is_public === true) ? <AdminLayoutPublic/> : <AdminLayoutPrivate/>
   } else {
-    return <MemberLauout/>
+    return <MemberLayout/>
   }
 }
 

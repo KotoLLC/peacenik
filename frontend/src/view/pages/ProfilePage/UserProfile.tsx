@@ -38,7 +38,7 @@ import {
 interface Props extends RouteComponentProps {
   userName: string
   users: ApiTypes.User[]
-  friends: ApiTypes.Friends.Friend[]
+  friends: ApiTypes.Friends.Friend[] | null
 
   onGetFriends: () => void
   onAddFriend: (data: ApiTypes.Friends.Request) => void
@@ -58,7 +58,7 @@ const UserProfile: React.FC<Props> = (props) => {
 
   const checkCurrentIcon = (user: ApiTypes.User, status: ApiTypes.Friends.InvitationStatus) => {
 
-    if (friends.some(item => item.user.id === user.id)) {
+    if (friends?.some(item => item.user.id === user.id)) {
       return null
     }
 
@@ -92,14 +92,14 @@ const UserProfile: React.FC<Props> = (props) => {
   }
 
   const mapCommonFriendsList = (id: string) => {
-    const selectedFriend = friends.find(item => item.user.id === id) || null
+    const selectedFriend = friends?.find(item => item.user.id === id) || null
 
     if (!selectedFriend) return null
 
     let commonFriends: ApiTypes.Friends.Friend[] = []
 
     selectedFriend.friends.forEach(item => {
-      if (friends.some(myFriend => myFriend.user.id === item.user.id)) {
+      if (friends?.some(myFriend => myFriend.user.id === item.user.id)) {
         commonFriends.push(item as never)
       }
     })
@@ -131,7 +131,7 @@ const UserProfile: React.FC<Props> = (props) => {
   }
 
   const mapPotentialFriendsList = (id: string) => {
-    const selectedFriend = friends.find(item => item.user.id === id) || null
+    const selectedFriend = friends?.find(item => item.user.id === id) || null
 
     if (!selectedFriend) return null
 
