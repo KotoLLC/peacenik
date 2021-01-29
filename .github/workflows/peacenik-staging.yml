@@ -62,15 +62,13 @@ jobs:
 
       - name: Update deployment file (staging)
         run: |
-          sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/backend-staging/user-hub.yaml
-          sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/frontend-staging/frontend.yaml
-          sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/backend-staging/message-hub.yaml
+          sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/staging/backend-staging/user-hub.yaml
+          sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/staging/frontend-staging/frontend.yaml
+          sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/staging/backend-staging/message-hub.yaml
 
       - name: Deploy Frontend and User-hub to DigitalOcean Kubernetes (staging)
         run: |
-          kubectl apply -f $GITHUB_WORKSPACE/.k8s/backend-staging/user-hub.yaml --force
-          kubectl apply -f $GITHUB_WORKSPACE/.k8s/frontend-staging/frontend.yaml --force
-          kubectl apply -f $GITHUB_WORKSPACE/.k8s/backend-staging/message-hub.yaml --force
+          kubectl apply -f $GITHUB_WORKSPACE/.k8s/staging/ --force
 
       - name: Staging Push
         uses: rjstone/discord-webhook-notify@v1
