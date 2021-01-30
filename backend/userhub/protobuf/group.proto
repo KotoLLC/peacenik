@@ -21,12 +21,14 @@ service GroupService {
     rpc PublicGroups (Empty) returns (GroupPublicGroupsResponse);
     rpc GroupDetails (GroupGroupDetailsRequest) returns (GroupGroupDetailsResponse);
     rpc RequestJoin (GroupRequestJoinRequest) returns (Empty);
+    rpc DeleteJoinRequest (GroupDeleteJoinRequestRequest) returns (Empty);
     rpc LeaveGroup (GroupLeaveGroupRequest) returns (Empty);
     rpc InvitesFromMe (Empty) returns (GroupInvitesFromMeResponse);
     rpc InvitesForMe (Empty) returns (GroupInvitesForMeResponse);
 
     // Low-level API
     rpc CreateInvite (GroupCreateInviteRequest) returns (Empty);
+    rpc DeleteInvite (GroupDeleteInviteRequest) returns (Empty);
     rpc AcceptInvite (GroupAcceptInviteRequest) returns (Empty);
     rpc RejectInvite (GroupRejectInviteRequest) returns (Empty);
 }
@@ -73,10 +75,20 @@ message GroupRequestJoinRequest {
     string message = 2;
 }
 
+message GroupDeleteJoinRequestRequest {
+    string group_id = 1;
+    string inviter_id = 2;
+}
+
 message GroupCreateInviteRequest {
     string group_id = 1;
     string invited = 2;
     string message = 3;
+}
+
+message GroupDeleteInviteRequest {
+    string group_id = 1;
+    string invited = 2;
 }
 
 message GroupAcceptInviteRequest {

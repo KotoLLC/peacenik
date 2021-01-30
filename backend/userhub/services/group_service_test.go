@@ -238,6 +238,20 @@ func (s *GroupServiceTestSuite) Test_AddUser_Admin() {
 	s.Empty(resp.Invites[0].AcceptedAt)
 	s.Empty(resp.Invites[0].RejectedAt)
 	s.Empty(resp.Invites[0].AcceptedByAdminAt)
+
+	_, err = s.service.DeleteJoinRequest(ctx, &rpc.GroupDeleteJoinRequestRequest{
+		GroupId:   groupID,
+		InviterId: "user-1",
+	})
+	s.Nil(err)
+
+	isGroupMember = s.repos.Group.IsGroupMember(groupID, "user-2")
+	s.False(isGroupMember)
+
+	ctx = s.userContext("user-2")
+	resp, err = s.service.InvitesForMe(ctx, &rpc.Empty{})
+	s.Nil(err)
+	s.Empty(resp.Invites)
 }
 
 func (s *GroupServiceTestSuite) Test_RequestJoin_PrivateGroup() {
@@ -281,6 +295,19 @@ func (s *GroupServiceTestSuite) Test_RequestJoin_PublicGroup() {
 	s.NotEmpty(resp.Invites[0].AcceptedAt)
 	s.Empty(resp.Invites[0].RejectedAt)
 	s.Empty(resp.Invites[0].AcceptedByAdminAt)
+
+	_, err = s.service.DeleteJoinRequest(ctx, &rpc.GroupDeleteJoinRequestRequest{
+		GroupId: groupID,
+	})
+	s.Nil(err)
+
+	isGroupMember = s.repos.Group.IsGroupMember(groupID, "user-2")
+	s.False(isGroupMember)
+
+	ctx = s.userContext("user-2")
+	resp, err = s.service.InvitesFromMe(ctx, &rpc.Empty{})
+	s.Nil(err)
+	s.Empty(resp.Invites)
 }
 
 func (s *GroupServiceTestSuite) Test_CreateInvite_SameUser_NotMember() {

@@ -208,6 +208,20 @@ func (s *groupService) RequestJoin(ctx context.Context, r *rpc.GroupRequestJoinR
 	})
 }
 
+func (s *groupService) DeleteJoinRequest(ctx context.Context, r *rpc.GroupDeleteJoinRequestRequest) (*rpc.Empty, error) {
+	if r.GroupId == "" {
+		return nil, twirp.NewError(twirp.InvalidArgument, "group_id")
+	}
+
+	me := s.getMe(ctx)
+	inviterID := r.InviterId
+	if inviterID == "" {
+		inviterID = me.ID
+	}
+	s.repos.Group.DeleteInvite(r.GroupId, inviterID, me.ID)
+	return &rpc.Empty{}, nil
+}
+
 func (s *groupService) CreateInvite(ctx context.Context, r *rpc.GroupCreateInviteRequest) (*rpc.Empty, error) {
 	me := s.getMe(ctx)
 
@@ -274,6 +288,22 @@ func (s *groupService) CreateInvite(ctx context.Context, r *rpc.GroupCreateInvit
 		//}
 	}
 
+	return &rpc.Empty{}, nil
+}
+
+func (s *groupService) DeleteInvite(ctx context.Context, r *rpc.GroupDeleteInviteRequest) (*rpc.Empty, error) {
+	me := s.getMe(ctx)
+
+	if r.GroupId == "" {
+		return nil, twirp.NewError(twirp.InvalidArgument, "group_id")
+	}
+
+	group, isGroupAdmin := s.getGroup(ctx, r.GroupId)
+	if group == nil || (!group.IsPublic && !isGroupAdmin) {
+		return nil, twirp.NotFoundError("group not found")
+	}
+
+	s.repos.Group.DeleteInvite(r.GroupId, me.ID, r.Invited)
 	return &rpc.Empty{}, nil
 }
 

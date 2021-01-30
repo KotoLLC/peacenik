@@ -57,6 +57,7 @@ type GroupRepo interface {
 	DeleteGroup(groupID string)
 	IsGroupMember(groupID, userID string) bool
 	AddInvite(groupID, inviterID, invitedID, message string)
+	DeleteInvite(groupID, inviterID, invitedID string)
 	AddInviteByEmail(groupID, inviterID, invitedEmail, message string)
 	AcceptInvite(groupID, inviterID, invitedID string) bool
 	RejectInvite(groupID, inviterID, invitedID string) bool
@@ -344,6 +345,16 @@ func (r *groupRepo) AddInvite(groupID, inviterID, invitedID, message string) {
 		select $1, $2, $3, $4, $5, $6
 		where not exists(select * from group_invites where group_id = $1 and inviter_id = $2 and invited_id = $3 and rejected_at is null)`,
 		groupID, inviterID, invitedID, now, acceptedAt, message)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (r *groupRepo) DeleteInvite(groupID, inviterID, invitedID string) {
+	_, err := r.db.Exec(`
+		delete from group_invites
+		where group_id = $1 and inviter_id = $2 and invited_id = $3 and accepted_by_admin_at is null;`,
+		groupID, inviterID, invitedID)
 	if err != nil {
 		panic(err)
 	}
