@@ -68,7 +68,7 @@ spec:
           - name: KOTO_PRIVATE_KEY
             value: /tmp/key
           - name: KOTO_ADMINS
-            value: matt,falconandy
+            value: matt,andy
           - name: KOTO_DB_HOST
             value: db-user-hub-service.backend
           - name: KOTO_DB_SSL_MODE

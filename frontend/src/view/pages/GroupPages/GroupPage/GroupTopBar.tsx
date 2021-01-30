@@ -1,13 +1,19 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { 
+import { connect } from 'react-redux'
+import Actions from '@store/actions'
+import selectors from '@selectors/index'
+import { ApiTypes, StoreTypes } from 'src/types'
+import JoinGroupDialog from './JoinGroupDialog'
+import { ButtonOutlined } from '@view/shared/styles'
+import {
   GroupHeader,
   HeaderContainer,
   HeaderCounterWrapper,
   HeaderCounter,
   HeaderCounterName,
   CountersWrapper,
-  TopBarButtonOutlined,
+  TopBarButtonWrapper,
 } from './styles'
 
 interface Props {
@@ -15,15 +21,63 @@ interface Props {
   isAdminLayout: boolean
   membersCounter?: number
   invitesCounter?: number
+  memberStatus: ApiTypes.Groups.MemberStatus
+  isGroupLeavedSuccess: boolean
+  errorMessage: string
+
+  onLeaveGroupSuccess: (value: boolean) => void
+  onLeaveGroupRequest: (value: string) => void
 }
 
-export const GroupTopBar: React.FC<Props> = (props) => {
-  const { 
-    membersCounter, 
-    invitesCounter, 
-    groupId, 
+const GroupTopBar: React.FC<Props> = (props) => {
+  const {
+    membersCounter,
+    invitesCounter,
+    groupId,
     isAdminLayout,
+    memberStatus,
+    onLeaveGroupRequest,
+    errorMessage,
+    isGroupLeavedSuccess,
+    onLeaveGroupSuccess,
   } = props
+
+  const [isRequested, setReauested] = useState<boolean>(false)
+
+  const onLeaveGroup = () => {
+    setReauested(true)
+    onLeaveGroupRequest(groupId)
+  }
+
+  const renderCurrentButton = () => {
+    if (memberStatus === 'member') {
+      return (
+        <ButtonOutlined
+          onClick={onLeaveGroup}
+          disabled={isRequested}
+          className="large grey">
+          Leave group
+        </ButtonOutlined>
+      )
+    }
+    if (memberStatus === 'pending') {
+      return <ButtonOutlined className="large green">Remove invite</ButtonOutlined>
+    }
+    if (memberStatus === '') {
+      return <JoinGroupDialog
+        groupId={groupId}
+        buttonClassName="large"
+        buttonText="Join group"
+      />
+    }
+  }
+
+  useEffect(() => {
+    if (isGroupLeavedSuccess || errorMessage) {
+      setReauested(false)
+      onLeaveGroupSuccess(false)
+    }
+  }, [isGroupLeavedSuccess, errorMessage])
 
   if (isAdminLayout) {
     return (
@@ -40,7 +94,7 @@ export const GroupTopBar: React.FC<Props> = (props) => {
             </HeaderCounterWrapper>
           </CountersWrapper>
           <Link to={`/groups/edit?id=${groupId}`}>
-            <TopBarButtonOutlined>Edit group</TopBarButtonOutlined>
+            <ButtonOutlined className="large">Edit group</ButtonOutlined>
           </Link>
         </HeaderContainer>
       </GroupHeader>
@@ -48,8 +102,26 @@ export const GroupTopBar: React.FC<Props> = (props) => {
   } else {
     return (
       <GroupHeader>
-        <HeaderContainer/>
+        <HeaderContainer>
+          <TopBarButtonWrapper>
+            {renderCurrentButton()}
+          </TopBarButtonWrapper>
+        </HeaderContainer>
       </GroupHeader>
     )
   }
 }
+
+type StateProps = Pick<Props, 'isGroupLeavedSuccess' | 'errorMessage'>
+const mapStateToProps = (state: StoreTypes): StateProps => ({
+  errorMessage: selectors.common.errorMessage(state),
+  isGroupLeavedSuccess: selectors.groups.isGroupLeavedSuccess(state),
+})
+
+type DispatchProps = Pick<Props, 'onLeaveGroupRequest' | 'onLeaveGroupSuccess'>
+const mapDispatchToProps = (dispatch): DispatchProps => ({
+  onLeaveGroupRequest: (value: string) => dispatch(Actions.groups.leaveGroupRequest(value)),
+  onLeaveGroupSuccess: (value: boolean) => dispatch(Actions.groups.leaveGroupSuccess(value)),
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(GroupTopBar)

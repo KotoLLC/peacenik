@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { PageLayout } from '@view/shared/PageLayout'
-import { GroupTopBar } from './GroupTopBar'
+import GroupTopBar from './GroupTopBar'
 import { Member } from './Member'
 import MemberInvited from './MemberInvited'
 import AvatarIcon from '@assets/images/groups-avatar-icon.svg'
@@ -35,12 +35,7 @@ interface Props {
 const AdminLauout: React.FC<Props> = React.memo((props) => {
   const [groupInvites, setGroupInvites] = useState<ApiTypes.Groups.Invite[] | null>(null)
   const [isRequested, setRequested] = useState(false)
-
-  const {
-    groupDetails,
-    onGetInvitesToConfirmRequest,
-    invitesToConfirm,
-  } = props
+  const { groupDetails, onGetInvitesToConfirmRequest } = props
 
   useEffect(() => {
     if (groupInvites === null && !isRequested) {
@@ -48,44 +43,32 @@ const AdminLauout: React.FC<Props> = React.memo((props) => {
       setRequested(true)
     }
 
-    if (invitesToConfirm?.length && isRequested) {
-      setGroupInvites(getCurrentGroupInvites(invitesToConfirm))
+    if (groupDetails?.invites?.length && isRequested) {
+      setGroupInvites(fixInvitesGroupId())
       setRequested(false)
     }
-  }, [invitesToConfirm, groupInvites, isRequested])
+  }, [groupInvites, isRequested])
 
-  const removeUserFromGroupInvites = (data: ApiTypes.Groups.ConfirmDenyInvite) => {
-    const result = groupInvites!.filter(item => item.invited_id !== data.invited_id)
-    setGroupInvites(result)
-    // onGetInvitesToConfirmRequest()
-    // setRequested(true)
-  }
-
-  const getCurrentGroupInvites = (invites) => {
-    if (!invites?.length) return []
-    const currentGroup = invites.filter(item => item.group.id === groupDetails?.group?.id)[0]
-    let result: ApiTypes.Groups.Invite[] = []
-
-    if (currentGroup?.group && currentGroup?.invites?.length) {
-      result = currentGroup.invites.map(item => {
-        item.group_id = currentGroup.group.id
-        return item
-      })
-    }
-
-    return result
+  const fixInvitesGroupId = () => {
+    if (!groupDetails?.invites?.length) return []
+    
+    return groupDetails?.invites?.map(item => {
+      item.group_id = groupDetails?.group?.id
+      return item
+    })
   }
 
   if (!groupDetails) return null
 
-  const { group, members } = groupDetails
+  const { group, members, status, invites } = groupDetails
 
   return (
     <PageLayout>
       <GroupCover />
       <GroupTopBar 
+        memberStatus={status}
         membersCounter={members?.length} 
-        invitesCounter={groupInvites?.length || 0} 
+        invitesCounter={invites?.length || 0} 
         groupId={group?.id} 
         isAdminLayout={true}
       />
@@ -113,9 +96,9 @@ const AdminLauout: React.FC<Props> = React.memo((props) => {
             {/* <ViewMoreButton>View more</ViewMoreButton> */}
           </CentralBar>
           <RightSideBar>
-            <BarTitle>Waiting for approval ({groupInvites?.length || 0})</BarTitle>
-            {Boolean(groupInvites?.length) && groupInvites?.map(item => <MemberInvited
-              calback={removeUserFromGroupInvites}
+            <BarTitle>Waiting for approval ({invites?.length || 0})</BarTitle>
+            {Boolean(invites?.length) && invites?.map(item => <MemberInvited
+              // calback={removeUserFromGroupInvites}
               key={uuidv4()}
               {...item}
             />)}

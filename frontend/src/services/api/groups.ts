@@ -65,4 +65,12 @@ export default {
       return response
     }).catch(error => ({ error }))
   }, 
+  
+  leaveGroup: async (value: string) => {
+    return await axiosInstance.post('/rpc.GroupService/LeaveGroup', {
+      group_id: value
+    }).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  }, 
 }

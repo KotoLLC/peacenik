@@ -61,7 +61,7 @@ const MobileTopBar: React.FC<Props> = React.memo((props) => {
               </HamburgerMenuLink>
             </HamburgerMenuItem>
             <HamburgerMenuItem>
-              <HamburgerMenuLink to="/friends/all">
+              <HamburgerMenuLink to="/friends">
                 <PeopleAltIcon className="icon" />
                 Friends
               </HamburgerMenuLink>

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { createBrowserHistory } from 'history'
 import { Router, Switch, Route, Redirect } from 'react-router-dom'
 import LoginPage from '@view/pages/LoginPage'
-import { FriendsPage } from '@view/pages/FriendsPage'
+import FriendsPage from '@view/pages/FriendsPage'
 import { connect } from 'react-redux'
 import { StoreTypes } from 'src/types'
 import { HubPages } from './pages/HubPages'
@@ -108,7 +108,6 @@ export const Routes = () => {
             <Route path="/confirm-user" component={ConfirmUserPage} />
             <Route path="/resend-confirm-email" component={ResendConfirmEmailPage} />
             <Route path="/no-hubs" component={NoHubsPage} />
-
             <PrivateRoute path="/friends" component={FriendsPage} />
             <PrivateRoute exact path="/groups" component={MyGroups} />
             <PrivateRoute path="/groups/my" component={MyGroups} />

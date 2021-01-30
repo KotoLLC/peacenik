@@ -6,14 +6,13 @@ import { ApiTypes, StoreTypes } from 'src/types'
 import { connect } from 'react-redux'
 import selectors from '@selectors/index'
 // import Actions from '@store/actions'
-import JoinGroupDialog from './JoinGroupDialog'
+import JoinGroupDialog from '../GroupPage/JoinGroupDialog'
 import {
   GroupsListItemWrapper,
   ItemCover,
   ItemContentWraper,
   ItemHeader,
   AvatarStyled,
-  GroupName,
   GroupNameLink,
   GroupCounter,
   GroupPublicity,
@@ -27,7 +26,7 @@ interface Props extends ApiTypes.Groups.RecievedGroup {
 
 const GroupsListItem: React.FC<Props> = React.memo((props) => {
   const { group, status, userId } = props
-  const { avatar_original, description, id, is_public, name, admin } = group
+  const { avatar_original, description, id, is_public, name, admin, member_count } = group
 
   const renderCurrentButton = () => {
     if (userId === admin.id) {
@@ -39,7 +38,11 @@ const GroupsListItem: React.FC<Props> = React.memo((props) => {
     }
 
     if (userId !== admin.id && status === '') {
-      return <JoinGroupDialog groupId={id} />
+      return <JoinGroupDialog
+        groupId={id}
+        buttonClassName="extra-small"
+        buttonText="Join"
+      />
     }
 
     if (userId !== admin.id && status === 'pending') {
@@ -57,24 +60,10 @@ const GroupsListItem: React.FC<Props> = React.memo((props) => {
               <img src={AvatarIcon} alt="icon" />
             </AvatarStyled>
           </Link>
-          {/* {status === 'member' ?
-            <Link to={`/groups/group?id=${id}`}>
-              <AvatarStyled>
-                <img src={AvatarIcon} alt="icon" />
-              </AvatarStyled>
-            </Link> :
-            <AvatarStyled>
-              <img src={AvatarIcon} alt="icon" />
-            </AvatarStyled>
-          } */}
           {renderCurrentButton()}
         </ItemHeader>
-        <GroupNameLink to={`/groups/group?id=${id}`}>{name}</GroupNameLink> 
-        {/* {status === 'member' ?
-          <GroupNameLink to={`/groups/group?id=${id}`}>{name}</GroupNameLink> :
-          <GroupName>{name}</GroupName>
-        } */}
-        <GroupCounter>123 participants</GroupCounter>
+        <GroupNameLink to={`/groups/group?id=${id}`}>{name}</GroupNameLink>
+        <GroupCounter>{member_count} participants</GroupCounter>
         <GroupPublicity>{is_public ? 'Public' : 'Private'} {userId === admin.id && '- My group'}</GroupPublicity>
         <GroupDescription>{description}</GroupDescription>
       </ItemContentWraper>

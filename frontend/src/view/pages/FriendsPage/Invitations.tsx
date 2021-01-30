@@ -1,36 +1,26 @@
 import React, { ChangeEvent } from 'react'
-import ListItem from '@material-ui/core/ListItem'
-import Paper from '@material-ui/core/Paper'
-import Divider from '@material-ui/core/Divider'
-import ListItemText from '@material-ui/core/ListItemText'
-import ListItemAvatar from '@material-ui/core/ListItemAvatar'
-import IconButton from '@material-ui/core/IconButton'
-import Tooltip from '@material-ui/core/Tooltip'
-import CheckCircleIcon from '@material-ui/icons/CheckCircle'
-import CancelIcon from '@material-ui/icons/Cancel'
 import { connect } from 'react-redux'
-import Actions from '@store/actions'
 import { StoreTypes, ApiTypes } from 'src/types'
+import Actions from '@store/actions'
 import selectors from '@selectors/index'
-import { getAvatarUrl } from '@services/avatarUrl'
+import InputAdornment from '@material-ui/core/InputAdornment'
+import SearchIcon from '@material-ui/icons/Search'
+import PeopleAltRoundedIcon from '@material-ui/icons/PeopleAltRounded'
+import InviteItem from './InviteItem'
+import { v4 as uuidv4 } from 'uuid'
 import {
-  UsersWrapper,
-  ListStyled,
-  SearchWrapper,
-  EmptyMessage,
-  UserName,
-  IconButtonGreen,
-  PageWrapper,
-  AvatarStyled,
   SearchInput,
-  SearchIconStyled,
+  SearchInputWrapper,
+  FriendsEmpty,
+  FriendsEmptyWrapper,
+  TextUnderlined,
+  IconWrapper,
+  Text,
 } from './styles'
 
 export interface Props {
   invitations: ApiTypes.Friends.Invitation[]
-  onGetInvitations: () => void
-  onAcceptInvitation: (data: ApiTypes.Friends.InvitationAccept) => void
-  onRejectInvitation: (data: ApiTypes.Friends.InvitationReject) => void
+  onOpenInvitationsDialog: (value: boolean) => void
 }
 
 interface State {
@@ -59,45 +49,38 @@ export class Invitations extends React.Component<Props, State> {
 
   showEmptyListMessage = () => {
     const { searchValue } = this.state
+    const { onOpenInvitationsDialog } = this.props
 
-    if (searchValue) {
-      return <EmptyMessage>No one's been found.</EmptyMessage>
-    } else {
-      return <EmptyMessage>You don't have any invitations yet.</EmptyMessage>
-    }
+    return (
+      <FriendsEmpty>
+        <FriendsEmptyWrapper>
+          <IconWrapper>
+            <PeopleAltRoundedIcon />
+          </IconWrapper>
+          {
+            searchValue ? <Text>No one's been found.</Text> :
+              <Text>No friends. You can <TextUnderlined onClick={() => onOpenInvitationsDialog(true)}>
+              invite friends</TextUnderlined>
+              </Text>
+          }
+        </FriendsEmptyWrapper>
+      </FriendsEmpty>
+    )
   }
 
   mapInvitations = (invitations: ApiTypes.Friends.Invitation[]) => {
-    const { onAcceptInvitation, onRejectInvitation } = this.props
-
     if (!invitations || !invitations?.length) {
       return this.showEmptyListMessage()
     }
 
-    return invitations.map(item => {
-      const { friend_id, friend_name } = item
-      return (
-        <div key={friend_id}>
-          <ListItem alignItems="center">
-            <ListItemAvatar>
-              <AvatarStyled alt={friend_name} src={getAvatarUrl(friend_id)} />
-            </ListItemAvatar>
-            <ListItemText primary={<UserName>{friend_name}</UserName>} />
-            <Tooltip title={`Accept the invitation`}>
-              <IconButtonGreen onClick={() => onAcceptInvitation({ inviter_id: friend_id })}>
-                <CheckCircleIcon />
-              </IconButtonGreen>
-            </Tooltip>
-            <Tooltip title={`Decline the invitation`}>
-              <IconButton color="secondary" onClick={() => onRejectInvitation({ inviter_id: friend_id })}>
-                <CancelIcon />
-              </IconButton>
-            </Tooltip>
-          </ListItem>
-          <Divider variant="inset" component="li" />
-        </div>
-      )
-    })
+    return invitations.map(item => (
+      <InviteItem
+        name={item.friend_name}
+        fullName={item.friend_full_name}
+        id={item.friend_id}
+        key={uuidv4()} 
+      />
+    ))
   }
 
   onSearch = (event: ChangeEvent<HTMLInputElement>) => {
@@ -114,33 +97,23 @@ export class Invitations extends React.Component<Props, State> {
     })
   }
 
-  componentDidMount() {
-    this.props.onGetInvitations()
-  }
-
   render() {
     const { pendingInvitations, searchResult, searchValue } = this.state
 
     return (
-      <PageWrapper>
-        <UsersWrapper>
-          <Paper>
-            <SearchWrapper>
-              <SearchIconStyled onClick={() => this.searchInputRef?.current?.focus()} />
-              <SearchInput
-                ref={this.searchInputRef}
-                id="filter"
-                placeholder="Filter"
-                onChange={this.onSearch}
-                value={searchValue}
-              />
-            </SearchWrapper>
-            <ListStyled>
-              {this.mapInvitations((searchValue) ? searchResult : pendingInvitations)}
-            </ListStyled>
-          </Paper>
-        </UsersWrapper>
-      </PageWrapper>
+      <>
+        <SearchInputWrapper>
+          <SearchInput
+            id="outlined-adornment-amount"
+            ref={this.searchInputRef}
+            placeholder="Filter"
+            onChange={this.onSearch}
+            value={searchValue}
+            startAdornment={<InputAdornment position="start"><SearchIcon /></InputAdornment>}
+          />
+        </SearchInputWrapper>
+        {this.mapInvitations((searchValue) ? searchResult : pendingInvitations)}
+      </>
     )
   }
 }
@@ -150,11 +123,9 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   invitations: selectors.friends.invitations(state),
 })
 
-type DispatchProps = Pick<Props, 'onGetInvitations' | 'onAcceptInvitation' | 'onRejectInvitation'>
+type DispatchProps = Pick<Props, 'onOpenInvitationsDialog'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onGetInvitations: () => dispatch(Actions.friends.getInvitationsRequest()),
-  onAcceptInvitation: (data: ApiTypes.Friends.InvitationAccept) => dispatch(Actions.friends.acceptInvitationRequest(data)),
-  onRejectInvitation: (data: ApiTypes.Friends.InvitationReject) => dispatch(Actions.friends.rejectInvitationRequest(data)),
+  onOpenInvitationsDialog: (value: boolean) => dispatch(Actions.friends.openInvitationsDialog(value))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Invitations)

@@ -14,7 +14,7 @@ export const MobileTopBarWrapper = styled.header`
   height: 47px;
   padding: 0 10px 0 15px;
 
-  @media (max-width: 700px){
+  @media (max-width: 760px){
     display: flex;
     justify-content: space-between;
     align-items: center;

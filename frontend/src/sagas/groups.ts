@@ -1,8 +1,9 @@
-import { put } from 'redux-saga/effects'
+import { put, select } from 'redux-saga/effects'
 import Actions from '@store/actions'
 import { API } from '@services/api'
 import { ApiTypes } from 'src/types'
 import { myGroupsFromBackToFront } from '@services/dataTransforms/myGroupsFromBackToFront'
+import selectors from '@selectors/index'
 
 export function* watchAddGroup(action: { type: string, payload: ApiTypes.Groups.AddGroup }) {
   const response = yield API.groups.addGroup(action.payload)
@@ -64,7 +65,7 @@ export function* watchDeleteGroup(action: { type: string, payload: string }) {
   }
 }
 
-export function* watchRequestJounGroup(action: { type: string, payload: ApiTypes.Groups.RequestJoin }) {
+export function* watchRequestJoinGroup(action: { type: string, payload: ApiTypes.Groups.RequestJoin }) {
   const response = yield API.groups.requestJoinGroup(action.payload)
 
   if (response.status === 200) {
@@ -89,7 +90,12 @@ export function* watchConfirmInviteRequest(action: { type: string, payload: ApiT
   const response = yield API.groups.сonfirmInvite(action.payload)
 
   if (response.status === 200) {
-    yield put(Actions.groups.getInvitesToConfirmRequest())
+    // yield put(Actions.groups.getInvitesToConfirmRequest())
+    
+    const state = yield select()
+    const currentGroupId = selectors.groups.currentGroupId(state)
+    yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))
+
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
@@ -99,7 +105,12 @@ export function* watchDenyInviteRequest(action: { type: string, payload: ApiType
   const response = yield API.groups.denyInvite(action.payload)
 
   if (response.status === 200) {
-    yield put(Actions.groups.getInvitesToConfirmRequest())
+    // yield put(Actions.groups.getInvitesToConfirmRequest())
+
+    const state = yield select()
+    const currentGroupId = selectors.groups.currentGroupId(state)
+    yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))
+
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
@@ -110,6 +121,26 @@ export function* watchDeleteMemberRequest(action: { type: string, payload: ApiTy
 
   if (response.status === 200) {
     yield put(Actions.groups.deleteMemberSuccess(true))
+    
+    const state = yield select()
+    const currentGroupId = selectors.groups.currentGroupId(state)
+    yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))
+
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
+export function* watchLeaveGroupRequest(action: { type: string, payload: string }) {
+  const response = yield API.groups.leaveGroup(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.groups.leaveGroupSuccess(true))
+    
+    const state = yield select()
+    const currentGroupId = selectors.groups.currentGroupId(state)
+    yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))
+
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }

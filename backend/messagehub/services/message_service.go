@@ -71,6 +71,15 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		}
 	}
 
+	var friendID sql.NullString
+	if rawFriendID, ok := claims["friend_id"]; ok {
+		friendID = sql.NullString{
+			String: rawFriendID.(string),
+			Valid:  rawFriendID.(string) != "",
+		}
+		notifiedUsers = []string{friendID.String}
+	}
+
 	isGuestHub := false
 	if rawIsGuestHub, ok := claims["is_guest_hub"]; ok {
 		isGuestHub, _ = rawIsGuestHub.(bool)
@@ -94,6 +103,7 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		UpdatedAt:             now,
 		GroupID:               groupID,
 		IsGuest:               isGuestHub,
+		FriendID:              friendID,
 	}
 	s.repos.Message.AddMessage("", msg)
 	if len(notifiedUsers) > 0 && s.notificationSender != nil {
@@ -102,7 +112,11 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 			"message_id": msg.ID,
 		})
 	}
-	userTags := message.FindUserTags(msg.Text)
+
+	var userTags []string
+	if !friendID.Valid {
+		userTags = message.FindUserTags(msg.Text)
+	}
 	notifyUsers := make([]string, 0, len(userTags))
 	for _, taggedUserID := range userTags {
 		if taggedUserID != msg.UserID && !user.IsBlockedUser(taggedUserID) {
@@ -166,16 +180,8 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 	}
 
 	var messages []repo.Message
-	if r.GroupId == "" {
-		if rawUserIDs, ok := claims["users"]; ok {
-			rawUserIDs := rawUserIDs.([]interface{})
-			userIDs := make([]string, len(rawUserIDs))
-			for i, rawUserID := range rawUserIDs {
-				userIDs[i] = rawUserID.(string)
-			}
-			messages = s.repos.Message.Messages(user.ID, userIDs, from, int(r.Count))
-		}
-	} else {
+	switch {
+	case r.GroupId != "":
 		found := false
 		if rawGroupIDs, ok := claims["groups"]; ok {
 			for _, rawGroupID := range rawGroupIDs.([]interface{}) {
@@ -189,6 +195,17 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 			return &rpc.MessageMessagesResponse{}, nil
 		}
 		messages = s.repos.Message.GroupMessages(user.ID, r.GroupId, from, int(r.Count))
+	case r.FriendId != "":
+		messages = s.repos.Message.DirectMessages(user.ID, r.FriendId, from, int(r.Count))
+	default:
+		if rawUserIDs, ok := claims["users"]; ok {
+			rawUserIDs := rawUserIDs.([]interface{})
+			userIDs := make([]string, len(rawUserIDs))
+			for i, rawUserID := range rawUserIDs {
+				userIDs[i] = rawUserID.(string)
+			}
+			messages = s.repos.Message.Messages(user.ID, userIDs, from, int(r.Count))
+		}
 	}
 
 	messageIDs := make([]string, len(messages))
@@ -476,7 +493,8 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 	}
 
 	found := false
-	if msg.GroupID.Valid {
+	switch {
+	case msg.GroupID.Valid:
 		if rawGroupIDs, ok := claims["groups"]; ok {
 			for _, rawGroupID := range rawGroupIDs.([]interface{}) {
 				if rawGroupID.(string) == msg.GroupID.String {
@@ -485,7 +503,9 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 				}
 			}
 		}
-	} else {
+	case msg.FriendID.Valid:
+		found = user.ID == msg.UserID || user.ID == msg.FriendID.String
+	default:
 		if rawUserIDs, ok := claims["users"]; ok {
 			for _, rawUserID := range rawUserIDs.([]interface{}) {
 				if rawUserID.(string) == msg.UserID {

@@ -1,32 +1,27 @@
 import React, { ChangeEvent } from 'react'
-import ListItem from '@material-ui/core/ListItem'
-import Paper from '@material-ui/core/Paper'
-import Divider from '@material-ui/core/Divider'
-import ListItemText from '@material-ui/core/ListItemText'
-import ListItemAvatar from '@material-ui/core/ListItemAvatar'
 import { connect } from 'react-redux'
-import Actions from '@store/actions'
 import { StoreTypes, ApiTypes } from 'src/types'
+import Actions from '@store/actions'
 import selectors from '@selectors/index'
-import { getAvatarUrl } from '@services/avatarUrl'
+import InputAdornment from '@material-ui/core/InputAdornment'
+import SearchIcon from '@material-ui/icons/Search'
+import PeopleAltRoundedIcon from '@material-ui/icons/PeopleAltRounded'
+import { FriendItem } from './FriendItem'
+import { v4 as uuidv4 } from 'uuid'
+import { ButtonContained } from '@view/shared/styles'
 import {
-  UsersWrapper,
-  ListStyled,
-  SearchWrapper,
+  FriendsEmpty,
+  FriendsEmptyWrapper,
+  TextUnderlined,
+  IconWrapper,
+  Text,
   SearchInput,
-  EmptyMessage,
-  UserNameLink,
-  PageWrapper,
-  ListItemWrapper,
-  AvatarStyled,
-  SearchIconStyled,
+  SearchInputWrapper,
 } from './styles'
-import { AvatarWrapperLink } from '@view/pages/MessagesPage/styles'
 
 export interface Props {
   friends: ApiTypes.Friends.Friend[]
-  onGetFriends: () => void
-  onAddFriend: (data: ApiTypes.Friends.Request) => void
+  onOpenInvitationsDialog: (value: boolean) => void
 }
 
 interface State {
@@ -45,12 +40,23 @@ class Friends extends React.Component<Props, State> {
 
   showEmptyListMessage = () => {
     const { searchValue } = this.state
+    const { onOpenInvitationsDialog } = this.props
 
-    if (searchValue) {
-      return <EmptyMessage>No one's been found.</EmptyMessage>
-    } else {
-      return <EmptyMessage>No friends yet.</EmptyMessage>
-    }
+    return (
+      <FriendsEmpty>
+        <FriendsEmptyWrapper>
+          <IconWrapper>
+            <PeopleAltRoundedIcon />
+          </IconWrapper>
+          {
+            searchValue ? <Text>No one's been found.</Text> :
+            <Text>No friends. You can <TextUnderlined onClick={() => onOpenInvitationsDialog(true)}>
+              invite friends</TextUnderlined>
+            </Text>
+          }
+        </FriendsEmptyWrapper>
+      </FriendsEmpty>
+    )
   }
 
   mapFriends = (friends: ApiTypes.Friends.Friend[]) => {
@@ -60,22 +66,11 @@ class Friends extends React.Component<Props, State> {
     }
 
     return friends.map(item => (
-      <ListItemWrapper key={item.user.id}>
-        <ListItem>
-          <ListItemAvatar>
-            <AvatarWrapperLink to={`/profile/user?id=${item.user.id}`}>
-              <AvatarStyled
-                alt={item.user.name}
-                src={getAvatarUrl(item.user.id)} />
-            </AvatarWrapperLink>
-          </ListItemAvatar>
-          <ListItemText
-            primary={
-              <UserNameLink to={`/profile/user?id=${item.user.id}`}>{item.user.full_name || item.user.name}
-              </UserNameLink>} />
-        </ListItem>
-        <Divider variant="inset" component="li" />
-      </ListItemWrapper>
+      <FriendItem
+        name={item.user.name}
+        fullName={item.user.full_name}
+        id={item.user.id}
+        key={uuidv4()} />
     ))
   }
 
@@ -89,34 +84,29 @@ class Friends extends React.Component<Props, State> {
     })
   }
 
-  componentDidMount() {
-    this.props.onGetFriends()
-  }
-
   render() {
-    const { friends } = this.props
+    const { friends, onOpenInvitationsDialog } = this.props
     const { searchResult, searchValue } = this.state
 
     return (
-      <PageWrapper>
-        <UsersWrapper>
-          <Paper>
-            <SearchWrapper>
-              <SearchIconStyled onClick={() => this.searchInputRef?.current?.focus()} />
-              <SearchInput
-                ref={this.searchInputRef}
-                id="filter"
-                placeholder="Filter"
-                onChange={this.onSearch}
-                value={searchValue}
-              />
-            </SearchWrapper>
-            <ListStyled>
-              {this.mapFriends((searchValue) ? searchResult : friends)}
-            </ListStyled>
-          </Paper>
-        </UsersWrapper>
-      </PageWrapper>
+      <>
+        <SearchInputWrapper>
+          <SearchInput
+            id="outlined-adornment-amount"
+            ref={this.searchInputRef}
+            placeholder="Filter"
+            onChange={this.onSearch}
+            value={searchValue}
+            startAdornment={<InputAdornment position="start"><SearchIcon /></InputAdornment>}
+          />
+        </SearchInputWrapper>
+        <ButtonContained 
+          className="mobile-only desktop-none"
+          onClick={() => onOpenInvitationsDialog(true)}>
+            Invite friends
+          </ButtonContained>
+        {this.mapFriends((searchValue) ? searchResult : friends)}
+      </>
     )
   }
 }
@@ -126,10 +116,9 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   friends: selectors.friends.friends(state),
 })
 
-type DispatchProps = Pick<Props, 'onGetFriends' | 'onAddFriend'>
+type DispatchProps = Pick<Props, 'onOpenInvitationsDialog'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onGetFriends: () => dispatch(Actions.friends.getFriendsRequest()),
-  onAddFriend: (data: ApiTypes.Friends.Request) => dispatch(Actions.friends.addFriendRequest(data)),
+  onOpenInvitationsDialog: (value: boolean) => dispatch(Actions.friends.openInvitationsDialog(value))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Friends)

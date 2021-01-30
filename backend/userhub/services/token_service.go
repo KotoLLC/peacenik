@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"encoding/hex"
 	"sort"
 	"time"
 
@@ -64,8 +65,8 @@ func (s *tokenService) PostMessage(ctx context.Context, r *rpc.TokenPostMessageR
 	switch {
 	case r.GroupId != "":
 		return s.postMessageForGroup(ctx, r.GroupId)
-	case r.UserId != "":
-		return s.postMessageForUser(ctx, r.UserId)
+	case r.FriendId != "":
+		return s.postMessageForUser(ctx, r.FriendId)
 	default:
 		return s.postMessage(ctx)
 	}
@@ -164,23 +165,22 @@ func (s *tokenService) postMessageForGroup(ctx context.Context, groupID string) 
 	}, nil
 }
 
-func (s *tokenService) postMessageForUser(ctx context.Context, userID string) (*rpc.TokenPostMessageResponse, error) {
+func (s *tokenService) postMessageForUser(ctx context.Context, friendID string) (*rpc.TokenPostMessageResponse, error) {
 	me := s.getMe(ctx)
-	user, isFriend := s.getUser(ctx, userID)
+	user, isFriend := s.getUser(ctx, friendID)
 	if user == nil || !isFriend {
 		return nil, twirp.NotFoundError("user not found")
 	}
 
-	// Force create a key for users
-	_ = s.repos.User.UsersKey(me.ID, user.ID)
+	messageKey := s.repos.User.UsersKey(me.ID, user.ID)
 
 	hub := s.repos.MessageHubs.GroupHub(me.ID)
 	tokens := make(map[string]string)
 	if hub != "" {
 		exp := time.Now().Add(s.tokenDuration)
 		claims := map[string]interface{}{
-			"hub":     hub,
-			"user_id": userID,
+			"hub":       hub,
+			"friend_id": friendID,
 		}
 		hubToken, err := s.tokenGenerator.Generate(me.ID, "post-message", exp, claims)
 		if err != nil {
@@ -189,7 +189,8 @@ func (s *tokenService) postMessageForUser(ctx context.Context, userID string) (*
 		tokens[hub] = hubToken
 	}
 	return &rpc.TokenPostMessageResponse{
-		Tokens: tokens,
+		Tokens:     tokens,
+		MessageKey: hex.EncodeToString(messageKey),
 	}, nil
 }
 

@@ -428,7 +428,7 @@ func (r *groupRepo) InvitesForMe(user User) []GroupInvite {
 		       i.created_at, i.accepted_at, i.rejected_at, i.accepted_by_admin_at, i.rejected_by_admin_at, i.message
 		from group_invites i
 		    inner join groups g on g.id = i.group_id
-		where i.invited_id = $1
+		where i.invited_id = $1 and i.accepted_by_admin_at is null and i.rejected_by_admin_at is null
 			and not exists(select * from blocked_users
 						   where (user_id = $1 and blocked_user_id = i.inviter_id)
 						      or (user_id = i.inviter_id and blocked_user_id = $1))

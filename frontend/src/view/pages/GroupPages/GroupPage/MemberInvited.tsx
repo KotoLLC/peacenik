@@ -66,7 +66,7 @@ const MemberInvited: React.FC<Props> = (props) => {
         </MemberNameWrapperSidebar>
       </MemberHeaderSidebar>
       <MemberButtonsWrapperSidebar>
-        <ButtonOutlined onClick={onDeny} className="small gray">Ignore</ButtonOutlined>
+        <ButtonOutlined onClick={onDeny} className="small grey">Ignore</ButtonOutlined>
         <ButtonContained onClick={onConfirm} className="small">Approve</ButtonContained>
       </MemberButtonsWrapperSidebar>
     </MemberWrapper>
