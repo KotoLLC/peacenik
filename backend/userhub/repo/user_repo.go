@@ -114,7 +114,7 @@ func (r *userRepo) AddUser(id, name, email, fullName, passwordHash string, hideI
 	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
 		_, err := tx.Exec(`
 			insert into users(id, name, email, full_name, password_hash, created_at, updated_at, hide_identity)
-			values($1, $2, $3, $4, $5, $6, $6, $7)`,
+			values($1, $2, $3, $4, $5, $6, $6, $7);`,
 			id, name, email, fullName, passwordHash, common.CurrentTimestamp(), hideIdentity)
 		if err != nil {
 			return merry.Wrap(err)
@@ -123,7 +123,13 @@ func (r *userRepo) AddUser(id, name, email, fullName, passwordHash string, hideI
 			_, err = tx.Exec(`
 			update invites
 			set friend_id = $1
-			where friend_id is null and friend_email = $2`,
+			where friend_id is null and friend_email = $2;`,
+				id, email)
+
+			_, err = tx.Exec(`
+			update group_invites
+			set invited_id = $1
+			where invited_id is null and invited_email = $2;`,
 				id, email)
 		}
 		return merry.Wrap(err)

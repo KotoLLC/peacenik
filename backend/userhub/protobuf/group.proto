@@ -67,7 +67,7 @@ message GroupManagedGroupsResponse {
 
 message GroupAddUserRequest {
     string group_id = 1;
-    string user_id = 2;
+    string user = 2;
 }
 
 message GroupRequestJoinRequest {
