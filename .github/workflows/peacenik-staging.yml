@@ -93,4 +93,4 @@ jobs:
           avatarUrl: https://user-images.githubusercontent.com/118036/104819208-50108f80-582c-11eb-830d-ced2ea30ce0f.png
           description: Build ${{ github.run_number }} pushed to ghcr.io
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-          details: Staging updated successfully
+          details: Kuberentes push (prod == ${{ github.event.inputs.push-to-prod }})
