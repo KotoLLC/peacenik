@@ -63,17 +63,17 @@ spec:
           - name: KOTO_LISTEN_ADDRESS
             value: ":12001"
           - name: KOTO_EXTERNAL_ADDRESS
-            value: https://central.orbits.at
+            value: https://central.peacenik.app
           - name: KOTO_PRIVATE_KEY
             value: /tmp/key
           - name: KOTO_ADMINS
-            value: matt,falconandy
+            value: admin
           - name: KOTO_DB_HOST
             value: db-user-hub-service.backend
           - name: KOTO_DB_SSL_MODE
             value: disable
           - name: KOTO_FRONTEND_ADDRESS
-            value: https://orbits.at
+            value: https://peacenik.app
           - name: KOTO_DB_USER
             value: postgres
           - name: KOTO_DB_PASSWORD
@@ -112,7 +112,7 @@ spec:
                 name: user-hub-smtp
                 key: smtp_password
           - name: KOTO_SMTP_FROM
-            value: admin@orbits.at
+            value: admin@peacenik.app
           - name: KOTO_TEST_MODE
             value: "true"
           - name: KOTO_FIREBASE_TOKEN
@@ -123,7 +123,7 @@ spec:
           - name: KOTO_ADMIN_FRIENDSHIP
             value: ""
           - name: KOTO_MESSAGEHUB_CONFIG
-            value: "https://raw.githubusercontent.com/mreider/koto/master/.k8s/sponsored-hub/hub.yaml"
+            value: "https://raw.githubusercontent.com/kotollc/peacenik/master/.k8s/sponsored-hub/hub.yaml"
 ---
 apiVersion: v1
 kind: Service
