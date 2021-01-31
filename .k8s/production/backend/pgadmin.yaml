@@ -84,7 +84,7 @@ metadata:
   name: pgadmin
   namespace: backend
 data:
-  PGADMIN_DEFAULT_EMAIL: admin@koto.at
+  PGADMIN_DEFAULT_EMAIL: admin@peacenik.app
 
 ---
 apiVersion: networking.k8s.io/v1
@@ -100,10 +100,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - "*.koto.at"
+    - "*.peacenik.app"
     secretName: koto-tls-backend
   rules:
-  - host: progresso-pg.koto.at
+  - host: progresso-pg.peacenik.app
     http:
       paths:
       - path: /

@@ -11,10 +11,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - "*.koto.at"
+    - "*.peacenik.app"
     secretName: koto-tls-backend
   rules:
-  - host: central.koto.at
+  - host: central.orbits.at
     http:
       paths:
       - path: /
@@ -24,7 +24,7 @@ spec:
             name: user-hub-service
             port: 
               number: 12001
-  - host: node1.koto.at
+  - host: node1.peacenik.app
     http:
       paths:
       - path: /

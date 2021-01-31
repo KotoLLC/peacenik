@@ -16,17 +16,17 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: message-hub
-        image: k0t0/node:<TAG>
+        image: ghcr.io/kotollc/koto/messagehub:<TAG>
         imagePullPolicy: Always
         ports:
         - containerPort: 12002
         env:
-          - name: KOTO_LISTEN_ADDRESS
+          - name: KOTO_ADDRESS
             value: ":12002"
           - name: KOTO_EXTERNAL_ADDRESS
-            value: https://node1.koto.at
+            value: https://node1.peacenik.app
           - name: KOTO_USER_HUB_ADDRESS
-            value: https://central.koto.at
+            value: https://central.peacenik.app
           - name: KOTO_DB_HOST
             value: db-message-hub-service.backend
           - name: KOTO_DB_SSL_MODE
@@ -41,7 +41,7 @@ spec:
           - name: KOTO_DB_NAME
             value: koto-message-hub-1
           - name: KOTO_S3_ENDPOINT
-            value: https://ams3.digitaloceanspaces.com
+            value: https://fra1.digitaloceanspaces.com
           - name: KOTO_S3_KEY
             valueFrom:
               secretKeyRef:

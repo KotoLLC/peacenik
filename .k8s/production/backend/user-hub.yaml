@@ -16,13 +16,13 @@ spec:
       terminationGracePeriodSeconds: 5
       initContainers:
       - name: kubectl
-        image: mreider/kubectl:0.0.2
+        image: ghcr.io/kotollc/koto/kubectl:0.0.2
         volumeMounts:
         - name: kubectl
           mountPath: /data
         command: ["cp", "/usr/local/bin/kubectl", "/data/kubectl"]
       - name: doctl
-        image: mreider/doctl:0.0.1
+        image: ghcr.io/kotollc/koto/doctl:0.0.1
         volumeMounts:
         - name: doctl
           mountPath: /data
@@ -39,7 +39,7 @@ spec:
           emptyDir: {}
       containers:
       - name: user-hub
-        image: k0t0/central:<TAG>
+        image: ghcr.io/kotollc/koto/userhub:<TAG>
         imagePullPolicy: Always
         ports:
         - containerPort: 12001
@@ -63,17 +63,17 @@ spec:
           - name: KOTO_LISTEN_ADDRESS
             value: ":12001"
           - name: KOTO_EXTERNAL_ADDRESS
-            value: https://central.koto.at
+            value: https://central.orbits.at
           - name: KOTO_PRIVATE_KEY
             value: /tmp/key
           - name: KOTO_ADMINS
-            value: matt
+            value: matt,falconandy
           - name: KOTO_DB_HOST
             value: db-user-hub-service.backend
           - name: KOTO_DB_SSL_MODE
             value: disable
           - name: KOTO_FRONTEND_ADDRESS
-            value: https://koto.at
+            value: https://orbits.at
           - name: KOTO_DB_USER
             value: postgres
           - name: KOTO_DB_PASSWORD
@@ -84,7 +84,7 @@ spec:
           - name: KOTO_DB_NAME
             value: koto-user-hub
           - name: KOTO_S3_ENDPOINT
-            value: https://ams3.digitaloceanspaces.com
+            value: https://fra1.digitaloceanspaces.com
           - name: KOTO_S3_KEY
             valueFrom:
               secretKeyRef:
@@ -112,7 +112,7 @@ spec:
                 name: user-hub-smtp
                 key: smtp_password
           - name: KOTO_SMTP_FROM
-            value: admin@koto.at
+            value: admin@orbits.at
           - name: KOTO_TEST_MODE
             value: "true"
           - name: KOTO_FIREBASE_TOKEN
@@ -131,7 +131,7 @@ metadata:
   name: user-hub-service
   namespace: backend
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: user-hub
   ports:
