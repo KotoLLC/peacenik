@@ -14,7 +14,7 @@ spec:
     - "*.peacenik.app"
     secretName: koto-tls-backend
   rules:
-  - host: central.peacenik.at
+  - host: central.peacenik.app
     http:
       paths:
       - path: /
