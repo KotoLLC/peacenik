@@ -39,7 +39,7 @@ spec:
                 name: db-message-hub-password
                 key: password
           - name: KOTO_DB_NAME
-            value: koto-message-hub-1
+            value: peacenik-message-hub-1
           - name: KOTO_S3_ENDPOINT
             value: https://fra1.digitaloceanspaces.com
           - name: KOTO_S3_KEY
