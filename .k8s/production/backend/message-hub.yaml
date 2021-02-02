@@ -53,7 +53,7 @@ spec:
                 name: message-hub-secrets
                 key: s3_secret
           - name: KOTO_S3_BUCKET
-            value: koto-message-hub-1
+            value: peacenik-message-hub-1
 ---
 apiVersion: v1
 kind: Service
