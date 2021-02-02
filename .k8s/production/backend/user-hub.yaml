@@ -96,7 +96,7 @@ spec:
                 name: user-hub-s3
                 key: s3_secret
           - name: KOTO_S3_BUCKET
-            value: koto-user-hub
+            value: peacenik-central-hub
           - name: KOTO_SMTP_HOST
             value: smtp.eu.mailgun.org
           - name: KOTO_SMTP_PORT
