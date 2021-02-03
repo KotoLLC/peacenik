@@ -77,7 +77,6 @@ message GroupRequestJoinRequest {
 
 message GroupDeleteJoinRequestRequest {
     string group_id = 1;
-    string inviter_id = 2;
 }
 
 message GroupCreateInviteRequest {

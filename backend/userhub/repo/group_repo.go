@@ -58,6 +58,7 @@ type GroupRepo interface {
 	IsGroupMember(groupID, userID string) bool
 	AddInvite(groupID, inviterID, invitedID, message string)
 	DeleteInvite(groupID, inviterID, invitedID string)
+	DeleteInvites(groupID, invitedID string)
 	AddInviteByEmail(groupID, inviterID, invitedEmail, message string)
 	AcceptInvite(groupID, inviterID, invitedID string) bool
 	RejectInvite(groupID, inviterID, invitedID string) bool
@@ -360,6 +361,16 @@ func (r *groupRepo) DeleteInvite(groupID, inviterID, invitedID string) {
 	}
 }
 
+func (r *groupRepo) DeleteInvites(groupID, invitedID string) {
+	_, err := r.db.Exec(`
+		delete from group_invites
+		where group_id = $1 and invited_id = $2 and accepted_by_admin_at is null;`,
+		groupID, invitedID)
+	if err != nil {
+		panic(err)
+	}
+}
+
 func (r *groupRepo) AddInviteByEmail(groupID, inviterID, invitedEmail, message string) {
 	_, err := r.db.Exec(`
 		insert into group_invites(group_id, inviter_id, invited_email, created_at, message)
@@ -452,10 +463,26 @@ func (r *groupRepo) InvitesForMe(user User) []GroupInvite {
 }
 
 func (r *groupRepo) RemoveUserFromGroup(groupID, userID string) {
-	_, err := r.db.Exec(`
-		delete from group_users
-		where group_id = $1 and user_id = $2;`,
-		groupID, userID)
+	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+		_, err := tx.Exec(`
+			delete from group_users
+			where group_id = $1 and user_id = $2;`,
+			groupID, userID)
+		if err != nil {
+			return err
+		}
+
+		_, err = tx.Exec(`
+			update group_invites
+			set rejected_at = $1
+			where group_id = $2 and invited_id = $3 and rejected_at is null;`,
+			common.CurrentTimestamp(), groupID, userID)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
 	if err != nil {
 		panic(err)
 	}
