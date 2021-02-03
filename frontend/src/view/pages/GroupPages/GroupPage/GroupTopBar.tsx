@@ -27,6 +27,7 @@ interface Props {
 
   onLeaveGroupSuccess: (value: boolean) => void
   onLeaveGroupRequest: (value: string) => void
+  onDeleteJoinRequest: (data: ApiTypes.Groups.DeleteJoinRequest) => void
 }
 
 const GroupTopBar: React.FC<Props> = (props) => {
@@ -40,6 +41,7 @@ const GroupTopBar: React.FC<Props> = (props) => {
     errorMessage,
     isGroupLeavedSuccess,
     onLeaveGroupSuccess,
+    onDeleteJoinRequest,
   } = props
 
   const [isRequested, setReauested] = useState<boolean>(false)
@@ -61,7 +63,14 @@ const GroupTopBar: React.FC<Props> = (props) => {
       )
     }
     if (memberStatus === 'pending') {
-      return <ButtonOutlined className="large green">Remove invite</ButtonOutlined>
+      return <ButtonOutlined 
+        onClick={() => onDeleteJoinRequest({
+          group_id: groupId,
+          inviter_id: '',
+        })}
+        className="large green">
+        Remove invite
+      </ButtonOutlined>
     }
     if (memberStatus === '') {
       return <JoinGroupDialog
@@ -118,10 +127,11 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   isGroupLeavedSuccess: selectors.groups.isGroupLeavedSuccess(state),
 })
 
-type DispatchProps = Pick<Props, 'onLeaveGroupRequest' | 'onLeaveGroupSuccess'>
+type DispatchProps = Pick<Props, 'onLeaveGroupRequest' | 'onLeaveGroupSuccess' | 'onDeleteJoinRequest'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onLeaveGroupRequest: (value: string) => dispatch(Actions.groups.leaveGroupRequest(value)),
   onLeaveGroupSuccess: (value: boolean) => dispatch(Actions.groups.leaveGroupSuccess(value)),
+  onDeleteJoinRequest: (data: ApiTypes.Groups.DeleteJoinRequest) => dispatch(Actions.groups.deleteJoinRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupTopBar)

@@ -73,4 +73,10 @@ export default {
       return response
     }).catch(error => ({ error }))
   }, 
+  
+  deleteJoinRequest: async (data: ApiTypes.Groups.DeleteJoinRequest) => {
+    return await axiosInstance.post('/rpc.GroupService/DeleteJoinRequest', data).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  }, 
 }

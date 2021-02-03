@@ -5,7 +5,7 @@ import { ButtonContained, ButtonOutlined } from '@view/shared/styles'
 import { ApiTypes, StoreTypes } from 'src/types'
 import { connect } from 'react-redux'
 import selectors from '@selectors/index'
-// import Actions from '@store/actions'
+import Actions from '@store/actions'
 import JoinGroupDialog from '../GroupPage/JoinGroupDialog'
 import {
   GroupsListItemWrapper,
@@ -22,10 +22,12 @@ import {
 
 interface Props extends ApiTypes.Groups.RecievedGroup {
   userId?: string
+
+  onDeleteJoinRequest: (data: ApiTypes.Groups.DeleteJoinRequest) => void
 }
 
 const GroupsListItem: React.FC<Props> = React.memo((props) => {
-  const { group, status, userId } = props
+  const { group, status, userId, onDeleteJoinRequest } = props
   const { avatar_original, description, id, is_public, name, admin, member_count } = group
 
   const renderCurrentButton = () => {
@@ -46,7 +48,14 @@ const GroupsListItem: React.FC<Props> = React.memo((props) => {
     }
 
     if (userId !== admin.id && status === 'pending') {
-      return <ButtonOutlined className="extra-small">Remove invite</ButtonOutlined>
+      return <ButtonOutlined 
+        className="extra-small" 
+        onClick={() => onDeleteJoinRequest({
+          group_id: id,
+          inviter_id: '',
+        })}>
+          Remove invite
+        </ButtonOutlined>
     } else return <NoButton />
   }
 
@@ -76,4 +85,9 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   userId: selectors.profile.userId(state),
 })
 
-export default connect(mapStateToProps, null)(GroupsListItem)
+type DispatchProps = Pick<Props, 'onDeleteJoinRequest'>
+const mapDispatchToProps = (dispatch): DispatchProps => ({
+  onDeleteJoinRequest: (data: ApiTypes.Groups.DeleteJoinRequest) => dispatch(Actions.groups.deleteJoinRequest(data)),
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(GroupsListItem)

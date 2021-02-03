@@ -98,6 +98,7 @@ import {
     watchDenyInviteRequest,
     watchDeleteMemberRequest,
     watchLeaveGroupRequest,
+    watchDeleteJoinRequest,
 } from './groups'
 
 export function* rootSaga() {
@@ -182,5 +183,6 @@ export function* rootSaga() {
         takeEvery(GroupsTypes.DENY_INVITE_REQUEST, watchDenyInviteRequest),
         takeEvery(GroupsTypes.DELETE_MEMBER_REQUEST, watchDeleteMemberRequest),
         takeEvery(GroupsTypes.LEAVE_GROUP_REQUEST, watchLeaveGroupRequest),
+        takeEvery(GroupsTypes.DELETE_JOIN_REQUEST, watchDeleteJoinRequest),
     ])
 }

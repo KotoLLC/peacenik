@@ -478,5 +478,10 @@ export declare namespace ApiTypes {
       user_id: string
     }
     
+    export interface DeleteJoinRequest {
+      group_id: string
+      inviter_id: string
+    }
+    
   }
 }
