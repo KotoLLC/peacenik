@@ -2,8 +2,13 @@ package services
 
 import (
 	"context"
+	"fmt"
+	"html"
+	"log"
+	"net/url"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/ansel1/merry"
 	"github.com/twitchtv/twirp"
@@ -11,6 +16,14 @@ import (
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/userhub/repo"
 	"github.com/mreider/koto/backend/userhub/rpc"
+)
+
+const (
+	inviteGroupUnregisteredUserEmailBody = `%s
+<h3>%s</h3>
+<p>%s</p>
+<p>To accept the invitation, click on the link below, register, and visit the groups page:</p>
+<p><a href="%s" target="_blank">Click here</a>.</p><p>Thanks!</p>`
 )
 
 var (
@@ -171,25 +184,50 @@ func (s *groupService) setAvatar(ctx context.Context, group repo.Group, avatarID
 
 func (s *groupService) AddUser(ctx context.Context, r *rpc.GroupAddUserRequest) (*rpc.Empty, error) {
 	me := s.getMe(ctx)
-	if me.ID == r.UserId {
-		return nil, twirp.InvalidArgumentError("user_id", "")
-	}
 
 	group, isGroupAdmin := s.getGroup(ctx, r.GroupId)
 	if group == nil || !isGroupAdmin {
 		return nil, twirp.NotFoundError("group not found")
 	}
 
-	if s.repos.Group.IsGroupMember(r.GroupId, r.UserId) {
+	userEmail := ""
+	user := s.repos.User.FindUserByID(r.User)
+	if user == nil {
+		user = s.repos.User.FindUserByName(r.User)
+	}
+	if user == nil && strings.Contains(r.User, "@") && strings.Contains(r.User, ".") {
+		users := s.repos.User.FindUsersByEmail(r.User)
+		switch len(users) {
+		case 1:
+			user = &users[0]
+		case 0:
+			userEmail = r.User
+		default:
+			return nil, twirp.NewError(twirp.AlreadyExists, "Email belongs to more than one account. Invite by username instead.")
+		}
+	}
+	if user == nil && userEmail == "" {
+		return nil, twirp.NotFoundError("user not found")
+	}
+
+	if user != nil && me.ID == user.ID {
+		return nil, twirp.InvalidArgumentError("user_id", "")
+	}
+
+	if user != nil && s.repos.Group.IsGroupMember(r.GroupId, user.ID) {
 		return nil, twirp.NewError(twirp.AlreadyExists, "already in the group.")
 	}
 
-	if s.repos.Friend.AreFriends(me.ID, r.UserId) {
-		s.repos.Group.AddUserToGroup(r.GroupId, r.UserId)
+	if user != nil && s.repos.Friend.AreFriends(me.ID, user.ID) {
+		s.repos.Group.AddUserToGroup(r.GroupId, user.ID)
 	} else {
+		invited := userEmail
+		if user != nil {
+			invited = user.ID
+		}
 		_, err := s.CreateInvite(ctx, &rpc.GroupCreateInviteRequest{
 			GroupId: r.GroupId,
-			Invited: r.UserId,
+			Invited: invited,
 		})
 		if err != nil {
 			return nil, err
@@ -206,6 +244,20 @@ func (s *groupService) RequestJoin(ctx context.Context, r *rpc.GroupRequestJoinR
 		Invited: me.ID,
 		Message: r.Message,
 	})
+}
+
+func (s *groupService) DeleteJoinRequest(ctx context.Context, r *rpc.GroupDeleteJoinRequestRequest) (*rpc.Empty, error) {
+	if r.GroupId == "" {
+		return nil, twirp.NewError(twirp.InvalidArgument, "group_id")
+	}
+
+	me := s.getMe(ctx)
+	inviterID := r.InviterId
+	if inviterID == "" {
+		inviterID = me.ID
+	}
+	s.repos.Group.DeleteInvite(r.GroupId, inviterID, me.ID)
+	return &rpc.Empty{}, nil
 }
 
 func (s *groupService) CreateInvite(ctx context.Context, r *rpc.GroupCreateInviteRequest) (*rpc.Empty, error) {
@@ -230,10 +282,10 @@ func (s *groupService) CreateInvite(ctx context.Context, r *rpc.GroupCreateInvit
 	invitedUser := s.repos.User.FindUserByIDOrName(r.Invited)
 	if invitedUser == nil {
 		if strings.Contains(r.Invited, "@") && strings.Contains(r.Invited, ".") {
-			friends := s.repos.User.FindUsersByEmail(r.Invited)
-			if len(friends) == 1 {
-				invitedUser = &friends[0]
-			} else if len(friends) > 1 {
+			users := s.repos.User.FindUsersByEmail(r.Invited)
+			if len(users) == 1 {
+				invitedUser = &users[0]
+			} else if len(users) > 1 {
 				return nil, twirp.NewError(twirp.AlreadyExists, "Email belongs to more than one account. Invite by username instead.")
 			}
 		} else {
@@ -259,21 +311,31 @@ func (s *groupService) CreateInvite(ctx context.Context, r *rpc.GroupCreateInvit
 				"user_id":  me.ID,
 			})
 		}
-		// TODO:
-		//err = s.sendInviteLinkToRegisteredUser(ctx, user, invitedUser.Email)
-		//if err != nil {
-		//	log.Println("can't invite by email:", err)
-		//}
 	} else {
 		s.repos.Group.AddInviteByEmail(group.ID, me.ID, r.Invited, r.Message)
 
-		// TODO
-		//err = s.sendInviteLinkToUnregisteredUser(ctx, user, r.Invited)
-		//if err != nil {
-		//	log.Println("can't invite by email:", err)
-		//}
+		err := s.sendInviteLinkToUnregisteredUser(ctx, *group, me, r.Invited)
+		if err != nil {
+			log.Println("can't invite by email:", err)
+		}
 	}
 
+	return &rpc.Empty{}, nil
+}
+
+func (s *groupService) DeleteInvite(ctx context.Context, r *rpc.GroupDeleteInviteRequest) (*rpc.Empty, error) {
+	me := s.getMe(ctx)
+
+	if r.GroupId == "" {
+		return nil, twirp.NewError(twirp.InvalidArgument, "group_id")
+	}
+
+	group, isGroupAdmin := s.getGroup(ctx, r.GroupId)
+	if group == nil || (!group.IsPublic && !isGroupAdmin) {
+		return nil, twirp.NotFoundError("group not found")
+	}
+
+	s.repos.Group.DeleteInvite(r.GroupId, me.ID, r.Invited)
 	return &rpc.Empty{}, nil
 }
 
@@ -591,4 +653,28 @@ func (s *groupService) GroupDetails(ctx context.Context, r *rpc.GroupGroupDetail
 		Invites: rpcInvites,
 		Status:  status,
 	}, nil
+}
+
+func (s *groupService) sendInviteLinkToUnregisteredUser(ctx context.Context, group repo.Group, inviter repo.User, userEmail string) error {
+	if !s.mailSender.Enabled() {
+		return nil
+	}
+
+	inviteToken, err := s.tokenGenerator.Generate(inviter.ID, "user-invite",
+		time.Now().Add(time.Hour*24*30*12),
+		map[string]interface{}{
+			"email": userEmail,
+		})
+	if err != nil {
+		return merry.Wrap(err)
+	}
+
+	attachments := s.GetUserAttachments(ctx, inviter)
+
+	inviterInfo := s.userCache.UserFullAccess(inviter.ID)
+	link := fmt.Sprintf("%s"+registerFrontendPath, s.cfg.FrontendAddress, url.QueryEscape(userEmail), inviteToken)
+	return s.mailSender.SendHTMLEmail([]string{userEmail}, fmt.Sprintf("%s invited you to the group '%s'", inviterInfo.DisplayName, group.Name),
+		fmt.Sprintf(inviteGroupUnregisteredUserEmailBody,
+			attachments.InlineHTML("avatar"), html.EscapeString(group.Name), html.EscapeString(group.Description), link),
+		attachments)
 }

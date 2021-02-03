@@ -11,10 +11,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - koto.at
+    - peacenik.app
     secretName: koto-tls
   rules:
-  - host: koto.at
+  - host: peacenik.app
     http:
       paths:
       - path: /

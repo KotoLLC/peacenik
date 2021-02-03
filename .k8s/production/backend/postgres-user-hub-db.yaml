@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: message-hub-db-pvc
+  name: user-hub-db-pvc
   namespace: backend
 spec:
   accessModes:
@@ -15,51 +15,50 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: db-message-hub-service
+  name: db-user-hub-service
   namespace: backend
   labels:
-    app: db-message-hub-service
+    app: db-user-hub-service
 spec:
   ports:
     - port: 5432
   selector:
-    app: db-message-hub-service
+    app: db-user-hub-service
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgres-message-hub-db
+  name: postgres-user-hub-db
   namespace: backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: db-message-hub-service
+      app: db-user-hub-service
   template:
     metadata:
       labels:
-        app: db-message-hub-service
+        app: db-user-hub-service
     spec:
       containers:
         - name: postgres
-          image: postgres:12.2
+          image: postgres:13.1
           env:
           - name: POSTGRES_DB
-            value: koto-message-hub-1
+            value: koto-user-hub
           - name: POSTGRES_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: db-message-hub-password
+                name: db-user-hub-password
                 key: password
           - name: PGDATA
             value: /var/lib/postgresql/data/pgdata
           ports:
           - containerPort: 5432
           volumeMounts:
-          - name: message-hub-db-data
+          - name: user-hub-db-data
             mountPath: /var/lib/postgresql/data
       volumes:
-      - name: message-hub-db-data
+      - name: user-hub-db-data
         persistentVolumeClaim:
-          claimName: message-hub-db-pvc
-
+          claimName: user-hub-db-pvc
