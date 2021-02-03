@@ -133,6 +133,9 @@ func (s *groupService) EditGroup(ctx context.Context, r *rpc.GroupEditGroupReque
 	}
 
 	if r.IsPublicChanged {
+		if len(s.repos.Group.GroupMembers(r.GroupId)) > 1 {
+			return nil, twirp.InvalidArgumentError("", "can't change the public/private flag for a group with members")
+		}
 		s.repos.Group.SetIsPublic(group.ID, r.IsPublic)
 	}
 
@@ -252,11 +255,7 @@ func (s *groupService) DeleteJoinRequest(ctx context.Context, r *rpc.GroupDelete
 	}
 
 	me := s.getMe(ctx)
-	inviterID := r.InviterId
-	if inviterID == "" {
-		inviterID = me.ID
-	}
-	s.repos.Group.DeleteInvite(r.GroupId, inviterID, me.ID)
+	s.repos.Group.DeleteInvites(r.GroupId, me.ID)
 	return &rpc.Empty{}, nil
 }
 

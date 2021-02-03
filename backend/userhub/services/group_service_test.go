@@ -191,7 +191,7 @@ func (s *GroupServiceTestSuite) Test_AddUser_NotAdmin() {
 	ctx := s.userContext("user-2")
 	_, err := s.service.AddUser(ctx, &rpc.GroupAddUserRequest{
 		GroupId: groupID,
-		UserId:  "user-3",
+		User:    "user-3",
 	})
 	s.EqualError(err, "twirp error not_found: group not found")
 }
@@ -210,12 +210,12 @@ func (s *GroupServiceTestSuite) Test_AddUser_Admin() {
 	ctx := s.userContext("user-1")
 	_, err = s.service.AddUser(ctx, &rpc.GroupAddUserRequest{
 		GroupId: groupID,
-		UserId:  "user-2",
+		User:    "user-2",
 	})
 	s.Nil(err)
 	_, err = s.service.AddUser(ctx, &rpc.GroupAddUserRequest{
 		GroupId: groupID,
-		UserId:  "user-3",
+		User:    "user-3",
 	})
 	s.Nil(err)
 
@@ -240,8 +240,7 @@ func (s *GroupServiceTestSuite) Test_AddUser_Admin() {
 	s.Empty(resp.Invites[0].AcceptedByAdminAt)
 
 	_, err = s.service.DeleteJoinRequest(ctx, &rpc.GroupDeleteJoinRequestRequest{
-		GroupId:   groupID,
-		InviterId: "user-1",
+		GroupId: groupID,
 	})
 	s.Nil(err)
 
