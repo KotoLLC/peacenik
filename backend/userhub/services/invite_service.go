@@ -141,7 +141,7 @@ func (s *inviteService) FromMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteFr
 
 func (s *inviteService) ForMe(ctx context.Context, _ *rpc.Empty) (*rpc.InviteForMeResponse, error) {
 	me := s.getMe(ctx)
-	invites := s.repos.Invite.InvitesForMe(me)
+	invites := s.repos.Invite.OpenInvitesForMe(me)
 	rpcInvites := make([]*rpc.InviteFriendInvite, len(invites))
 	for i, invite := range invites {
 		inviterInfo := s.userCache.UserFullAccess(invite.UserID)

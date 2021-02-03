@@ -26,7 +26,7 @@ type InviteRepo interface {
 	AcceptInvite(inviterID, friendID string, autoAccepted bool) bool
 	RejectInvite(inviterID, friendID string) bool
 	InvitesFromMe(user User) []Invite
-	InvitesForMe(user User) []Invite
+	OpenInvitesForMe(user User) []Invite
 	InviteStatuses(user User) map[string]string
 }
 
@@ -163,7 +163,7 @@ func (r *inviteRepo) InvitesFromMe(user User) []Invite {
 	return invites
 }
 
-func (r *inviteRepo) InvitesForMe(user User) []Invite {
+func (r *inviteRepo) OpenInvitesForMe(user User) []Invite {
 	var invites []Invite
 	err := r.db.Select(&invites, `
 		select i.id, i.user_id,
@@ -171,6 +171,7 @@ func (r *inviteRepo) InvitesForMe(user User) []Invite {
 		from invites i
 			inner join users u on u.id = i.user_id
 		where i.friend_id = $1
+		  	and i.accepted_at is null and i.rejected_at is null
 			and not exists(select * from blocked_users
 						   where (user_id = $1 and blocked_user_id = i.user_id)
 						      or (user_id = i.user_id and blocked_user_id = $1))
