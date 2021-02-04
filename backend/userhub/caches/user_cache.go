@@ -13,6 +13,7 @@ type User struct {
 	Email             string `db:"email"`
 	AvatarOriginalID  string `db:"avatar_original_id"`
 	AvatarThumbnailID string `db:"avatar_thumbnail_id"`
+	BackroundID       string `db:"background_id"`
 	HideIdentity      bool   `db:"hide_identity"`
 	DisplayName       string
 }
@@ -35,7 +36,7 @@ type userCache struct {
 func (c *userCache) User(userID, meID string) User {
 	var user User
 	err := c.db.Get(&user, `
-		select name, full_name, email, avatar_thumbnail_id, hide_identity
+		select name, full_name, email, avatar_original_id, avatar_thumbnail_id, background_id, hide_identity
 		from users
 		where id = $1;`,
 		userID)
@@ -69,7 +70,9 @@ func (c *userCache) User(userID, meID string) User {
 		user.FullName = "Anonymous"
 		user.DisplayName = "Anonymous"
 		user.Email = ""
+		user.AvatarOriginalID = ""
 		user.AvatarThumbnailID = ""
+		user.BackroundID = ""
 	}
 
 	return user
