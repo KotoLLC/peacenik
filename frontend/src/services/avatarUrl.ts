@@ -8,3 +8,7 @@ export function getAvatarUrl(id: string) {
 export function getGroupAvatarUrl(id: string) {
   return `${userHubUrl}/image/group/${id}`
 }
+
+export function getGroupCoverUrl(id: string) {
+  return `${userHubUrl}/image/group/background/${id}`
+}

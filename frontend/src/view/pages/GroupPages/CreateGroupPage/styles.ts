@@ -24,14 +24,16 @@ export const CoverWrapper = styled.div`
   height: 200px;
   width: 100%;
   background-color: #A1AEC8;
+  background-image:  ${props => `url(${props.resource})`};
+  background-position: center;
   background-size: cover;
-  background-position: center center;
 `
 
 export const CoverIconWrapper = styled.figure`
   border: 2px solid #FFFFFF;
   width: 72px;
   height: 72px;
+  margin: 0 auto;
   border-radius: 50%;
   display: flex;
   justify-content: center;

@@ -9,7 +9,7 @@ import Actions from '@store/actions'
 import selectors from '@selectors/index'
 import { ApiTypes, StoreTypes } from 'src/types'
 import { v4 as uuidv4 } from 'uuid'
-import { getGroupAvatarUrl } from '@services/avatarUrl'
+import { getGroupAvatarUrl, getGroupCoverUrl } from '@services/avatarUrl'
 import {
   GroupCover,
   GroupContainer,
@@ -64,7 +64,7 @@ const AdminLayoutPublic: React.FC<Props> = React.memo((props) => {
 
   return (
     <PageLayout>
-      <GroupCover />
+      <GroupCover resource={getGroupCoverUrl(group?.id)}/>
       <GroupTopBar 
         memberStatus={status}
         membersCounter={members?.length} 

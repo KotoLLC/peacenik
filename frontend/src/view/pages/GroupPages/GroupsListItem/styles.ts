@@ -11,9 +11,10 @@ export const GroupsListItemWrapper = styled.div`
 
 export const ItemCover = styled.div`
   height: 80px;
+  background-color: #A1AEC8; 
+  background-image:  ${props => `url(${props.resource})`};
   background-position: center;
   background-size: cover;
-  background-color: #A1AEC8;
 `
 
 export const ItemContentWraper = styled.div`

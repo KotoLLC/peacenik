@@ -12,6 +12,7 @@ export const GroupCover = styled.div`
   background-position: center;
   background-size: cover;
   background-color: #A1AEC8;
+  background-image:  ${props => `url(${props.resource})`};
 ` 
 
 export const GroupHeader = styled.header`

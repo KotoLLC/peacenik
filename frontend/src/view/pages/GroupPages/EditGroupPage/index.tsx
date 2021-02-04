@@ -9,7 +9,7 @@ import selectors from '@selectors/index'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import queryString from 'query-string'
 import loadImage from 'blueimp-load-image'
-import { getGroupAvatarUrl } from '@services/avatarUrl'
+import { getGroupAvatarUrl, getGroupCoverUrl } from '@services/avatarUrl'
 import { ErrorMessage, ButtonContained, ButtonOutlined } from '@view/shared/styles'
 import {
   CreateGroupContainer,
@@ -26,9 +26,9 @@ import {
   InputField,
   TextareaField,
   ButtonsWrapper,
-  RadioStyled,
-  FormControlLabelStyled,
-  RadiosWrapper,
+  // RadioStyled,
+  // FormControlLabelStyled,
+  // RadiosWrapper,
 } from './../CreateGroupPage/styles'
 import { UploadInput } from './../styles'
 
@@ -62,6 +62,8 @@ const EditGroupPage: React.FC<Props> = (props) => {
     avatarUploadLink,
     onGetAvatarUploadLinkRequest,
     onSetAvatarRequest,
+    onGetCoverUploadLinkRequest,
+    onSetCoverRequest,
   } = props
 
   const url = location.search
@@ -76,9 +78,12 @@ const EditGroupPage: React.FC<Props> = (props) => {
   const [groupName, setGroupName] = useState<string>(initialGroup ? initialGroup.name : '')
   const [groupDescription, setGroupDescription] = useState<string>(initialGroup ? initialGroup.description : '')
   const [invalideMessage, setInvalideMessage] = useState<string>('')
-  
+
   const [isAvatarFileUploaded, setAvatarUploadedFile] = useState<boolean>(false)
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
+
+  const [isCoverFileUploaded, setCoverUploadedFile] = useState<boolean>(false)
+  const [coverFile, setCoverFile] = useState<File | null>(null)
 
   const isDataValid = (): boolean => {
 
@@ -104,12 +109,12 @@ const EditGroupPage: React.FC<Props> = (props) => {
         group_id: initialGroup?.id ? initialGroup?.id : '',
         description: groupDescription,
         description_changed: true,
-        is_public: isPublic,
-        is_public_changed: true,
+        // is_public: isPublic,
+        // is_public_changed: true,
         avatar_id: avatarUploadLink ? avatarUploadLink?.blob_id : '',
-        avatar_changed: true, 
-        background_id: '',
-        background_changed: true,
+        avatar_changed: avatarUploadLink ? true : false,
+        background_id: coverUploadLink ? coverUploadLink?.blob_id : '',
+        background_changed: coverUploadLink ? true : false,
       }
 
       onEditGroup(data)
@@ -152,6 +157,22 @@ const EditGroupPage: React.FC<Props> = (props) => {
 
       onSetAvatarRequest({
         link: avatarUploadLink?.link,
+        form_data: data,
+      })
+    }
+
+    if (coverUploadLink && coverFile && !isCoverFileUploaded) {
+      const { form_data } = coverUploadLink
+      const data = new FormData()
+
+      for (let key in form_data) {
+        data.append(key, form_data[key])
+      }
+
+      data.append('file', coverFile, coverFile?.name)
+
+      onSetCoverRequest({
+        link: coverUploadLink?.link,
         form_data: data,
       })
     }
@@ -201,6 +222,40 @@ const EditGroupPage: React.FC<Props> = (props) => {
     }
   }
 
+  const onCoverFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    setCoverUploadedFile(false)
+
+    const uploadedFile = event.target.files
+    if (uploadedFile && uploadedFile[0]) {
+
+      onGetCoverUploadLinkRequest({
+        content_type: uploadedFile[0].type,
+        file_name: uploadedFile[0].name,
+      })
+
+      /* tslint:disable */
+      loadImage(
+        uploadedFile[0],
+        function (img, data) {
+          if (data.imageHead && data.exif) {
+            // Reset Exif Orientation data:
+            loadImage.writeExifData(data.imageHead, data, 'Orientation', 1)
+            img.toBlob(function (blob) {
+              loadImage.replaceHead(blob, data.imageHead, function (newBlob) {
+                setAvatarFile(newBlob)
+              })
+            }, 'image/jpeg')
+          } else {
+            setCoverFile(uploadedFile[0])
+          }
+        },
+        { meta: true, orientation: true, canvas: true }
+      )
+      /* tslint:enable */
+
+    }
+  }
+
   const renderAvatar = () => {
     if (avatarFile) {
       return (
@@ -211,31 +266,40 @@ const EditGroupPage: React.FC<Props> = (props) => {
     }
 
     return (
-      <AvatarStyled src={ initialGroup?.id ? getGroupAvatarUrl(initialGroup?.id) : ''}/>
+      <AvatarStyled src={initialGroup?.id ? getGroupAvatarUrl(initialGroup?.id) : ''} />
     )
   }
 
   return (
     <PageLayout>
       <CreateGroupContainer>
-        <CoverWrapper>
-          <CoverIconWrapper>
-            <img src={CoverIcon} alt="icon" />
-          </CoverIconWrapper>
-          <AddCoverButtonWrapper>
-            <AddCoverButton>Add cover picture</AddCoverButton>
-          </AddCoverButtonWrapper>
+        <CoverWrapper resource={(coverFile) ? URL.createObjectURL(coverFile) : getGroupCoverUrl(initialGroup?.id!)}>
+          <label>
+            <CoverIconWrapper>
+              <img src={CoverIcon} alt="icon" />
+            </CoverIconWrapper>
+            <AddCoverButtonWrapper>
+              <AddCoverButton>Add cover picture</AddCoverButton>
+            </AddCoverButtonWrapper>
+            <UploadInput
+              type="file"
+              id="cover"
+              name="cover"
+              onChange={onCoverFileUpload}
+              accept="image/*"
+            />
+          </label>
         </CoverWrapper>
         <AvatarsBlock>
           <label>
             {renderAvatar()}
             <UploadInput
-                type="file"
-                id="file"
-                name="file"
-                onChange={onAvatarFileUpload}
-                accept="video/*,image/*"
-              />
+              type="file"
+              id="file"
+              name="file"
+              onChange={onAvatarFileUpload}
+              accept="image/*"
+            />
           </label>
           <AvatarsNote>Upload jpg or png file. Up to 1 MB</AvatarsNote>
         </AvatarsBlock>
@@ -280,12 +344,12 @@ const EditGroupPage: React.FC<Props> = (props) => {
   )
 }
 
-type StateProps = Pick<Props, 
-| 'isGroupEditedSuccessfully' 
-| 'errorMessage' 
-| 'myGroups'
-| 'coverUploadLink'
-| 'avatarUploadLink'
+type StateProps = Pick<Props,
+  | 'isGroupEditedSuccessfully'
+  | 'errorMessage'
+  | 'myGroups'
+  | 'coverUploadLink'
+  | 'avatarUploadLink'
 >
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   isGroupEditedSuccessfully: selectors.groups.isGroupEditedSuccessfully(state),
@@ -313,7 +377,7 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onSetCoverRequest: (data: ApiTypes.Groups.Image) => dispatch(Actions.groups.setCoverRequest(data)),
   onGetAvatarUploadLinkRequest: (data: ApiTypes.Groups.UploadLinkRequest) =>
     dispatch(Actions.groups.getAvatarUploadLinkRequest(data)),
-  onSetAvatarRequest: (data: ApiTypes.Groups.Image) => dispatch(Actions.groups.setAvatarRequest(data)) 
+  onSetAvatarRequest: (data: ApiTypes.Groups.Image) => dispatch(Actions.groups.setAvatarRequest(data))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditGroupPage)

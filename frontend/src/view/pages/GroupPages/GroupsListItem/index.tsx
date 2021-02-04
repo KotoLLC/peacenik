@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 import selectors from '@selectors/index'
 import Actions from '@store/actions'
 import JoinGroupDialog from '../GroupPage/JoinGroupDialog'
-import { getGroupAvatarUrl } from '@services/avatarUrl'
+import { getGroupAvatarUrl, getGroupCoverUrl } from '@services/avatarUrl'
 import {
   GroupsListItemWrapper,
   ItemCover,
@@ -60,7 +60,7 @@ const GroupsListItem: React.FC<Props> = React.memo((props) => {
 
   return (
     <GroupsListItemWrapper>
-      <ItemCover style={{ backgroundImage: avatar_original }} />
+      <ItemCover resource={getGroupCoverUrl(id!)} />
       <ItemContentWraper>
         <ItemHeader>
           <Link to={`/groups/group?id=${id}`}>

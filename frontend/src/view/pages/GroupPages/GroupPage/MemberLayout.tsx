@@ -7,7 +7,7 @@ import GroupTopBar from './GroupTopBar'
 import { Member } from './Member'
 import { Owner } from './Owner'
 import { v4 as uuidv4 } from 'uuid'
-import { getGroupAvatarUrl } from '@services/avatarUrl'
+import { getGroupAvatarUrl, getGroupCoverUrl } from '@services/avatarUrl'
 import {
   GroupCover,
   GroupContainer,
@@ -35,7 +35,7 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
 
   return (
     <PageLayout>
-      <GroupCover />
+      <GroupCover resource={getGroupCoverUrl(group?.id)}/>
       <GroupTopBar 
         groupId={group?.id} 
         isAdminLayout={false} 

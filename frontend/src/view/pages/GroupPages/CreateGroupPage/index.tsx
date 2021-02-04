@@ -57,16 +57,21 @@ const CreateGroupPage: React.FC<Props> = (props) => {
     avatarUploadLink,
     onGetAvatarUploadLinkRequest,
     onSetAvatarRequest,
+    onGetCoverUploadLinkRequest,
+    onSetCoverRequest,
   } = props
 
   const [isRequested, setRequested] = useState<boolean>(false)
-  const [isPublic, setPublic] = useState<boolean>(false)
+  const [isPublic, setPublic] = useState<boolean>(true)
   const [groupName, setGroupName] = useState<string>('')
   const [groupDescription, setGroupDescription] = useState<string>('')
   const [invalideMessage, setInvalideMessage] = useState<string>('')
 
   const [isAvatarFileUploaded, setAvatarUploadedFile] = useState<boolean>(false)
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
+
+  const [isCoverFileUploaded, setCoverUploadedFile] = useState<boolean>(false)
+  const [coverFile, setCoverFile] = useState<File | null>(null)
 
   const isDataValid = (): boolean => {
 
@@ -93,7 +98,7 @@ const CreateGroupPage: React.FC<Props> = (props) => {
         description: groupDescription,
         is_public: isPublic,
         avatar_id: avatarUploadLink ? avatarUploadLink?.blob_id : '',
-        background_id: '',
+        background_id: coverUploadLink ? coverUploadLink?.blob_id : '',
       }
 
       onAddGroup(data)
@@ -128,6 +133,23 @@ const CreateGroupPage: React.FC<Props> = (props) => {
         form_data: data,
       })
     }
+
+    if (coverUploadLink && coverFile && !isCoverFileUploaded) {
+      const { form_data } = coverUploadLink
+      const data = new FormData()
+
+      for (let key in form_data) {
+        data.append(key, form_data[key])
+      }
+
+      data.append('file', coverFile, coverFile?.name)
+
+      onSetCoverRequest({
+        link: coverUploadLink?.link,
+        form_data: data,
+      })
+    }
+
   }, [
     isGroupAddedSuccessfully,
     errorMessage,
@@ -169,6 +191,40 @@ const CreateGroupPage: React.FC<Props> = (props) => {
     }
   }
 
+  const onCoverFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    setCoverUploadedFile(false)
+
+    const uploadedFile = event.target.files
+    if (uploadedFile && uploadedFile[0]) {
+
+      onGetCoverUploadLinkRequest({
+        content_type: uploadedFile[0].type,
+        file_name: uploadedFile[0].name,
+      })
+
+      /* tslint:disable */
+      loadImage(
+        uploadedFile[0],
+        function (img, data) {
+          if (data.imageHead && data.exif) {
+            // Reset Exif Orientation data:
+            loadImage.writeExifData(data.imageHead, data, 'Orientation', 1)
+            img.toBlob(function (blob) {
+              loadImage.replaceHead(blob, data.imageHead, function (newBlob) {
+                setAvatarFile(newBlob)
+              })
+            }, 'image/jpeg')
+          } else {
+            setCoverFile(uploadedFile[0])
+          }
+        },
+        { meta: true, orientation: true, canvas: true }
+      )
+      /* tslint:enable */
+
+    }
+  }
+
   const renderAvatar = () => {
     if (avatarFile) {
       return (
@@ -188,13 +244,22 @@ const CreateGroupPage: React.FC<Props> = (props) => {
   return (
     <PageLayout>
       <CreateGroupContainer>
-        <CoverWrapper>
-          <CoverIconWrapper>
-            <img src={CoverIcon} alt="icon" />
-          </CoverIconWrapper>
-          <AddCoverButtonWrapper>
-            <AddCoverButton>Add cover picture</AddCoverButton>
-          </AddCoverButtonWrapper>
+        <CoverWrapper resource={(coverFile) ? URL.createObjectURL(coverFile) : ''}>
+          <label>
+            <CoverIconWrapper>
+              <img src={CoverIcon} alt="icon" />
+            </CoverIconWrapper>
+            <AddCoverButtonWrapper>
+              <AddCoverButton>Add cover picture</AddCoverButton>
+            </AddCoverButtonWrapper>
+            <UploadInput
+              type="file"
+              id="cover"
+              name="cover"
+              onChange={onCoverFileUpload}
+              accept="image/*"
+            />
+          </label>
         </CoverWrapper>
         <AvatarsBlock>
           <label>
@@ -204,7 +269,7 @@ const CreateGroupPage: React.FC<Props> = (props) => {
               id="file"
               name="file"
               onChange={onAvatarFileUpload}
-              accept="video/*,image/*"
+              accept="image/*"
             />
           </label>
           <AvatarsNote>Upload jpg or png file. Up to 1 MB</AvatarsNote>
@@ -250,12 +315,12 @@ const CreateGroupPage: React.FC<Props> = (props) => {
   )
 }
 
-type StateProps = Pick<Props, 
-  | 'isGroupAddedSuccessfully' 
+type StateProps = Pick<Props,
+  | 'isGroupAddedSuccessfully'
   | 'errorMessage'
   | 'coverUploadLink'
   | 'avatarUploadLink'
-  >
+>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   isGroupAddedSuccessfully: selectors.groups.isGroupAddedSuccessfully(state),
   errorMessage: selectors.common.errorMessage(state),
