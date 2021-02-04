@@ -99,6 +99,10 @@ import {
     watchDeleteMemberRequest,
     watchLeaveGroupRequest,
     watchDeleteJoinRequest,
+    watchGetGroupCoverUploadLink,
+    watchSetGroupCover,
+    watchGetGroupAvatarUploadLink,
+    watchSetGroupAvatar,
 } from './groups'
 
 export function* rootSaga() {
@@ -184,5 +188,9 @@ export function* rootSaga() {
         takeEvery(GroupsTypes.DELETE_MEMBER_REQUEST, watchDeleteMemberRequest),
         takeEvery(GroupsTypes.LEAVE_GROUP_REQUEST, watchLeaveGroupRequest),
         takeEvery(GroupsTypes.DELETE_JOIN_REQUEST, watchDeleteJoinRequest),
+        takeEvery(GroupsTypes.GET_COVER_UPLOAD_LINK_REQUEST, watchGetGroupCoverUploadLink),
+        takeEvery(GroupsTypes.SET_COVER_REQUEST, watchSetGroupCover),
+        takeEvery(GroupsTypes.GET_AVATAR_UPLOAD_LINK_REQUEST, watchGetGroupAvatarUploadLink),
+        takeEvery(GroupsTypes.SET_AVATAR_REQUEST, watchSetGroupAvatar),
     ])
 }

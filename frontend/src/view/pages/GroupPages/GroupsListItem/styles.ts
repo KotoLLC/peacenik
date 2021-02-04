@@ -37,11 +37,6 @@ export const AvatarStyled = styled(Avatar)`
     left: 0;
     top: -41px;
   }
-
-  img {
-    width: 24px;
-    height: 24px;
-  }
 `
 
 export const GroupName = styled.span`

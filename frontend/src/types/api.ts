@@ -387,8 +387,8 @@ export declare namespace ApiTypes {
       description: string
       avatar_changed: boolean
       avatar_id: string
-      is_public_changed: boolean
-      is_public: boolean
+      is_public_changed?: boolean
+      is_public?: boolean
       background_changed: boolean
       background_id: string
     }
@@ -480,7 +480,16 @@ export declare namespace ApiTypes {
     
     export interface DeleteJoinRequest {
       group_id: string
-      inviter_id: string
+    }
+
+    export interface UploadLinkRequest {
+      content_type: string
+      file_name: string
+    }
+
+    export interface Image {
+      form_data: FormData
+      link: string
     }
     
   }

@@ -13,6 +13,8 @@ export interface State  {
   currentGroupId: string
   groupDetails: ApiTypes.Groups.GroupDetails | null
   invitesToConfirm: ApiTypes.Groups.InviteToConfirm[]
+  coverUploadLink: ApiTypes.UploadLink | null
+  avatarUploadLink: ApiTypes.UploadLink | null
 }
 
 const initialState: State = {
@@ -27,6 +29,8 @@ const initialState: State = {
   currentGroupId: '',
   groupDetails: null,
   invitesToConfirm: [],
+  coverUploadLink: null,
+  avatarUploadLink: null,
 }
 
 const reducer = (state = initialState, action) => {
@@ -108,6 +112,17 @@ const reducer = (state = initialState, action) => {
         }
       }
     }
+    case Types.GET_COVER_UPLOAD_LINK_SUCCESS: {
+      return {
+        ...state, ...{ coverUploadLink: action.payload }
+      }
+    }
+    case Types.GET_AVATAR_UPLOAD_LINK_SUCCESS: {
+      return {
+        ...state, ...{ avatarUploadLink: action.payload }
+      }
+    }
+
     default: return state
   }
 }

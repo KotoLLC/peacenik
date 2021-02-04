@@ -66,7 +66,6 @@ const GroupTopBar: React.FC<Props> = (props) => {
       return <ButtonOutlined 
         onClick={() => onDeleteJoinRequest({
           group_id: groupId,
-          inviter_id: '',
         })}
         className="large green">
         Remove invite

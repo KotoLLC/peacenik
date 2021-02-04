@@ -42,6 +42,18 @@ export enum Types {
 
   DELETE_JOIN_REQUEST = 'DELETE_JOIN_REQUEST',
   DELETE_JOIN_SUCCESS = 'DELETE_JOIN_SUCCESS',
+
+  GET_COVER_UPLOAD_LINK_REQUEST = 'GET_COVER_UPLOAD_LINK_REQUEST',
+  GET_COVER_UPLOAD_LINK_SUCCESS = 'GET_COVER_UPLOAD_LINK_SUCCESS',
+
+  SET_COVER_REQUEST = 'SET_COVER_REQUEST',  
+  SET_COVER_SUCCESS = 'SET_COVER_SUCCESS',  
+  
+  GET_AVATAR_UPLOAD_LINK_REQUEST = 'GET_AVATAR_UPLOAD_LINK_REQUEST',
+  GET_AVATAR_UPLOAD_LINK_SUCCESS = 'GET_AVATAR_UPLOAD_LINK_SUCCESS',
+
+  SET_AVATAR_REQUEST = 'SET_AVATAR_REQUEST',  
+  SET_AVATAR_SUCCESS = 'SET_AVATAR_SUCCESS',  
 }
 
 const addGroupRequest = (payload: ApiTypes.Groups.AddGroup) => ({
@@ -176,6 +188,44 @@ const deleteJoinSuccess = (payload: boolean) => ({
   payload
 })
 
+const getCoverUploadLinkRequest = (payload: ApiTypes.Groups.UploadLinkRequest) => ({
+  type: Types.GET_COVER_UPLOAD_LINK_REQUEST,
+  payload,
+})
+
+const getCoverUploadLinkSucces = (payload: ApiTypes.UploadLink | null) => ({
+  type: Types.GET_COVER_UPLOAD_LINK_SUCCESS,
+  payload
+})
+
+const setCoverRequest = (payload: ApiTypes.Groups.Image) => ({
+  type: Types.SET_COVER_REQUEST,
+  payload,
+})
+
+const setCoverSuccess = () => ({
+  type: Types.SET_COVER_SUCCESS,
+})
+
+const getAvatarUploadLinkRequest = (payload: ApiTypes.Groups.UploadLinkRequest) => ({
+  type: Types.GET_AVATAR_UPLOAD_LINK_REQUEST,
+  payload,
+})
+
+const getAvatarUploadLinkSucces = (payload: ApiTypes.UploadLink | null) => ({
+  type: Types.GET_AVATAR_UPLOAD_LINK_SUCCESS,
+  payload
+})
+
+const setAvatarRequest = (payload: ApiTypes.Groups.Image) => ({
+  type: Types.SET_AVATAR_REQUEST,
+  payload,
+})
+
+const setAvatarSuccess = () => ({
+  type: Types.SET_AVATAR_SUCCESS,
+})
+
 export default {
   addGroupRequest,
   addGroupSucces,
@@ -204,4 +254,12 @@ export default {
   setCurrentGroupId,
   deleteJoinRequest,
   deleteJoinSuccess,
+  getCoverUploadLinkRequest,
+  getCoverUploadLinkSucces,
+  setCoverRequest,
+  setCoverSuccess,
+  getAvatarUploadLinkRequest,
+  getAvatarUploadLinkSucces,
+  setAvatarRequest,
+  setAvatarSuccess,
 }

@@ -1,7 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import RadioGroup from '@material-ui/core/RadioGroup'
+import React, { useState, useEffect, ChangeEvent } from 'react'
 import { PageLayout } from '@view/shared/PageLayout'
-import AvatarIcon from '@assets/images/groups-avatar-icon.svg'
 import CoverIcon from '@assets/images/groups-cover-icon.svg'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
@@ -10,6 +8,8 @@ import { Link, RouteComponentProps } from 'react-router-dom'
 import selectors from '@selectors/index'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import queryString from 'query-string'
+import loadImage from 'blueimp-load-image'
+import { getGroupAvatarUrl } from '@services/avatarUrl'
 import { ErrorMessage, ButtonContained, ButtonOutlined } from '@view/shared/styles'
 import {
   CreateGroupContainer,
@@ -30,27 +30,38 @@ import {
   FormControlLabelStyled,
   RadiosWrapper,
 } from './../CreateGroupPage/styles'
+import { UploadInput } from './../styles'
 
 interface Props extends RouteComponentProps {
   isGroupEditedSuccessfully: boolean
   errorMessage: string
   myGroups: ApiTypes.Groups.RecievedGroup[]
+  coverUploadLink: ApiTypes.UploadLink | null
+  avatarUploadLink: ApiTypes.UploadLink | null
 
   editGroupSuccess: (value: boolean) => void
   onEditGroup: (data: ApiTypes.Groups.EditGroup) => void
   onGetMyGroupsRequest: () => void
+  onGetCoverUploadLinkRequest: (data: ApiTypes.Groups.UploadLinkRequest) => void
+  onSetCoverRequest: (data: ApiTypes.Groups.Image) => void
+  onGetAvatarUploadLinkRequest: (data: ApiTypes.Groups.UploadLinkRequest) => void
+  onSetAvatarRequest: (data: ApiTypes.Groups.Image) => void
 }
 
 const EditGroupPage: React.FC<Props> = (props) => {
-  const { 
-    onEditGroup, 
-    editGroupSuccess, 
+  const {
+    onEditGroup,
+    editGroupSuccess,
     onGetMyGroupsRequest,
-    isGroupEditedSuccessfully, 
-    history, 
+    isGroupEditedSuccessfully,
+    history,
     location,
-    errorMessage, 
+    errorMessage,
     myGroups,
+    coverUploadLink,
+    avatarUploadLink,
+    onGetAvatarUploadLinkRequest,
+    onSetAvatarRequest,
   } = props
 
   const url = location.search
@@ -65,6 +76,9 @@ const EditGroupPage: React.FC<Props> = (props) => {
   const [groupName, setGroupName] = useState<string>(initialGroup ? initialGroup.name : '')
   const [groupDescription, setGroupDescription] = useState<string>(initialGroup ? initialGroup.description : '')
   const [invalideMessage, setInvalideMessage] = useState<string>('')
+  
+  const [isAvatarFileUploaded, setAvatarUploadedFile] = useState<boolean>(false)
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
 
   const isDataValid = (): boolean => {
 
@@ -92,8 +106,8 @@ const EditGroupPage: React.FC<Props> = (props) => {
         description_changed: true,
         is_public: isPublic,
         is_public_changed: true,
-        avatar_id: '',
-        avatar_changed: true,
+        avatar_id: avatarUploadLink ? avatarUploadLink?.blob_id : '',
+        avatar_changed: true, 
         background_id: '',
         background_changed: true,
       }
@@ -126,14 +140,80 @@ const EditGroupPage: React.FC<Props> = (props) => {
       setGroupDescription(groupDescription ? groupDescription : initialGroup.description)
     }
 
+    if (avatarUploadLink && avatarFile && !isAvatarFileUploaded) {
+      const { form_data } = avatarUploadLink
+      const data = new FormData()
+
+      for (let key in form_data) {
+        data.append(key, form_data[key])
+      }
+
+      data.append('file', avatarFile, avatarFile?.name)
+
+      onSetAvatarRequest({
+        link: avatarUploadLink?.link,
+        form_data: data,
+      })
+    }
+
   }, [
-    isGroupEditedSuccessfully, 
-    errorMessage, 
+    isGroupEditedSuccessfully,
+    errorMessage,
     myGroups,
     isPublic,
     groupDescription,
     initialGroup,
+    coverUploadLink,
+    avatarUploadLink,
   ])
+
+  const onAvatarFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    setAvatarUploadedFile(false)
+
+    const uploadedFile = event.target.files
+    if (uploadedFile && uploadedFile[0]) {
+
+      onGetAvatarUploadLinkRequest({
+        content_type: uploadedFile[0].type,
+        file_name: uploadedFile[0].name,
+      })
+
+      /* tslint:disable */
+      loadImage(
+        uploadedFile[0],
+        function (img, data) {
+          if (data.imageHead && data.exif) {
+            // Reset Exif Orientation data:
+            loadImage.writeExifData(data.imageHead, data, 'Orientation', 1)
+            img.toBlob(function (blob) {
+              loadImage.replaceHead(blob, data.imageHead, function (newBlob) {
+                setAvatarFile(newBlob)
+              })
+            }, 'image/jpeg')
+          } else {
+            setAvatarFile(uploadedFile[0])
+          }
+        },
+        { meta: true, orientation: true, canvas: true }
+      )
+      /* tslint:enable */
+
+    }
+  }
+
+  const renderAvatar = () => {
+    if (avatarFile) {
+      return (
+        <AvatarStyled>
+          <img src={URL.createObjectURL(avatarFile)} alt="" />
+        </AvatarStyled>
+      )
+    }
+
+    return (
+      <AvatarStyled src={ initialGroup?.id ? getGroupAvatarUrl(initialGroup?.id) : ''}/>
+    )
+  }
 
   return (
     <PageLayout>
@@ -147,14 +227,21 @@ const EditGroupPage: React.FC<Props> = (props) => {
           </AddCoverButtonWrapper>
         </CoverWrapper>
         <AvatarsBlock>
-          <AvatarStyled>
-            <img src={AvatarIcon} alt="icon" />
-          </AvatarStyled>
+          <label>
+            {renderAvatar()}
+            <UploadInput
+                type="file"
+                id="file"
+                name="file"
+                onChange={onAvatarFileUpload}
+                accept="video/*,image/*"
+              />
+          </label>
           <AvatarsNote>Upload jpg or png file. Up to 1 MB</AvatarsNote>
         </AvatarsBlock>
         <FormWrapper>
           <FieldWrapper className="radios" onSubmit={onSubmit}>
-            <FieldPlaceholder className="radios">Group Type</FieldPlaceholder>
+            {/* <FieldPlaceholder className="radios">Group Type</FieldPlaceholder>
             <RadioGroup aria-label="publicity" name="publicity">
               <RadiosWrapper>
                 <FormControlLabelStyled
@@ -168,7 +255,7 @@ const EditGroupPage: React.FC<Props> = (props) => {
                   control={<RadioStyled checked={isPublic} size="small" color="primary" />}
                   label={<div className="title">Public <span className="title-note">Listed for all users</span></div>} />
               </RadiosWrapper>
-            </RadioGroup>
+            </RadioGroup> */}
           </FieldWrapper>
           <FieldWrapper>
             <FieldPlaceholder>Group Name</FieldPlaceholder>
@@ -193,18 +280,40 @@ const EditGroupPage: React.FC<Props> = (props) => {
   )
 }
 
-type StateProps = Pick<Props, 'isGroupEditedSuccessfully' | 'errorMessage' | 'myGroups'>
+type StateProps = Pick<Props, 
+| 'isGroupEditedSuccessfully' 
+| 'errorMessage' 
+| 'myGroups'
+| 'coverUploadLink'
+| 'avatarUploadLink'
+>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   isGroupEditedSuccessfully: selectors.groups.isGroupEditedSuccessfully(state),
   errorMessage: selectors.common.errorMessage(state),
   myGroups: selectors.groups.myGroups(state),
+  coverUploadLink: selectors.groups.coverUploadLink(state),
+  avatarUploadLink: selectors.groups.avatarUploadLink(state),
 })
 
-type DispatchProps = Pick<Props, 'onEditGroup' | 'editGroupSuccess' | 'onGetMyGroupsRequest'>
+type DispatchProps = Pick<Props,
+  | 'onEditGroup'
+  | 'editGroupSuccess'
+  | 'onGetMyGroupsRequest'
+  | 'onGetCoverUploadLinkRequest'
+  | 'onSetCoverRequest'
+  | 'onGetAvatarUploadLinkRequest'
+  | 'onSetAvatarRequest'
+>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onEditGroup: (data: ApiTypes.Groups.EditGroup) => dispatch(Actions.groups.editGroupRequest(data)),
   editGroupSuccess: (value: boolean) => dispatch(Actions.groups.editGroupSuccess(value)),
   onGetMyGroupsRequest: () => dispatch(Actions.groups.getMyGroupsRequest()),
+  onGetCoverUploadLinkRequest: (data: ApiTypes.Groups.UploadLinkRequest) =>
+    dispatch(Actions.groups.getCoverUploadLinkRequest(data)),
+  onSetCoverRequest: (data: ApiTypes.Groups.Image) => dispatch(Actions.groups.setCoverRequest(data)),
+  onGetAvatarUploadLinkRequest: (data: ApiTypes.Groups.UploadLinkRequest) =>
+    dispatch(Actions.groups.getAvatarUploadLinkRequest(data)),
+  onSetAvatarRequest: (data: ApiTypes.Groups.Image) => dispatch(Actions.groups.setAvatarRequest(data)) 
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditGroupPage)

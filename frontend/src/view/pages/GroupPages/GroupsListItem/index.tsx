@@ -1,12 +1,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import AvatarIcon from '@assets/images/groups-avatar-icon.svg'
+import CameraAltIcon from '@material-ui/icons/CameraAlt'
 import { ButtonContained, ButtonOutlined } from '@view/shared/styles'
 import { ApiTypes, StoreTypes } from 'src/types'
 import { connect } from 'react-redux'
 import selectors from '@selectors/index'
 import Actions from '@store/actions'
 import JoinGroupDialog from '../GroupPage/JoinGroupDialog'
+import { getGroupAvatarUrl } from '@services/avatarUrl'
 import {
   GroupsListItemWrapper,
   ItemCover,
@@ -22,7 +23,6 @@ import {
 
 interface Props extends ApiTypes.Groups.RecievedGroup {
   userId?: string
-
   onDeleteJoinRequest: (data: ApiTypes.Groups.DeleteJoinRequest) => void
 }
 
@@ -51,8 +51,7 @@ const GroupsListItem: React.FC<Props> = React.memo((props) => {
       return <ButtonOutlined 
         className="extra-small" 
         onClick={() => onDeleteJoinRequest({
-          group_id: id,
-          inviter_id: '',
+          group_id: id
         })}>
           Remove invite
         </ButtonOutlined>
@@ -65,8 +64,8 @@ const GroupsListItem: React.FC<Props> = React.memo((props) => {
       <ItemContentWraper>
         <ItemHeader>
           <Link to={`/groups/group?id=${id}`}>
-            <AvatarStyled>
-              <img src={AvatarIcon} alt="icon" />
+            <AvatarStyled src={getGroupAvatarUrl(id)}>
+              <CameraAltIcon/>
             </AvatarStyled>
           </Link>
           {renderCurrentButton()}

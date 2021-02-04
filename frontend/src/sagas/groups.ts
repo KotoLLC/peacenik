@@ -161,3 +161,43 @@ export function* watchDeleteJoinRequest(action: { type: string, payload: ApiType
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
+
+export function* watchGetGroupCoverUploadLink(action: { type: string, payload: ApiTypes.Groups.UploadLinkRequest }) {
+  const response = yield API.groups.getUploadLink(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.groups.getCoverUploadLinkSucces(response.data))
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
+export function* watchSetGroupCover(action: { type: string, payload: ApiTypes.Profile.Avatar }) {
+  const response = yield API.groups.setGroupImage(action.payload.link, action.payload.form_data)
+
+  if (response.status === 204 || response.status === 200) {
+    yield put(Actions.groups.setCoverSuccess())
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
+export function* watchGetGroupAvatarUploadLink(action: { type: string, payload: ApiTypes.Groups.UploadLinkRequest }) {
+  const response = yield API.groups.getUploadLink(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.groups.getAvatarUploadLinkSucces(response.data))
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
+export function* watchSetGroupAvatar(action: { type: string, payload: ApiTypes.Profile.Avatar }) {
+  const response = yield API.groups.setGroupImage(action.payload.link, action.payload.form_data)
+
+  if (response.status === 204 || response.status === 200) {
+    yield put(Actions.groups.setAvatarSuccess())
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}

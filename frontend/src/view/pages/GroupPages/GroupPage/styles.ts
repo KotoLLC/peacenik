@@ -144,10 +144,6 @@ export const AvatarStyled = styled(Avatar)`
   background: #DEE5F2;
   margin: -160px auto 30px;
   border: 6px solid #FFFFFF;
-
-  img {
-    width: 50px;
-  }
 `
 
 export const GroupName = styled.h2`

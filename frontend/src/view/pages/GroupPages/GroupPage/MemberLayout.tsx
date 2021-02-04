@@ -6,8 +6,8 @@ import { PageLayout } from '@view/shared/PageLayout'
 import GroupTopBar from './GroupTopBar'
 import { Member } from './Member'
 import { Owner } from './Owner'
-import AvatarIcon from '@assets/images/groups-avatar-icon.svg'
 import { v4 as uuidv4 } from 'uuid'
+import { getGroupAvatarUrl } from '@services/avatarUrl'
 import {
   GroupCover,
   GroupContainer,
@@ -44,9 +44,7 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
       <GroupContainer>
         <GroupMainWrapper>
           <LeftSideBar>
-            <AvatarStyled>
-              <img src={AvatarIcon} alt="icon" />
-            </AvatarStyled>
+            <AvatarStyled src={getGroupAvatarUrl(group?.id)}/>
             <GroupName>{group?.name}</GroupName>
             <GroupPublicity>{group?.is_public ? 'Public' : 'Private'} group</GroupPublicity>
             <GroupDescriptopn>{group?.description}</GroupDescriptopn>

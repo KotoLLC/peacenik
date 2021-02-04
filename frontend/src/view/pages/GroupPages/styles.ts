@@ -154,3 +154,7 @@ export const EmptyGroupsIconWrapper = styled.figure`
     height: 108px;
   }
 `
+
+export const UploadInput = styled.input`
+  display: none;
+`
