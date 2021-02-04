@@ -42,9 +42,11 @@ type imageRouter struct {
 	s3Storage *common.S3Storage
 	staticFS  http.FileSystem
 
-	noAvatarOnce    sync.Once
-	noAvatarImage   []byte
-	noAvatarModTime time.Time
+	noAvatarOnce         sync.Once
+	noUserAvatarImage    []byte
+	noUserAvatarModTime  time.Time
+	noGroupAvatarImage   []byte
+	noGroupAvatarModTime time.Time
 }
 
 func (ir *imageRouter) UserAvatar(w http.ResponseWriter, r *http.Request) {
@@ -58,9 +60,9 @@ func (ir *imageRouter) UserAvatar(w http.ResponseWriter, r *http.Request) {
 	userInfo := ir.userCache.User(userID, me.ID)
 
 	if userInfo.AvatarThumbnailID == "" || (me.ID != userID && !ir.repos.Friend.AreFriends(me.ID, userID)) {
-		ir.loadNoAvatarImage()
+		ir.loadNoAvatarImages()
 		w.Header().Set("Cache-Control", "max-age=60")
-		http.ServeContent(w, r, "no-avatar.png", ir.noAvatarModTime, bytes.NewReader(ir.noAvatarImage))
+		http.ServeContent(w, r, "no-avatar.png", ir.noUserAvatarModTime, bytes.NewReader(ir.noUserAvatarImage))
 		return
 	}
 	link, err := ir.s3Storage.CreateLink(r.Context(), userInfo.AvatarThumbnailID, time.Hour*24)
@@ -110,9 +112,9 @@ func (ir *imageRouter) GroupAvatar(w http.ResponseWriter, r *http.Request) {
 
 	group := ir.repos.Group.FindGroupByID(groupID)
 	if group == nil || group.AvatarThumbnailID == "" {
-		ir.loadNoAvatarImage()
+		ir.loadNoAvatarImages()
 		w.Header().Set("Cache-Control", "max-age=60")
-		http.ServeContent(w, r, "no-avatar.png", ir.noAvatarModTime, bytes.NewReader(ir.noAvatarImage))
+		http.ServeContent(w, r, "no-group-avatar.png", ir.noGroupAvatarModTime, bytes.NewReader(ir.noGroupAvatarImage))
 		return
 	}
 	link, err := ir.s3Storage.CreateLink(r.Context(), group.AvatarThumbnailID, time.Hour*24)
@@ -151,26 +153,35 @@ func (ir *imageRouter) GroupBackground(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, link, http.StatusMovedPermanently)
 }
 
-func (ir *imageRouter) loadNoAvatarImage() {
+func (ir *imageRouter) loadNoAvatarImages() {
 	ir.noAvatarOnce.Do(func() {
-		f, err := ir.staticFS.Open("/no-avatar.png")
+		var err error
+		ir.noUserAvatarImage, ir.noUserAvatarModTime, err = ir.loadNoAvatarImage("/no-avatar.png")
 		if err != nil {
-			log.Println("can't open no-avatar.png:", err)
-			return
+			log.Println("can't load no-avatar.png:", err)
 		}
-		defer func() { _ = f.Close() }()
-		content, err := ioutil.ReadAll(f)
+		ir.noGroupAvatarImage, ir.noGroupAvatarModTime, err = ir.loadNoAvatarImage("/no-group-avatar.png")
 		if err != nil {
-			log.Println("can't read no-avatar.png:", err)
-			return
+			log.Println("can't load no-group-avatar.png:", err)
 		}
-		ir.noAvatarImage = content
-
-		stat, err := f.Stat()
-		if err != nil {
-			log.Println("can't get stat for no-avatar.png:", err)
-			return
-		}
-		ir.noAvatarModTime = stat.ModTime()
 	})
+}
+
+func (ir *imageRouter) loadNoAvatarImage(name string) ([]byte, time.Time, error) {
+	f, err := ir.staticFS.Open(name)
+	if err != nil {
+		return nil, time.Time{}, err
+	}
+	defer func() { _ = f.Close() }()
+
+	content, err := ioutil.ReadAll(f)
+	if err != nil {
+		return nil, time.Time{}, err
+	}
+
+	stat, err := f.Stat()
+	if err != nil {
+		return nil, time.Time{}, err
+	}
+	return content, stat.ModTime(), nil
 }
