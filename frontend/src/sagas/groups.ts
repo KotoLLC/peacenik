@@ -20,6 +20,9 @@ export function* watchEditGroup(action: { type: string, payload: ApiTypes.Groups
 
   if (response.status === 200) {
     yield put(Actions.groups.editGroupSuccess(true))
+    yield put(Actions.groups.getMyGroupsRequest())
+    yield put(Actions.groups.getPublicGroupsRequest())
+    yield put(Actions.common.setSuccessNotify('Saved successfully!'))
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
@@ -156,7 +159,10 @@ export function* watchDeleteJoinRequest(action: { type: string, payload: ApiType
 
     const state = yield select()
     const currentGroupId = selectors.groups.currentGroupId(state)
-    yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))
+
+    if(currentGroupId){
+      yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))  
+    }
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }

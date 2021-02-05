@@ -131,8 +131,9 @@ const EditGroupPage: React.FC<Props> = (props) => {
 
     if (isGroupEditedSuccessfully) {
       setRequested(false)
-      history.push('/groups')
       editGroupSuccess(false)
+      // setAvatarFile(null)
+      // setCoverFile(null)
     }
 
     if (errorMessage) {
@@ -259,9 +260,7 @@ const EditGroupPage: React.FC<Props> = (props) => {
   const renderAvatar = () => {
     if (avatarFile) {
       return (
-        <AvatarStyled>
-          <img src={URL.createObjectURL(avatarFile)} alt="" />
-        </AvatarStyled>
+        <AvatarStyled src={URL.createObjectURL(avatarFile)} />
       )
     }
 
