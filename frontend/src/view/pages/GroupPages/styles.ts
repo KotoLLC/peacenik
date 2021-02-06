@@ -15,7 +15,7 @@ export const GroupsContainer = styled.main`
   @media (max-width: 770px) {
     flex-wrap: wrap;
     margin-top: 50px;
-    padding: 15px;
+    padding: 10px 15px 15px;
   }
 `
 

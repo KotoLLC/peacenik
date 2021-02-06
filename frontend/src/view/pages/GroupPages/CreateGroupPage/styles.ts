@@ -9,10 +9,15 @@ export const CreateGroupContainer = styled.main`
   align-items: flex-start;
   position: relative;
   flex-wrap: wrap;
-  width: 750px;
+  width: calc(100% - 30px);
+  max-width: 750px;
   margin: 95px auto 30px;
   background: #FFFFFF;
   box-shadow: 0px 1px 3px #D4D4D4;
+
+  @media (max-width: 770px) {
+    margin: 60px auto 0px
+  }
 `
 
 export const CoverWrapper = styled.div`
@@ -27,6 +32,14 @@ export const CoverWrapper = styled.div`
   background-image:  ${props => `url(${props.resource})`};
   background-position: center;
   background-size: cover;
+
+  @media (max-width: 770px){
+    height: 100px;
+    
+    label {
+      margin-left: 30px;
+    }
+  }
 `
 
 export const CoverIconWrapper = styled.figure`
@@ -39,12 +52,26 @@ export const CoverIconWrapper = styled.figure`
   justify-content: center;
   align-items: center;
   cursor: pointer;
+
+  @media (max-width: 770px){
+    width: 36px;
+    height: 36px;
+    border: 1px solid #FFFFFF;
+
+    img {
+      width: 16px;
+    }
+  }
 `
 
 export const AddCoverButtonWrapper = styled.div`
   text-align: center;
   width: 100%;
   margin-top: 20px;
+
+  @media (max-width: 770px){
+    margin-top: 5px;
+  }
 `
 
 export const AddCoverButton = styled.span`
@@ -75,6 +102,10 @@ export const AddCoverButton = styled.span`
       opacity: 0;
     }
   }
+
+  @media (max-width: 770px){
+    font-size: 12px;
+  }
 `
 
 export const AvatarStyled = styled(Avatar)`
@@ -84,6 +115,17 @@ export const AvatarStyled = styled(Avatar)`
   height: 140px;
   cursor: pointer;
   margin-left: 23px;
+
+  @media (max-width: 770px){
+    width: 90px;
+    height: 90px;
+    border: 2px solid #FFFFFF;
+    margin-left: 15px;
+
+    .avatar-icon {
+      width: 24px;
+    }
+  }
 `
 
 export const AvatarsBlock = styled.div`
@@ -91,6 +133,10 @@ export const AvatarsBlock = styled.div`
   align-items: flex-end;
   margin-top: -72px;
   width: 100%;
+
+  @media (max-width: 770px) {
+    margin-top: -45px;
+  }
 `
 
 export const AvatarsNote = styled.div`
@@ -98,11 +144,19 @@ export const AvatarsNote = styled.div`
   font-size: 12px;
   padding-bottom: 26px;
   margin-left: 15px;
+
+  @media (max-width: 770px){
+    padding-bottom: 15px;
+  }
 `
 
 export const FormWrapper = styled.form`
   padding: 30px 97px 30px 60px;
-  width: 100%;
+  width: 100%; 
+
+  @media (max-width: 770px) {
+    padding: 15px 15px 20px;
+  }
 `
 
 export const FieldWrapper = styled.div`
@@ -113,6 +167,11 @@ export const FieldWrapper = styled.div`
   &.radios {
     align-items: flex-start;
   }
+
+  @media (max-width: 770px) {
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
 `
 
 export const FieldPlaceholder = styled.span`
@@ -122,7 +181,14 @@ export const FieldPlaceholder = styled.span`
   width: 130px;
 
   &.radios {
-    padding-top: 8px;
+    /* padding-right: 9px; */
+  }
+
+  @media (max-width: 770px) {
+    text-align: left;
+    padding-right: 0;
+    margin-bottom: 10px;
+    font-size: 14px;
   }
 `
 
@@ -140,6 +206,10 @@ export const InputField = styled.input`
 
   &:focus {
     border-color: #A1AEC8;
+  }
+
+  @media (max-width: 770px) {
+    width: 100%;
   }
 `
 
@@ -159,6 +229,10 @@ export const TextareaField = styled.textarea`
   &:focus {
     border-color: #A1AEC8;
   }
+
+  @media (max-width: 770px) {
+    width: 100%;
+  }
 `
 
 export const ButtonsWrapper = styled.div`
@@ -169,6 +243,7 @@ export const ButtonsWrapper = styled.div`
 export const RadioStyled = styled(Radio)`
   && {
     color: #599C0B;
+    padding: 0 9px 0 0;
 
     &:checked {
       color: #599C0B;     
@@ -180,6 +255,7 @@ export const FormControlLabelStyled = styled(FormControlLabel)`
   
   && {
     margin-right: 30px;
+    align-items: flex-start;
   }
 
   .title {
@@ -191,7 +267,6 @@ export const FormControlLabelStyled = styled(FormControlLabel)`
 
   .title-note {
     display: block;
-    position: absolute;
     left: 0;
     bottom: -14px;
     font-size: 10px;
@@ -203,4 +278,5 @@ export const FormControlLabelStyled = styled(FormControlLabel)`
 export const RadiosWrapper = styled.div`
   display: flex;
   margin-bottom: 2px;
+  margin-left: 9px;
 `

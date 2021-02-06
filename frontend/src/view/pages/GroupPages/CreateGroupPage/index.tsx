@@ -228,15 +228,13 @@ const CreateGroupPage: React.FC<Props> = (props) => {
   const renderAvatar = () => {
     if (avatarFile) {
       return (
-        <AvatarStyled>
-          <img src={URL.createObjectURL(avatarFile)} alt="" />
-        </AvatarStyled>
+        <AvatarStyled src={URL.createObjectURL(avatarFile)} />
       )
     }
 
     return (
       <AvatarStyled>
-        <img src={AvatarIcon} alt="" />
+        <img className='avatar-icon' src={AvatarIcon} alt="" />
       </AvatarStyled>
     )
   }
