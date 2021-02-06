@@ -8,7 +8,7 @@ export const AppBarStyled = styled(AppBar)`
   background: #fff;
   box-shadow: 0px 1px 5px #D4D4D4;
   
-  @media (max-width: 760px){
+  @media (max-width: 770px){
     display: none;
   }
 `
@@ -16,7 +16,7 @@ export const AppBarStyled = styled(AppBar)`
 export const LogoMobile = styled.img`
   display: none;
 
-  @media (max-width: 800px){
+  @media (max-width: 770px){
     position: relative;
     top: 0px;
     left: -5px;
@@ -30,7 +30,7 @@ export const Logo = styled.img`
   position: relative;
   top: 3px;
 
-  @media (max-width: 800px){
+  @media (max-width: 770px){
     display: none;
   }
 `

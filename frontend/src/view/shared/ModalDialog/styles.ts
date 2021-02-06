@@ -47,7 +47,7 @@ export const ModalTitle = styled.div`
   text-align: center;
   margin-bottom: 44px;
 
-  @media (max-width: 760px) {
+  @media (max-width: 770px) {
     font-size: 18px;
     line-height: 21px;
     margin-bottom: 36px;
@@ -57,6 +57,10 @@ export const ModalTitle = styled.div`
 export const ModalSubTitle = styled.div`
   text-align: center;
   font-size: 18px;
+
+  @media (max-width: 770px) {
+    font-size: 16px;
+  }
 `
 
 export const ModalButtonsGroup = styled.div`
@@ -72,7 +76,7 @@ export const ModalCancelButton = styled(ButtonOutlined)`
   line-height: 19px;
   font-family: 'SFUITextSemibold';
 
-  @media (max-width: 760px) {
+  @media (max-width: 770px) {
     font-size: 14px;
     line-height: 16px;
   }
@@ -85,7 +89,7 @@ export const ModalAllowButton = styled(ButtonContained)`
   line-height: 19px;
   font-family: 'SFUITextSemibold';
 
-  @media (max-width: 760px) {
+  @media (max-width: 770px) {
     font-size: 14px;
     line-height: 16px;
   }
@@ -149,7 +153,7 @@ export const DialogSubTitle = styled.div`
   line-height: 28px;
   font-family: 'SFUITextBold';
 
-  @media (max-width: 760px) {
+  @media (max-width: 770px) {
     font-size: 20px;
     line-height: 23px;
   }

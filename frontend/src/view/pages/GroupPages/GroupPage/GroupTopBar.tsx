@@ -21,6 +21,7 @@ interface Props {
   isAdminLayout: boolean
   membersCounter?: number
   invitesCounter?: number
+  className?: string
   memberStatus: ApiTypes.Groups.MemberStatus
   isGroupLeavedSuccess: boolean
   errorMessage: string
@@ -42,6 +43,7 @@ const GroupTopBar: React.FC<Props> = (props) => {
     isGroupLeavedSuccess,
     onLeaveGroupSuccess,
     onDeleteJoinRequest,
+    className,
   } = props
 
   const [isRequested, setReauested] = useState<boolean>(false)
@@ -89,7 +91,7 @@ const GroupTopBar: React.FC<Props> = (props) => {
 
   if (isAdminLayout) {
     return (
-      <GroupHeader>
+      <GroupHeader className={className}>
         <HeaderContainer>
           <CountersWrapper>
             <HeaderCounterWrapper>
@@ -109,7 +111,7 @@ const GroupTopBar: React.FC<Props> = (props) => {
     )
   } else {
     return (
-      <GroupHeader>
+      <GroupHeader className={className}>
         <HeaderContainer>
           <TopBarButtonWrapper>
             {renderCurrentButton()}

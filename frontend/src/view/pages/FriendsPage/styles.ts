@@ -127,7 +127,7 @@ export const FriendsWrapper = styled.div`
   background: #FFFFFF;
   margin: 0 auto 31px auto;
 
-  @media (max-width: 760px) {
+  @media (max-width: 770px) {
     width: calc(100% - 30px);
     padding: 15px 0 0 0;
     min-height: calc(100vh - 100px);
@@ -149,7 +149,7 @@ export const FriendsTabs = styled(Tabs)`
     background: #599C0B;
   }
 
-  @media (max-width: 760px) {
+  @media (max-width: 770px) {
     width: 100%;
   }
 `
@@ -190,7 +190,7 @@ export const FriendsTab = styled(Tab)`
 `
 
 export const SearchInputWrapper = styled.div`
-  @media (max-width: 760px) {
+  @media (max-width: 770px) {
     padding: 0 15px;
   }
 `
@@ -204,7 +204,7 @@ export const SearchInput = styled(OutlinedInput)`
     height: 40px;
     opacity: 0.4;
 
-    @media (max-width: 760px) {
+    @media (max-width: 770px) {
       margin-bottom: 10px;
     }
 
@@ -235,7 +235,7 @@ export const FriendCard = styled.div`
   padding: 20px 0;
   border-bottom: 1px solid rgba(200,207,212,0.6);
 
-  @media (max-width: 760px) {
+  @media (max-width: 770px) {
     position: relative;
     flex-wrap: wrap;
     padding: 20px 5px;
@@ -259,7 +259,7 @@ export const UserInfo = styled.div`
   display: flex;
   align-items: center;
 
-  @media (max-width: 760px) {
+  @media (max-width: 770px) {
     width: 100%;
   }
 `
@@ -284,7 +284,7 @@ export const UserInfoDisplayName = styled(Link)`
   white-space: nowrap;
 
 
-  @media (max-width: 760px) {
+  @media (max-width: 770px) {
     font-size: 16px;
     line-height: 19px;
     margin-bottom: 8px;
@@ -298,7 +298,7 @@ export const UserInfoDisplayEmail = styled.span`
   line-height: 19px;
   color: #ABB7CD;
 
-  @media (max-width: 760px) {
+  @media (max-width: 770px) {
     font-size: 14px;
     line-height: 16px;
   }
@@ -312,7 +312,7 @@ export const AvatarStyled = styled(Avatar)`
     background: #DEE5F2;
     cursor: pointer;
 
-    @media (max-width: 760px) {
+    @media (max-width: 770px) {
       width: 50px;
       height: 50px;
       margin-right: 12px;
@@ -334,7 +334,7 @@ export const ButtonGroup = styled.div`
     margin: 0;
   }
 
-  @media (max-width: 760px) {
+  @media (max-width: 770px) {
     margin-top: 15px;
   }
 `
@@ -368,7 +368,7 @@ export const FriendsEmptyWrapper = styled.div`
   flex-wrap: wrap;
   justify-content: center;
 
-  @media (max-width: 760px) {
+  @media (max-width: 770px) {
     margin: 100px auto 0 auto;
     flex-direction: column;
     align-items: center;
@@ -394,7 +394,7 @@ export const IconWrapper = styled.div`
     color: #C8CFD4;
   }
 
-  @media (max-width: 760px) {
+  @media (max-width: 770px) {
     width: 157px;
     height: 158px;
     margin-bottom: 21px;
@@ -412,7 +412,7 @@ export const Text = styled.div`
   width: 100%;
   text-align: center;
 
-  @media (max-width: 760px) {
+  @media (max-width: 770px) {
     font-size: 16px;
   }
 `
@@ -439,7 +439,7 @@ export const GetEmailText = styled.span`
   margin-bottom: 30px;
   font-family: 'SFUITextSemibold';
 
-  @media (max-width: 760px) {
+  @media (max-width: 770px) {
     font-size: 16px;
     line-height: 19px;
   }
@@ -464,7 +464,7 @@ export const DialogIconWrapper = styled.div`
     opacity: 0.4;
   }
 
-  @media (max-width: 760px) {
+  @media (max-width: 770px) {
     width: 158px;
     height: 158px;
     margin: 24px auto 30px auto;
@@ -494,7 +494,7 @@ export const InvitationsLink = styled.a`
     color: #000;
   }
 
-  @media (max-width: 760px) {
+  @media (max-width: 770px) {
     font-size: 16px;
     line-height: 19px;
   }

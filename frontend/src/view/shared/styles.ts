@@ -48,7 +48,7 @@ export const MenuButton = styled(Button)`
 export const PageWrapper = styled.main`
   padding: 0px 0px 170px;
 
-  @media (max-width: 760px) {
+  @media (max-width: 770px) {
     padding: 0px 0px 120px;
   }
 `
@@ -243,7 +243,7 @@ export const MentionLink = styled(Link)`
 export const ConnectionErrorWrapper = styled.div`
   width: 80%;
   height: calc(80vh - 56px);
-  max-width: 800px;
+  max-width: 770px;
   background: #fff;
   position: fixed;
   padding: 15px;
@@ -348,7 +348,7 @@ export const ButtonContained = styled(Button)`
   }
 
   &.desktop-only {
-    @media (max-width: 760px){
+    @media (max-width: 770px){
       display: none;
     }
   }
@@ -356,7 +356,7 @@ export const ButtonContained = styled(Button)`
   &.mobile-only {
     display: none;
 
-    @media (max-width: 760px) {
+    @media (max-width: 770px) {
       display: flex;
       margin-left: 15px;
       margin-right: 15px;

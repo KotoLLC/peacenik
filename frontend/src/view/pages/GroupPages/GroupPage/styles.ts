@@ -3,7 +3,6 @@ import Avatar from '@material-ui/core/Avatar'
 import { Link } from 'react-router-dom'
 import { ButtonOutlined } from '@view/shared/styles'
 import DialogContent from '@material-ui/core/DialogContent'
-import Dialog from '@material-ui/core/Dialog'
 
 export const GroupCover = styled.div`
   width: 100%;
@@ -13,32 +12,71 @@ export const GroupCover = styled.div`
   background-size: cover;
   background-color: #A1AEC8;
   background-image:  ${props => `url(${props.resource})`};
+
+  @media (max-width: 1025px){
+    height: 250px;
+  }
+
+  @media (max-width: 770px){
+    margin-top: 45px;
+    height: 108px;
+  }
 ` 
 
 export const GroupHeader = styled.header`
   width: 100%;
   background: #FFFFFF;
   box-shadow: 0px 1px 3px #D4D4D4;
-`
 
-export const GroupContainer = styled.div`
-  width: 1140px;
-  margin: 0 auto;
+  &.mobile-only{
+    display: none;
+  }
+
+  @media (max-width: 1025px){
+    &.desktop-only {
+      display: none;
+    }  
+
+    &.mobile-only{
+      display: block;
+      box-shadow: none;
+    }
+  }
+
+  @media (max-width: 770px){
+    padding-bottom: 15px;
+  }
 `
 
 export const HeaderContainer = styled.div`
-  width: 1140px;
+  max-width: 1140px;
+  width: 100%;
   margin: 0 auto;
   min-height: 66px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  @media (max-width: 770px) {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 `
 
 export const CountersWrapper = styled.div`
   margin-left: 290px;
   display: flex;
   align-items: center;
+
+  @media (max-width: 1025px) {
+    margin-left: 176px;
+  }  
+  
+  @media (max-width: 770px) {
+    width: 100%;
+    margin: 0 0 15px;
+    justify-content: center;
+  }  
 `
 
 export const HeaderCounterWrapper = styled.div`
@@ -72,6 +110,10 @@ export const HeaderCounter = styled.span`
   color: #A1AEC8;
   font-size: 20px;
   font-family: 'SFUITextBold';
+
+  @media (max-width: 770px){
+    font-size: 16px;
+  }
 `
 
 export const HeaderCounterName = styled.span`
@@ -86,6 +128,32 @@ export const LeftSideBar = styled.aside`
   width: 260px;
   margin-right: 30px;
   text-align: center;
+
+  @media (max-width: 1025px){
+    width: calc(100vw + 30px);
+    margin: 0 0 20px;
+    background: #fff;
+    position: relative;
+
+    &:before,
+    &:after {
+      content: '';
+      width: 15px;
+      height: 100%;
+      background: #fff;
+      display: block;
+      position: absolute;
+      top: 0;
+    }
+
+    &:before {
+      left: -15px;
+    }
+    
+    &:after {
+      right: -15px;
+    }
+  }
 `
 
 export const RightSideBar = styled.aside`
@@ -95,6 +163,16 @@ export const RightSideBar = styled.aside`
   margin-left: 30px;
   background: #fff;
   border-radius: 0 0 4px 4px;
+
+  @media (max-width: 960px){
+    margin-left: 15px;
+  }
+
+  @media (max-width: 770px){
+    width: 100%;
+    margin: 0;
+    padding: 15px 0;
+  }
 `
 
 export const CentralBar = styled.section`
@@ -103,6 +181,12 @@ export const CentralBar = styled.section`
   padding: 20px 0 20px;
   position: relative;
   border-radius: 0 0 4px 4px;
+
+  @media (max-width: 770px){
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 15px 0;
+  }
 `
 
 export const ViewMoreButton = styled.div`
@@ -129,6 +213,10 @@ export const ViewMoreButton = styled.div`
 export const BarTitle = styled.div`
   padding: 0 20px 5px;
   color: #000;
+
+  @media (max-width: 770px){
+    padding: 0 15px;
+  }
 `
 
 export const GroupMainWrapper = styled.div`
@@ -136,7 +224,12 @@ export const GroupMainWrapper = styled.div`
   align-items: flex-start;
   align-content: flex-start;
   justify-content: space-between;
+  flex-wrap: wrap;
   padding-top: 30px;
+
+  @media (max-width: 1025px){
+    padding-top: 0px;
+  }
 `
 
 export const AvatarStyled = styled(Avatar)`
@@ -145,18 +238,57 @@ export const AvatarStyled = styled(Avatar)`
   background: #DEE5F2;
   margin: -160px auto 30px;
   border: 6px solid #FFFFFF;
+
+  @media (max-width: 1025px){
+    width: 160px;
+    height: 160px;
+    margin: -80px 0 0;
+  }
+  
+  @media (max-width: 770px){
+    width: 120px;
+    height: 120px;
+    margin: -60px 0 0;
+    border: 3px solid #FFFFFF;
+  }
 `
 
 export const GroupName = styled.h2`
   font-size: 24px;
   margin-bottom: 16px;
   font-family: 'SFUITextMedium';
+
+  @media (max-width: 1025px){
+    margin-top: -60px;
+    padding-left: 180px;
+    font-size: 20px;
+    text-align: left;
+  }
+  
+  @media (max-width: 770px){
+    margin-top: -50px;
+    padding-left: 135px;
+    font-size: 18px;
+  }
 `
 
 export const GroupPublicity = styled.p`
   font-size: 18px;
   margin-bottom: 30px;
   color:  #788692;
+
+  @media (max-width: 1025px){
+    padding-left: 180px;
+    font-size: 16px;
+    text-align: left;
+  }
+
+  @media (max-width: 770px){
+    font-size: 14px;
+    padding-left: 135px;
+    margin-top: -10px;
+    margin-bottom: 20px;
+  }
 `
 
 export const GroupDescriptopn = styled.div`
@@ -185,6 +317,18 @@ export const GroupDescriptopn = styled.div`
     background: linear-gradient(90deg, rgba(247, 248, 249, 0.0001) 0%, #BEC4CC 59.24%);
     transform: matrix(1, 0, 0, -1, 0, 0);
   }
+
+  @media (max-width: 1025px){
+    padding-top: 15px;
+    padding-bottom: 25px;
+    text-align: left;
+    padding-left: 180px;
+  }
+
+  @media (max-width: 770px){
+    text-align: center;
+    padding: 15px 0 25px;
+  }
 `
 
 export const DangerZoneWrapper = styled.div`
@@ -192,12 +336,36 @@ export const DangerZoneWrapper = styled.div`
   padding: 20px 16px;
   background: #fff;
   text-align: left;
+
+  &.mobile-only{
+    display: none;
+   }
+  
+  @media (max-width: 1025px){
+    &.desktop-only {
+      display: none;
+    }  
+
+    &.mobile-only{
+      display: block;
+      width: 100%;
+      margin: 15px 0 30px;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
 `
 
 export const DangerZoneTitle = styled.h3`
   font-size: 16px;
   font-weight: normal;
   margin-bottom: 20px;
+
+  @media (max-width: 1025px){
+    margin: 0;
+  }
 `
 
 export const MemberHeaderSidebar = styled.div`
@@ -222,6 +390,15 @@ export const MemberWrapper = styled.li`
     display: block;
     padding: 15px;
   }
+
+  @media (max-width: 770px){
+    padding: 15px 15px 20px;
+    flex-wrap: wrap;
+
+    &.sidebar {
+      padding: 15px 15px 20px;
+    }
+  }
 `
 
 export const MemberAvatar = styled(Avatar)`
@@ -233,6 +410,18 @@ export const MemberAvatar = styled(Avatar)`
   &.sidebar {
     height: 40px;
     width: 40px;
+  }
+
+  @media (max-width: 770px){
+    width: 50px;
+    height: 50px;
+    margin-right: 12px;
+
+    &.sidebar {
+      width: 50px;
+      height: 50px;
+      margin-right: 12px;
+    }
   }
 `
 
@@ -247,6 +436,10 @@ export const MemberName = styled(Link)`
     width: 100%;
     margin-bottom: 5px;
     display: block;
+  }
+
+  @media (max-width: 770px){
+    width: calc(100% - 65px);
   }
 `
 
@@ -267,15 +460,36 @@ export const MemberButtonsWrapperSidebar = styled.div`
   margin-top: 12px;
   display: flex;
   justify-content: space-between;
+
+  @media (max-width: 770px){
+    justify-content: start;
+  }
 `
 
 export const MemberButtonOutlined = styled(ButtonOutlined)`
   margin-left: auto;
   margin-right: 0;
+
+  @media (max-width: 770px){
+    margin-left: 0;
+    margin-top: 15px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 12px;
+    min-width: 110px;
+  }
 `
 
 export const TopBarButtonWrapper = styled.div`
   margin-left: 290px;
+
+  @media (max-width: 1025px){
+    margin-left: 180px;
+  }
+  
+  @media (max-width: 770px){
+    margin-left: 0px;
+  }
 `
 
 export const DialogContentStyled = styled(DialogContent)`

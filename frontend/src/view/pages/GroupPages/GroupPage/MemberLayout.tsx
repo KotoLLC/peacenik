@@ -8,9 +8,9 @@ import { Member } from './Member'
 import { Owner } from './Owner'
 import { v4 as uuidv4 } from 'uuid'
 import { getGroupAvatarUrl, getGroupCoverUrl } from '@services/avatarUrl'
+import { Container } from '@view/shared/styles'
 import {
   GroupCover,
-  GroupContainer,
   GroupMainWrapper,
   LeftSideBar,
   RightSideBar,
@@ -35,19 +35,27 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
 
   return (
     <PageLayout>
-      <GroupCover resource={getGroupCoverUrl(group?.id)}/>
-      <GroupTopBar 
-        groupId={group?.id} 
-        isAdminLayout={false} 
+      <GroupCover resource={getGroupCoverUrl(group?.id)} />
+      <GroupTopBar
+        className="desktop-only"
+        groupId={group?.id}
+        isAdminLayout={false}
         memberStatus={status}
       />
-      <GroupContainer>
+      <Container>
         <GroupMainWrapper>
           <LeftSideBar>
-            <AvatarStyled src={getGroupAvatarUrl(group?.id)}/>
+            <AvatarStyled src={getGroupAvatarUrl(group?.id)} />
             <GroupName>{group?.name}</GroupName>
             <GroupPublicity>{group?.is_public ? 'Public' : 'Private'} group</GroupPublicity>
             <GroupDescriptopn>{group?.description}</GroupDescriptopn>
+
+            <GroupTopBar
+              className="mobile-only"
+              groupId={group?.id}
+              isAdminLayout={false}
+              memberStatus={status}
+            />
           </LeftSideBar>
           <CentralBar>
             <BarTitle>Members ({members?.length})</BarTitle>
@@ -63,15 +71,15 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
           </CentralBar>
           <RightSideBar>
             <BarTitle>Owner</BarTitle>
-            <Owner {...group.admin}/>
+            <Owner {...group.admin} />
           </RightSideBar>
         </GroupMainWrapper>
-      </GroupContainer>
+      </Container>
     </PageLayout>
   )
 })
 
-type StateProps = Pick<Props, 'groupDetails' >
+type StateProps = Pick<Props, 'groupDetails'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   groupDetails: selectors.groups.groupDetails(state),
 })

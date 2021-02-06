@@ -12,7 +12,7 @@ export const NavigationWrapper = styled.nav`
   display: flex;
   align-items: center;
 
-  @media (max-width: 760px) {
+  @media (max-width: 770px) {
     width: 300px;
     height: 44px;
     margin: 65px auto 20px;
@@ -49,7 +49,7 @@ export const NavigationItem = styled(NavLink)`
     height: 4px;
   }
 
-  @media (max-width: 760px) {
+  @media (max-width: 770px) {
     &.active::before {
       height: 2px;
     }

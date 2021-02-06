@@ -19,6 +19,7 @@ interface Props extends RouteComponentProps {
   groupId: string
   errorMessage: string
   isGroupDeletedSuccessfully: boolean
+  className?: string
 
   onDeleteGroup: (value: string) => void
   onDeleteGroupSuccess: (value: boolean) => void
@@ -32,6 +33,7 @@ const DeleteGroupDialog: React.FC<Props> = (props) => {
     onDeleteGroupSuccess,
     onDeleteGroup,
     history,
+    className,
   } = props
   const [isReqeted, setRequested] = useState(false)
   const [isOpen, setOpen] = useState(false)
@@ -55,7 +57,7 @@ const DeleteGroupDialog: React.FC<Props> = (props) => {
   }, [isGroupDeletedSuccessfully])
 
   return (
-    <DangerZoneWrapper>
+    <DangerZoneWrapper className={className}>
       <DangerZoneTitle>Danger Zone</DangerZoneTitle>
       <ButtonContained onClick={() => setOpen(true)} className="grey small">Destroy</ButtonContained>
       <ModalDialog
@@ -64,12 +66,10 @@ const DeleteGroupDialog: React.FC<Props> = (props) => {
         setOpenModal={() => setOpen(!isOpen)}
       >
         <ModalSubTitle>Are you sure? <br />This action can`t be undone.</ModalSubTitle>
-        <DialogActions>
-          <ModalButtonsGroup>
-            <ModalCancelButton className="grey" onClick={() => setOpen(false)}>Cancel</ModalCancelButton>
-            <ModalAllowButton disabled={isReqeted} onClick={onDestroy}>Yes</ModalAllowButton>
-          </ModalButtonsGroup>
-        </DialogActions>
+        <ModalButtonsGroup>
+          <ModalCancelButton className="grey" onClick={() => setOpen(false)}>Cancel</ModalCancelButton>
+          <ModalAllowButton disabled={isReqeted} onClick={onDestroy}>Yes</ModalAllowButton>
+        </ModalButtonsGroup>
       </ModalDialog>
     </DangerZoneWrapper>
   )

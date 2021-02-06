@@ -10,9 +10,9 @@ import selectors from '@selectors/index'
 import { ApiTypes, StoreTypes } from 'src/types'
 import { v4 as uuidv4 } from 'uuid'
 import { getGroupAvatarUrl, getGroupCoverUrl } from '@services/avatarUrl'
+import { Container } from '@view/shared/styles'
 import {
   GroupCover,
-  GroupContainer,
   GroupMainWrapper,
   LeftSideBar,
   RightSideBar,
@@ -83,7 +83,7 @@ const AdminLayoutPrivate: React.FC<Props> = React.memo((props) => {
         groupId={group?.id} 
         isAdminLayout={true}
       />
-      <GroupContainer>
+      <Container>
         <GroupMainWrapper>
           <LeftSideBar>
             <AvatarStyled src={getGroupAvatarUrl(group?.id)}/>
@@ -113,7 +113,7 @@ const AdminLayoutPrivate: React.FC<Props> = React.memo((props) => {
             {/* <ViewMoreButton>View more</ViewMoreButton> */}
           </RightSideBar>
         </GroupMainWrapper>
-      </GroupContainer>
+      </Container>
     </PageLayout>
   )
 })

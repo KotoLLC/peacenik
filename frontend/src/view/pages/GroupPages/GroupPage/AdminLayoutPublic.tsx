@@ -10,9 +10,9 @@ import selectors from '@selectors/index'
 import { ApiTypes, StoreTypes } from 'src/types'
 import { v4 as uuidv4 } from 'uuid'
 import { getGroupAvatarUrl, getGroupCoverUrl } from '@services/avatarUrl'
+import { Container } from '@view/shared/styles'
 import {
   GroupCover,
-  GroupContainer,
   GroupMainWrapper,
   LeftSideBar,
   RightSideBar,
@@ -51,7 +51,7 @@ const AdminLayoutPublic: React.FC<Props> = React.memo((props) => {
 
   const fixInvitesGroupId = () => {
     if (!groupDetails?.invites?.length) return []
-    
+
     return groupDetails?.invites?.map(item => {
       item.group_id = groupDetails?.group?.id
       return item
@@ -64,22 +64,34 @@ const AdminLayoutPublic: React.FC<Props> = React.memo((props) => {
 
   return (
     <PageLayout>
-      <GroupCover resource={getGroupCoverUrl(group?.id)}/>
-      <GroupTopBar 
+      <GroupCover resource={getGroupCoverUrl(group?.id)} />
+      <GroupTopBar
+        className="desktop-only"
         memberStatus={status}
-        membersCounter={members?.length} 
-        invitesCounter={invites?.length || 0} 
-        groupId={group?.id} 
+        membersCounter={members?.length}
+        invitesCounter={invites?.length || 0}
+        groupId={group?.id}
         isAdminLayout={true}
       />
-      <GroupContainer>
+      <Container>
         <GroupMainWrapper>
           <LeftSideBar>
-            <AvatarStyled src={getGroupAvatarUrl(group?.id)}/>
+            <AvatarStyled src={getGroupAvatarUrl(group?.id)} />
             <GroupName>{group?.name}</GroupName>
             <GroupPublicity>{group?.is_public ? 'Public' : 'Private'} group</GroupPublicity>
             <GroupDescriptopn>{group?.description}</GroupDescriptopn>
-            <DeleteGroupDialog groupId={group?.id} />
+            <DeleteGroupDialog
+              className="desktop-only"
+              groupId={group?.id}
+            />
+            <GroupTopBar
+              className="mobile-only"
+              memberStatus={status}
+              membersCounter={members?.length}
+              invitesCounter={invites?.length || 0}
+              groupId={group?.id}
+              isAdminLayout={true}
+            />
           </LeftSideBar>
           <CentralBar>
             <BarTitle>Members ({members?.length})</BarTitle>
@@ -99,10 +111,13 @@ const AdminLayoutPublic: React.FC<Props> = React.memo((props) => {
               key={uuidv4()}
               {...item}
             />)}
-            {/* <ViewMoreButton>View more</ViewMoreButton> */}
           </RightSideBar>
+          <DeleteGroupDialog
+            className="mobile-only"
+            groupId={group?.id}
+          />
         </GroupMainWrapper>
-      </GroupContainer>
+      </Container>
     </PageLayout>
   )
 })
