@@ -10,10 +10,10 @@ export const BottomBarWrapper = styled.footer`
   bottom: 0;
   left: 0;
   width: 100%;
-  padding: 20px 30px;
+  padding: 20px 0px;
 
   @media (max-width: 600px){
-    padding: 15px;
+    padding: 15px 0;
   }
 `
 

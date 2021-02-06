@@ -7,16 +7,21 @@ export const GroupsContainer = styled.main`
   justify-content: space-between;
   align-items: flex-start;
   position: relative;
-  width: 1140px;
+  max-width: 1170px;
+  width: 100%;
   margin: 65px auto 0;
-  padding-top: 30px;
+  padding: 30px 15px 30px;
+
+  @media (max-width: 770px) {
+    flex-wrap: wrap;
+    margin-top: 50px;
+    padding: 15px;
+  }
 `
 
 export const PaperStyled = styled(Paper)`
   padding: 15px;
   position: relative;
-  
-  @media (max-width: 600px) {}
 `
 
 export const PageTitle = styled.h3`
@@ -33,6 +38,12 @@ export const SidebarWrapper = styled.ul`
   left: 0;
   top: 94px;
   box-shadow: 0px 1px 3px #D4D4D4;
+
+  @media (max-width: 770px) {
+    width: 100%;
+    position: static;
+    margin-bottom: 15px;
+  }
 `
 
 export const SidebarItem = styled(NavLink)`
@@ -101,9 +112,13 @@ export const SidebarButton = styled(Link)`
 `
 
 export const GroupsListWrapper = styled.div`
-  width: 880px;
+  width: calc(100% - 262px);
   display: flex;
   flex-wrap: wrap;
+
+  @media (max-width: 770px) {
+    width: 100%;
+  }
 `
 
 export const EmptyGroups = styled.div`
@@ -113,15 +128,32 @@ export const EmptyGroups = styled.div`
   align-items: center;
   align-content: center;
   width: calc(100% - 30px);
-  height: calc(100vh - 270px);
+  height: calc(100vh - 200px);
   margin-left: 30px;
   background: #E8EDF3;
+  padding: 30px;
+
+  @media (max-width: 960px){
+    width: calc(100% - 15px);
+    margin-left: 15px;
+  }
+
+  @media (max-width: 770px) {
+    height: 450px;
+    width: 100%;
+    margin-left: 0px;
+    margin-bottom: 10px;
+  }
 `
 
 export const EmptyGroupsText = styled.p`
   display: inline-block;
   font-size: 18px;
   max-width: 415px;
+
+  @media (max-width: 960px){
+    font-size: 16px;
+  }
 `
 
 export const EmptyGroupsTextWrapper = styled.div`
@@ -152,6 +184,17 @@ export const EmptyGroupsIconWrapper = styled.figure`
   .icon {
     width: 108px;
     height: 108px;
+  }
+
+  @media (max-width: 960px){
+   width: 157px;
+   height: 157px;
+   border-radius: 26px; 
+
+   .icon {
+      width: 87px;
+      height: 87px;
+    }
   }
 `
 

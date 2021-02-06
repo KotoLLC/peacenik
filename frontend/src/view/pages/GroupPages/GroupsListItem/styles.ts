@@ -7,6 +7,21 @@ export const GroupsListItemWrapper = styled.div`
   background: #fff;
   position: relative;
   margin: 0 0 30px 30px;
+
+  @media (max-width: 1180px){
+    width: calc(50% - 30px);
+    margin: 0 0 30px 30px;
+  }
+
+  @media (max-width: 960px){
+    width: calc(100% - 15px);
+    margin: 0 0 15px 15px;
+  }
+
+  @media (max-width: 770px) {
+    width: 100%;
+    margin: 0 0 10px;
+  }
 `
 
 export const ItemCover = styled.div`

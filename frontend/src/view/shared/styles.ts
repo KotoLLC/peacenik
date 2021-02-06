@@ -12,6 +12,13 @@ import MenuItem from '@material-ui/core/MenuItem'
 import Menu from '@material-ui/core/Menu'
 import CircularProgress from '@material-ui/core/CircularProgress'
 
+export const Container = styled.main`
+  width: 100%;
+  max-width: 1170px;
+  padding: 0 15px;
+  margin: 0 auto;
+`
+
 export const TooltipStyle = styled(Tooltip)`
   && {
     margin-left: 0px;
@@ -147,7 +154,7 @@ export const AvatarWrapper = styled.div`
   background: #bdbdbd;
   width: 40px;
   height: 40px;
-  margin: 0 10px;
+  margin-left: 10px;
   cursor: pointer;
 
   @media (max-width: 700px){

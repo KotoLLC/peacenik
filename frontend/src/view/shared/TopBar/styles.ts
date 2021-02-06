@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import { NavLink } from 'react-router-dom'
 import AppBar from '@material-ui/core/AppBar'
 import Badge from '@material-ui/core/Badge'
+import Toolbar from '@material-ui/core/Toolbar'
 
 export const AppBarStyled = styled(AppBar)`
   background: #fff;
@@ -126,5 +127,11 @@ export const BadgeStyled = styled(Badge)`
   .MuiBadge-badge {
     background-color: #F22229;
     border: 1px solid #fff;
+  }
+`
+
+export const ToolbarStyled = styled(Toolbar)`
+  && {
+    padding: 0;
   }
 `
