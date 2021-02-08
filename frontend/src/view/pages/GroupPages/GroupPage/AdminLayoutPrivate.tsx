@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { PageLayout } from '@view/shared/PageLayout'
 import GroupTopBar from './GroupTopBar'
 import { Member } from './Member'
-import MemberInvited from './MemberInvited'
 import DeleteGroupDialog from './DeleteGroupDialog'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
@@ -11,6 +10,7 @@ import { ApiTypes, StoreTypes } from 'src/types'
 import { v4 as uuidv4 } from 'uuid'
 import { getGroupAvatarUrl, getGroupCoverUrl } from '@services/avatarUrl'
 import { Container } from '@view/shared/styles'
+import UserForInvite from './UserForInvite'
 import {
   GroupCover,
   GroupMainWrapper,
@@ -22,7 +22,6 @@ import {
   GroupPublicity,
   GroupDescriptopn,
   BarTitle,
-  // ViewMoreButton,
 } from './styles'
 
 interface Props {
@@ -69,6 +68,16 @@ const AdminLayoutPrivate: React.FC<Props> = React.memo((props) => {
     })
   }
 
+  const filterFriendsForInvite = () => {
+    return friends?.filter((item) =>
+      !Boolean(
+        groupDetails?.members?.some(
+          member => member.id === item.user.id
+        )
+      )
+    )
+  }
+
   if (!groupDetails) return null
 
   const { group, members, status, invites } = groupDetails
@@ -77,11 +86,13 @@ const AdminLayoutPrivate: React.FC<Props> = React.memo((props) => {
     <PageLayout>
       <GroupCover resource={getGroupCoverUrl(group?.id)}/>
       <GroupTopBar 
+        className="desktop-only"
         memberStatus={status}
         membersCounter={members?.length} 
         invitesCounter={invites?.length || 0} 
         groupId={group?.id} 
         isAdminLayout={true}
+        isPublic={group?.is_public}
       />
       <Container>
         <GroupMainWrapper>
@@ -90,7 +101,19 @@ const AdminLayoutPrivate: React.FC<Props> = React.memo((props) => {
             <GroupName>{group?.name}</GroupName>
             <GroupPublicity>{group?.is_public ? 'Public' : 'Private'} group</GroupPublicity>
             <GroupDescriptopn>{group?.description}</GroupDescriptopn>
-            <DeleteGroupDialog groupId={group?.id} />
+            <DeleteGroupDialog 
+              className="desktop-only"
+              groupId={group?.id} 
+            />
+            <GroupTopBar
+              className="mobile-only"
+              memberStatus={status}
+              membersCounter={members?.length}
+              invitesCounter={invites?.length || 0}
+              groupId={group?.id}
+              isAdminLayout={true}
+              isPublic={group?.is_public}
+            />
           </LeftSideBar>
           <CentralBar>
             <BarTitle>Members ({members?.length})</BarTitle>
@@ -106,12 +129,17 @@ const AdminLayoutPrivate: React.FC<Props> = React.memo((props) => {
           </CentralBar>
           <RightSideBar>
             <BarTitle>Invite friends</BarTitle>
-            {Boolean(invites?.length) && invites?.map(item => <MemberInvited
-              key={uuidv4()}
+            {filterFriendsForInvite()?.map(item => <UserForInvite 
+              groupId={group?.id}
+              key={uuidv4()} 
               {...item}
-            />)}
+              />)}
             {/* <ViewMoreButton>View more</ViewMoreButton> */}
           </RightSideBar>
+          <DeleteGroupDialog
+            className="mobile-only"
+            groupId={group?.id}
+          />
         </GroupMainWrapper>
       </Container>
     </PageLayout>

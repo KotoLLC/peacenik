@@ -41,6 +41,7 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
         groupId={group?.id}
         isAdminLayout={false}
         memberStatus={status}
+        isPublic={group?.is_public}
       />
       <Container>
         <GroupMainWrapper>
@@ -49,10 +50,10 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
             <GroupName>{group?.name}</GroupName>
             <GroupPublicity>{group?.is_public ? 'Public' : 'Private'} group</GroupPublicity>
             <GroupDescriptopn>{group?.description}</GroupDescriptopn>
-
             <GroupTopBar
               className="mobile-only"
               groupId={group?.id}
+              isPublic={group?.is_public}
               isAdminLayout={false}
               memberStatus={status}
             />

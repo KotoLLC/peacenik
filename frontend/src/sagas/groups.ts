@@ -4,6 +4,7 @@ import { API } from '@services/api'
 import { ApiTypes } from 'src/types'
 import { myGroupsFromBackToFront } from '@services/dataTransforms/myGroupsFromBackToFront'
 import selectors from '@selectors/index'
+import { history } from '@view/routes'
 
 export function* watchAddGroup(action: { type: string, payload: ApiTypes.Groups.AddGroup }) {
   const response = yield API.groups.addGroup(action.payload)
@@ -74,6 +75,9 @@ export function* watchRequestJoinGroup(action: { type: string, payload: ApiTypes
   if (response.status === 200) {
     yield put(Actions.groups.joinToGroupSuccess(true))
     yield put(Actions.groups.getPublicGroupsRequest())
+    const state = yield select()
+    const currentGroupId = selectors.groups.currentGroupId(state)
+    yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
@@ -139,11 +143,7 @@ export function* watchLeaveGroupRequest(action: { type: string, payload: string 
 
   if (response.status === 200) {
     yield put(Actions.groups.leaveGroupSuccess(true))
-    
-    const state = yield select()
-    const currentGroupId = selectors.groups.currentGroupId(state)
-    yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))
-
+    history.push('/groups')
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
@@ -160,7 +160,7 @@ export function* watchDeleteJoinRequest(action: { type: string, payload: ApiType
     const state = yield select()
     const currentGroupId = selectors.groups.currentGroupId(state)
 
-    if(currentGroupId){
+    if (currentGroupId) {
       yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))  
     }
   } else {
@@ -203,6 +203,21 @@ export function* watchSetGroupAvatar(action: { type: string, payload: ApiTypes.P
 
   if (response.status === 204 || response.status === 200) {
     yield put(Actions.groups.setAvatarSuccess())
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
+export function* watchAddUserToGroup(action: { type: string, payload: ApiTypes.Groups.AddUserToGroup }) {
+  const response = yield API.groups.addUserToGroup(action.payload)
+
+  if (response.status === 204 || response.status === 200) {
+    const state = yield select()
+    const currentGroupId = selectors.groups.currentGroupId(state)
+
+    if (currentGroupId) {
+      yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))  
+    }
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }

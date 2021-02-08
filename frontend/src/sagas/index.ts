@@ -103,6 +103,7 @@ import {
     watchSetGroupCover,
     watchGetGroupAvatarUploadLink,
     watchSetGroupAvatar,
+    watchAddUserToGroup,
 } from './groups'
 
 export function* rootSaga() {
@@ -192,5 +193,6 @@ export function* rootSaga() {
         takeEvery(GroupsTypes.SET_COVER_REQUEST, watchSetGroupCover),
         takeEvery(GroupsTypes.GET_AVATAR_UPLOAD_LINK_REQUEST, watchGetGroupAvatarUploadLink),
         takeEvery(GroupsTypes.SET_AVATAR_REQUEST, watchSetGroupAvatar),
+        takeEvery(GroupsTypes.ADD_USER_TO_GROUP_REQUEST, watchAddUserToGroup),
     ])
 }

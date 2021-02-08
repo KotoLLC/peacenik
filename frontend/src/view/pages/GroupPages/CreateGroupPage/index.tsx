@@ -234,7 +234,7 @@ const CreateGroupPage: React.FC<Props> = (props) => {
 
     return (
       <AvatarStyled>
-        <img className='avatar-icon' src={AvatarIcon} alt="" />
+        <img className="avatar-icon" src={AvatarIcon} alt="" />
       </AvatarStyled>
     )
   }

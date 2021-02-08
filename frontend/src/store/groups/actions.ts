@@ -54,6 +54,8 @@ export enum Types {
 
   SET_AVATAR_REQUEST = 'SET_AVATAR_REQUEST',  
   SET_AVATAR_SUCCESS = 'SET_AVATAR_SUCCESS',  
+
+  ADD_USER_TO_GROUP_REQUEST = 'ADD_USER_TO_GROUP_REQUEST',
 }
 
 const addGroupRequest = (payload: ApiTypes.Groups.AddGroup) => ({
@@ -226,6 +228,11 @@ const setAvatarSuccess = () => ({
   type: Types.SET_AVATAR_SUCCESS,
 })
 
+const addUserToGroupRequest = (payload: ApiTypes.Groups.AddUserToGroup) => ({
+  type: Types.ADD_USER_TO_GROUP_REQUEST,
+  payload,
+})
+
 export default {
   addGroupRequest,
   addGroupSucces,
@@ -262,4 +269,5 @@ export default {
   getAvatarUploadLinkSucces,
   setAvatarRequest,
   setAvatarSuccess,
+  addUserToGroupRequest,
 }

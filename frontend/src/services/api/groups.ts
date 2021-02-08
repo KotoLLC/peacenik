@@ -79,6 +79,12 @@ export default {
       return response
     }).catch(error => ({ error }))
   }, 
+ 
+  addUserToGroup: async (data: ApiTypes.Groups.AddUserToGroup) => {
+    return await axiosInstance.post('/rpc.GroupService/AddUser', data).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  }, 
 
   setGroupImage: async (host: string, data: FormData) => {
     const config = {

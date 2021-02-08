@@ -14,6 +14,7 @@ import {
   HeaderCounterName,
   CountersWrapper,
   TopBarButtonWrapper,
+  WarningText,
 } from './styles'
 
 interface Props {
@@ -25,6 +26,7 @@ interface Props {
   memberStatus: ApiTypes.Groups.MemberStatus
   isGroupLeavedSuccess: boolean
   errorMessage: string
+  isPublic: boolean
 
   onLeaveGroupSuccess: (value: boolean) => void
   onLeaveGroupRequest: (value: string) => void
@@ -44,9 +46,11 @@ const GroupTopBar: React.FC<Props> = (props) => {
     onLeaveGroupSuccess,
     onDeleteJoinRequest,
     className,
+    isPublic,
   } = props
 
   const [isRequested, setReauested] = useState<boolean>(false)
+  const [isButtonHover, setButtonHover] = useState<boolean>(false)
 
   const onLeaveGroup = () => {
     setReauested(true)
@@ -57,6 +61,8 @@ const GroupTopBar: React.FC<Props> = (props) => {
     if (memberStatus === 'member') {
       return (
         <ButtonOutlined
+          onMouseOver={() => setButtonHover(true)}
+          onMouseOut={() => setButtonHover(false)}
           onClick={onLeaveGroup}
           disabled={isRequested}
           className="large grey">
@@ -87,7 +93,7 @@ const GroupTopBar: React.FC<Props> = (props) => {
       setReauested(false)
       onLeaveGroupSuccess(false)
     }
-  }, [isGroupLeavedSuccess, errorMessage])
+  }, [isGroupLeavedSuccess, errorMessage, isButtonHover])
 
   if (isAdminLayout) {
     return (
@@ -116,6 +122,9 @@ const GroupTopBar: React.FC<Props> = (props) => {
           <TopBarButtonWrapper>
             {renderCurrentButton()}
           </TopBarButtonWrapper>
+          {!isPublic && <WarningText>
+            {isButtonHover && 'If you leave the group, you will not be able to return without the invitation from owner'}
+          </WarningText>}
         </HeaderContainer>
       </GroupHeader>
     )

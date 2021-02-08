@@ -170,7 +170,7 @@ export const RightSideBar = styled.aside`
 
   @media (max-width: 770px){
     width: 100%;
-    margin: 0;
+    margin-left: 0;
     padding: 15px 0;
   }
 `
@@ -229,6 +229,10 @@ export const GroupMainWrapper = styled.div`
 
   @media (max-width: 1025px){
     padding-top: 0px;
+  }
+  
+  @media (max-width: 960px){
+    padding-bottom: 30px;
   }
 `
 
@@ -349,7 +353,7 @@ export const DangerZoneWrapper = styled.div`
     &.mobile-only{
       display: block;
       width: 100%;
-      margin: 15px 0 30px;
+      margin: 15px 0 0;
       padding: 15px;
       display: flex;
       justify-content: space-between;
@@ -501,5 +505,14 @@ export const DialogContentStyled = styled(DialogContent)`
     @media (max-width: 600px) {
       width: 90%;
     }    
+  }
+`
+
+export const WarningText = styled.p`
+  min-height: 20px;
+
+  @media (max-width: 770px) {
+    width: 100%;
+    margin-top: 10px;
   }
 `

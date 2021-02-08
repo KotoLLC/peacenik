@@ -491,6 +491,11 @@ export declare namespace ApiTypes {
       form_data: FormData
       link: string
     }
+
+    export interface AddUserToGroup {
+      group_id: string
+      user: string
+    }
     
   }
 }

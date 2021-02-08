@@ -72,6 +72,7 @@ const AdminLayoutPublic: React.FC<Props> = React.memo((props) => {
         invitesCounter={invites?.length || 0}
         groupId={group?.id}
         isAdminLayout={true}
+        isPublic={group?.is_public}
       />
       <Container>
         <GroupMainWrapper>
@@ -91,6 +92,7 @@ const AdminLayoutPublic: React.FC<Props> = React.memo((props) => {
               invitesCounter={invites?.length || 0}
               groupId={group?.id}
               isAdminLayout={true}
+              isPublic={group?.is_public}
             />
           </LeftSideBar>
           <CentralBar>
