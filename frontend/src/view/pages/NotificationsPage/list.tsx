@@ -67,6 +67,8 @@ class NotificationsList extends React.PureComponent<Props, State> {
       }
     )
 
+    // console.log(type)
+
     if (type.indexOf('message-hub') !== -1) {
       return (
         <ListText>

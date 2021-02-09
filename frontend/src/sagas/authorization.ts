@@ -21,6 +21,7 @@ export function* watchlogout() {
 
   if (response.status === 200) {
     yield put(Actions.authorization.logoutSucces())
+    localStorage.clear()
     window.location.reload()
   } else {
     localStorage.clear()

@@ -66,12 +66,11 @@ const CreateGroupPage: React.FC<Props> = (props) => {
   const [groupName, setGroupName] = useState<string>('')
   const [groupDescription, setGroupDescription] = useState<string>('')
   const [invalideMessage, setInvalideMessage] = useState<string>('')
-
   const [isAvatarFileUploaded, setAvatarUploadedFile] = useState<boolean>(false)
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
-
   const [isCoverFileUploaded, setCoverUploadedFile] = useState<boolean>(false)
   const [coverFile, setCoverFile] = useState<File | null>(null)
+  const [coverFileObjectUrl, setCoverFileObjectUrl] = useState<string>('')
 
   const isDataValid = (): boolean => {
 
@@ -110,7 +109,7 @@ const CreateGroupPage: React.FC<Props> = (props) => {
   useEffect(() => {
     if (isGroupAddedSuccessfully) {
       setRequested(false)
-      history.push('/groups')
+      history.push('/groups/my')
       addGroupSucces(false)
     }
 
@@ -132,6 +131,8 @@ const CreateGroupPage: React.FC<Props> = (props) => {
         link: avatarUploadLink?.link,
         form_data: data,
       })
+      
+      setAvatarUploadedFile(true)
     }
 
     if (coverUploadLink && coverFile && !isCoverFileUploaded) {
@@ -148,6 +149,8 @@ const CreateGroupPage: React.FC<Props> = (props) => {
         link: coverUploadLink?.link,
         form_data: data,
       })
+      
+      setCoverUploadedFile(true)
     }
 
   }, [
@@ -211,11 +214,13 @@ const CreateGroupPage: React.FC<Props> = (props) => {
             loadImage.writeExifData(data.imageHead, data, 'Orientation', 1)
             img.toBlob(function (blob) {
               loadImage.replaceHead(blob, data.imageHead, function (newBlob) {
-                setAvatarFile(newBlob)
+                setCoverFile(newBlob)
+                setCoverFileObjectUrl(URL.createObjectURL(newBlob))
               })
             }, 'image/jpeg')
           } else {
             setCoverFile(uploadedFile[0])
+            setCoverFileObjectUrl(URL.createObjectURL(uploadedFile[0]))
           }
         },
         { meta: true, orientation: true, canvas: true }
@@ -242,7 +247,7 @@ const CreateGroupPage: React.FC<Props> = (props) => {
   return (
     <PageLayout>
       <CreateGroupContainer>
-        <CoverWrapper resource={(coverFile) ? URL.createObjectURL(coverFile) : ''}>
+        <CoverWrapper resource={(coverFile) ? coverFileObjectUrl : ''}>
           <label>
             <CoverIconWrapper>
               <img src={CoverIcon} alt="icon" />

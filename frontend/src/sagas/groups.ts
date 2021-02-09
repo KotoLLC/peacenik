@@ -77,7 +77,11 @@ export function* watchRequestJoinGroup(action: { type: string, payload: ApiTypes
     yield put(Actions.groups.getPublicGroupsRequest())
     const state = yield select()
     const currentGroupId = selectors.groups.currentGroupId(state)
-    yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))
+
+    if (currentGroupId) {
+      yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))
+    }
+    
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
@@ -101,7 +105,10 @@ export function* watchConfirmInviteRequest(action: { type: string, payload: ApiT
     
     const state = yield select()
     const currentGroupId = selectors.groups.currentGroupId(state)
-    yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))
+
+    if (currentGroupId) {
+      yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))  
+    }
 
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
@@ -116,8 +123,10 @@ export function* watchDenyInviteRequest(action: { type: string, payload: ApiType
 
     const state = yield select()
     const currentGroupId = selectors.groups.currentGroupId(state)
-    yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))
-
+    
+    if (currentGroupId) {
+      yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))  
+    }
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
@@ -131,7 +140,10 @@ export function* watchDeleteMemberRequest(action: { type: string, payload: ApiTy
     
     const state = yield select()
     const currentGroupId = selectors.groups.currentGroupId(state)
-    yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))
+    
+    if (currentGroupId) {
+      yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))
+    }
 
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))

@@ -26,17 +26,22 @@ export const CopyrightWrapper = styled.div`
 
   @media (max-width: 600px) {
     font-size: 14px;
-    padding-top: 15px;
+    padding: 15px 15px 10px;
   }
 `
 
 export const FooterWrapper = styled.div`
   padding-bottom: 20px;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
 
   @media (max-width: 600px){
     padding-bottom: 15px;
+  }
+  
+  @media (max-width: 370px){
+    padding-bottom: 5px;
   }
 `
 
@@ -46,6 +51,11 @@ export const LogoIcon = styled.img`
   
   @media (max-width: 600px){
     max-width: 40px;
+    max-height: 40px;
+  }
+
+  @media (max-width: 370px){
+    margin-bottom: 10px;
   }
 `
 
@@ -53,11 +63,13 @@ export const FooterMenu = styled.nav`
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
 `
 
 export const FooterMenuItem = styled.span`
   font-size: 14px;
   text-transform: uppercase;
+  white-space: nowrap;
 
   &:after {
     display: inline-block;
@@ -84,6 +96,13 @@ export const FooterMenuItem = styled.span`
       margin: 0 13px;
       height: 12px;
       top: 3px;
+    }
+  }
+
+  @media (max-width: 370px) {
+    margin: 0px 10px 10px 0;
+    &:after {
+      display: none;
     }
   }
 `

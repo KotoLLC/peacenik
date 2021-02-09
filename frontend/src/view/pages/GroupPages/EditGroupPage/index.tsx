@@ -74,16 +74,15 @@ const EditGroupPage: React.FC<Props> = (props) => {
   const initialGroup = currentGroup ? currentGroup.group : null
 
   const [isRequested, setRequested] = useState<boolean>(false)
-  const [isPublic, setPublic] = useState<boolean>(initialGroup ? initialGroup.is_public : false)
+  // const [isPublic, setPublic] = useState<boolean>(initialGroup ? initialGroup.is_public : false)
   const [groupName, setGroupName] = useState<string>(initialGroup ? initialGroup.name : '')
   const [groupDescription, setGroupDescription] = useState<string>(initialGroup ? initialGroup.description : '')
   const [invalideMessage, setInvalideMessage] = useState<string>('')
-
   const [isAvatarFileUploaded, setAvatarUploadedFile] = useState<boolean>(false)
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
-
   const [isCoverFileUploaded, setCoverUploadedFile] = useState<boolean>(false)
   const [coverFile, setCoverFile] = useState<File | null>(null)
+  const [coverFileObjectUrl, setCoverFileObjectUrl] = useState<string>('')
 
   const isDataValid = (): boolean => {
 
@@ -132,8 +131,7 @@ const EditGroupPage: React.FC<Props> = (props) => {
     if (isGroupEditedSuccessfully) {
       setRequested(false)
       editGroupSuccess(false)
-      // setAvatarFile(null)
-      // setCoverFile(null)
+      history.push('/groups/my')
     }
 
     if (errorMessage) {
@@ -160,6 +158,8 @@ const EditGroupPage: React.FC<Props> = (props) => {
         link: avatarUploadLink?.link,
         form_data: data,
       })
+
+      setAvatarUploadedFile(true)
     }
 
     if (coverUploadLink && coverFile && !isCoverFileUploaded) {
@@ -176,13 +176,15 @@ const EditGroupPage: React.FC<Props> = (props) => {
         link: coverUploadLink?.link,
         form_data: data,
       })
+
+      setCoverUploadedFile(true)
     }
 
   }, [
     isGroupEditedSuccessfully,
     errorMessage,
     myGroups,
-    isPublic,
+    // isPublic,
     groupDescription,
     initialGroup,
     coverUploadLink,
@@ -243,11 +245,13 @@ const EditGroupPage: React.FC<Props> = (props) => {
             loadImage.writeExifData(data.imageHead, data, 'Orientation', 1)
             img.toBlob(function (blob) {
               loadImage.replaceHead(blob, data.imageHead, function (newBlob) {
-                setAvatarFile(newBlob)
+                setCoverFile(newBlob)
+                setCoverFileObjectUrl(URL.createObjectURL(newBlob))
               })
             }, 'image/jpeg')
           } else {
             setCoverFile(uploadedFile[0])
+            setCoverFileObjectUrl(URL.createObjectURL(uploadedFile[0]))
           }
         },
         { meta: true, orientation: true, canvas: true }
@@ -272,7 +276,7 @@ const EditGroupPage: React.FC<Props> = (props) => {
   return (
     <PageLayout>
       <CreateGroupContainer>
-        <CoverWrapper resource={(coverFile) ? URL.createObjectURL(coverFile) : getGroupCoverUrl(initialGroup?.id!)}>
+        <CoverWrapper resource={(coverFile) ? coverFileObjectUrl : getGroupCoverUrl(initialGroup?.id!)}>
           <label>
             <CoverIconWrapper>
               <img src={CoverIcon} alt="icon" />
