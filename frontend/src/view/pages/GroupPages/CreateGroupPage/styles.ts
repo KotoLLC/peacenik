@@ -16,7 +16,7 @@ export const CreateGroupContainer = styled.main`
   box-shadow: 0px 1px 3px #D4D4D4;
 
   @media (max-width: 770px) {
-    margin: 60px auto 0px
+    margin: 60px auto 30px
   }
 `
 

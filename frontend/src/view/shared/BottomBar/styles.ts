@@ -27,7 +27,7 @@ export const CopyrightWrapper = styled.div`
 
   @media (max-width: 600px) {
     font-size: 14px;
-    padding: 15px 15px 10px;
+    padding: 15px 15px 0px;
   }
 `
 

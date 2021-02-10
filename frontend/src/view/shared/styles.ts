@@ -308,9 +308,6 @@ export const MenuStyled = styled(Menu)`
 `
 
 export const ButtonContained = styled(Button)`
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
   min-width: 120px;
   height: 32px;
   line-height: 32px;
@@ -376,9 +373,6 @@ export const ButtonContained = styled(Button)`
 `
 
 export const ButtonOutlined = styled(Button)`
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
   margin-right: 10px;
   min-width: 120px;
   height: 32px;
