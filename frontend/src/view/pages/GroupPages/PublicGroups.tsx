@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import GroupsListItem from './GroupsListItem'
 import GroupsSidebar from './GroupsSIdebar'
-import { PageLayout } from '@view/shared/PageLayout'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import { ApiTypes, StoreTypes } from 'src/types'
@@ -24,11 +23,11 @@ interface Props {
 }
 
 const PublicGroups: React.FC<Props> = (props) => {
-  const { 
-    onGetPublicGroupsRequest, 
+  const {
+    onGetPublicGroupsRequest,
     publicGroups,
     ownedHubs,
-   } = props
+  } = props
 
   useEffect(() => {
     onGetPublicGroupsRequest()
@@ -58,7 +57,7 @@ const PublicGroups: React.FC<Props> = (props) => {
         <EmptyGroupsTextWrapper>
           <EmptyGroupsText>
             No groups. You can either
-          <EmptyGroupsTextLink to="/groups/public"> join a public group</EmptyGroupsTextLink> <br /> 
+          <EmptyGroupsTextLink to="/groups/public"> join a public group</EmptyGroupsTextLink> <br />
           or <EmptyGroupsTextLink to="/groups/create">create</EmptyGroupsTextLink> a public or private group of your own
         </EmptyGroupsText>
         </EmptyGroupsTextWrapper>
@@ -66,7 +65,7 @@ const PublicGroups: React.FC<Props> = (props) => {
         <EmptyGroupsTextWrapper>
           <EmptyGroupsText>
             Sorry! You can’t create new group. Your hub does not support groups. <EmptyGroupsTextLink to="/hubs">
-            Visit the hub page</EmptyGroupsTextLink> in your profile to create a hub with group support.
+              Visit the hub page</EmptyGroupsTextLink> in your profile to create a hub with group support.
           </EmptyGroupsText>
         </EmptyGroupsTextWrapper>
       }
@@ -74,14 +73,12 @@ const PublicGroups: React.FC<Props> = (props) => {
   )
 
   return (
-    <PageLayout>
-      <GroupsContainer>
-        <GroupsSidebar />
-        <GroupsListWrapper>
-          {publicGroups?.length ? renderGroups() : renderEmptyScreen()}
-        </GroupsListWrapper>
-      </GroupsContainer>
-    </PageLayout>
+    <GroupsContainer>
+      <GroupsSidebar />
+      <GroupsListWrapper>
+        {publicGroups?.length ? renderGroups() : renderEmptyScreen()}
+      </GroupsListWrapper>
+    </GroupsContainer>
   )
 }
 

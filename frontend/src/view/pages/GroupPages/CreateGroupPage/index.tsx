@@ -1,6 +1,5 @@
 import React, { useState, useEffect, ChangeEvent } from 'react'
 import RadioGroup from '@material-ui/core/RadioGroup'
-import { PageLayout } from '@view/shared/PageLayout'
 import AvatarIcon from '@assets/images/groups-avatar-icon.svg'
 import CoverIcon from '@assets/images/groups-cover-icon.svg'
 import { connect } from 'react-redux'
@@ -348,9 +347,9 @@ const CreateGroupPage: React.FC<Props> = (props) => {
   )
 
   return (
-    <PageLayout>
+    <>
       {isHubsOwnerCheck() ? renderForm() : renderEmptyScreen()}
-    </PageLayout>
+    </>
   )
 }
 

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, ChangeEvent } from 'react'
-import { PageLayout } from '@view/shared/PageLayout'
 import CoverIcon from '@assets/images/groups-cover-icon.svg'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
@@ -274,7 +273,7 @@ const EditGroupPage: React.FC<Props> = (props) => {
   }
 
   return (
-    <PageLayout>
+    <>
       <CreateGroupContainer>
         <CoverWrapper resource={(coverFile) ? coverFileObjectUrl : getGroupCoverUrl(initialGroup?.id!)}>
           <label>
@@ -343,7 +342,7 @@ const EditGroupPage: React.FC<Props> = (props) => {
           </ButtonsWrapper>
         </FormWrapper>
       </CreateGroupContainer>
-    </PageLayout>
+    </>
   )
 }
 

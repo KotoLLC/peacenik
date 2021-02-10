@@ -6,7 +6,6 @@ import Invitations from './Invitations'
 import InviteFriendDialog from './InviteFriendDialog'
 import FriendTabs from './Tabs'
 import { Switch, Route, RouteComponentProps } from 'react-router-dom'
-import { PageLayout } from '@view/shared/PageLayout'
 import { PageNavigation } from './PageNavigation'
 import { FriendsWrapper } from './styles'
 
@@ -27,7 +26,7 @@ const FriendsPage: React.FC<Props> = (props) => {
   })
 
   return (
-    <PageLayout>
+    <>
       <PageNavigation />
       <FriendsWrapper>
         <FriendTabs />
@@ -38,7 +37,7 @@ const FriendsPage: React.FC<Props> = (props) => {
         </Switch>
       </FriendsWrapper>
       <InviteFriendDialog />
-    </PageLayout>
+    </>
   )
 }
 

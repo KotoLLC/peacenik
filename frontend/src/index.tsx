@@ -164,9 +164,9 @@ class AppComponent extends React.Component<Props, State> {
           <CssBaseline />
           <Routes />
           <Notify />
-          <ConnectionErrorPopup/>
+          <ConnectionErrorPopup />
         </ThemeProvider>
-        <GlobalStyle/>
+        <GlobalStyle />
       </ErrorBoundary>
     )
   }
@@ -189,5 +189,5 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
 const App = connect(mapStateToProps, mapDispatchToProps)(AppComponent)
 ReactDOM.render(
   <Provider store={store}>
-      <App />
+    <App />
   </Provider>, document.getElementById('root') as HTMLElement)

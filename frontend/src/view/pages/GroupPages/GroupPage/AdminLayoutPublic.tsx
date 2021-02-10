@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { PageLayout } from '@view/shared/PageLayout'
 import GroupTopBar from './GroupTopBar'
 import { Member } from './Member'
 import MemberInvited from './MemberInvited'
@@ -63,7 +62,7 @@ const AdminLayoutPublic: React.FC<Props> = React.memo((props) => {
   const { group, members, status, invites } = groupDetails
 
   return (
-    <PageLayout>
+    <>
       <GroupCover resource={getGroupCoverUrl(group?.id)} />
       <GroupTopBar
         className="desktop-only"
@@ -120,7 +119,7 @@ const AdminLayoutPublic: React.FC<Props> = React.memo((props) => {
           />
         </GroupMainWrapper>
       </Container>
-    </PageLayout>
+    </>
   )
 })
 

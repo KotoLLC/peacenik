@@ -29,6 +29,7 @@ import PublicGroups from '@view/pages/GroupPages/PublicGroups'
 import CreateGroupPage from '@view/pages/GroupPages/CreateGroupPage'
 import EditGroupPage from '@view/pages/GroupPages/EditGroupPage'
 import GroupPage from '@view/pages/GroupPages/GroupPage'
+import { PageLayout } from '@view/shared/PageLayout'
 
 export const history = createBrowserHistory()
 
@@ -97,32 +98,33 @@ export const Routes = () => {
         <LastLocationProvider>
           <BackIconWrapper className={swipeType === 'Right' ? 'visible' : ''}><ArrowBackIcon /></BackIconWrapper>
           <ForwardIconWrapper className={swipeType === 'Left' ? 'visible' : ''}><ArrowForwardIcon /></ForwardIconWrapper>
-          <Switch>
-            <Route exact path="/" component={LoginPage} />
-            <Route path="/login" component={LoginPage} />
-            <Route path="/registration" component={RegistrationPage} />
-            <Route path="/forgot-password" component={ForgotPasswordPage} />
-            <Route path="/forgot-username" component={ForgotUserNamePage} />
-            <Route path="/reset-password" component={ResetPasswordPage} />
-            <Route path="/docs" component={DocsPages} />
-            <Route path="/confirm-user" component={ConfirmUserPage} />
-            <Route path="/resend-confirm-email" component={ResendConfirmEmailPage} />
-            <Route path="/no-hubs" component={NoHubsPage} />
-            <PrivateRoute path="/friends" component={FriendsPage} />
-            <PrivateRoute exact path="/groups" component={PublicGroups} />
-            <PrivateRoute path="/groups/my" component={MyGroups} />
-            <PrivateRoute path="/groups/public" component={PublicGroups} />
-            <PrivateRoute path="/groups/group" exact component={GroupPage} />
-            <PrivateRoute path="/groups/create" exact component={CreateGroupPage} />
-            <PrivateRoute path="/groups/edit" exact component={EditGroupPage} />
-            <PrivateRoute path="/hubs" component={HubPages} />
-            <PrivateRoute path="/messages" component={MessagesPage} />
-            <PrivateRoute path="/notifications" component={NotificationsPage} />
-            <PrivateRoute path="/profile" component={ProfilePage} />
-            <PrivateRoute path="/dashboard" component={DashboardPage} />
-            
-            <Route component={() => <>404 not found</>} />
-          </Switch>
+          <PageLayout>
+            <Switch>
+              <Route exact path="/" component={LoginPage} />
+              <Route path="/login" component={LoginPage} />
+              <Route path="/registration" component={RegistrationPage} />
+              <Route path="/forgot-password" component={ForgotPasswordPage} />
+              <Route path="/forgot-username" component={ForgotUserNamePage} />
+              <Route path="/reset-password" component={ResetPasswordPage} />
+              <Route path="/docs" component={DocsPages} />
+              <Route path="/confirm-user" component={ConfirmUserPage} />
+              <Route path="/resend-confirm-email" component={ResendConfirmEmailPage} />
+              <Route path="/no-hubs" component={NoHubsPage} />
+              <PrivateRoute path="/friends" component={FriendsPage} />
+              <PrivateRoute exact path="/groups" component={PublicGroups} />
+              <PrivateRoute path="/groups/my" component={MyGroups} />
+              <PrivateRoute path="/groups/public" component={PublicGroups} />
+              <PrivateRoute path="/groups/group" exact component={GroupPage} />
+              <PrivateRoute path="/groups/create" exact component={CreateGroupPage} />
+              <PrivateRoute path="/groups/edit" exact component={EditGroupPage} />
+              <PrivateRoute path="/hubs" component={HubPages} />
+              <PrivateRoute path="/messages" component={MessagesPage} />
+              <PrivateRoute path="/notifications" component={NotificationsPage} />
+              <PrivateRoute path="/profile" component={ProfilePage} />
+              <PrivateRoute path="/dashboard" component={DashboardPage} />
+              <Route component={() => <>404 not found</>} />
+            </Switch>
+          </PageLayout>
         </LastLocationProvider>
       </div>
     </Router>

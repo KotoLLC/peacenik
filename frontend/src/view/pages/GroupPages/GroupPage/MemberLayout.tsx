@@ -2,7 +2,6 @@ import React from 'react'
 import { connect } from 'react-redux'
 import selectors from '@selectors/index'
 import { ApiTypes, StoreTypes } from 'src/types'
-import { PageLayout } from '@view/shared/PageLayout'
 import GroupTopBar from './GroupTopBar'
 import { Member } from './Member'
 import { Owner } from './Owner'
@@ -34,7 +33,7 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
   const { group, members, status } = groupDetails
 
   return (
-    <PageLayout>
+    <>
       <GroupCover resource={getGroupCoverUrl(group?.id)} />
       <GroupTopBar
         className="desktop-only"
@@ -76,7 +75,7 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
           </RightSideBar>
         </GroupMainWrapper>
       </Container>
-    </PageLayout>
+    </>
   )
 })
 
