@@ -6,7 +6,6 @@ import (
 	"log"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/ansel1/merry"
 	"github.com/disintegration/imaging"
@@ -76,13 +75,6 @@ func (s *BaseService) getUser(ctx context.Context, userID string) (*repo.User, b
 	me := s.getMe(ctx)
 	isFriend := s.repos.Friend.AreFriends(me.ID, user.ID)
 	return user, isFriend
-}
-
-func (s *BaseService) createBlobLink(ctx context.Context, blobID string) (string, error) {
-	if blobID == "" {
-		return "", nil
-	}
-	return s.s3Storage.CreateLink(ctx, blobID, time.Hour*24)
 }
 
 func (s *BaseService) GetUserAttachments(ctx context.Context, user repo.User) common.MailAttachmentList {

@@ -270,7 +270,7 @@ func (r *userRepo) FindUsers(ids []string) []User {
 	}
 
 	query, args, err := sqlx.In(`
-		select id, name, email, full_name, password_hash, avatar_original_id, avatar_thumbnail_id, created_at, updated_at, confirmed_at, background_id
+		select id, password_hash, created_at, updated_at, confirmed_at
 		from users
 		where id in (?)`, ids)
 	if err != nil {

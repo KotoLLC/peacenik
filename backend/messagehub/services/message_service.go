@@ -106,11 +106,20 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		FriendID:              friendID,
 	}
 	s.repos.Message.AddMessage("", msg)
+
+	notifyData := map[string]interface{}{
+		"user_id":    msg.UserID,
+		"message_id": msg.ID,
+	}
+	if groupID.Valid {
+		notifyData["group-id"] = groupID.String
+	}
+	if friendID.Valid {
+		notifyData["friend-id"] = friendID.String
+	}
+
 	if len(notifiedUsers) > 0 && s.notificationSender != nil {
-		s.notificationSender.SendNotification(notifiedUsers, user.DisplayName()+" posted a new message", "message/post", map[string]interface{}{
-			"user_id":    msg.UserID,
-			"message_id": msg.ID,
-		})
+		s.notificationSender.SendNotification(notifiedUsers, user.DisplayName()+" posted a new message", "message/post", notifyData)
 	}
 
 	var userTags []string
@@ -124,10 +133,7 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		}
 	}
 	if len(notifyUsers) > 0 && s.notificationSender != nil {
-		s.notificationSender.SendNotification(notifyUsers, user.DisplayName()+" tagged you in a message", "message/tag", map[string]interface{}{
-			"user_id":    msg.UserID,
-			"message_id": msg.ID,
-		})
+		s.notificationSender.SendNotification(notifyUsers, user.DisplayName()+" tagged you in a message", "message/tag", notifyData)
 	}
 	attachmentLink, err := s.createBlobLink(ctx, msg.AttachmentID)
 	if err != nil {
@@ -541,12 +547,20 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 	}
 	s.repos.Message.AddMessage(r.MessageId, comment)
 
+	notifyData := map[string]interface{}{
+		"user_id":    user.ID,
+		"message_id": msg.ID,
+		"comment_id": comment.ID,
+	}
+	if msg.GroupID.Valid {
+		notifyData["group-id"] = msg.GroupID.String
+	}
+	if msg.FriendID.Valid {
+		notifyData["friend-id"] = msg.FriendID.String
+	}
+
 	if user.ID != msg.UserID {
-		s.notificationSender.SendNotification([]string{msg.UserID}, user.DisplayName()+" posted a new comment", "comment/post", map[string]interface{}{
-			"user_id":    user.ID,
-			"message_id": msg.ID,
-			"comment_id": comment.ID,
-		})
+		s.notificationSender.SendNotification([]string{msg.UserID}, user.DisplayName()+" posted a new comment", "comment/post", notifyData)
 	}
 
 	userTags := message.FindUserTags(comment.Text)
@@ -556,11 +570,7 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 			notifyUsers = append(notifyUsers, taggedUserID)
 		}
 	}
-	s.notificationSender.SendNotification(notifyUsers, user.DisplayName()+" tagged you in a comment", "comment/tag", map[string]interface{}{
-		"user_id":    comment.UserID,
-		"message_id": msg.ID,
-		"comment_id": comment.ID,
-	})
+	s.notificationSender.SendNotification(notifyUsers, user.DisplayName()+" tagged you in a comment", "comment/tag", notifyData)
 
 	attachmentLink, err := s.createBlobLink(ctx, comment.AttachmentID)
 	if err != nil {
@@ -721,10 +731,17 @@ func (s *messageService) LikeMessage(ctx context.Context, r *rpc.MessageLikeMess
 		newLikeCount = s.repos.Message.UnlikeMessage(user.ID, msg.ID)
 	} else {
 		newLikeCount = s.repos.Message.LikeMessage(user.ID, msg.ID)
-		s.notificationSender.SendNotification([]string{msg.UserID}, user.DisplayName()+" liked your post", "message/like", map[string]interface{}{
+		notifyData := map[string]interface{}{
 			"user_id":    user.ID,
 			"message_id": msg.ID,
-		})
+		}
+		if msg.GroupID.Valid {
+			notifyData["group-id"] = msg.GroupID.String
+		}
+		if msg.FriendID.Valid {
+			notifyData["friend-id"] = msg.FriendID.String
+		}
+		s.notificationSender.SendNotification([]string{msg.UserID}, user.DisplayName()+" liked your post", "message/like", notifyData)
 	}
 
 	return &rpc.MessageLikeMessageResponse{
@@ -758,11 +775,20 @@ func (s *messageService) LikeComment(ctx context.Context, r *rpc.MessageLikeComm
 		newLikeCount = s.repos.Message.UnlikeMessage(user.ID, comment.ID)
 	} else {
 		newLikeCount = s.repos.Message.LikeMessage(user.ID, comment.ID)
-		s.notificationSender.SendNotification([]string{comment.UserID}, user.DisplayName()+" liked your comment", "comment/like", map[string]interface{}{
+
+		msg := s.repos.Message.Message(user.ID, comment.ParentID.String)
+		notifyData := map[string]interface{}{
 			"user_id":    user.ID,
 			"message_id": comment.ParentID.String,
 			"comment_id": comment.ID,
-		})
+		}
+		if msg != nil && msg.GroupID.Valid {
+			notifyData["group-id"] = msg.GroupID.String
+		}
+		if msg != nil && msg.FriendID.Valid {
+			notifyData["friend-id"] = msg.FriendID.String
+		}
+		s.notificationSender.SendNotification([]string{comment.UserID}, user.DisplayName()+" liked your comment", "comment/like", notifyData)
 	}
 	return &rpc.MessageLikeCommentResponse{
 		Likes: int32(newLikeCount),
