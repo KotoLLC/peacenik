@@ -313,6 +313,7 @@ export const ButtonContained = styled(Button)`
   align-items: center;
   min-width: 120px;
   height: 32px;
+  line-height: 32px;
   background: #599C0B;
   border-radius: 16px;
   font-family: 'SFUITextMedium';
@@ -331,12 +332,14 @@ export const ButtonContained = styled(Button)`
   
   &.small {
     height: 30px;
+    line-height: 30px;
     min-width: 110px;
     font-size: 12px;
   }
 
   &.extra-small {
     height: 26px;
+    line-height: 26px;
     min-width: 105px;
     font-size: 12px;
     border-radius: 13px;
@@ -379,6 +382,7 @@ export const ButtonOutlined = styled(Button)`
   margin-right: 10px;
   min-width: 120px;
   height: 32px;
+  line-height: 32px;
   outline: none;
   background: #fff;
   border-radius: 16px;
@@ -402,12 +406,14 @@ export const ButtonOutlined = styled(Button)`
 
   &.small {
     height: 30px;
+    line-height: 30px;
     min-width: 110px;
     font-size: 12px;
   }
   
   &.extra-small {
     height: 26px;
+    line-height: 26px;
     min-width: 105px;
     font-size: 12px;
     border-radius: 13px;
