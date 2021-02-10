@@ -82,7 +82,10 @@ const MobileTopBar: React.FC<Props> = React.memo((props) => {
               </HamburgerMenuLink>
               </HamburgerMenuItem>
               <HamburgerMenuItem>
-                <HamburgerMenuLink to={`/groups/my`}>
+                <HamburgerMenuLink 
+                  to={`/groups/my`}
+                  onClick={() => openHamburgerMenu(false)}
+                  >
                   <svg className="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path fillRule="evenodd" clipRule="evenodd" d="M0 0H24V24H0V0Z" stroke="black" strokeOpacity="0.0117647" strokeWidth="0" />
                     <path className="groug-icon" fillRule="evenodd" clipRule="evenodd" d="M12.5058 10C14.4457 10 16 8.43667 16 6.5C16 4.56333 14.4457 3 12.5058 3C10.5659 3 9 4.56333 9 6.5C9 8.43667 10.5659 10 12.5058 10ZM12.5 12C10.0036 12 5 13.56 5 16.6667V21H20V16.6667C20 13.56 14.9964 12 12.5 12Z" />
