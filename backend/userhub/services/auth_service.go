@@ -295,7 +295,7 @@ func (s *authService) confirmUser(ctx context.Context, confirmToken string) erro
 	switch s.adminFriendship {
 	case "invite":
 		s.repos.Invite.AddInvite(user.ID, admin.ID)
-		s.notificationSender.SendNotification([]string{admin.ID}, userInfo.DisplayName+" invited you to be friends", "invite/add", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{admin.ID}, userInfo.DisplayName+" invited you to be friends", "friend-invite/add", map[string]interface{}{
 			"user_id": user.ID,
 		})
 		err = s.sendInviteLinkToRegisteredUser(ctx, *user, adminInfo.Email)
@@ -307,7 +307,7 @@ func (s *authService) confirmUser(ctx context.Context, confirmToken string) erro
 		if !s.repos.Invite.AcceptInvite(userID, admin.ID, true) {
 			return twirp.NotFoundError("invite not found")
 		}
-		s.notificationSender.SendNotification([]string{admin.ID}, userInfo.DisplayName+" is registered and added to your friends!", "invite/accept", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{admin.ID}, userInfo.DisplayName+" is registered and added to your friends!", "friend-invite/accept", map[string]interface{}{
 			"user_id": user.ID,
 		})
 	}

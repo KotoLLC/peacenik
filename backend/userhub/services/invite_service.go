@@ -70,7 +70,7 @@ func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) 
 		}
 
 		s.repos.Invite.AddInvite(me.ID, friend.ID)
-		s.notificationSender.SendNotification([]string{friend.ID}, meInfo.DisplayName+" invited you to be friends", "invite/add", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{friend.ID}, meInfo.DisplayName+" invited you to be friends", "friend-invite/add", map[string]interface{}{
 			"user_id": me.ID,
 		})
 		friendInfo := s.userCache.UserFullAccess(friend.ID)
@@ -95,7 +95,7 @@ func (s *inviteService) Accept(ctx context.Context, r *rpc.InviteAcceptRequest) 
 		return nil, twirp.NotFoundError("invite not found")
 	}
 	userInfo := s.userCache.User(me.ID, r.InviterId)
-	s.notificationSender.SendNotification([]string{r.InviterId}, userInfo.DisplayName+" accepted your invite!", "invite/accept", map[string]interface{}{
+	s.notificationSender.SendNotification([]string{r.InviterId}, userInfo.DisplayName+" accepted your invite!", "friend-invite/accept", map[string]interface{}{
 		"user_id": me.ID,
 	})
 	return &rpc.Empty{}, nil
@@ -106,7 +106,7 @@ func (s *inviteService) Reject(ctx context.Context, r *rpc.InviteRejectRequest) 
 	if !s.repos.Invite.RejectInvite(r.InviterId, me.ID) {
 		return nil, twirp.NotFoundError("invite not found")
 	}
-	s.notificationSender.SendNotification([]string{r.InviterId}, "Your invite is rejected", "invite/reject", map[string]interface{}{
+	s.notificationSender.SendNotification([]string{r.InviterId}, "Your invite is rejected", "friend-invite/reject", map[string]interface{}{
 		"user_id": me.ID,
 	})
 	return &rpc.Empty{}, nil
