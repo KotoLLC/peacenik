@@ -1,5 +1,5 @@
 import React from 'react'
-import { PageWrapper } from './styles'
+import { PageWrapper, PageContent } from './styles'
 import TopBar from './TopBar'
 import MobileTopBar from './MobileTopBar'
 import selectors from '@selectors/index'
@@ -12,14 +12,16 @@ interface Props {
 }
 
 export const WithPageLayout: React.SFC<Props> = (props) => {
-  const {isLogged, isEmailConfirmed} = props  
+  const { isLogged, isEmailConfirmed } = props
 
   return (
     <PageWrapper>
-      {isLogged && isEmailConfirmed && <TopBar/>}
-      {isLogged && isEmailConfirmed && <MobileTopBar/>}
-      {props.children}
-      {isLogged && isEmailConfirmed && <BottomBar/>}
+      {isLogged && isEmailConfirmed && <TopBar />}
+      {isLogged && isEmailConfirmed && <MobileTopBar />}
+      <PageContent>
+        {props.children}
+      </PageContent>
+      {isLogged && isEmailConfirmed && <BottomBar />}
     </PageWrapper>
   )
 }

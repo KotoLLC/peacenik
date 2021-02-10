@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import Paper from '@material-ui/core/Paper'
 import { NavLink, Link } from 'react-router-dom'
 
@@ -89,7 +89,7 @@ export const SidebarButtonWrapper = styled.li`
   padding: 20px;
 `
 
-export const SidebarButton = styled(Link)`
+const sidebarButtonStyles = css`
   display: inline-block;
   height: 30px;
   line-height: 30px;
@@ -101,14 +101,27 @@ export const SidebarButton = styled(Link)`
   text-decoration: none;
   font-family: 'SFUITextMedium';
   color: #fff;
-  cursor: pointer;
-  font-size: 13px;
-  cursor: pointer;
   transition: 0.15s;
+  cursor: pointer;
 
   &:hover {
     background: #4e8c07;
   }
+`
+
+export const SidebarButtonLink = styled(Link)`
+  ${sidebarButtonStyles}
+`
+
+export const SidebarButton = styled.span`
+  ${sidebarButtonStyles}
+  background: #A1AEC8;
+  cursor: default;
+
+  &:hover {
+    background: #A1AEC8;
+  }
+
 `
 
 export const GroupsListWrapper = styled.div`
@@ -149,7 +162,7 @@ export const EmptyGroups = styled.div`
 export const EmptyGroupsText = styled.p`
   display: inline-block;
   font-size: 18px;
-  max-width: 415px;
+  max-width: 460px;
 
   @media (max-width: 960px){
     font-size: 16px;
@@ -164,6 +177,11 @@ export const EmptyGroupsTextWrapper = styled.div`
 
 export const EmptyGroupsTextLink = styled(Link)`
   color: #599C0B;
+  text-decoration: underline;
+
+  &:hover {
+    text-decoration: none;
+  }
 `
 
 export const EmptyGroupsIconWrapper = styled.figure`

@@ -226,13 +226,10 @@ export const GroupMainWrapper = styled.div`
   justify-content: space-between;
   flex-wrap: wrap;
   padding-top: 30px;
+  padding-bottom: 30px;
 
   @media (max-width: 1025px){
     padding-top: 0px;
-  }
-  
-  @media (max-width: 960px){
-    padding-bottom: 30px;
   }
 `
 

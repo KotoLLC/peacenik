@@ -371,7 +371,7 @@ export declare namespace ApiTypes {
 
   export namespace Groups {
 
-    export type MemberStatus = 'member' | 'pending' | ''
+    export type MemberStatus = 'member' | 'pending' | 'rejected' | ''
 
     export interface AddGroup {
       name: string

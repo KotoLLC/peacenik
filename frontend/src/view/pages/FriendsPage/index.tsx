@@ -16,10 +16,10 @@ interface Props extends RouteComponentProps {
 }
 
 const FriendsPage: React.FC<Props> = (props) => {
-  const { 
-    onGetFriends, 
+  const {
+    onGetFriends,
     onGetInvitations,
-   } = props
+  } = props
 
   useEffect(() => {
     onGetFriends()
@@ -37,7 +37,7 @@ const FriendsPage: React.FC<Props> = (props) => {
           <Route path="/friends/invitations" exact component={Invitations} />
         </Switch>
       </FriendsWrapper>
-      <InviteFriendDialog/>
+      <InviteFriendDialog />
     </PageLayout>
   )
 }

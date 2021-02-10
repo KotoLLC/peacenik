@@ -20,6 +20,20 @@ export const CreateGroupContainer = styled.main`
   }
 `
 
+export const EmptyScrenWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  background: #E8EDF3;
+  width: calc(100% - 30px);
+  min-height: 570px;
+  max-width: 750px;
+  margin: 95px auto 30px;
+  padding: 30px;
+`
+
 export const CoverWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;

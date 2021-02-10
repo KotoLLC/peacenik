@@ -46,11 +46,18 @@ export const MenuButton = styled(Button)`
 `
 
 export const PageWrapper = styled.main`
-  padding: 0px 0px 170px;
+  padding: 0px;
+  display: flex;
+  flex-wrap: wrap;
+  min-height: 100vh;
 
   @media (max-width: 770px) {
-    padding: 0px 0px 120px;
+    /* padding: 0px 0px 120px; */
   }
+`
+
+export const PageContent = styled.section`
+  width: 100%;
 `
 
 export const Header = styled.header`

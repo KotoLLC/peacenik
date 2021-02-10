@@ -58,6 +58,7 @@ const GroupTopBar: React.FC<Props> = (props) => {
   }
 
   const renderCurrentButton = () => {
+
     if (memberStatus === 'member') {
       return (
         <ButtonOutlined
@@ -79,7 +80,7 @@ const GroupTopBar: React.FC<Props> = (props) => {
         Remove invite
       </ButtonOutlined>
     }
-    if (memberStatus === '') {
+    if (memberStatus === '' || memberStatus === 'rejected') {
       return <JoinGroupDialog
         groupId={groupId}
         buttonClassName="large"

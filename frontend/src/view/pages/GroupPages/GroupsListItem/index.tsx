@@ -28,7 +28,7 @@ interface Props extends ApiTypes.Groups.RecievedGroup {
 
 const GroupsListItem: React.FC<Props> = React.memo((props) => {
   const { group, status, userId, onDeleteJoinRequest } = props
-  const { avatar_original, description, id, is_public, name, admin, member_count } = group
+  const { description, id, is_public, name, admin, member_count } = group
 
   const renderCurrentButton = () => {
     if (userId === admin.id) {
@@ -39,22 +39,23 @@ const GroupsListItem: React.FC<Props> = React.memo((props) => {
       )
     }
 
-    if (userId !== admin.id && status === '') {
-      return <JoinGroupDialog
-        groupId={id}
-        buttonClassName="extra-small"
-        buttonText="Join"
-      />
-    }
-
-    if (userId !== admin.id && status === 'pending') {
-      return <ButtonOutlined 
-        className="extra-small" 
-        onClick={() => onDeleteJoinRequest({
-          group_id: id
-        })}>
+    if (userId !== admin.id) {
+      if (status === '' || status === 'rejected') {
+        return <JoinGroupDialog
+          groupId={id}
+          buttonClassName="extra-small"
+          buttonText="Join"
+        />
+      }
+      if (status === 'pending') {
+        return <ButtonOutlined
+          className="extra-small"
+          onClick={() => onDeleteJoinRequest({
+            group_id: id
+          })}>
           Remove invite
         </ButtonOutlined>
+      } else return <NoButton />
     } else return <NoButton />
   }
 
@@ -65,7 +66,7 @@ const GroupsListItem: React.FC<Props> = React.memo((props) => {
         <ItemHeader>
           <Link to={`/groups/group?id=${id}`}>
             <AvatarStyled src={getGroupAvatarUrl(id)}>
-              <CameraAltIcon/>
+              <CameraAltIcon />
             </AvatarStyled>
           </Link>
           {renderCurrentButton()}

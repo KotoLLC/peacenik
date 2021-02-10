@@ -5,12 +5,13 @@ import { Link } from 'react-router-dom'
 export const BottomBarWrapper = styled.footer`
   background: #FFFFFF;
   box-shadow: 0px -1px 10px rgba(212, 212, 212, 0.8);
-  position: absolute;
-  z-index: 1000;
-  bottom: 0;
-  left: 0;
+  /* position: absolute; */
+  /* z-index: 1000; */
+  /* bottom: 0; */
+  /* left: 0; */
   width: 100%;
   padding: 20px 0px;
+  margin-top: auto;
 
   @media (max-width: 600px){
     padding: 15px 0;
