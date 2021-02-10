@@ -78,6 +78,11 @@ func (s *groupService) AddGroup(ctx context.Context, r *rpc.GroupAddGroupRequest
 		return nil, twirp.NewError(twirp.AlreadyExists, "group already exists")
 	}
 
+	ownedHubs := s.repos.MessageHubs.Hubs(me)
+	if len(ownedHubs) == 0 {
+		return nil, twirp.NewError(twirp.InvalidArgument, "not a hub admin")
+	}
+
 	groupID := common.GenerateUUID()
 
 	s.repos.Group.AddGroup(groupID, r.Name, r.Description, me.ID, r.IsPublic)
