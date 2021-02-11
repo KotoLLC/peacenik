@@ -10,9 +10,9 @@ import { MessagesPage } from './pages/MessagesPage'
 import { NotificationsPage } from './pages/NotificationsPage'
 import NoHubsPage from './pages/NoHubsPage'
 import ProfilePage from './pages/ProfilePage'
-import RegistrationPage from './pages/RegistrationPage'
 import DocsPages from './pages/DocsPages'
 import ConfirmUserPage from '@view/pages/ConfirmUserPage'
+import RegistrationPage from './pages/RegistrationPage'
 import ResendConfirmEmailPage from '@view/pages/ResendConfirmEmailPage'
 import ForgotPasswordPage from '@view/pages/ForgotPasswordPage'
 import ForgotUserNamePage from '@view/pages/ForgotUserNamePage'
@@ -102,14 +102,14 @@ export const Routes = () => {
           <PageLayout>
             <Switch>
               <Route exact path="/" component={LoginPage} />
-              <Route path="/login" component={LoginPage} />
-              <Route path="/registration" component={RegistrationPage} />
+              {/* <Route path="/login" component={LoginPage} /> */}
+              {/* <Route path="/registration" component={RegistrationPage} /> */}
+              {/* <Route path="/resend-confirm-email" component={ResendConfirmEmailPage} /> */}
               <Route path="/forgot-password" component={ForgotPasswordPage} />
               <Route path="/forgot-username" component={ForgotUserNamePage} />
               <Route path="/reset-password" component={ResetPasswordPage} />
               <Route path="/docs" component={DocsPages} />
               <Route path="/confirm-user" component={ConfirmUserPage} />
-              <Route path="/resend-confirm-email" component={ResendConfirmEmailPage} />
               <Route path="/no-hubs" component={NoHubsPage} />
               <PrivateRoute path="/friends" component={FriendsPage} />
               <PrivateRoute exact path="/groups" component={PublicGroups} />

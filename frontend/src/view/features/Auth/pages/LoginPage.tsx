@@ -161,7 +161,7 @@ const LoginPage = (props) => {
       </AuthForm>
       <Separator>OR</Separator>
       <LinkBlock>
-        Don’t have an account?  <Link to="/registration2">Register!</Link>
+        Don’t have an account?  <Link to="/registration">Register!</Link>
       </LinkBlock>
     </>
   )

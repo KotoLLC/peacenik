@@ -3,6 +3,7 @@ import { ButtonContained } from '@view/shared/styles'
 import { TextField } from '@material-ui/core'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import { Link } from 'react-router-dom'
+import IconButton from '@material-ui/core/IconButton'
 
 export const LogoImage = styled.img`
   max-width: 162px;
@@ -13,6 +14,12 @@ export const LogoImageWrapper = styled.figure`
   margin-bottom: -145px;
 	position: relative;
 	z-index: 10;
+`
+
+export const WelcomeLogoWrapper = styled.figure`
+	position: relative;
+	z-index: 10;
+	margin-bottom: 30px;
 `
 
 export const AuthWrapper = styled.div`
@@ -26,6 +33,14 @@ export const AuthWrapper = styled.div`
 	margin: 0 auto;
 `
 
+export const AuthTitle = styled.h1`
+	color: #585F6F;
+	font-family: 'SFUITextBold';
+	margin-bottom: 30px;
+	font-size: 28px;
+	text-align: center;
+`
+
 export const AuthForm = styled.form`
   display: flex;
   flex-direction: column;
@@ -34,6 +49,7 @@ export const AuthForm = styled.form`
   padding: 25px 30px;
   align-items: center;
 	box-shadow: 0px 1px 3px #D4D4D4;
+	position: relative;
 `
 
 export const FormSubtitle = styled.div`
@@ -46,6 +62,10 @@ export const FormSubtitle = styled.div`
 	text-align: center;
 	color: #585F6F;
 	margin-bottom: 16px;
+`
+
+export const ConfirmMessage = styled(FormSubtitle)`
+	padding: 0;
 `
 
 export const TextFieldNote = styled.div`
@@ -119,8 +139,6 @@ export const SubmitButton = styled(ButtonContained)`
 export const TextFieldStyled = styled(TextField)`
 	&& {
 		font-family: 'SFUITextMedium';
-		font-size: 28px;
-		line-height: 34px;
 		text-align: center;
 		color: #585F6F;
 		width: 100%;
@@ -192,5 +210,17 @@ export const LabelLink = styled(Link)`
 
 	&:hover {
 		text-decoration: underline;
+	}
+`
+
+export const CloseButton = styled(IconButton)`
+	&& {
+		position: absolute;
+		right: 0;
+		top: 0;
+
+		svg {
+			color: #A1AEC8;
+		}
 	}
 `

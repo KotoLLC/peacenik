@@ -204,7 +204,7 @@ const RegistrationPage = (props) => {
       </AuthForm>
       <Separator>OR</Separator>
       <LinkBlock>
-        Already have an account?  <Link to="/login2">Login!</Link>
+        Already have an account?  <Link to="/login">Login!</Link>
       </LinkBlock>
     </>
   )
