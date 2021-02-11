@@ -21,7 +21,7 @@ export const WithPageLayout: React.SFC<Props> = (props) => {
       <PageContent>
         {props.children}
       </PageContent>
-      {isLogged && isEmailConfirmed && <BottomBar />}
+      <BottomBar />
     </PageWrapper>
   )
 }

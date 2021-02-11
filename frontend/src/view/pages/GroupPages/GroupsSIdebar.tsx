@@ -7,7 +7,7 @@ import {
   SidebarItem,
   SidebarButtonWrapper,
   SidebarButtonLink,
-  SidebarButton,
+  // SidebarButton,
 } from './styles'
 
 interface Props {
@@ -15,18 +15,14 @@ interface Props {
 }
 
 const GroupsSidebar: React.FC<Props> = React.memo((props) => {
-  const { ownedHubs } = props
+  // const { ownedHubs } = props
 
   return (
     <SidebarWrapper>
       <SidebarItem exact to="/groups">PUBLIC GROUPS</SidebarItem>
       <SidebarItem to="/groups/my">MY GROUPS</SidebarItem>
       <SidebarButtonWrapper>
-        {ownedHubs.length ?
-          <SidebarButtonLink to="/groups/create">Create New Group</SidebarButtonLink>
-          :
-          <SidebarButton>Create New Group</SidebarButton>
-        }
+        <SidebarButtonLink to="/groups/create">Create New Group</SidebarButtonLink>
       </SidebarButtonWrapper>
     </SidebarWrapper>
   )

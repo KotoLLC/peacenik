@@ -30,6 +30,7 @@ import CreateGroupPage from '@view/pages/GroupPages/CreateGroupPage'
 import EditGroupPage from '@view/pages/GroupPages/EditGroupPage'
 import GroupPage from '@view/pages/GroupPages/GroupPage'
 import { PageLayout } from '@view/shared/PageLayout'
+import AuthPages from '@view/features/Auth/pages'
 
 export const history = createBrowserHistory()
 
@@ -122,6 +123,10 @@ export const Routes = () => {
               <PrivateRoute path="/notifications" component={NotificationsPage} />
               <PrivateRoute path="/profile" component={ProfilePage} />
               <PrivateRoute path="/dashboard" component={DashboardPage} />
+
+
+              <AuthPages/>
+
               <Route component={() => <>404 not found</>} />
             </Switch>
           </PageLayout>
