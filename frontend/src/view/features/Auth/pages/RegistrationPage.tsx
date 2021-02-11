@@ -4,7 +4,6 @@ import Actions from '@store/actions'
 import { ApiTypes, StoreTypes } from 'src/types'
 import selectors from '@selectors/index'
 import { validate } from '@services/validation'
-import { useLastLocation } from 'react-router-last-location'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
 import IconButton from '@material-ui/core/IconButton'
@@ -12,41 +11,70 @@ import { Link, RouteComponentProps } from 'react-router-dom'
 import Checkbox from '@material-ui/core/Checkbox'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import queryString from 'query-string'
+
 import {
   AuthForm,
   FormSubtitle,
   SubmitButton,
   TextFieldStyled,
+  TextFieldNote,
   Separator,
   LinkBlock,
   CheckboxLabel,
   CheckboxFieldWrapper,
-} from './../components/styles'
+  LabelLink,
+} from '../components/styles'
 
-type FieldsType = 'username' | 'password' | ''
+type FieldsType = 'username' | 'password' | 'email' | ''
 
 export interface Props extends RouteComponentProps {
-  loginErrorMessage: string
+  registrationErrorMessage: string
+  isRegisterSuccess: boolean
+  isUserRegisteredResult: boolean | null
   isLogged: boolean
 
+  onRegisterUser: (data: ApiTypes.RegisterUser) => void
+  onResetRegistrationResult: () => void
   onLogin: (data: ApiTypes.Login) => void
-  resetLoginFailedMessage: () => void
 }
 
-const LoginPage = (props) => {
-  const [username, onEmailChange] = useState<string>('')
+const RegistrationPage = (props) => {
+  const url = props.location.search
+  const params = queryString.parse(url)
+
+  const [username, onNameChange] = useState<string>('')
+  const [userFullName, onFullNameChange] = useState<string>('')
+  const [email, onEmailChange] = useState<string>(params?.email as string || '')
   const [password, onPasswordChange] = useState<string>('')
-  const [isRememberedMe, onRememberMeChange] = useState<boolean>(false)
+  const [isLicenseChecked, onLicenseCheck] = useState<boolean>(false)
   const [isPasswordVisible, onPasswordOpen] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [noValideField, setNoValideField] = useState<FieldsType>('')
   const [isRequest, setRequest] = useState<boolean>(false)
-  const { loginErrorMessage, isLogged, onLogin, location, history } = props
+  const {
+    onRegisterUser,
+    location,
+    history,
+    registrationErrorMessage,
+    isRegisterSuccess,
+    onResetRegistrationResult,
+    isUserRegisteredResult,
+    onLogin,
+    isLogged,
+  } = props
 
   const onValidate = (): boolean => {
+
     if (!validate.isUserNameValid(username)) {
       setErrorMessage('Your username contains invalid characters, allowed: a-z A-Z 0-9 @ . -')
       setNoValideField('username')
+      return false
+    }
+
+    if (!validate.isEmailValid(email)) {
+      setErrorMessage('Email is incorrect')
+      setNoValideField('email')
       return false
     }
 
@@ -60,50 +88,45 @@ const LoginPage = (props) => {
   }
 
   const onFormSubmit = (event: FormEvent) => {
-    props.resetLoginFailedMessage()
     event.preventDefault()
-    if (!onValidate()) return
+    onResetRegistrationResult()
 
+    if (!onValidate()) return
     setRequest(true)
     setErrorMessage('')
     setNoValideField('')
 
-    onLogin({
+    onRegisterUser({
       name: username,
       password,
-      remember_me: isRememberedMe,
+      email,
+      full_name: userFullName,
+      invite_token: params?.invite as string,
     })
   }
 
-  const checkExcludedRoutes = (path?: string) => {
-    const excludedRoutes = ['reset-password', 'forgot-password', 'docs', 'no-hubs', 'registration']
-    if (!path) return false
-    return excludedRoutes.some(item => path.indexOf(item) !== -1)
-  }
-
-  const lastLocation = useLastLocation()
-  const lastLoactionPathname = lastLocation?.pathname
-
   useEffect(() => {
-    if (loginErrorMessage !== '') {
-      setErrorMessage(loginErrorMessage)
+
+    if (registrationErrorMessage !== '') {
+      setErrorMessage(registrationErrorMessage)
       setRequest(false)
     }
 
-    if (isLogged === true) {
-      if (location.pathname !== lastLoactionPathname) {
-        if (lastLoactionPathname === '/registration' || lastLoactionPathname === '/resend-confirm-email') {
-          history.push('/friends/invitations')
-        }
-        if (checkExcludedRoutes(lastLoactionPathname)) {
-          history.push('/messages')
-        } else {
-          history.push(lastLoactionPathname ? `${lastLoactionPathname}` : '/messages')
-        }
+    if (isRegisterSuccess === true) {
+
+      if (params?.invite) {
+        onLogin({ name: username, password })
       }
+
+      if (isLogged) {
+        history.push('/friends/invitations')
+      } else {
+        history.push('/resend-confirm-email')
+      }
+
       setRequest(false)
     }
-  }, [loginErrorMessage, isLogged, onLogin, location, history, lastLoactionPathname])
+  }, [location, history, registrationErrorMessage, isRegisterSuccess, isUserRegisteredResult, isLogged, onLogin, params, password, username])
 
   return (
     <>
@@ -112,10 +135,28 @@ const LoginPage = (props) => {
         <TextFieldStyled
           id="username"
           variant="outlined"
-          placeholder="Username"
+          placeholder="Username (jsmith)"
           type="text"
           value={username}
           error={(noValideField === 'username') ? true : false}
+          onChange={(event) => onNameChange(event.currentTarget.value.trim())}
+        />
+        <TextFieldNote>Providing your real name lets friends identify you more easily</TextFieldNote>
+        <TextFieldStyled
+          id="fullname"
+          variant="outlined"
+          placeholder="Full name (John Smith)"
+          type="text"
+          value={userFullName}
+          onChange={(event) => onFullNameChange(event.currentTarget.value)}
+        />
+        <TextFieldStyled
+          id="email"
+          variant="outlined"
+          placeholder="Email"
+          type="text"
+          value={email}
+          error={(noValideField === 'email') ? true : false}
           onChange={(event) => onEmailChange(event.currentTarget.value.trim())}
         />
         <TextFieldStyled
@@ -143,40 +184,45 @@ const LoginPage = (props) => {
           <CheckboxLabel
             control={
               <Checkbox
-                checked={isRememberedMe}
-                onChange={(event) => onRememberMeChange(event.target.checked)}
+                checked={isLicenseChecked}
+                onChange={(event) => onLicenseCheck(event.target.checked)}
                 name="rememberMe"
                 color="primary"
               />
             }
-            label="Remember me"
+            label=""
           />
+          <LabelLink to={'/docs/code-of-conduct'}>I agree to peacenik's End User License Agreement (EULA)</LabelLink>
         </CheckboxFieldWrapper>
         <SubmitButton
           type="submit"
           onClick={onFormSubmit}
+          disabled={isLicenseChecked ? false : true}
           className="green"
-        >{isRequest ? <CircularProgress size={20} color={'inherit'} /> : 'Login'}</SubmitButton>
+        >{isRequest ? <CircularProgress size={20} color={'inherit'} /> : 'Register'}</SubmitButton>
         {errorMessage && <FormHelperText error>{errorMessage}</FormHelperText>}
       </AuthForm>
       <Separator>OR</Separator>
       <LinkBlock>
-        Don’t have an account?  <Link to="/registration2">Register!</Link>
+        Already have an account?  <Link to="/login2">Login!</Link>
       </LinkBlock>
     </>
   )
 }
 
-type StateProps = Pick<Props, 'loginErrorMessage' | 'isLogged'>
+type StateProps = Pick<Props, 'registrationErrorMessage' | 'isRegisterSuccess' | 'isUserRegisteredResult' | 'isLogged'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  loginErrorMessage: selectors.authorization.loginErrorMessage(state),
+  registrationErrorMessage: selectors.registration.registrationErrorMessage(state),
+  isRegisterSuccess: selectors.registration.isRegisterSuccess(state),
+  isUserRegisteredResult: selectors.registration.isUserRegisteredResult(state),
   isLogged: selectors.authorization.isLogged(state),
 })
 
-type DispatchProps = Pick<Props, 'onLogin' | 'resetLoginFailedMessage'>
+type DispatchProps = Pick<Props, 'onRegisterUser' | 'onResetRegistrationResult' | 'onLogin'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
+  onRegisterUser: (data: ApiTypes.RegisterUser) => dispatch(Actions.registration.registerUserRequest(data)),
+  onResetRegistrationResult: () => { dispatch(Actions.registration.resetRegistrationResult()) },
   onLogin: (data: ApiTypes.Login) => dispatch(Actions.authorization.loginRequest(data)),
-  resetLoginFailedMessage: () => dispatch(Actions.authorization.resetLoginFailedMessage()),
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(LoginPage)
+export default connect(mapStateToProps, mapDispatchToProps)(RegistrationPage)

@@ -12,7 +12,6 @@ import MenuItem from '@material-ui/core/MenuItem'
 import Menu from '@material-ui/core/Menu'
 import CircularProgress from '@material-ui/core/CircularProgress'
 
-
 export const Container = styled.main`
   width: 100%;
   max-width: 1170px;
@@ -370,6 +369,11 @@ export const ButtonContained = styled(Button)`
       margin-right: 15px;
     }
   }
+
+  &:disabled {
+    background: #A1AEC8;
+    color: #fff;
+  }
   
 `
 
@@ -423,9 +427,14 @@ export const ButtonOutlined = styled(Button)`
       color: #262626;
     }
   }
+
+  &:disabled {
+    background: #fff;
+    border-color: #A1AEC8;
+    color: #A1AEC8;
+  }
 `
 
 export const CircularProgressWhite = styled(CircularProgress)`
   color: #fff;
 `
-

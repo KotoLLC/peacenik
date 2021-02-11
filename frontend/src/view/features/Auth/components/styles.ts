@@ -1,7 +1,8 @@
 import styled from 'styled-components'
 import { ButtonContained } from '@view/shared/styles'
 import { TextField } from '@material-ui/core'
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import { Link } from 'react-router-dom'
 
 export const LogoImage = styled.img`
   max-width: 162px;
@@ -47,14 +48,12 @@ export const FormSubtitle = styled.div`
 	margin-bottom: 16px;
 `
 
-export const NameInfoText = styled.div`
+export const TextFieldNote = styled.div`
 	font-family: 'SFUITextMedium';
-	font-style: normal;
-	font-weight: 100;
 	font-size: 12px;
 	line-height: 18px;
 	color: #A1AEC8;
-	padding: 12px 0 0 0;
+	margin: -4px 0 14px;
 `
 
 export const Separator = styled.div`
@@ -120,14 +119,16 @@ export const SubmitButton = styled(ButtonContained)`
 export const TextFieldStyled = styled(TextField)`
 	&& {
 		font-family: 'SFUITextMedium';
-		font-style: normal;
-		font-weight: bold;
 		font-size: 28px;
 		line-height: 34px;
 		text-align: center;
 		color: #585F6F;
 		width: 100%;
 		margin-bottom: 16px;
+
+		fieldset {
+			transition: 0.2s;
+		}
 
 		.Mui-focused fieldset {
       border: 1px solid #000;
@@ -140,16 +141,13 @@ export const TextFieldStyled = styled(TextField)`
 	
 	input {
 		font-family: 'SFUITextMedium';
-		font-style: normal;
-		font-weight: 100;
 		font-size: 14px;
-		line-height: 17px;
 		color: #262626;
 
 		&::placeholder {
 			font-family: 'SFUITextMedium';
 			font-size: 14px;
-			color: #262626;
+			color: #585F6F;
 		}
 	}
 	
@@ -160,8 +158,7 @@ export const TextFieldStyled = styled(TextField)`
 
 export const CheckboxLabel = styled(FormControlLabel)`
 	&& {
-		width: 100%;
-		margin-bottom: 12px;
+		margin: 0 0 0 -14px;
 
 		span:nth-child(1) { 
 			color: #A1AEC8;
@@ -173,11 +170,27 @@ export const CheckboxLabel = styled(FormControlLabel)`
 		
 		span:nth-child(2) {
 			font-family: 'SFUITextRegular';
-			font-style: normal;
-			font-weight: 100;
 			font-size: 12px;
-			line-height: 18px;
 			color: #A1AEC8;
 		}     
+	}
+`
+
+export const CheckboxFieldWrapper = styled.div`
+	display: flex;
+	align-items: center;
+	margin-bottom: 10px;
+	width: 100%;
+`
+
+export const LabelLink = styled(Link)`
+	font-family: 'SFUITextRegular';
+	font-size: 12px;
+	color: #A1AEC8;
+	cursor: pointer;
+	transition: 0.2s;
+
+	&:hover {
+		text-decoration: underline;
 	}
 `

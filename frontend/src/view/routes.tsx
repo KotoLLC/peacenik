@@ -124,7 +124,6 @@ export const Routes = () => {
               <PrivateRoute path="/profile" component={ProfilePage} />
               <PrivateRoute path="/dashboard" component={DashboardPage} />
 
-
               <AuthPages/>
 
               <Route component={() => <>404 not found</>} />
