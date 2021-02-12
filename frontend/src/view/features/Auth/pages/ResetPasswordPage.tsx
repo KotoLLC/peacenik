@@ -136,7 +136,6 @@ const ResetPasswordPage = (props) => {
   )
 }
 
-
 type StateProps = Pick<Props, 'passwordErrorMessage' | 'isResetPasswordSuccess'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   passwordErrorMessage: selectors.authorization.passwordErrorMessage(state),

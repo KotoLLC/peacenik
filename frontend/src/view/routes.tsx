@@ -10,13 +10,12 @@ import { NotificationsPage } from './pages/NotificationsPage'
 import NoHubsPage from './pages/NoHubsPage'
 import ProfilePage from './pages/ProfilePage'
 import DocsPages from './pages/DocsPages'
-import LoginPage from '@view/pages/LoginPage'
-import ConfirmUserPage from '@view/pages/ConfirmUserPage'
-import RegistrationPage from './pages/RegistrationPage'
-import ResendConfirmEmailPage from '@view/pages/ResendConfirmEmailPage'
-import ForgotPasswordPage from '@view/pages/ForgotPasswordPage'
-import ForgotUserNamePage from '@view/pages/ForgotUserNamePage'
-import ResetPasswordPage from '@view/pages/ResetPasswordPage'
+import ConfirmUserPage from '@view/pages/_legacycode/ConfirmUserPage'
+import RegistrationPage from './pages/_legacycode/RegistrationPage'
+import ResendConfirmEmailPage from '@view/pages/_legacycode/ResendConfirmEmailPage'
+import ForgotPasswordPage from '@view/pages/_legacycode/ForgotPasswordPage'
+import ForgotUserNamePage from '@view/pages/_legacycode/ForgotUserNamePage'
+import ResetPasswordPage from '@view/pages/_legacycode/ResetPasswordPage'
 import { DashboardPage } from '@view/pages/DashboardPage'
 import selectors from '@selectors/index'
 import { LastLocationProvider } from 'react-router-last-location'
@@ -101,17 +100,6 @@ export const Routes = () => {
           <ForwardIconWrapper className={swipeType === 'Left' ? 'visible' : ''}><ArrowForwardIcon /></ForwardIconWrapper>
           <PageLayout>
             <Switch>
-              
-              
-              {/* <Route exact path="/" component={AuthPages} /> */}
-              {/* <Route path="/login" component={LoginPage} /> */}
-              {/* <Route path="/registration" component={RegistrationPage} /> */}
-              {/* <Route path="/resend-confirm-email" component={ResendConfirmEmailPage} /> */}
-              {/* <Route path="/forgot-password" component={ForgotPasswordPage} /> */}
-              {/* <Route path="/reset-password" component={ResetPasswordPage} /> */}
-              {/* <Route path="/forgot-username" component={ForgotUserNamePage} /> */}
-              {/* <Route path="/confirm-user" component={ConfirmUserPage} /> */}
-              
               <Route path="/docs" component={DocsPages} />
               <Route path="/no-hubs" component={NoHubsPage} />
               <PrivateRoute path="/friends" component={FriendsPage} />
