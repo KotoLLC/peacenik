@@ -133,7 +133,8 @@ export const LinkBlock = styled.div`
 `
 
 export const SubmitButton = styled(ButtonContained)`
-	width: 266px;
+	max-width: 266px;
+	width: 100%;
 `
 
 export const TextFieldStyled = styled(TextField)`
