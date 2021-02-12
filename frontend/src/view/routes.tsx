@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { createBrowserHistory } from 'history'
 import { Router, Switch, Route, Redirect } from 'react-router-dom'
-import LoginPage from '@view/pages/LoginPage'
 import FriendsPage from '@view/pages/FriendsPage'
 import { connect } from 'react-redux'
 import { StoreTypes } from 'src/types'
@@ -11,6 +10,7 @@ import { NotificationsPage } from './pages/NotificationsPage'
 import NoHubsPage from './pages/NoHubsPage'
 import ProfilePage from './pages/ProfilePage'
 import DocsPages from './pages/DocsPages'
+import LoginPage from '@view/pages/LoginPage'
 import ConfirmUserPage from '@view/pages/ConfirmUserPage'
 import RegistrationPage from './pages/RegistrationPage'
 import ResendConfirmEmailPage from '@view/pages/ResendConfirmEmailPage'
@@ -101,15 +101,18 @@ export const Routes = () => {
           <ForwardIconWrapper className={swipeType === 'Left' ? 'visible' : ''}><ArrowForwardIcon /></ForwardIconWrapper>
           <PageLayout>
             <Switch>
-              <Route exact path="/" component={LoginPage} />
+              
+              
+              {/* <Route exact path="/" component={AuthPages} /> */}
               {/* <Route path="/login" component={LoginPage} /> */}
               {/* <Route path="/registration" component={RegistrationPage} /> */}
               {/* <Route path="/resend-confirm-email" component={ResendConfirmEmailPage} /> */}
               {/* <Route path="/forgot-password" component={ForgotPasswordPage} /> */}
               {/* <Route path="/reset-password" component={ResetPasswordPage} /> */}
-              <Route path="/forgot-username" component={ForgotUserNamePage} />
+              {/* <Route path="/forgot-username" component={ForgotUserNamePage} /> */}
+              {/* <Route path="/confirm-user" component={ConfirmUserPage} /> */}
+              
               <Route path="/docs" component={DocsPages} />
-              <Route path="/confirm-user" component={ConfirmUserPage} />
               <Route path="/no-hubs" component={NoHubsPage} />
               <PrivateRoute path="/friends" component={FriendsPage} />
               <PrivateRoute exact path="/groups" component={PublicGroups} />
@@ -123,9 +126,9 @@ export const Routes = () => {
               <PrivateRoute path="/notifications" component={NotificationsPage} />
               <PrivateRoute path="/profile" component={ProfilePage} />
               <PrivateRoute path="/dashboard" component={DashboardPage} />
-
+              
               <AuthPages/>
-
+              
               <Route component={() => <>404 not found</>} />
             </Switch>
           </PageLayout>
