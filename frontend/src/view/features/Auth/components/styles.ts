@@ -225,3 +225,19 @@ export const CloseButton = styled(IconButton)`
 		}
 	}
 `
+
+export const SuccessIcon = styled.img`
+	width: 80px;
+	height: 80px;
+`
+
+export const SuccessIconWrapper = styled.div`
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 130px auto 20px;
+	height: 124px;
+	width: 124px;
+	box-shadow: 0px 1px 10px 2px rgba(216, 216, 216, 0.3);
+	border-radius: 24px;
+`

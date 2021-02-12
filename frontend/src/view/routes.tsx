@@ -106,8 +106,8 @@ export const Routes = () => {
               {/* <Route path="/registration" component={RegistrationPage} /> */}
               {/* <Route path="/resend-confirm-email" component={ResendConfirmEmailPage} /> */}
               {/* <Route path="/forgot-password" component={ForgotPasswordPage} /> */}
+              {/* <Route path="/reset-password" component={ResetPasswordPage} /> */}
               <Route path="/forgot-username" component={ForgotUserNamePage} />
-              <Route path="/reset-password" component={ResetPasswordPage} />
               <Route path="/docs" component={DocsPages} />
               <Route path="/confirm-user" component={ConfirmUserPage} />
               <Route path="/no-hubs" component={NoHubsPage} />

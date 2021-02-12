@@ -5,6 +5,7 @@ import LoginPage from './LoginPage'
 import RegistrationPage from './RegistrationPage'
 import ResendEmailPage from './ResendEmailPage'
 import ForgotPasswordPage from './ForgotPasswordPage'
+import ResetPasswordPage from './ResetPasswordPage'
 
 const AuthPages = () => (
   <Switch>
@@ -14,6 +15,7 @@ const AuthPages = () => (
       <Route path="/login" exact component={LoginPage} />
       <Route path="/registration" exact component={RegistrationPage} />
       <Route path="/forgot-password" exact component={ForgotPasswordPage} />
+      <Route path="/reset-password" exact component={ResetPasswordPage} />
     </AuthLayout>
   </Switch>
 )
