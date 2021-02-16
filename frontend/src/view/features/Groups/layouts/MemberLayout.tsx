@@ -2,9 +2,9 @@ import React from 'react'
 import { connect } from 'react-redux'
 import selectors from '@selectors/index'
 import { ApiTypes, StoreTypes } from 'src/types'
-import GroupTopBar from './GroupTopBar'
-import { Member } from './Member'
-import { Owner } from './Owner'
+import GroupTopBar from './../components/GroupTopBar'
+import { Member } from './../components/Member'
+import { Owner } from './../components/Owner'
 import { v4 as uuidv4 } from 'uuid'
 import { getGroupAvatarUrl, getGroupCoverUrl } from '@services/avatarUrl'
 import { Container } from '@view/shared/styles'
@@ -14,12 +14,12 @@ import {
   LeftSideBar,
   RightSideBar,
   CentralBar,
-  AvatarStyled,
-  GroupName,
-  GroupPublicity,
+  GroupLayoutAvatar,
+  LaypoutsGroupName,
+  LaypoutsGroupPublicity,
   GroupDescriptopn,
   BarTitle,
-} from './styles'
+} from './../components/styles'
 
 interface Props {
   groupDetails?: ApiTypes.Groups.GroupDetails | null
@@ -45,9 +45,9 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
       <Container>
         <GroupMainWrapper>
           <LeftSideBar>
-            <AvatarStyled src={getGroupAvatarUrl(group?.id)} />
-            <GroupName>{group?.name}</GroupName>
-            <GroupPublicity>{group?.is_public ? 'Public' : 'Private'} group</GroupPublicity>
+            <GroupLayoutAvatar src={getGroupAvatarUrl(group?.id)} />
+            <LaypoutsGroupName>{group?.name}</LaypoutsGroupName>
+            <LaypoutsGroupPublicity>{group?.is_public ? 'Public' : 'Private'} group</LaypoutsGroupPublicity>
             <GroupDescriptopn>{group?.description}</GroupDescriptopn>
             <GroupTopBar
               className="mobile-only"

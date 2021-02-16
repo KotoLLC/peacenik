@@ -16,14 +16,10 @@ import { useSwipeable } from 'react-swipeable'
 import { ForwardIconWrapper, BackIconWrapper } from './shared/styles'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
-import MyGroups from '@view/pages/GroupPages/MyGroups'
-import PublicGroups from '@view/pages/GroupPages/PublicGroups'
-import CreateGroupPage from '@view/pages/GroupPages/CreateGroupPage'
-import EditGroupPage from '@view/pages/GroupPages/EditGroupPage'
-import GroupPage from '@view/pages/GroupPages/GroupPage'
 import { PageLayout } from '@view/shared/PageLayout'
-import AuthPages from '@view/features/Auth/pages'
 import FriendsPages from '@view/features/Friends/pages'
+import GroupsPages from '@view/features/Groups/pages'
+import AuthPages from '@view/features/Auth/pages'
 
 export const history = createBrowserHistory()
 
@@ -96,19 +92,14 @@ export const Routes = () => {
             <Switch>
               <Route path="/docs" component={DocsPages} />
               <Route path="/no-hubs" component={NoHubsPage} />
-              <PrivateRoute exact path="/groups" component={PublicGroups} />
-              <PrivateRoute path="/groups/my" component={MyGroups} />
-              <PrivateRoute path="/groups/public" component={PublicGroups} />
-              <PrivateRoute path="/groups/group" exact component={GroupPage} />
-              <PrivateRoute path="/groups/create" exact component={CreateGroupPage} />
-              <PrivateRoute path="/groups/edit" exact component={EditGroupPage} />
               <PrivateRoute path="/hubs" component={HubPages} />
               <PrivateRoute path="/messages" component={MessagesPage} />
               <PrivateRoute path="/notifications" component={NotificationsPage} />
               <PrivateRoute path="/profile" component={ProfilePage} />
               <PrivateRoute path="/dashboard" component={DashboardPage} />
-              
-              <FriendsPages/>
+
+              <PrivateRoute path="/friends" component={FriendsPages} />
+              <PrivateRoute path="/groups" component={GroupsPages} />
               <AuthPages/>
               
               <Route component={() => <>404 not found</>} />

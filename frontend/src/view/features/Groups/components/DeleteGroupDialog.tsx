@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import DialogActions from '@material-ui/core/DialogActions'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'
@@ -13,7 +12,7 @@ import {
   ModalAllowButton,
 } from '@view/shared/ModalDialog/styles'
 import { ButtonContained } from '@view/shared/styles'
-import { DangerZoneWrapper, DangerZoneTitle } from './styles'
+import { DangerZoneWrapper, DangerZoneTitle } from './../components/styles'
 
 interface Props extends RouteComponentProps {
   groupId: string

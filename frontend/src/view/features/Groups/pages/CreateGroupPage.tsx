@@ -16,7 +16,7 @@ import {
   CoverIconWrapper,
   AddCoverButton,
   AddCoverButtonWrapper,
-  AvatarStyled,
+  CreateGroupAvatar,
   AvatarsBlock,
   AvatarsNote,
   FormWrapper,
@@ -29,14 +29,12 @@ import {
   FormControlLabelStyled,
   RadiosWrapper,
   EmptyScrenWrapper,
-} from './styles'
-import {
   EmptyGroupsText,
   EmptyGroupsTextWrapper,
   EmptyGroupsIconWrapper,
   EmptyGroupsTextLink,
   UploadInput,
-} from './../styles'
+} from './../components/styles'
 
 interface Props extends RouteComponentProps {
   isGroupAddedSuccessfully: boolean
@@ -241,14 +239,14 @@ const CreateGroupPage: React.FC<Props> = (props) => {
   const renderAvatar = () => {
     if (avatarFile) {
       return (
-        <AvatarStyled src={URL.createObjectURL(avatarFile)} />
+        <CreateGroupAvatar src={URL.createObjectURL(avatarFile)} />
       )
     }
 
     return (
-      <AvatarStyled>
+      <CreateGroupAvatar>
         <img className="avatar-icon" src={AvatarIcon} alt="" />
-      </AvatarStyled>
+      </CreateGroupAvatar>
     )
   }
 

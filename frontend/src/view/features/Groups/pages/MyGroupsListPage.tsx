@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
-import GroupsListItem from './GroupsListItem'
-import GroupsSidebar from './GroupsSIdebar'
+import GroupsListItem from '../components/GroupsListItem'
+import GroupsSidebar from '../components/GroupsSidebar'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import { ApiTypes, StoreTypes } from 'src/types'
@@ -14,27 +14,23 @@ import {
   EmptyGroupsTextWrapper,
   EmptyGroupsIconWrapper,
   EmptyGroupsTextLink,
-} from './styles'
+} from '../components/styles'
 
 interface Props {
-  publicGroups: ApiTypes.Groups.RecievedGroup[]
+  myGroups: ApiTypes.Groups.RecievedGroup[]
   ownedHubs: string[]
-  onGetPublicGroupsRequest: () => void
+  onGetMyGroupsRequest: () => void
 }
 
-const PublicGroups: React.FC<Props> = (props) => {
-  const {
-    onGetPublicGroupsRequest,
-    publicGroups,
-    ownedHubs,
-  } = props
+const MyGroupsListPage: React.FC<Props> = (props) => {
+  const { onGetMyGroupsRequest, myGroups, ownedHubs } = props
 
   useEffect(() => {
-    onGetPublicGroupsRequest()
+    onGetMyGroupsRequest()
   }, [])
 
   const renderGroups = () => (
-    publicGroups?.length && publicGroups.map(
+    myGroups?.length && myGroups.map(
       item => <GroupsListItem {...item} key={uuidv4()} />
     )
   )
@@ -76,21 +72,21 @@ const PublicGroups: React.FC<Props> = (props) => {
     <GroupsContainer>
       <GroupsSidebar />
       <GroupsListWrapper>
-        {publicGroups?.length ? renderGroups() : renderEmptyScreen()}
+        {myGroups?.length ? renderGroups() : renderEmptyScreen()}
       </GroupsListWrapper>
     </GroupsContainer>
   )
 }
 
-type StateProps = Pick<Props, 'publicGroups' | 'ownedHubs'>
+type StateProps = Pick<Props, 'myGroups' | 'ownedHubs'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  publicGroups: selectors.groups.publicGroups(state),
+  myGroups: selectors.groups.myGroups(state),
   ownedHubs: selectors.profile.ownedHubs(state),
 })
 
-type DispatchProps = Pick<Props, 'onGetPublicGroupsRequest'>
+type DispatchProps = Pick<Props, 'onGetMyGroupsRequest'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onGetPublicGroupsRequest: () => dispatch(Actions.groups.getPublicGroupsRequest()),
+  onGetMyGroupsRequest: () => dispatch(Actions.groups.getMyGroupsRequest()),
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(PublicGroups)
+export default connect(mapStateToProps, mapDispatchToProps)(MyGroupsListPage)

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import GroupTopBar from './GroupTopBar'
-import { Member } from './Member'
-import MemberInvited from './MemberInvited'
-import DeleteGroupDialog from './DeleteGroupDialog'
+import GroupTopBar from '../components/GroupTopBar'
+import { Member } from '../components/Member'
+import MemberInvited from '../components/MemberInvited'
+import DeleteGroupDialog from '../components/DeleteGroupDialog'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'
@@ -16,13 +16,13 @@ import {
   LeftSideBar,
   RightSideBar,
   CentralBar,
-  AvatarStyled,
-  GroupName,
-  GroupPublicity,
+  GroupLayoutAvatar,
+  LaypoutsGroupName,
+  LaypoutsGroupPublicity,
   GroupDescriptopn,
   BarTitle,
   // ViewMoreButton,
-} from './styles'
+} from '../components/styles'
 
 interface Props {
   groupDetails?: ApiTypes.Groups.GroupDetails | null
@@ -31,7 +31,7 @@ interface Props {
   onGetInvitesToConfirmRequest: () => void
 }
 
-const AdminLayoutPublic: React.FC<Props> = React.memo((props) => {
+const AdminPublicLayout: React.FC<Props> = React.memo((props) => {
   const [groupInvites, setGroupInvites] = useState<ApiTypes.Groups.Invite[] | null>(null)
   const [isRequested, setRequested] = useState(false)
   const { groupDetails, onGetInvitesToConfirmRequest } = props
@@ -76,9 +76,9 @@ const AdminLayoutPublic: React.FC<Props> = React.memo((props) => {
       <Container>
         <GroupMainWrapper>
           <LeftSideBar>
-            <AvatarStyled src={getGroupAvatarUrl(group?.id)} />
-            <GroupName>{group?.name}</GroupName>
-            <GroupPublicity>{group?.is_public ? 'Public' : 'Private'} group</GroupPublicity>
+            <GroupLayoutAvatar src={getGroupAvatarUrl(group?.id)} />
+            <LaypoutsGroupName>{group?.name}</LaypoutsGroupName>
+            <LaypoutsGroupPublicity>{group?.is_public ? 'Public' : 'Private'} group</LaypoutsGroupPublicity>
             <GroupDescriptopn>{group?.description}</GroupDescriptopn>
             <DeleteGroupDialog
               className="desktop-only"
@@ -134,4 +134,4 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetInvitesToConfirmRequest: () => dispatch(Actions.groups.getInvitesToConfirmRequest()),
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(AdminLayoutPublic)
+export default connect(mapStateToProps, mapDispatchToProps)(AdminPublicLayout)

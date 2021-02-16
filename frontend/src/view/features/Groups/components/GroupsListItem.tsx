@@ -1,25 +1,25 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import CameraAltIcon from '@material-ui/icons/CameraAlt'
-import { ButtonContained, ButtonOutlined } from '@view/shared/styles'
+import { ButtonOutlined } from '@view/shared/styles'
 import { ApiTypes, StoreTypes } from 'src/types'
 import { connect } from 'react-redux'
 import selectors from '@selectors/index'
 import Actions from '@store/actions'
-import JoinGroupDialog from '../GroupPage/JoinGroupDialog'
+import JoinGroupDialog from './../components/JoinGroupDialog'
 import { getGroupAvatarUrl, getGroupCoverUrl } from '@services/avatarUrl'
 import {
   GroupsListItemWrapper,
   ItemCover,
   ItemContentWraper,
   ItemHeader,
-  AvatarStyled,
+  GroupItemAvatar,
   GroupNameLink,
   GroupCounter,
-  GroupPublicity,
+  ItemsGroupPublicity,
   GroupDescription,
   NoButton,
-} from './styles'
+} from './../components/styles'
 
 interface Props extends ApiTypes.Groups.RecievedGroup {
   userId?: string
@@ -65,15 +65,15 @@ const GroupsListItem: React.FC<Props> = React.memo((props) => {
       <ItemContentWraper>
         <ItemHeader>
           <Link to={`/groups/group?id=${id}`}>
-            <AvatarStyled src={getGroupAvatarUrl(id)}>
+            <GroupItemAvatar src={getGroupAvatarUrl(id)}>
               <CameraAltIcon />
-            </AvatarStyled>
+            </GroupItemAvatar>
           </Link>
           {renderCurrentButton()}
         </ItemHeader>
         <GroupNameLink to={`/groups/group?id=${id}`}>{name}</GroupNameLink>
         <GroupCounter>{member_count} participants</GroupCounter>
-        <GroupPublicity>{is_public ? 'Public' : 'Private'} {userId === admin.id && '- My group'}</GroupPublicity>
+        <ItemsGroupPublicity>{is_public ? 'Public' : 'Private'} {userId === admin.id && '- My group'}</ItemsGroupPublicity>
         <GroupDescription>{description}</GroupDescription>
       </ItemContentWraper>
     </GroupsListItemWrapper>
