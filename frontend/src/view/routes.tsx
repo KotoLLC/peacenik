@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { createBrowserHistory } from 'history'
 import { Router, Switch, Route, Redirect } from 'react-router-dom'
-import FriendsPage from '@view/pages/FriendsPage'
 import { connect } from 'react-redux'
 import { StoreTypes } from 'src/types'
 import { HubPages } from './pages/HubPages'
@@ -10,13 +9,7 @@ import { NotificationsPage } from './pages/NotificationsPage'
 import NoHubsPage from './pages/NoHubsPage'
 import ProfilePage from './pages/ProfilePage'
 import DocsPages from './pages/DocsPages'
-import ConfirmUserPage from '@view/pages/_legacycode/ConfirmUserPage'
-import RegistrationPage from './pages/_legacycode/RegistrationPage'
-import ResendConfirmEmailPage from '@view/pages/_legacycode/ResendConfirmEmailPage'
-import ForgotPasswordPage from '@view/pages/_legacycode/ForgotPasswordPage'
-import ForgotUserNamePage from '@view/pages/_legacycode/ForgotUserNamePage'
-import ResetPasswordPage from '@view/pages/_legacycode/ResetPasswordPage'
-import { DashboardPage } from '@view/pages/DashboardPage'
+import { DashboardPage } from '@view/pages/DashboardPage' 
 import selectors from '@selectors/index'
 import { LastLocationProvider } from 'react-router-last-location'
 import { useSwipeable } from 'react-swipeable'
@@ -30,6 +23,7 @@ import EditGroupPage from '@view/pages/GroupPages/EditGroupPage'
 import GroupPage from '@view/pages/GroupPages/GroupPage'
 import { PageLayout } from '@view/shared/PageLayout'
 import AuthPages from '@view/features/Auth/pages'
+import FriendsPages from '@view/features/Friends/pages'
 
 export const history = createBrowserHistory()
 
@@ -102,7 +96,6 @@ export const Routes = () => {
             <Switch>
               <Route path="/docs" component={DocsPages} />
               <Route path="/no-hubs" component={NoHubsPage} />
-              <PrivateRoute path="/friends" component={FriendsPage} />
               <PrivateRoute exact path="/groups" component={PublicGroups} />
               <PrivateRoute path="/groups/my" component={MyGroups} />
               <PrivateRoute path="/groups/public" component={PublicGroups} />
@@ -115,6 +108,7 @@ export const Routes = () => {
               <PrivateRoute path="/profile" component={ProfilePage} />
               <PrivateRoute path="/dashboard" component={DashboardPage} />
               
+              <FriendsPages/>
               <AuthPages/>
               
               <Route component={() => <>404 not found</>} />

@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom'
 import MenuItem from '@material-ui/core/MenuItem'
 import Menu from '@material-ui/core/Menu'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import Avatar from '@material-ui/core/Avatar'
 
 export const Container = styled.main`
   width: 100%;
@@ -437,4 +438,48 @@ export const ButtonOutlined = styled(Button)`
 
 export const CircularProgressWhite = styled(CircularProgress)`
   color: #fff;
+`
+
+export const UserName = styled.span``
+
+export const UserNameLink = styled(Link)`
+  cursor: pointer;
+  color: #000;
+
+  &:hover {
+    text-decoration: none;
+  }
+`
+
+export const AvatarStyled = styled(Avatar)`
+  && {
+    width: 60px;
+    height: 60px;
+    margin-right: 20px;
+    background: #DEE5F2;
+    cursor: pointer;
+
+    @media (max-width: 770px) {
+      width: 50px;
+      height: 50px;
+      margin-right: 12px;
+    }
+
+    &.no-link {
+      cursor: default;
+    }
+  }
+`
+
+export const ListStyled = styled.div`
+  position: relative;
+  overflow: auto;
+  height: calc(100vh - 40px);
+`
+
+export const ContainerTitle = styled.h3`
+  font-size: 14px;
+  padding: 5px 10px;
+  margin: 0;
+  text-transform: uppercase;
 `

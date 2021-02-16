@@ -6,7 +6,7 @@ import selectors from '@selectors/index'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import SearchIcon from '@material-ui/icons/Search'
 import PeopleAltRoundedIcon from '@material-ui/icons/PeopleAltRounded'
-import InviteItem from './InviteItem'
+import InviteItem from './../components/InviteItem'
 import { v4 as uuidv4 } from 'uuid'
 import {
   SearchInput,
@@ -16,7 +16,7 @@ import {
   TextUnderlined,
   IconWrapper,
   Text,
-} from './styles'
+} from '../components/styles'
 
 export interface Props {
   invitations: ApiTypes.Friends.Invitation[]
@@ -29,7 +29,7 @@ interface State {
   searchValue: string
 }
 
-export class Invitations extends React.Component<Props, State> {
+export class InvitationsPage extends React.Component<Props, State> {
 
   state = {
     searchResult: [],
@@ -128,4 +128,4 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onOpenInvitationsDialog: (value: boolean) => dispatch(Actions.friends.openInvitationsDialog(value))
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(Invitations)
+export default connect(mapStateToProps, mapDispatchToProps)(InvitationsPage)

@@ -16,14 +16,12 @@ import PersonAddIcon from '@material-ui/icons/PersonAdd'
 import { capitalizeFirstLetter } from '@services/capitalizeFirstLetter'
 import { UserProfileMenu } from './UserProfileMenu'
 import { withRouter, RouteComponentProps, Link } from 'react-router-dom'
-
 import {
-  UserName,
   UserNameLink,
   AvatarStyled,
   ListStyled,
   ContainerTitle,
-} from '@view/pages/FriendsPage/styles'
+} from '@view/shared/styles'
 import {
   UserContentWrapper,
   AvatarWrapper,
@@ -144,7 +142,7 @@ const UserProfile: React.FC<Props> = (props) => {
             <ListItemAvatar>
               <AvatarStyled className="no-link" alt={user.name} src={getAvatarUrl(user.id)} />
             </ListItemAvatar>
-            <ListItemText primary={<UserName className="no-link">{user.full_name || user.name}</UserName>} />
+            <ListItemText primary={<span className="no-link">{user.full_name || user.name}</span>} />
             {checkCurrentIcon(user, invite_status)}
           </ListItem>
           <Divider variant="inset" />

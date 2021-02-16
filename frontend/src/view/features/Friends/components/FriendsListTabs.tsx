@@ -7,9 +7,9 @@ import { StoreTypes, ApiTypes } from 'src/types'
 import selectors from '@selectors/index'
 
 import {
-  FriendsTabsWrapper,
-  FriendsTabs,
-  FriendsTab,
+  ListTabsWrapper,
+  ListTabs,
+  ListTab,
 } from './styles'
 
 interface Props extends RouteComponentProps {
@@ -19,7 +19,7 @@ interface Props extends RouteComponentProps {
   onOpenInvitationsDialog: (value: boolean) => void
 }
 
-const FriendTabs: React.FC<Props> = React.memo((props) => {
+const FriendsListTabs: React.FC<Props> = React.memo((props) => {
   const [currentTab, onTabChange] = useState<number | boolean>(0)
   const { history, location, friends, invitations, onOpenInvitationsDialog } = props
 
@@ -37,18 +37,18 @@ const FriendTabs: React.FC<Props> = React.memo((props) => {
   }, [location.pathname])
 
   return (
-    <FriendsTabsWrapper>
-      <FriendsTabs
+    <ListTabsWrapper>
+      <ListTabs
         value={currentTab}
         onChange={(event, newTab) => onTabChange(newTab)}
         centered>
-        <FriendsTab label={`Friends (${friends?.length})`} onClick={() => history.push('/friends/all')} />
-        <FriendsTab label={`Invites (${invitations?.length})`} onClick={() => history.push('/friends/invitations')} />
-      </FriendsTabs>
+        <ListTab label={`Friends (${friends?.length})`} onClick={() => history.push('/friends/all')} />
+        <ListTab label={`Invites (${invitations?.length})`} onClick={() => history.push('/friends/invitations')} />
+      </ListTabs>
       <ButtonContained className="large desktop-only" onClick={() => onOpenInvitationsDialog(true)}>
         Invite friends
       </ButtonContained>
-    </FriendsTabsWrapper>
+    </ListTabsWrapper>
   )
 })
 
@@ -63,4 +63,4 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onOpenInvitationsDialog: (value: boolean) => dispatch(Actions.friends.openInvitationsDialog(value))
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(FriendTabs))
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(FriendsListTabs))

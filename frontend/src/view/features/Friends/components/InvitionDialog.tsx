@@ -39,7 +39,7 @@ interface Props {
   onInviteByEmailResult: (value: boolean) => void
 }
 
-class InviteFriendDialog extends React.Component<Props, State> {
+class InvitionDialog extends React.Component<Props, State> {
 
   state = {
     isRequestSend: false,
@@ -198,4 +198,4 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onOpenInvitationsDialog: (value: boolean) => dispatch(Actions.friends.openInvitationsDialog(value)),
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(InviteFriendDialog)
+export default connect(mapStateToProps, mapDispatchToProps)(InvitionDialog)

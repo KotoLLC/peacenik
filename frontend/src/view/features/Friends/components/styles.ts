@@ -3,7 +3,7 @@ import SearchIcon from '@material-ui/icons/Search'
 import Paper from '@material-ui/core/Paper'
 import IconButton from '@material-ui/core/IconButton'
 import Avatar from '@material-ui/core/Avatar'
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
 import OutlinedInput from '@material-ui/core/OutlinedInput'
@@ -134,14 +134,14 @@ export const FriendsWrapper = styled.div`
   }
 `
 
-export const FriendsTabsWrapper = styled.div`
+export const ListTabsWrapper = styled.div`
   display: flex;
   align-items: flex-end;
   height: 39px;
   justify-content: space-between;
 `
 
-export const FriendsTabs = styled(Tabs)`
+export const ListTabs = styled(Tabs)`
   display: flex;
   width: 500px;
 
@@ -154,7 +154,7 @@ export const FriendsTabs = styled(Tabs)`
   }
 `
 
-export const FriendsTab = styled(Tab)`
+export const ListTab = styled(Tab)`
   && {
     position: relative;
     display: flex;
@@ -497,5 +497,59 @@ export const InvitationsLink = styled.a`
   @media (max-width: 770px) {
     font-size: 16px;
     line-height: 19px;
+  }
+`
+
+export const PageTabsWrapper = styled.nav`
+  width: 360px;
+  height: 54px;
+  margin: 90px auto 38px;
+  background: #FFFFFF;
+  box-shadow: 0px 1px 3px #D4D4D4;
+  border-radius: 27px;
+  display: flex;
+  align-items: center;
+
+  @media (max-width: 770px) {
+    width: 300px;
+    height: 44px;
+    margin: 65px auto 20px;
+  }
+`
+
+export const PageTab = styled(NavLink)`
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  height: 100%;
+  font-size: 12px;
+  line-height: 14px;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-family: SFUITextMedium;
+  transition: all 0.2s;
+  color: #88909D;
+
+  &.active {
+    color: #262626;
+    font-family: SFUITextBold;
+  }
+
+  &.active::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    background: #599C0B;
+    border-radius: 100px;
+    width: 44px;
+    height: 4px;
+  }
+
+  @media (max-width: 770px) {
+    &.active::before {
+      height: 2px;
+    }
   }
 `

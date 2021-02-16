@@ -6,7 +6,7 @@ import selectors from '@selectors/index'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import SearchIcon from '@material-ui/icons/Search'
 import PeopleAltRoundedIcon from '@material-ui/icons/PeopleAltRounded'
-import { FriendItem } from './FriendItem'
+import { FriendItem } from '../components/FriendItem'
 import { v4 as uuidv4 } from 'uuid'
 import { ButtonContained } from '@view/shared/styles'
 import {
@@ -17,7 +17,7 @@ import {
   Text,
   SearchInput,
   SearchInputWrapper,
-} from './styles'
+} from '../components/styles'
 
 export interface Props {
   friends: ApiTypes.Friends.Friend[] | null
@@ -29,7 +29,7 @@ interface State {
   searchResult: ApiTypes.Friends.Friend[]
 }
 
-class Friends extends React.Component<Props, State> {
+class AllFriendsPage extends React.Component<Props, State> {
 
   state = {
     searchValue: '',
@@ -127,4 +127,4 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onOpenInvitationsDialog: (value: boolean) => dispatch(Actions.friends.openInvitationsDialog(value))
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(Friends)
+export default connect(mapStateToProps, mapDispatchToProps)(AllFriendsPage)
