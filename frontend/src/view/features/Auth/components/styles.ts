@@ -241,3 +241,13 @@ export const SuccessIconWrapper = styled.div`
 	box-shadow: 0px 1px 10px 2px rgba(216, 216, 216, 0.3);
 	border-radius: 24px;
 `
+
+export const FormLink = styled(Link)`
+	display: inline-block;
+	margin-right: auto;
+	color: #599C0B;
+	font-family: 'SFUITextMedium';
+	text-decoration: underline;
+	font-size: 12px;
+	margin-bottom: 16px;
+`

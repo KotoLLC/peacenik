@@ -21,6 +21,7 @@ import {
   LinkBlock,
   CheckboxLabel,
   CheckboxFieldWrapper,
+  FormLink,
 } from './../components/styles'
 
 type FieldsType = 'username' | 'password' | ''
@@ -118,6 +119,7 @@ const LoginPage = (props) => {
           error={(noValideField === 'username') ? true : false}
           onChange={(event) => onEmailChange(event.currentTarget.value.trim())}
         />
+        <FormLink to="/forgot-username">Forgot username?</FormLink>
         <TextFieldStyled
           variant="outlined"
           placeholder="Password"
@@ -139,6 +141,7 @@ const LoginPage = (props) => {
             )
           }}
         />
+        <FormLink to="/forgot-password">Forgot password?</FormLink>
         <CheckboxFieldWrapper>
           <CheckboxLabel
             control={
