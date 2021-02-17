@@ -483,3 +483,282 @@ export const ContainerTitle = styled.h3`
   margin: 0;
   text-transform: uppercase;
 `
+
+export const PageCover = styled.div`
+  width: 100%;
+  height: 333px;
+  margin-top: 60px;
+  background-position: center;
+  background-size: cover;
+  background-color: #A1AEC8;
+  background-image:  ${props => `url(${props.resource})`};
+
+  @media (max-width: 1025px){
+    height: 250px;
+  }
+
+  @media (max-width: 770px){
+    margin-top: 45px;
+    height: 108px;
+  }
+` 
+
+export const ProfileAvatar = styled(Avatar)`
+  width: 200px;
+  height: 200px;
+  background: #DEE5F2;
+  margin: -160px auto 30px;
+  border: 6px solid #FFFFFF;
+
+  @media (max-width: 1025px){
+    width: 160px;
+    height: 160px;
+    margin: -80px 0 0;
+  }
+  
+  @media (max-width: 770px){
+    width: 120px;
+    height: 120px;
+    margin: -60px 0 0;
+    border: 3px solid #FFFFFF;
+  }
+`
+
+export const LeftSideBar = styled.aside`
+  width: 260px;
+  margin-right: 30px;
+  text-align: center;
+
+  @media (max-width: 1025px){
+    width: calc(100vw + 30px);
+    margin: 0 0 20px;
+    background: #fff;
+    position: relative;
+
+    &:before,
+    &:after {
+      content: '';
+      width: 15px;
+      height: 100%;
+      background: #fff;
+      display: block;
+      position: absolute;
+      top: 0;
+    }
+
+    &:before {
+      left: -15px;
+    }
+    
+    &:after {
+      right: -15px;
+    }
+  }
+`
+
+export const RightSideBar = styled.aside`
+  position: relative;
+  padding: 20px 0 20px;
+  width: 260px;
+  margin-left: 30px;
+  background: #fff;
+  border-radius: 0 0 4px 4px;
+
+  @media (max-width: 960px){
+    margin-left: 15px;
+  }
+
+  @media (max-width: 770px){
+    width: 100%;
+    margin-left: 0;
+    padding: 15px 0;
+  }
+`
+
+export const CentralBar = styled.section`
+  background: #fff;
+  flex-grow: 1;
+  padding: 20px 0 20px;
+  position: relative;
+  border-radius: 0 0 4px 4px;
+
+  @media (max-width: 770px){
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 15px 0;
+  }
+`
+
+export const PageColumnBarsWrapper = styled.div`
+  display: flex;
+  align-items: flex-start;
+  align-content: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding-top: 30px;
+  padding-bottom: 30px;
+
+  @media (max-width: 1025px){
+    padding-top: 0px;
+  }
+`
+
+export const PageBarTitle = styled.div`
+  padding: 0 20px 5px;
+  color: #000;
+
+  @media (max-width: 770px){
+    padding: 0 15px;
+  }
+`
+
+export const ProfileName = styled.h2`
+  font-size: 24px;
+  margin-bottom: 16px;
+  font-family: 'SFUITextMedium';
+
+  @media (max-width: 1025px){
+    margin-top: -60px;
+    padding-left: 180px;
+    font-size: 20px;
+    text-align: left;
+  }
+  
+  @media (max-width: 770px){
+    margin-top: -50px;
+    padding-left: 135px;
+    font-size: 18px;
+  }
+`
+
+export const ProfileNote = styled.p`
+  font-size: 18px;
+  margin-bottom: 30px;
+  color:  #788692;
+
+  @media (max-width: 1025px){
+    padding-left: 180px;
+    font-size: 16px;
+    text-align: left;
+  }
+
+  @media (max-width: 770px){
+    font-size: 14px;
+    padding-left: 135px;
+    margin-top: -10px;
+    margin-bottom: 20px;
+  }
+`
+
+export const CoverBarWrapper = styled.header`
+  width: 100%;
+  background: #FFFFFF;
+  box-shadow: 0px 1px 3px #D4D4D4;
+
+  &.mobile-only{
+    display: none;
+  }
+
+  @media (max-width: 1025px){
+    &.desktop-only {
+      display: none;
+    }  
+
+    &.mobile-only{
+      display: block;
+      box-shadow: none;
+    }
+  }
+
+  @media (max-width: 770px){
+    padding-bottom: 15px;
+  }
+`
+
+export const CoverBarContainer = styled.div`
+  max-width: 1140px;
+  width: 100%;
+  margin: 0 auto;
+  min-height: 66px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  @media (max-width: 770px) {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+`
+
+export const CoverBarCounterWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: flex-start;
+  justify-content: center;
+  text-align: center;
+
+  &:first-child {
+    margin-right: 45px;
+    position: relative;
+
+    &:after {
+      display: inline-block;
+      position: absolute;
+      right: -29px;
+      top: calc(50% - 4px);
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #ABB7CD;
+    }
+  }
+`
+
+export const CoverBarCounter = styled.span`
+  width: 100%;
+  color: #A1AEC8;
+  font-size: 20px;
+  font-family: 'SFUITextBold';
+
+  @media (max-width: 770px){
+    font-size: 16px;
+  }
+`
+
+export const CoverBarCounterName = styled.span`
+  width: 100%;
+  font-size: 12px;
+  text-transform: uppercase;
+  font-family: 'SFUITextMedium';
+  margin-bottom: 2px;
+`
+
+export const CoverBarCounters = styled.div`
+  margin-left: 290px;
+  display: flex;
+  align-items: center;
+
+  @media (max-width: 1025px) {
+    margin-left: 176px;
+  }  
+  
+  @media (max-width: 770px) {
+    width: 100%;
+    margin: 0 0 15px;
+    justify-content: center;
+  }  
+`
+
+export const CoverBarButtonsWrapper = styled.div`
+  margin-left: 290px;
+
+  @media (max-width: 1025px){
+    margin-left: 180px;
+  }
+  
+  @media (max-width: 770px){
+    margin-left: 0px;
+  }
+`

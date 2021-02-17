@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import GroupTopBar from '../components/GroupTopBar'
+import GroupCoverBar from '../components/GroupCoverBar'
 import { Member } from '../components/Member'
 import UserForInvite from '../components/UserForInvite'
 import DeleteGroupDialog from '../components/DeleteGroupDialog'
@@ -9,18 +9,20 @@ import selectors from '@selectors/index'
 import { ApiTypes, StoreTypes } from 'src/types'
 import { v4 as uuidv4 } from 'uuid'
 import { getGroupAvatarUrl, getGroupCoverUrl } from '@services/avatarUrl'
-import { Container } from '@view/shared/styles'
-import {
-  GroupCover,
-  GroupMainWrapper,
+import { 
+  Container, 
+  PageCover, 
+  ProfileAvatar, 
   LeftSideBar,
   RightSideBar,
   CentralBar,
-  GroupLayoutAvatar,
-  LaypoutsGroupName,
-  LaypoutsGroupPublicity,
+  PageColumnBarsWrapper,
+  PageBarTitle,
+  ProfileName,
+  ProfileNote,
+} from '@view/shared/styles'
+import {
   GroupDescriptopn,
-  BarTitle,
 } from '../components/styles'
 
 interface Props {
@@ -83,8 +85,8 @@ const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
 
   return (
     <>
-      <GroupCover resource={getGroupCoverUrl(group?.id)}/>
-      <GroupTopBar 
+      <PageCover resource={getGroupCoverUrl(group?.id)}/>
+      <GroupCoverBar 
         className="desktop-only"
         memberStatus={status}
         membersCounter={members?.length} 
@@ -94,17 +96,17 @@ const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
         isPublic={group?.is_public}
       />
       <Container>
-        <GroupMainWrapper>
+        <PageColumnBarsWrapper>
           <LeftSideBar>
-            <GroupLayoutAvatar src={getGroupAvatarUrl(group?.id)}/>
-            <LaypoutsGroupName>{group?.name}</LaypoutsGroupName>
-            <LaypoutsGroupPublicity>{group?.is_public ? 'Public' : 'Private'} group</LaypoutsGroupPublicity>
+            <ProfileAvatar src={getGroupAvatarUrl(group?.id)}/>
+            <ProfileName>{group?.name}</ProfileName>
+            <ProfileNote>{group?.is_public ? 'Public' : 'Private'} group</ProfileNote>
             <GroupDescriptopn>{group?.description}</GroupDescriptopn>
             <DeleteGroupDialog 
               className="desktop-only"
               groupId={group?.id} 
             />
-            <GroupTopBar
+            <GroupCoverBar
               className="mobile-only"
               memberStatus={status}
               membersCounter={members?.length}
@@ -115,7 +117,7 @@ const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
             />
           </LeftSideBar>
           <CentralBar>
-            <BarTitle>Members ({members?.length})</BarTitle>
+            <PageBarTitle>Members ({members?.length})</PageBarTitle>
             {Boolean(members?.length) && members.map(item => (
               <Member
                 groupId={group?.id}
@@ -127,7 +129,7 @@ const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
             {/* <ViewMoreButton>View more</ViewMoreButton> */}
           </CentralBar>
           <RightSideBar>
-            <BarTitle>Invite friends</BarTitle>
+            <PageBarTitle>Invite friends</PageBarTitle>
             {filterFriendsForInvite()?.map(item => <UserForInvite 
               groupId={group?.id}
               key={uuidv4()} 
@@ -139,7 +141,7 @@ const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
             className="mobile-only"
             groupId={group?.id}
           />
-        </GroupMainWrapper>
+        </PageColumnBarsWrapper>
       </Container>
     </>
   )

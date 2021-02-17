@@ -8,6 +8,7 @@ import { MessagesPage } from './pages/MessagesPage'
 import { NotificationsPage } from './pages/NotificationsPage'
 import NoHubsPage from './pages/NoHubsPage'
 import ProfilePage from './pages/ProfilePage'
+import ProfilePage2 from './features/Profile/pages'
 import DocsPages from './pages/DocsPages'
 import { DashboardPage } from '@view/pages/DashboardPage' 
 import selectors from '@selectors/index'
@@ -92,16 +93,17 @@ export const Routes = () => {
             <Switch>
               <Route path="/docs" component={DocsPages} />
               <Route path="/no-hubs" component={NoHubsPage} />
+              <PrivateRoute path="/dashboard" component={DashboardPage} />
               <PrivateRoute path="/hubs" component={HubPages} />
               <PrivateRoute path="/messages" component={MessagesPage} />
               <PrivateRoute path="/notifications" component={NotificationsPage} />
+
               <PrivateRoute path="/profile" component={ProfilePage} />
-              <PrivateRoute path="/dashboard" component={DashboardPage} />
+              <PrivateRoute path="/profile2" component={ProfilePage2} />
 
               <PrivateRoute path="/friends" component={FriendsPages} />
               <PrivateRoute path="/groups" component={GroupsPages} />
-              <AuthPages/>
-              
+              <AuthPages/>   
               <Route component={() => <>404 not found</>} />
             </Switch>
           </PageLayout>

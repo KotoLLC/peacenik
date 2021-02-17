@@ -5,15 +5,17 @@ import Actions from '@store/actions'
 import selectors from '@selectors/index'
 import { ApiTypes, StoreTypes } from 'src/types'
 import JoinGroupDialog from './JoinGroupDialog'
-import { ButtonOutlined } from '@view/shared/styles'
+import { 
+  ButtonOutlined, 
+  CoverBarWrapper, 
+  CoverBarContainer,
+  CoverBarCounterWrapper,
+  CoverBarCounter,
+  CoverBarCounterName,
+  CoverBarCounters,
+  CoverBarButtonsWrapper,
+} from '@view/shared/styles'
 import {
-  GroupHeader,
-  HeaderContainer,
-  HeaderCounterWrapper,
-  HeaderCounter,
-  HeaderCounterName,
-  CountersWrapper,
-  TopBarButtonWrapper,
   WarningText,
 } from './styles'
 
@@ -33,7 +35,7 @@ interface Props {
   onDeleteJoinRequest: (data: ApiTypes.Groups.DeleteJoinRequest) => void
 }
 
-const GroupTopBar: React.FC<Props> = (props) => {
+const GroupCoverBar: React.FC<Props> = (props) => {
   const {
     membersCounter,
     invitesCounter,
@@ -98,36 +100,36 @@ const GroupTopBar: React.FC<Props> = (props) => {
 
   if (isAdminLayout) {
     return (
-      <GroupHeader className={className}>
-        <HeaderContainer>
-          <CountersWrapper>
-            <HeaderCounterWrapper>
-              <HeaderCounterName>INVITES</HeaderCounterName>
-              <HeaderCounter>{invitesCounter}</HeaderCounter>
-            </HeaderCounterWrapper>
-            <HeaderCounterWrapper>
-              <HeaderCounterName>MEMBERS</HeaderCounterName>
-              <HeaderCounter>{membersCounter}</HeaderCounter>
-            </HeaderCounterWrapper>
-          </CountersWrapper>
+      <CoverBarWrapper className={className}>
+        <CoverBarContainer>
+          <CoverBarCounters>
+            <CoverBarCounterWrapper>
+              <CoverBarCounterName>INVITES</CoverBarCounterName>
+              <CoverBarCounter>{invitesCounter}</CoverBarCounter>
+            </CoverBarCounterWrapper>
+            <CoverBarCounterWrapper>
+              <CoverBarCounterName>MEMBERS</CoverBarCounterName>
+              <CoverBarCounter>{membersCounter}</CoverBarCounter>
+            </CoverBarCounterWrapper>
+          </CoverBarCounters>
           <Link to={`/groups/edit?id=${groupId}`}>
             <ButtonOutlined className="large">Edit group</ButtonOutlined>
           </Link>
-        </HeaderContainer>
-      </GroupHeader>
+        </CoverBarContainer>
+      </CoverBarWrapper>
     )
   } else {
     return (
-      <GroupHeader className={className}>
-        <HeaderContainer>
-          <TopBarButtonWrapper>
+      <CoverBarWrapper className={className}>
+        <CoverBarContainer>
+          <CoverBarButtonsWrapper>
             {renderCurrentButton()}
-          </TopBarButtonWrapper>
+          </CoverBarButtonsWrapper>
           {!isPublic && <WarningText>
             {isButtonHover && 'If you leave the group, you will not be able to return without the invitation from owner'}
           </WarningText>}
-        </HeaderContainer>
-      </GroupHeader>
+        </CoverBarContainer>
+      </CoverBarWrapper>
     )
   }
 }
@@ -145,4 +147,4 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onDeleteJoinRequest: (data: ApiTypes.Groups.DeleteJoinRequest) => dispatch(Actions.groups.deleteJoinRequest(data)),
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(GroupTopBar)
+export default connect(mapStateToProps, mapDispatchToProps)(GroupCoverBar)

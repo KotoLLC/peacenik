@@ -2,23 +2,25 @@ import React from 'react'
 import { connect } from 'react-redux'
 import selectors from '@selectors/index'
 import { ApiTypes, StoreTypes } from 'src/types'
-import GroupTopBar from './../components/GroupTopBar'
+import GroupCoverBar from './../components/GroupCoverBar'
 import { Member } from './../components/Member'
 import { Owner } from './../components/Owner'
 import { v4 as uuidv4 } from 'uuid'
 import { getGroupAvatarUrl, getGroupCoverUrl } from '@services/avatarUrl'
-import { Container } from '@view/shared/styles'
-import {
-  GroupCover,
-  GroupMainWrapper,
+import { 
+  Container, 
+  PageCover,
+  ProfileAvatar, 
   LeftSideBar,
   RightSideBar,
-  CentralBar,
-  GroupLayoutAvatar,
-  LaypoutsGroupName,
-  LaypoutsGroupPublicity,
+  CentralBar, 
+  PageColumnBarsWrapper,
+  PageBarTitle,
+  ProfileName,
+  ProfileNote,
+ } from '@view/shared/styles'
+import {
   GroupDescriptopn,
-  BarTitle,
 } from './../components/styles'
 
 interface Props {
@@ -34,8 +36,8 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
 
   return (
     <>
-      <GroupCover resource={getGroupCoverUrl(group?.id)} />
-      <GroupTopBar
+      <PageCover resource={getGroupCoverUrl(group?.id)} />
+      <GroupCoverBar
         className="desktop-only"
         groupId={group?.id}
         isAdminLayout={false}
@@ -43,13 +45,13 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
         isPublic={group?.is_public}
       />
       <Container>
-        <GroupMainWrapper>
+        <PageColumnBarsWrapper>
           <LeftSideBar>
-            <GroupLayoutAvatar src={getGroupAvatarUrl(group?.id)} />
-            <LaypoutsGroupName>{group?.name}</LaypoutsGroupName>
-            <LaypoutsGroupPublicity>{group?.is_public ? 'Public' : 'Private'} group</LaypoutsGroupPublicity>
+            <ProfileAvatar src={getGroupAvatarUrl(group?.id)} />
+            <ProfileName>{group?.name}</ProfileName>
+            <ProfileNote>{group?.is_public ? 'Public' : 'Private'} group</ProfileNote>
             <GroupDescriptopn>{group?.description}</GroupDescriptopn>
-            <GroupTopBar
+            <GroupCoverBar
               className="mobile-only"
               groupId={group?.id}
               isPublic={group?.is_public}
@@ -58,7 +60,7 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
             />
           </LeftSideBar>
           <CentralBar>
-            <BarTitle>Members ({members?.length})</BarTitle>
+            <PageBarTitle>Members ({members?.length})</PageBarTitle>
             {Boolean(members?.length) && members.map(item => (
               <Member
                 groupId={group?.id}
@@ -70,10 +72,10 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
             {/* <ViewMoreButton>View more</ViewMoreButton> */}
           </CentralBar>
           <RightSideBar>
-            <BarTitle>Owner</BarTitle>
+            <PageBarTitle>Owner</PageBarTitle>
             <Owner {...group.admin} />
           </RightSideBar>
-        </GroupMainWrapper>
+        </PageColumnBarsWrapper>
       </Container>
     </>
   )
