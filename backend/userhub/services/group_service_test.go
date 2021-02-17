@@ -73,7 +73,7 @@ func (s *GroupServiceTestSuite) Test_AddGroup_InvalidName() {
 }
 
 func (s *GroupServiceTestSuite) Test_AddPrivateGroup() {
-	s.addUser("user-1")
+	s.addHubAdmin("user-1")
 	ctx := s.userContext("user-1")
 	resp, err := s.service.AddGroup(ctx, &rpc.GroupAddGroupRequest{
 		Name:        "group-1",
@@ -94,7 +94,7 @@ func (s *GroupServiceTestSuite) Test_AddPrivateGroup() {
 }
 
 func (s *GroupServiceTestSuite) Test_AddPublicGroup() {
-	s.addUser("user-1")
+	s.addHubAdmin("user-1")
 	ctx := s.userContext("user-1")
 	resp, err := s.service.AddGroup(ctx, &rpc.GroupAddGroupRequest{
 		Name:         "group-1",
@@ -117,7 +117,7 @@ func (s *GroupServiceTestSuite) Test_AddPublicGroup() {
 }
 
 func (s *GroupServiceTestSuite) Test_AddExistingGroup() {
-	s.addUser("user-1")
+	s.addHubAdmin("user-1")
 	s.addUser("user-2")
 
 	ctx := s.userContext("user-1")
@@ -905,8 +905,13 @@ func (s *GroupServiceTestSuite) addUser(name string) {
 	s.repos.User.AddUser(name, name+"-name", name+"@mail.org", name+" "+name, "", false)
 }
 
+func (s *GroupServiceTestSuite) addHubAdmin(userName string) {
+	s.addUser(userName)
+	s.repos.MessageHubs.AddHub(userName+"-hub", userName+"-details", userName, 0, false)
+}
+
 func (s *GroupServiceTestSuite) addPublicGroup(name, adminName string) string {
-	s.addUser(adminName)
+	s.addHubAdmin(adminName)
 
 	ctx := s.userContext(adminName)
 	resp, err := s.service.AddGroup(ctx, &rpc.GroupAddGroupRequest{
@@ -920,7 +925,7 @@ func (s *GroupServiceTestSuite) addPublicGroup(name, adminName string) string {
 }
 
 func (s *GroupServiceTestSuite) addPrivateGroup(name, adminName string) string {
-	s.addUser(adminName)
+	s.addHubAdmin(adminName)
 
 	ctx := s.userContext(adminName)
 	resp, err := s.service.AddGroup(ctx, &rpc.GroupAddGroupRequest{

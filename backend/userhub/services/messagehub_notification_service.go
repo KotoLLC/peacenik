@@ -56,11 +56,18 @@ func (s *messageHubNotificationService) PostNotifications(ctx context.Context, r
 		for i, rawUserID := range rawUserIDs {
 			userIDs[i] = rawUserID.(string)
 		}
+		text, _ := rawNotification["text"].(string)
+		mailSubject, _ := rawNotification["mail_subject"].(string)
+		mailBody, _ := rawNotification["mail_body"].(string)
+		messageType, _ := rawNotification["message_type"].(string)
+		data, _ := rawNotification["data"].(map[string]interface{})
 		notifications[i] = Notification{
 			UserIDs:     userIDs,
-			Text:        rawNotification["text"].(string),
-			MessageType: rawNotification["message_type"].(string),
-			Data:        rawNotification["data"].(map[string]interface{}),
+			Text:        text,
+			MailSubject: mailSubject,
+			MailBody:    mailBody,
+			MessageType: messageType,
+			Data:        data,
 			IsExternal:  true,
 		}
 	}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html"
 	"log"
+	"strings"
 
 	"github.com/appleboy/go-fcm"
 
@@ -17,7 +18,7 @@ type NotificationSender interface {
 	Start()
 	SendNotification(userIDs []string, text, messageType string, data map[string]interface{})
 	SendExternalNotifications(notifications []Notification)
-	SetGetUserAttachments(getUserAttachments func(ctx context.Context, user repo.User) common.MailAttachmentList)
+	SetGetUserAttachments(getUserAttachments func(ctx context.Context, userID string) common.MailAttachmentList)
 }
 
 type notificationSender struct {
@@ -26,12 +27,14 @@ type notificationSender struct {
 	firebaseClient     *fcm.Client
 	mailSender         *common.MailSender
 	notifications      chan []Notification
-	getUserAttachments func(ctx context.Context, user repo.User) common.MailAttachmentList
+	getUserAttachments func(ctx context.Context, userID string) common.MailAttachmentList
 }
 
 type Notification struct {
 	UserIDs     []string
 	Text        string
+	MailSubject string
+	MailBody    string
 	MessageType string
 	Data        map[string]interface{}
 	IsExternal  bool
@@ -108,20 +111,21 @@ func (s *notificationSender) sendFCMNotifications(n Notification) {
 }
 
 func (s *notificationSender) sendEmailNotifications(n Notification) {
-	if !s.mailSender.Enabled() {
+	if !s.mailSender.Enabled() || (n.MailSubject == "" && n.MailBody == "") {
 		return
 	}
 
-	if n.MessageType != "message/tag" {
-		return
+	if n.MailSubject == "" {
+		n.MailSubject = n.Text
+	} else if n.MailBody == "" {
+		n.MailBody = html.EscapeString(n.Text)
 	}
 
 	var userAttachments common.MailAttachmentList
 	userID, ok := n.Data["user_id"].(string)
 	if ok {
-		user := s.repos.User.FindUserByID(userID)
-		if user != nil && s.getUserAttachments != nil {
-			userAttachments = s.getUserAttachments(context.TODO(), *user)
+		if s.getUserAttachments != nil {
+			userAttachments = s.getUserAttachments(context.TODO(), userID)
 		}
 	}
 
@@ -131,17 +135,14 @@ func (s *notificationSender) sendEmailNotifications(n Notification) {
 			continue
 		}
 		userInfo := s.userCache.UserFullAccess(user.ID)
-		const body = `%s
-<p>%s</p>`
-		err := s.mailSender.SendHTMLEmail([]string{userInfo.Email}, "KOTO notification",
-			fmt.Sprintf(body, userAttachments.InlineHTML("avatar"), html.EscapeString(n.Text)),
-			userAttachments)
+		var body = strings.ReplaceAll(n.MailBody, "@@avatar@@", userAttachments.InlineHTML("avatar"))
+		err := s.mailSender.SendHTMLEmail([]string{userInfo.Email}, n.MailSubject, body, userAttachments)
 		if err != nil {
 			log.Printf("can't send email to '%s': %v", userInfo.Email, err)
 		}
 	}
 }
 
-func (s *notificationSender) SetGetUserAttachments(getUserAttachments func(ctx context.Context, user repo.User) common.MailAttachmentList) {
+func (s *notificationSender) SetGetUserAttachments(getUserAttachments func(ctx context.Context, userID string) common.MailAttachmentList) {
 	s.getUserAttachments = getUserAttachments
 }

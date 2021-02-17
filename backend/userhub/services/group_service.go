@@ -663,7 +663,7 @@ func (s *groupService) sendInviteLinkToUnregisteredUser(ctx context.Context, gro
 		return merry.Wrap(err)
 	}
 
-	attachments := s.GetUserAttachments(ctx, inviter)
+	attachments := s.GetUserAttachments(ctx, inviter.ID)
 
 	inviterInfo := s.userCache.UserFullAccess(inviter.ID)
 	link := fmt.Sprintf("%s"+registerFrontendPath, s.cfg.FrontendAddress, url.QueryEscape(userEmail), inviteToken)

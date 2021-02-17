@@ -14,7 +14,7 @@ import (
 
 type NotificationSender interface {
 	Start()
-	SendNotification(userIDs []string, text, messageType string, data map[string]interface{})
+	SendNotification(notification Notification)
 }
 
 type notificationSender struct {
@@ -23,12 +23,14 @@ type notificationSender struct {
 	userHubEndpoint  string
 	tokenGenerator   token.Generator
 	userHubClient    *http.Client
-	notifications    chan notification
+	notifications    chan Notification
 }
 
-type notification struct {
+type Notification struct {
 	UserIDs     []string               `json:"users"`
 	Text        string                 `json:"text"`
+	MailSubject string                 `json:"mail_subject"`
+	MailBody    string                 `json:"mail_body"`
 	MessageType string                 `json:"message_type"`
 	Data        map[string]interface{} `json:"data"`
 }
@@ -43,26 +45,21 @@ func NewNotificationSender(notificationRepo common.NotificationRepo, externalAdd
 		userHubClient: &http.Client{
 			Timeout: time.Second * 30,
 		},
-		notifications: make(chan notification, 10000),
+		notifications: make(chan Notification, 10000),
 	}
 }
 
-func (n *notificationSender) SendNotification(userIDs []string, text, messageType string, data map[string]interface{}) {
-	if len(userIDs) == 0 {
+func (n *notificationSender) SendNotification(notification Notification) {
+	if len(notification.UserIDs) == 0 {
 		return
 	}
 
-	n.notifications <- notification{
-		UserIDs:     userIDs,
-		Text:        text,
-		MessageType: messageType,
-		Data:        data,
-	}
+	n.notifications <- notification
 }
 
 func (n *notificationSender) Start() {
 	go func() {
-		var pendingNotifications []notification
+		var pendingNotifications []Notification
 		ticker := time.NewTicker(time.Second * 10)
 		defer ticker.Stop()
 
@@ -89,7 +86,7 @@ func (n *notificationSender) Start() {
 	}()
 }
 
-func (n *notificationSender) sendNotifications(notifications []notification) {
+func (n *notificationSender) sendNotifications(notifications []Notification) {
 	claims := map[string]interface{}{
 		"notifications": notifications,
 	}
