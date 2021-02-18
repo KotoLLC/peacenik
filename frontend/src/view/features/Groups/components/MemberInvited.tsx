@@ -5,10 +5,7 @@ import { getAvatarUrl } from '@services/avatarUrl'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import {
-  MemberHeaderSidebar,
-  MemberNameWrapperSidebar,
-  MemberMessageSidebar,
-  MemberButtonsWrapperSidebar,
+  MemberMessageSidebar
 } from './styles'
 import {
   UsersListItemWrapper,
@@ -16,6 +13,9 @@ import {
   UsersListItemFullName,
   ButtonOutlined, 
   ButtonContained,
+  UsersListHeaderSidebar,
+  UsersListNameWrapperSidebar,
+  UsersListButtonsWrapperSidebar,
 } from '@view/shared/styles' 
 
 interface Props extends ApiTypes.Groups.Invite {
@@ -55,23 +55,23 @@ const MemberInvited: React.FC<Props> = (props) => {
 
   return (
     <UsersListItemWrapper className="sidebar">
-      <MemberHeaderSidebar>
+      <UsersListHeaderSidebar>
         <Link to={`/profile/user?id=${invited_id}`}>
           <UsersListItemAvatar src={getAvatarUrl(invited_id)} className="sidebar" />
         </Link>
-        <MemberNameWrapperSidebar>
+        <UsersListNameWrapperSidebar>
           <UsersListItemFullName
             className="sidebar"
             to={`/profile/user?id=${invited_id}`}>
-            {invited_full_name || invited_name}
+            {invited_full_name ? invited_full_name : `@${invited_name}`}
           </UsersListItemFullName>
           <MemberMessageSidebar>{message}</MemberMessageSidebar>
-        </MemberNameWrapperSidebar>
-      </MemberHeaderSidebar>
-      <MemberButtonsWrapperSidebar>
+        </UsersListNameWrapperSidebar>
+      </UsersListHeaderSidebar>
+      <UsersListButtonsWrapperSidebar>
         <ButtonOutlined onClick={onDeny} className="small grey">Ignore</ButtonOutlined>
         <ButtonContained onClick={onConfirm} className="small">Approve</ButtonContained>
-      </MemberButtonsWrapperSidebar>
+      </UsersListButtonsWrapperSidebar>
     </UsersListItemWrapper>
   )
 }

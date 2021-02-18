@@ -26,7 +26,7 @@ interface Props {
   onAddFriend: (data: ApiTypes.Friends.Request) => void
 }
 
-const FriendsListItem: React.FC<Props> = React.memo((props) => {
+const ProfileFriend: React.FC<Props> = React.memo((props) => {
   const {
     fullName,
     name,
@@ -95,4 +95,4 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onAddFriend: (data: ApiTypes.Friends.Request) => dispatch(Actions.friends.addFriendRequest(data)),
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(FriendsListItem)
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileFriend)

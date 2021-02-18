@@ -857,7 +857,6 @@ export const UsersListItemFullName = styled(Link)`
 
   &.sidebar {
     font-size: 14px;
-    width: 100%;
     margin-bottom: 5px;
     display: block;
   }
@@ -883,5 +882,30 @@ export const UsersListItemButtons = styled.div`
   @media (max-width: 770px){
     margin-left: 0;
     margin-top: 15px;
+  }
+`
+
+export const UsersListHeaderSidebar = styled.div`
+  display: flex;
+  /* align-items: center; */
+`
+
+export const UsersListNameWrapperSidebar = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  text-overflow: ellipsis;
+  overflow: hidden; 
+  white-space: nowrap;
+`
+
+export const UsersListButtonsWrapperSidebar = styled.div`
+  width: 100%;
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+
+  @media (max-width: 770px){
+    justify-content: start;
   }
 `

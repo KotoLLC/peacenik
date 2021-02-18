@@ -5,16 +5,13 @@ import { getAvatarUrl } from '@services/avatarUrl'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import {
-  MemberHeaderSidebar,
-  MemberNameWrapperSidebar,
-  MemberButtonsWrapperSidebar,
-} from './styles'
-
-import {
   UsersListItemWrapper,
   UsersListItemAvatar,
   UsersListItemFullName,
   ButtonContained,
+  UsersListHeaderSidebar,
+  UsersListNameWrapperSidebar,
+  UsersListButtonsWrapperSidebar,
 } from '@view/shared/styles' 
 
 interface Props extends ApiTypes.Friends.Friend {
@@ -43,26 +40,26 @@ const UserForInvite: React.FC<Props> = (props) => {
 
   return (
     <UsersListItemWrapper className="sidebar">
-      <MemberHeaderSidebar>
+      <UsersListHeaderSidebar>
         <Link to={`/profile/user?id=${user.id}`}>
           <UsersListItemAvatar src={getAvatarUrl(user.id)} className="sidebar" />
         </Link>
-        <MemberNameWrapperSidebar>
+        <UsersListNameWrapperSidebar>
           <UsersListItemFullName
             className="sidebar"
             to={`/profile/user?id=${user.id}`}>
-            {user.full_name || user.name}
+            {user.full_name ? user.full_name : `@${user.name}`}
           </UsersListItemFullName>
-        </MemberNameWrapperSidebar>
-      </MemberHeaderSidebar>
-      <MemberButtonsWrapperSidebar>
+        </UsersListNameWrapperSidebar>
+      </UsersListHeaderSidebar>
+      <UsersListButtonsWrapperSidebar>
         <ButtonContained 
           onClick={onInvite}
           disabled={isRequested} 
           className="small">
           Invite
         </ButtonContained>
-      </MemberButtonsWrapperSidebar>
+      </UsersListButtonsWrapperSidebar>
     </UsersListItemWrapper>
   )
 }

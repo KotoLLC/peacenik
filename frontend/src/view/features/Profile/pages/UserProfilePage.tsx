@@ -8,8 +8,9 @@ import UserCoverBar from './../components/UserCoverBar'
 import { getGroupAvatarUrl, getGroupCoverUrl, getAvatarUrl } from '@services/avatarUrl'
 import { withRouter, RouteComponentProps, Link } from 'react-router-dom'
 import queryString from 'query-string'
-import FriendsListItem from './../components/FriendsListItem'
+import ProfileFriend from '../components/ProfileFriend'
 import { capitalizeFirstLetter } from '@services/capitalizeFirstLetter'
+import { ProfileCommonFriend } from './../components/ProfileCommonFriend'
 import {
   Container,
   PageCover,
@@ -34,13 +35,13 @@ interface Props extends RouteComponentProps {
 }
 
 const UserProfilePage: React.FC<Props> = React.memo((props) => {
-  const { 
-    userName, 
-    onGetUser, 
-    users, 
-    friends, 
-    onGetFriends, 
-    onAddFriend, 
+  const {
+    userName,
+    onGetUser,
+    users,
+    friends,
+    onGetFriends,
+    onAddFriend,
     location,
   } = props
   const [friendsLength, setFriendsLength] = useState<number>(0)
@@ -53,16 +54,24 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
     onGetUser(userId as string)
     onGetFriends()
   }, [
-    props, 
-    users, 
-    onGetUser, 
-    userId, 
-    friends, 
-    onGetFriends, 
-    friendsLength, 
+    props,
+    users,
+    onGetUser,
+    userId,
+    friends,
+    onGetFriends,
+    friendsLength,
   ])
 
   const selectedFriend = friends?.find(item => item.user.id === userId) || null
+
+  let commonFriends: ApiTypes.Friends.Friend[] = []
+
+  selectedFriend?.friends?.forEach(item => {
+    if (friends?.some(myFriend => myFriend.user.id === item.user.id)) {
+      commonFriends.push(item as never)
+    }
+  })
 
   const mapFriendsList = () => {
 
@@ -71,7 +80,7 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
     return selectedFriend.friends.map(item => {
       const { user, invite_status } = item
 
-      return <FriendsListItem
+      return <ProfileFriend
         key={uuidv4()}
         fullName={user.full_name}
         name={user.name}
@@ -79,6 +88,28 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
         inviteStatus={invite_status}
       />
     })
+  }
+
+  const mapCommonFriendsList = () => {
+    if (!selectedFriend) return null
+
+    if (commonFriends.length) {
+      return commonFriends.map(item => {
+        const { user } = item
+
+        return (
+          <ProfileCommonFriend
+            key={uuidv4()}
+            name={user.name}
+            fullName={user.full_name}
+            id={user.id}
+          />
+        )
+      })
+    } else {
+      return <>No common friends found</>
+    }
+
   }
 
   return (
@@ -107,7 +138,8 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
             {mapFriendsList()}
           </CentralBar>
           <RightSideBar>
-            <PageBarTitle>Content</PageBarTitle>
+            <PageBarTitle>Common friends ({commonFriends.length || 0})</PageBarTitle>
+            {mapCommonFriendsList()}
           </RightSideBar>
         </PageColumnBarsWrapper>
       </Container>

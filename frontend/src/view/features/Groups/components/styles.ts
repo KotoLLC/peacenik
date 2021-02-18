@@ -615,32 +615,10 @@ export const DangerZoneTitle = styled.h3`
   }
 `
 
-export const MemberHeaderSidebar = styled.div`
-  display: flex;
-  /* align-items: center; */
-`
-
-export const MemberNameWrapperSidebar = styled.div`
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-`
-
 export const MemberMessageSidebar = styled.div`
   font-size: 12px;
   color: #A1AEC8;
   width: 100%;
-`
-
-export const MemberButtonsWrapperSidebar = styled.div`
-  width: 100%;
-  margin-top: 12px;
-  display: flex;
-  justify-content: space-between;
-
-  @media (max-width: 770px){
-    justify-content: start;
-  }
 `
 
 export const MemberButtonOutlined = styled(ButtonOutlined)`

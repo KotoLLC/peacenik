@@ -1,6 +1,5 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { ApiTypes } from 'src/types'
 import { getAvatarUrl } from '@services/avatarUrl'
 import {
   UsersListItemWrapper,
@@ -10,10 +9,14 @@ import {
   UsersListNameWrapperSidebar,
 } from '@view/shared/styles'
 
-interface Props extends ApiTypes.Groups.GroupAdmin {}
+interface Props {
+  fullName: string
+  name: string
+  id: string
+}
 
-export const Owner: React.FC<Props> = (props) => {
-  const { full_name, id, name } = props
+export const ProfileCommonFriend: React.FC<Props> = (props) => {
+  const { fullName, name, id } = props
 
   return (
     <UsersListItemWrapper className="sidebar">
@@ -25,7 +28,7 @@ export const Owner: React.FC<Props> = (props) => {
           <UsersListItemFullName
             className="sidebar"
             to={`/profile/user?id=${id}`}>
-            {full_name ? full_name : `@${name}`}
+            {fullName ? fullName : `@${name}`}
           </UsersListItemFullName>
         </UsersListNameWrapperSidebar>
       </UsersListHeaderSidebar>
