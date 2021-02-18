@@ -4,10 +4,10 @@ import { ApiTypes } from 'src/types'
 import { getAvatarUrl } from '@services/avatarUrl'
 import DeleteMemberDialog from './DeleteMemberDialog'
 import {
-  MemberWrapper,
-  MemberAvatar,
-  MemberName,
-} from './styles'
+  UsersListItemWrapper,
+  UsersListItemAvatar,
+  UsersListItemFullName,
+} from '@view/shared/styles' 
 
 interface Props extends ApiTypes.Groups.GroupMember {
   isAdminLayout: boolean
@@ -25,12 +25,12 @@ export const Member: React.FC<Props> = (props) => {
   } = props
 
   return (
-    <MemberWrapper>
+    <UsersListItemWrapper>
       <Link to={`/profile/user?id=${id}`}>
-        <MemberAvatar src={getAvatarUrl(id)} />
+        <UsersListItemAvatar src={getAvatarUrl(id)} />
       </Link>
-      <MemberName to={`/profile/user?id=${id}`}>{full_name || name}</MemberName>
+      <UsersListItemFullName to={`/profile/user?id=${id}`}>{full_name || name}</UsersListItemFullName>
       {isAdminLayout && <DeleteMemberDialog groupId={groupId} memberId={id} />}
-    </MemberWrapper>
+    </UsersListItemWrapper>
   )
 }

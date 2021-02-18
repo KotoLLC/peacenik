@@ -4,15 +4,18 @@ import { ApiTypes } from 'src/types'
 import { getAvatarUrl } from '@services/avatarUrl'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
-import { ButtonContained } from '@view/shared/styles'
 import {
-  MemberWrapper,
-  MemberAvatar,
-  MemberName,
   MemberHeaderSidebar,
   MemberNameWrapperSidebar,
   MemberButtonsWrapperSidebar,
 } from './styles'
+
+import {
+  UsersListItemWrapper,
+  UsersListItemAvatar,
+  UsersListItemFullName,
+  ButtonContained,
+} from '@view/shared/styles' 
 
 interface Props extends ApiTypes.Friends.Friend {
   groupId: string
@@ -39,17 +42,17 @@ const UserForInvite: React.FC<Props> = (props) => {
   }
 
   return (
-    <MemberWrapper className="sidebar">
+    <UsersListItemWrapper className="sidebar">
       <MemberHeaderSidebar>
         <Link to={`/profile/user?id=${user.id}`}>
-          <MemberAvatar src={getAvatarUrl(user.id)} className="sidebar" />
+          <UsersListItemAvatar src={getAvatarUrl(user.id)} className="sidebar" />
         </Link>
         <MemberNameWrapperSidebar>
-          <MemberName
+          <UsersListItemFullName
             className="sidebar"
             to={`/profile/user?id=${user.id}`}>
             {user.full_name || user.name}
-          </MemberName>
+          </UsersListItemFullName>
         </MemberNameWrapperSidebar>
       </MemberHeaderSidebar>
       <MemberButtonsWrapperSidebar>
@@ -60,7 +63,7 @@ const UserForInvite: React.FC<Props> = (props) => {
           Invite
         </ButtonContained>
       </MemberButtonsWrapperSidebar>
-    </MemberWrapper>
+    </UsersListItemWrapper>
   )
 }
 

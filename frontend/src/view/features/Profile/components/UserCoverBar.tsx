@@ -17,11 +17,13 @@ import {
 
 interface Props {
   className?: string
+  friendsLenght: number
 }
 
 const UserCoverBar: React.FC<Props> = (props) => {
   const {
     className,
+    friendsLenght,
   } = props
 
   const [isRequested, setReauested] = useState<boolean>(false)
@@ -47,7 +49,7 @@ const UserCoverBar: React.FC<Props> = (props) => {
           </CoverBarCounterWrapper>
           <CoverBarCounterWrapper>
             <CoverBarCounterName>FRIENdS</CoverBarCounterName>
-            <CoverBarCounter>0</CoverBarCounter>
+            <CoverBarCounter>{friendsLenght}</CoverBarCounter>
           </CoverBarCounterWrapper>
         </CoverBarCounters>
         <CoverBarButtonsWrapper>

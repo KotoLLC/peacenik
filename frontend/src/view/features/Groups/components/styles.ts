@@ -620,76 +620,6 @@ export const MemberHeaderSidebar = styled.div`
   /* align-items: center; */
 `
 
-export const MemberWrapper = styled.li`
-  list-style: none;
-  min-height: 87px;
-  padding: 15px 20px;
-  background: #fff;
-  border-bottom: 1px solid rgba(200, 207, 212, 0.6);
-  display: flex;
-  align-items: center;
-
-  &:last-child {
-    border: none;
-  }
-
-  &.sidebar {
-    display: block;
-    padding: 15px;
-  }
-
-  @media (max-width: 770px){
-    padding: 15px 15px 20px;
-    flex-wrap: wrap;
-
-    &.sidebar {
-      padding: 15px 15px 20px;
-    }
-  }
-`
-
-export const MemberAvatar = styled(Avatar)`
-  width: 56px;
-  height: 56px;
-  background: #DEE5F2;
-  margin-right: 16px;
-
-  &.sidebar {
-    height: 40px;
-    width: 40px;
-  }
-
-  @media (max-width: 770px){
-    width: 50px;
-    height: 50px;
-    margin-right: 12px;
-
-    &.sidebar {
-      width: 50px;
-      height: 50px;
-      margin-right: 12px;
-    }
-  }
-`
-
-export const MemberName = styled(Link)`
-  display: block;
-  text-decoration: none;
-  font-family: 'SFUITextMedium';
-  color: #000;
-
-  &.sidebar {
-    font-size: 14px;
-    width: 100%;
-    margin-bottom: 5px;
-    display: block;
-  }
-
-  @media (max-width: 770px){
-    width: calc(100% - 65px);
-  }
-`
-
 export const MemberNameWrapperSidebar = styled.div`
   display: flex;
   align-items: center;
@@ -720,10 +650,6 @@ export const MemberButtonOutlined = styled(ButtonOutlined)`
   @media (max-width: 770px){
     margin-left: 0;
     margin-top: 15px;
-    height: 30px;
-    line-height: 30px;
-    font-size: 12px;
-    min-width: 110px;
   }
 `
 

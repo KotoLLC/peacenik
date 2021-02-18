@@ -4,16 +4,19 @@ import { ApiTypes } from 'src/types'
 import { getAvatarUrl } from '@services/avatarUrl'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
-import { ButtonOutlined, ButtonContained } from '@view/shared/styles'
 import {
-  MemberWrapper,
-  MemberAvatar,
-  MemberName,
   MemberHeaderSidebar,
-  MemberNameWrapperSidebar,
+  MemberNameWrapperSidebar, 
   MemberMessageSidebar,
   MemberButtonsWrapperSidebar,
 } from './styles'
+import {
+  UsersListItemWrapper,
+  UsersListItemAvatar,
+  UsersListItemFullName,
+  ButtonOutlined, 
+  ButtonContained,
+} from '@view/shared/styles' 
 
 interface Props extends ApiTypes.Groups.Invite {
   calback?: (data: ApiTypes.Groups.ConfirmDenyInvite) => void
@@ -51,17 +54,17 @@ const FriendForInvitation: React.FC<Props> = (props) => {
   }
 
   return (
-    <MemberWrapper className="sidebar">
+    <UsersListItemWrapper className="sidebar">
       <MemberHeaderSidebar>
         <Link to={`/profile/user?id=${invited_id}`}>
-          <MemberAvatar src={getAvatarUrl(invited_id)} className="sidebar" />
+          <UsersListItemAvatar src={getAvatarUrl(invited_id)} className="sidebar" />
         </Link>
         <MemberNameWrapperSidebar>
-          <MemberName
+          <UsersListItemFullName
             className="sidebar"
             to={`/profile/user?id=${invited_id}`}>
             {invited_full_name || invited_name}
-          </MemberName>
+          </UsersListItemFullName>
           <MemberMessageSidebar>{message}</MemberMessageSidebar>
         </MemberNameWrapperSidebar>
       </MemberHeaderSidebar>
@@ -70,7 +73,7 @@ const FriendForInvitation: React.FC<Props> = (props) => {
         {/* <ButtonOutlined onClick={onDeny} className="small grey">Ignore</ButtonOutlined> */}
         {/* <ButtonContained onClick={onConfirm} className="small">Approve</ButtonContained> */}
       </MemberButtonsWrapperSidebar>
-    </MemberWrapper>
+    </UsersListItemWrapper>
   )
 }
 

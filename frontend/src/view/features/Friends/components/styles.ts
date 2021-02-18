@@ -328,7 +328,6 @@ export const ButtonGroup = styled.div`
   display: inline-flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  min-width: 290px;
 
   span:last-child {
     margin: 0;

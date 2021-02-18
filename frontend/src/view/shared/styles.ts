@@ -375,7 +375,13 @@ export const ButtonContained = styled(Button)`
     background: #A1AEC8;
     color: #fff;
   }
-  
+
+  @media (max-width: 770px){
+    height: 30px;
+    line-height: 30px;
+    font-size: 12px;
+    min-width: 110px;
+  }
 `
 
 export const ButtonOutlined = styled(Button)`
@@ -433,6 +439,13 @@ export const ButtonOutlined = styled(Button)`
     background: #fff;
     border-color: #A1AEC8;
     color: #A1AEC8;
+  }
+
+  @media (max-width: 770px){
+    height: 30px;
+    line-height: 30px;
+    font-size: 12px;
+    min-width: 110px;
   }
 `
 
@@ -578,12 +591,20 @@ export const RightSideBar = styled.aside`
 export const CentralBar = styled.section`
   background: #fff;
   flex-grow: 1;
+  max-width: calc(100% - 580px);
   padding: 20px 0 20px;
   position: relative;
   border-radius: 0 0 4px 4px;
 
+
+
+  @media (max-width: 1024px){
+    max-width: calc(100% - 290px);
+  }
+
   @media (max-width: 770px){
     width: 100%;
+    max-width: 100%;
     margin-bottom: 20px;
     padding: 15px 0;
   }
@@ -760,5 +781,107 @@ export const CoverBarButtonsWrapper = styled.div`
   
   @media (max-width: 770px){
     margin-left: 0px;
+  }
+`
+
+export const UsersListItemWrapper = styled.li`
+  list-style: none;
+  min-height: 87px;
+  padding: 15px 20px;
+  background: #fff;
+  border-bottom: 1px solid rgba(200, 207, 212, 0.6);
+  display: flex;
+  align-items: center;
+
+  &:last-child {
+    border: none;
+  }
+
+  &.sidebar {
+    display: block;
+    padding: 15px;
+  }
+
+  @media (max-width: 770px){
+    padding: 15px 15px 20px;
+    flex-wrap: wrap;
+
+    &.sidebar {
+      padding: 15px 15px 20px;
+    }
+  }
+`
+
+export const UsersListItemAvatar = styled(Avatar)`
+  width: 56px;
+  height: 56px;
+  background: #DEE5F2;
+  margin-right: 16px;
+
+  &.sidebar {
+    height: 40px;
+    width: 40px;
+  }
+
+  @media (max-width: 770px){
+    width: 50px;
+    height: 50px;
+    margin-right: 12px;
+
+    &.sidebar {
+      width: 50px;
+      height: 50px;
+      margin-right: 12px;
+    }
+  }
+`
+
+export const UsersListItemNamesWrapper = styled.div`
+  text-overflow: ellipsis;
+  overflow: hidden; 
+  white-space: nowrap;
+  
+  @media (max-width: 770px){
+    width: calc(100% - 65px);
+  }
+`
+
+export const UsersListItemFullName = styled(Link)`
+  display: block;
+  text-decoration: none;
+  font-family: 'SFUITextMedium';
+  color: #000;
+  text-overflow: ellipsis;
+  overflow: hidden; 
+  white-space: nowrap;
+
+  &.sidebar {
+    font-size: 14px;
+    width: 100%;
+    margin-bottom: 5px;
+    display: block;
+  }
+
+  @media (max-width: 770px){
+    width: calc(100% - 65px);
+  }
+`
+
+export const UsersListItemName = styled(Link)`
+  font-size: 12px;
+  color: #ABB7CD;
+  font-family: 'SFUITextRegular';
+
+  @media (max-width: 1025px){}
+  
+  @media (max-width: 770px){}
+`
+
+export const UsersListItemButtons = styled.div`
+  margin-left: auto;
+
+  @media (max-width: 770px){
+    margin-left: 0;
+    margin-top: 15px;
   }
 `
