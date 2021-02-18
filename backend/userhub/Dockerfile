@@ -1,4 +1,5 @@
 FROM golang:1.15-alpine as builder
+RUN apk add build-base
 
 COPY go.mod /service/
 COPY go.sum /service/
@@ -13,7 +14,7 @@ COPY common/*.go ./common/
 
 COPY userhub/ ./userhub/
 
-RUN GOOS=linux GOARCH=amd64 go build -o user-hub-service ./userhub/cmd/
+RUN GOOS=linux GOARCH=amd64 go build -ldflags '-linkmode=external' -o user-hub-service ./userhub/cmd/
 
 FROM alpine
 
