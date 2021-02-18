@@ -12,6 +12,7 @@ COPY . ./
 RUN npm run build
 
 FROM golang:1.15-alpine as server-builder
+RUN apk add build-base
 
 WORKDIR /server
 
@@ -22,7 +23,7 @@ RUN go mod download
 
 COPY server/*.go ./
 
-RUN GOOS=linux GOARCH=amd64 go build -o frontend-server .
+RUN GOOS=linux GOARCH=amd64 go build -ldflags '-linkmode=external' -o frontend-server .
 
 FROM alpine
 
