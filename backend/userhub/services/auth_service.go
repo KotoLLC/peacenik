@@ -20,14 +20,15 @@ import (
 
 const (
 	confirmFrontendPath = "/confirm-user?token=%s"
-	confirmEmailSubject = "Please confirm your KOTO account"
-	confirmEmailBody    = `Hi there!<p>Thanks for registering.</p>Please click the link below to confirm your account:</p>
-<p><a href="%s" target="_blank">Click here</a>.</p><p>Thanks!</p>`
+	confirmEmailSubject = "Confirm your Peacenik account"
+	confirmEmailBody    = `<p>Thanks for registering with Peacenik.</p>
+<p>Please confirm your account by clicking <a href="%s" target="_blank">this link</a>.</p>`
 
-	resetPasswordSubject      = "KOTO password reset"
+	resetPasswordSubject      = "Peacenik password reset"
 	resetPasswordFrontendPath = "/reset-password?name=%s&email=%s&token=%s"
-	resetPasswordEmailBody    = `<p>To reset password, click on the link below:</p>
-<p><a href="%s" target="_blank">Click here</a>.</p><p>Thanks!</p>`
+	resetPasswordEmailBody    = `<p>Thanks for requesting to reset your password.</p>
+<p>If you did not make this request, you can ignore this email.</p>
+<p>Otherwise you can reset your password by clicking <a href="%s" target="_blank">this link</a>.</p>`
 
 	SessionDefaultMaxAge = time.Hour * 24 * 365 * 10
 )
@@ -335,12 +336,12 @@ func (s *authService) sendInviteLinkToRegisteredUser(ctx context.Context, invite
 		return nil
 	}
 
-	attachments := s.GetUserAttachments(ctx, inviter)
+	attachments := s.GetUserAttachments(ctx, inviter.ID)
 
 	inviterInfo := s.userCache.UserFullAccess(inviter.ID)
 	link := fmt.Sprintf("%s"+invitationsFrontendPath, s.cfg.FrontendAddress)
-	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviterInfo.DisplayName+" invited you to be friends on KOTO",
-		fmt.Sprintf(inviteRegisteredUserEmailBody, attachments.InlineHTML("avatar"), link),
+	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviterInfo.DisplayName+" invited you to be friends",
+		fmt.Sprintf(inviteRegisteredUserEmailBody, attachments.InlineHTML("avatar"), inviterInfo.DisplayName, link),
 		attachments)
 }
 
@@ -360,17 +361,20 @@ func (s *authService) RecallNames(_ context.Context, r *rpc.AuthRecallNamesReque
 		userNames[i] = userInfo.DisplayName
 	}
 
-	var message string
-	switch len(userNames) {
-	case 0:
-		message = "Your email is not associated with username"
-	case 1:
-		message = "Your email is associated with one username: " + userNames[0]
-	default:
-		message = "Your email is associated with more than one username:\n" + strings.Join(userNames, "\n")
+	var message strings.Builder
+	message.WriteString("<p>Thanks for requesting a username reminder.</p>\n")
+	if len(userNames) == 0 {
+		message.WriteString("<p>Your email address is not associated with username.</p>\n")
+	} else {
+		message.WriteString("<p>Your email address is associated with the following usernames:</p>\n")
+		for _, userName := range userNames {
+			message.WriteString("<p>")
+			message.WriteString(userName)
+			message.WriteString("</p>\n")
+		}
 	}
 
-	err := s.mailSender.SendTextEmail([]string{r.Email}, "Koto username reminder", message)
+	err := s.mailSender.SendHTMLEmail([]string{r.Email}, "Peacenik username reminder", message.String(), nil)
 	if err != nil {
 		return nil, err
 	}

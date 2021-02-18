@@ -18,14 +18,17 @@ import (
 
 const (
 	registerFrontendPath            = "/registration?email=%s&invite=%s"
-	inviteUnregisteredUserEmailBody = `%s
-<p>To accept the invitation, click on the link below, register, and visit the friends page:</p>
-<p><a href="%s" target="_blank">Click here</a>.</p><p>Thanks!</p>`
+	inviteUnregisteredUserEmailBody = inviteRegisteredUserEmailBody
 
 	invitationsFrontendPath       = "/friends/invitations"
 	inviteRegisteredUserEmailBody = `%s
-<p>To accept the invitation, click on the link below, log in, and visit the friends page:</p>
-<p><a href="%s" target="_blank">Click here</a>.</p><p>Thanks!</p>`
+<p>%s invited you to be friends on Peacenik.</p>
+<p>To accept the invitation click <a href="%s" target="_blank">here</a>.</p>
+<p>Peacenik is an ad-free, hate-free social network for sharing ideas, photos, and videos.
+The community agrees to a code of conduct prohibiting bullying, bating, hate speech etc.
+Peacenik is also distributed, which means member messages are stored on independent servers all over the world.</p>
+<p>Thanks!</p>
+`
 )
 
 type inviteService struct {
@@ -174,12 +177,12 @@ func (s *inviteService) sendInviteLinkToUnregisteredUser(ctx context.Context, in
 		return merry.Wrap(err)
 	}
 
-	attachments := s.GetUserAttachments(ctx, inviter)
+	attachments := s.GetUserAttachments(ctx, inviter.ID)
 
 	inviterInfo := s.userCache.UserFullAccess(inviter.ID)
 	link := fmt.Sprintf("%s"+registerFrontendPath, s.cfg.FrontendAddress, url.QueryEscape(userEmail), inviteToken)
-	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviterInfo.DisplayName+" invited you to be friends on KOTO",
-		fmt.Sprintf(inviteUnregisteredUserEmailBody, attachments.InlineHTML("avatar"), link),
+	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviterInfo.DisplayName+" invited you to be friends",
+		fmt.Sprintf(inviteUnregisteredUserEmailBody, attachments.InlineHTML("avatar"), inviterInfo.DisplayName, link),
 		attachments)
 }
 
@@ -188,11 +191,11 @@ func (s *inviteService) sendInviteLinkToRegisteredUser(ctx context.Context, invi
 		return nil
 	}
 
-	attachments := s.GetUserAttachments(ctx, inviter)
+	attachments := s.GetUserAttachments(ctx, inviter.ID)
 
 	inviterInfo := s.userCache.UserFullAccess(inviter.ID)
 	link := fmt.Sprintf("%s"+invitationsFrontendPath, s.cfg.FrontendAddress)
-	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviterInfo.DisplayName+" invited you to be friends on KOTO",
-		fmt.Sprintf(inviteRegisteredUserEmailBody, attachments.InlineHTML("avatar"), link),
+	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviterInfo.DisplayName+" invited you to be friends",
+		fmt.Sprintf(inviteRegisteredUserEmailBody, attachments.InlineHTML("avatar"), inviterInfo.DisplayName, link),
 		attachments)
 }

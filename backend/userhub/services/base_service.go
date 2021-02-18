@@ -77,9 +77,9 @@ func (s *BaseService) getUser(ctx context.Context, userID string) (*repo.User, b
 	return user, isFriend
 }
 
-func (s *BaseService) GetUserAttachments(ctx context.Context, user repo.User) common.MailAttachmentList {
+func (s *BaseService) GetUserAttachments(ctx context.Context, userID string) common.MailAttachmentList {
 	me := s.getMe(ctx)
-	userInfo := s.userCache.User(user.ID, me.ID)
+	userInfo := s.userCache.User(userID, me.ID)
 	if userInfo.AvatarThumbnailID == "" {
 		return nil
 	}

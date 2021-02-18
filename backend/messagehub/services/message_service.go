@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
+	"fmt"
 	"image/jpeg"
 	"log"
 	"path/filepath"
@@ -22,8 +23,12 @@ import (
 )
 
 const (
-	fileTypeBufSize = 8192
-)
+	fileTypeBufSize     = 8192
+	mentionMailTemplate = `<p>Greetings from Peacenik!</p>
+<p>%s mentioned you in a message.</p>
+<p>To view the message click [here].</p>
+<p>Thanks!</p>`
+) // TODO: link [here]
 
 type messageService struct {
 	*BaseService
@@ -119,7 +124,12 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 	}
 
 	if len(notifiedUsers) > 0 && s.notificationSender != nil {
-		s.notificationSender.SendNotification(notifiedUsers, user.DisplayName()+" posted a new message", "message/post", notifyData)
+		s.notificationSender.SendNotification(Notification{
+			UserIDs:     notifiedUsers,
+			Text:        user.DisplayName() + " posted a new message",
+			MessageType: "message/post",
+			Data:        notifyData,
+		})
 	}
 
 	var userTags []string
@@ -133,7 +143,15 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		}
 	}
 	if len(notifyUsers) > 0 && s.notificationSender != nil {
-		s.notificationSender.SendNotification(notifyUsers, user.DisplayName()+" tagged you in a message", "message/tag", notifyData)
+		notification := Notification{
+			UserIDs:     notifyUsers,
+			Text:        user.DisplayName() + " mentioned you in a message",
+			MailSubject: user.DisplayName() + " mentioned you in a message",
+			MailBody:    fmt.Sprintf(mentionMailTemplate, user.DisplayName()),
+			MessageType: "message/tag",
+			Data:        notifyData,
+		}
+		s.notificationSender.SendNotification(notification)
 	}
 	attachmentLink, err := s.createBlobLink(ctx, msg.AttachmentID)
 	if err != nil {
@@ -560,7 +578,12 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 	}
 
 	if user.ID != msg.UserID {
-		s.notificationSender.SendNotification([]string{msg.UserID}, user.DisplayName()+" posted a new comment", "comment/post", notifyData)
+		s.notificationSender.SendNotification(Notification{
+			UserIDs:     []string{msg.UserID},
+			Text:        user.DisplayName() + " posted a new comment",
+			MessageType: "comment/post",
+			Data:        notifyData,
+		})
 	}
 
 	userTags := message.FindUserTags(comment.Text)
@@ -570,7 +593,12 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 			notifyUsers = append(notifyUsers, taggedUserID)
 		}
 	}
-	s.notificationSender.SendNotification(notifyUsers, user.DisplayName()+" tagged you in a comment", "comment/tag", notifyData)
+	s.notificationSender.SendNotification(Notification{
+		UserIDs:     notifyUsers,
+		Text:        user.DisplayName() + " mentioned you in a comment",
+		MessageType: "comment/tag",
+		Data:        notifyData,
+	})
 
 	attachmentLink, err := s.createBlobLink(ctx, comment.AttachmentID)
 	if err != nil {
@@ -741,7 +769,12 @@ func (s *messageService) LikeMessage(ctx context.Context, r *rpc.MessageLikeMess
 		if msg.FriendID.Valid {
 			notifyData["friend-id"] = msg.FriendID.String
 		}
-		s.notificationSender.SendNotification([]string{msg.UserID}, user.DisplayName()+" liked your post", "message/like", notifyData)
+		s.notificationSender.SendNotification(Notification{
+			UserIDs:     []string{msg.UserID},
+			Text:        user.DisplayName() + " liked your post",
+			MessageType: "message/like",
+			Data:        notifyData,
+		})
 	}
 
 	return &rpc.MessageLikeMessageResponse{
@@ -788,7 +821,12 @@ func (s *messageService) LikeComment(ctx context.Context, r *rpc.MessageLikeComm
 		if msg != nil && msg.FriendID.Valid {
 			notifyData["friend-id"] = msg.FriendID.String
 		}
-		s.notificationSender.SendNotification([]string{comment.UserID}, user.DisplayName()+" liked your comment", "comment/like", notifyData)
+		s.notificationSender.SendNotification(Notification{
+			UserIDs:     []string{comment.UserID},
+			Text:        user.DisplayName() + " liked your comment",
+			MessageType: "comment/like",
+			Data:        notifyData,
+		})
 	}
 	return &rpc.MessageLikeCommentResponse{
 		Likes: int32(newLikeCount),

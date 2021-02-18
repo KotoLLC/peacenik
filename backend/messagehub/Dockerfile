@@ -1,4 +1,5 @@
 FROM golang:1.15-alpine as builder
+RUN apk add build-base
 
 COPY go.mod /service/
 COPY go.sum /service/
@@ -12,7 +13,7 @@ COPY common/*.go ./common/
 
 COPY ./messagehub/ ./messagehub/
 
-RUN GOOS=linux GOARCH=amd64 go build -o message-hub-service ./messagehub/cmd/
+RUN GOOS=linux GOARCH=amd64 go build -ldflags '-linkmode=external' -o message-hub-service ./messagehub/cmd/
 
 FROM jrottenberg/ffmpeg:3.4-alpine
 
