@@ -1,4 +1,5 @@
 FROM golang:1.15-alpine as builder
+RUN apk add build-base
 
 COPY go.mod /service/
 COPY go.sum /service/
