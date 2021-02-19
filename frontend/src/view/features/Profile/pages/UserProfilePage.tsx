@@ -11,6 +11,7 @@ import queryString from 'query-string'
 import ProfileFriend from '../components/ProfileFriend'
 import { capitalizeFirstLetter } from '@services/capitalizeFirstLetter'
 import { ProfileCommonFriend } from './../components/ProfileCommonFriend'
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt'
 import {
   Container,
   PageCover,
@@ -23,6 +24,10 @@ import {
   ProfileName,
   ProfileNote,
 } from '@view/shared/styles'
+import {
+  NoFriendsWrapper,
+  NoFriendsTitle,
+} from './../components/styles'
 
 interface Props extends RouteComponentProps {
   userName: string
@@ -74,23 +79,35 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
   })
 
   const mapFriendsList = () => {
+    if (selectedFriend === null) return null
 
-    if (!selectedFriend) return null
+    if (selectedFriend?.friends?.length) {
+      return selectedFriend.friends.map(item => {
+        const { user, invite_status } = item
 
-    return selectedFriend.friends.map(item => {
-      const { user, invite_status } = item
+        return <ProfileFriend
+          key={uuidv4()}
+          fullName={user.full_name}
+          name={user.name}
+          id={user.id}
+          inviteStatus={invite_status}
+        />
+      })
+    } else {
+      return (
+        <>
+          <NoFriendsWrapper>
+            <PeopleAltIcon />
+          </NoFriendsWrapper>
+          <NoFriendsTitle>No friens yet</NoFriendsTitle>
+        </>
+      )
+    }
 
-      return <ProfileFriend
-        key={uuidv4()}
-        fullName={user.full_name}
-        name={user.name}
-        id={user.id}
-        inviteStatus={invite_status}
-      />
-    })
   }
 
   const mapCommonFriendsList = () => {
+
     if (!selectedFriend) return null
 
     if (commonFriends.length) {
@@ -107,7 +124,14 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
         )
       })
     } else {
-      return <>No common friends found</>
+      return (
+        <>
+          <NoFriendsWrapper className="small-size">
+            <PeopleAltIcon />
+          </NoFriendsWrapper>
+          <NoFriendsTitle className="small-size">No friens yet</NoFriendsTitle>
+        </>
+      )
     }
 
   }

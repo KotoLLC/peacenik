@@ -596,8 +596,6 @@ export const CentralBar = styled.section`
   position: relative;
   border-radius: 0 0 4px 4px;
 
-
-
   @media (max-width: 1024px){
     max-width: calc(100% - 290px);
   }
