@@ -65,7 +65,8 @@ func (s *userService) Friends(ctx context.Context, _ *rpc.Empty) (*rpc.UserFrien
 				FullName:     friendInfo.FullName,
 				HideIdentity: friendInfo.HideIdentity,
 			},
-			Friends: rpcUsers,
+			Friends:    rpcUsers,
+			GroupCount: int32(s.repos.Group.UserGroupCount(friend.ID)),
 		})
 	}
 
