@@ -497,13 +497,39 @@ export const ContainerTitle = styled.h3`
   text-transform: uppercase;
 `
 
+export const PageCoverWrapper = styled.div`
+  background-color: #A1AEC8;
+  position: relative;
+`
+
+export const PageCoverIconWrapper = styled.figure`
+  position: absolute;
+  display: inline-flex;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 15px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+
+  svg {
+    font-size: 40px;
+    color: #fff;
+  }
+
+  @media (max-width: 770px){
+    display: none;
+  }
+`
+
 export const PageCover = styled.div`
   width: 100%;
   height: 333px;
   margin-top: 60px;
+  position: relative;
+  z-index: 10;
   background-position: center;
   background-size: cover;
-  background-color: #A1AEC8;
   background-image:  ${props => `url(${props.resource})`};
 
   @media (max-width: 1025px){

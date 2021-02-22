@@ -12,9 +12,12 @@ import ProfileFriend from '../components/ProfileFriend'
 import { capitalizeFirstLetter } from '@services/capitalizeFirstLetter'
 import { ProfileCommonFriend } from './../components/ProfileCommonFriend'
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt'
+import ImageIcon from '@material-ui/icons/Image'
 import {
   Container,
   PageCover,
+  PageCoverWrapper,
+  PageCoverIconWrapper,
   ProfileAvatar,
   LeftSideBar,
   RightSideBar,
@@ -133,7 +136,12 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
 
   return (
     <>
-      <PageCover resource={getGroupCoverUrl('')} />
+      <PageCoverWrapper>
+        <PageCoverIconWrapper>
+          <ImageIcon/>
+        </PageCoverIconWrapper>
+        <PageCover resource={getGroupCoverUrl('')}/>
+      </PageCoverWrapper>
       <UserCoverBar
         inviteStatus={selectedFriend?.invite_status}
         id={selectedFriend?.user?.id}
