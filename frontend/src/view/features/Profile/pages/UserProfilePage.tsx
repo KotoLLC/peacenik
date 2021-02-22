@@ -68,7 +68,7 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
     friendsLength,
   ])
 
-  const selectedFriend = friends?.find(item => item.user.id === userId) || null
+  let selectedFriend = friends?.find(item => item.user.id === userId) || null
 
   let commonFriends: ApiTypes.Friends.Friend[] = []
 
@@ -79,8 +79,6 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
   })
 
   const mapFriendsList = () => {
-    if (selectedFriend === null) return null
-
     if (selectedFriend?.friends?.length) {
       return selectedFriend.friends.map(item => {
         const { user, invite_status } = item
@@ -108,8 +106,6 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
 
   const mapCommonFriendsList = () => {
 
-    if (!selectedFriend) return null
-
     if (commonFriends.length) {
       return commonFriends.map(item => {
         const { user } = item
@@ -133,13 +129,15 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
         </>
       )
     }
-
   }
 
   return (
     <>
       <PageCover resource={getGroupCoverUrl('')} />
       <UserCoverBar
+        inviteStatus={selectedFriend?.invite_status}
+        id={selectedFriend?.user?.id}
+        userName={selectedFriend?.user?.name}
         friendsLenght={selectedFriend?.friends?.length || 0}
         className="desktop-only"
       />
@@ -147,16 +145,19 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
         <PageColumnBarsWrapper>
           <LeftSideBar>
             <ProfileAvatar src={getAvatarUrl(userId as string)} />
-            <ProfileName>{users[0]?.full_name}</ProfileName>
-            <ProfileNote>@{users[0]?.name}</ProfileNote>
+            <ProfileName>{selectedFriend?.user?.full_name}</ProfileName>
+            <ProfileNote>@{selectedFriend?.user?.name}</ProfileNote>
             <UserCoverBar
+              id={selectedFriend?.user?.id}
+              userName={selectedFriend?.user?.name}
+              inviteStatus={selectedFriend?.invite_status}
               friendsLenght={selectedFriend?.friends?.length || 0}
               className="mobile-only"
             />
           </LeftSideBar>
           <CentralBar>
             <PageBarTitle>
-              {`${capitalizeFirstLetter(users[0]?.name)}\`s 
+              {`${capitalizeFirstLetter(selectedFriend?.user?.name || '')}\`s 
               friends (${selectedFriend?.friends?.length || 0})`}
             </PageBarTitle>
             {mapFriendsList()}
@@ -185,4 +186,4 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onAddFriend: (data: ApiTypes.Friends.Request) => dispatch(Actions.friends.addFriendRequest(data)),
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserProfilePage)
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(UserProfilePage))

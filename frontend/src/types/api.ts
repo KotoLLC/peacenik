@@ -104,7 +104,7 @@ export declare namespace ApiTypes {
       friend: string
     }
 
-    export type InvitationStatus = 'rejected' | 'pending' | 'accepted'
+    export type InvitationStatus = 'rejected' | 'pending' | 'accepted' | ''
 
     export interface Invitation {
       friend_id: string

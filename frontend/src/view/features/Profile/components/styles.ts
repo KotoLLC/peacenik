@@ -1,4 +1,6 @@
 import styled from 'styled-components'
+import { ButtonOutlined, ButtonContained } from '@view/shared/styles'
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz'
 
 export const NoFriendsWrapper = styled.div`
   width: 196px;
@@ -68,5 +70,43 @@ export const NoFriendsTitle = styled.h3`
       font-size: 16px;
       margin: 20px 0;
     }
+  }
+`
+
+export const ButtonOutlinedStyled = styled(ButtonOutlined)`
+  margin-left: 10px;
+  margin-right: 10px;
+
+  @media (max-width: 770px) {
+    margin-right: 0px;
+    margin-top: 10px;
+  }
+
+  @media (max-width: 370px) {
+    margin: 10px 5px 0;
+  }
+` 
+
+export const ButtonContainedStyled = styled(ButtonContained)`
+  margin-right: 10px;
+
+  @media (max-width: 770px) {
+    margin-top: 10px;
+  }
+
+  @media (max-width: 370px) {
+    margin: 10px 5px 0;
+  }
+`
+
+export const DotsIcon = styled(MoreHorizIcon)`
+  color: #A1AEC8;
+`
+
+export const CoverBarDropdownWrapper = styled.div`
+  display: inline-block;
+  
+  @media (max-width: 770px) {
+    width: 100%;
   }
 `

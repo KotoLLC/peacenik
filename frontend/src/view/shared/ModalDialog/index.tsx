@@ -10,7 +10,7 @@ import {
 } from './styles'
 
 interface Props {
-  title: string
+  title?: string
   isModalOpen: boolean
   setOpenModal: (value: boolean) => void
 }
@@ -34,7 +34,7 @@ export const ModalDialog: React.FC<Props> = (props) => {
           <ModalCloseBtn>
             <CloseIcon onClick={() => setOpenModal(false)} />
           </ModalCloseBtn>
-          <ModalTitle>{title}</ModalTitle>
+          {title && <ModalTitle>{title}</ModalTitle>}
           {props.children}
         </ModalViewport>
       </Fade>

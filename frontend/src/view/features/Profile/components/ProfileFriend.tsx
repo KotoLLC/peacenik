@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { getAvatarUrl } from '@services/avatarUrl'
 import { ApiTypes, StoreTypes } from 'src/types'
@@ -63,6 +63,10 @@ const ProfileFriend: React.FC<Props> = React.memo((props) => {
       )
     }
   }
+
+  useEffect(() => {
+    setRequest(false)
+  }, [props])
 
   const onButtonClick = () => {
     setRequest(true)

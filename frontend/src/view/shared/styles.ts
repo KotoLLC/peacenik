@@ -771,10 +771,10 @@ export const CoverBarCounters = styled.div`
 `
 
 export const CoverBarButtonsWrapper = styled.div`
-  margin-left: 290px;
+  /* margin-left: 290px; */
 
   @media (max-width: 1025px){
-    margin-left: 180px;
+    /* margin-left: 180px; */
   }
   
   @media (max-width: 770px){
