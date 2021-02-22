@@ -24,6 +24,7 @@ message UserFriendsFriendOfFriend {
 message UserFriendsFriend {
     User user = 1;
     repeated UserFriendsFriendOfFriend friends = 2;
+    int32 group_count = 3;
 }
 
 message UserFriendsResponse {

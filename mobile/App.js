@@ -15,7 +15,7 @@ import CookieManager from '@react-native-community/cookies';
 import axios from 'axios';
 import SplashScreen from 'react-native-splash-screen';
 
-const url = 'https://koto.at';
+const url = 'https://peacenik.app';
 const inAppUrls = [
   url,
   'https://www.youtube.com',

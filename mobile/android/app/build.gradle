@@ -1,5 +1,4 @@
 apply plugin: "com.android.application"
-apply plugin: 'com.google.gms.google-services'
 
 import com.android.build.OutputFile
 
@@ -130,11 +129,11 @@ android {
     }
 
     defaultConfig {
-        applicationId "koto.at"
+        applicationId "com.peacenik"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 6
-        versionName "1.5"
+        versionCode 1
+        versionName "1.0"
     }
     splits {
         abi {
@@ -185,7 +184,6 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    implementation project(':react-native-splash-screen')
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 

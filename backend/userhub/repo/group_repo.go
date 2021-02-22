@@ -75,6 +75,7 @@ type GroupRepo interface {
 	JoinStatuses(userID string) map[string]string
 	JoinStatus(userID, groupID string) string
 	UserGroups(userID string) []Group
+	UserGroupCount(userID string) int
 }
 
 func NewGroups(db *sqlx.DB) GroupRepo {
@@ -690,4 +691,17 @@ func (r *groupRepo) UserGroups(userID string) []Group {
 		panic(err)
 	}
 	return groups
+}
+
+func (r *groupRepo) UserGroupCount(userID string) int {
+	var count int
+	err := r.db.Get(&count, `
+		select count(*)
+		from group_users
+		where user_id = $1;`,
+		userID)
+	if err != nil {
+		panic(err)
+	}
+	return count
 }
