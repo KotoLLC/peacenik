@@ -190,24 +190,24 @@ func (r *inviteRepo) InviteStatuses(user User) map[string]string {
 	}
 
 	err := r.db.Select(&items, `
-with t as (
-    select u.id user_id,
-           i.accepted_at,
-           i.rejected_at,
-           row_number() over (partition by i.friend_id order by i.created_at desc) rn
-    from invites i
-             inner join users u on u.id = i.friend_id
-    where i.user_id = $1
-)
-select user_id,
-       case
-           when rejected_at is not null then 'rejected'
-           when accepted_at is not null then 'accepted'
-           else 'pending'
-           end status
-from t
-where rn = 1;
-`, user.ID)
+		with t as (
+			select u.id user_id,
+				   i.accepted_at,
+				   i.rejected_at,
+				   row_number() over (partition by i.friend_id order by i.created_at desc) rn
+			from invites i
+					 inner join users u on u.id = i.friend_id
+			where i.user_id = $1
+		)
+		select user_id,
+			   case
+				   when rejected_at is not null then 'rejected'
+				   when accepted_at is not null then 'accepted'
+				   else 'pending'
+				   end status
+		from t
+		where rn = 1;`,
+		user.ID)
 	if err != nil {
 		panic(err)
 	}
@@ -218,23 +218,23 @@ where rn = 1;
 	}
 
 	err = r.db.Select(&items, `
-with t as (
-    select i.user_id,
-           i.accepted_at,
-           i.rejected_at,
-           row_number() over (partition by i.friend_id order by i.created_at desc) rn
-    from invites i
-    where i.friend_id = $1
-)
-select user_id,
-       case
-           when rejected_at is not null then 'rejected'
-           when accepted_at is not null then 'accepted'
-           else 'pending'
-           end status
-from t
-where rn = 1
-`, user.ID)
+		with t as (
+			select i.user_id,
+				   i.accepted_at,
+				   i.rejected_at,
+				   row_number() over (partition by i.friend_id order by i.created_at desc) rn
+			from invites i
+			where i.friend_id = $1
+		)
+		select user_id,
+			   case
+				   when rejected_at is not null then 'rejected'
+				   when accepted_at is not null then 'accepted'
+				   else 'pending'
+				   end status
+		from t
+		where rn = 1;`,
+		user.ID)
 	if err != nil {
 		panic(err)
 	}
