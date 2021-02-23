@@ -245,7 +245,10 @@ func (s *userService) setAvatar(ctx context.Context, user repo.User, avatarID st
 func (s *userService) Users(ctx context.Context, r *rpc.UserUsersRequest) (*rpc.UserUsersResponse, error) {
 	me := s.getMe(ctx)
 	users := s.repos.User.FindUsers(r.UserIds)
+	inviteStatuses := s.repos.Invite.InviteStatuses(me)
+
 	rpcUsers := make([]*rpc.User, len(users))
+	rpcInviteStatuses := make([]string, len(users))
 	for i, user := range users {
 		userInfo := s.userCache.User(user.ID, me.ID)
 		rpcUsers[i] = &rpc.User{
@@ -254,10 +257,12 @@ func (s *userService) Users(ctx context.Context, r *rpc.UserUsersRequest) (*rpc.
 			FullName:     userInfo.FullName,
 			HideIdentity: userInfo.HideIdentity,
 		}
+		rpcInviteStatuses[i] = inviteStatuses[user.ID]
 	}
 
 	return &rpc.UserUsersResponse{
-		Users: rpcUsers,
+		Users:          rpcUsers,
+		InviteStatuses: rpcInviteStatuses,
 	}, nil
 }
 
