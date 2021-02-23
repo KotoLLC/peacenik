@@ -120,7 +120,7 @@ const ResetPasswordPage = (props) => {
       <SuccessIconWrapper>
         <SuccessIcon src={successIcon}/>
       </SuccessIconWrapper>
-      <ConfirmMessage>Reset request sent. Please check your email</ConfirmMessage>
+      <ConfirmMessage>Your password was reset successfully</ConfirmMessage>
     </>
   )
 
