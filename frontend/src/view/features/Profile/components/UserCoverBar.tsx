@@ -25,6 +25,7 @@ interface Props {
   className?: string
   friendsLenght: number
   inviteStatus?: ApiTypes.Friends.InvitationStatus
+  groupCount?: number
   errorMessage: string
 
   onAddFriend: (data: ApiTypes.Friends.Request) => void
@@ -40,6 +41,7 @@ const UserCoverBar: React.FC<Props> = (props) => {
     userName,
     inviteStatus,
     errorMessage,
+    groupCount,
   } = props
   const [isRequest, setRequest] = useState<boolean>(false)
   const [isUnfriendDialogOpen, openUnfriendDialog] = useState<boolean>(false)
@@ -90,7 +92,7 @@ const UserCoverBar: React.FC<Props> = (props) => {
     onAddFriend({ friend: id })
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     setRequest(false)
   }, [props, errorMessage])
 
@@ -100,7 +102,7 @@ const UserCoverBar: React.FC<Props> = (props) => {
         <CoverBarCounters>
           <CoverBarCounterWrapper>
             <CoverBarCounterName>GROUPS</CoverBarCounterName>
-            <CoverBarCounter>0</CoverBarCounter>
+            <CoverBarCounter>{groupCount}</CoverBarCounter>
           </CoverBarCounterWrapper>
           <CoverBarCounterWrapper>
             <CoverBarCounterName>FRIENdS</CoverBarCounterName>

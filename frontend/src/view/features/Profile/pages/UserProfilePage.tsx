@@ -143,9 +143,10 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
         <PageCover resource={getGroupCoverUrl('')}/>
       </PageCoverWrapper>
       <UserCoverBar
-        inviteStatus={selectedFriend?.invite_status}
         id={selectedFriend?.user?.id}
         userName={selectedFriend?.user?.name}
+        inviteStatus={selectedFriend?.invite_status}
+        groupCount={selectedFriend?.group_count}
         friendsLenght={selectedFriend?.friends?.length || 0}
         className="desktop-only"
       />
@@ -158,6 +159,7 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
             <UserCoverBar
               id={selectedFriend?.user?.id}
               userName={selectedFriend?.user?.name}
+              groupCount={selectedFriend?.group_count}
               inviteStatus={selectedFriend?.invite_status}
               friendsLenght={selectedFriend?.friends?.length || 0}
               className="mobile-only"

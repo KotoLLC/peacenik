@@ -91,6 +91,7 @@ export declare namespace ApiTypes {
         user: User
         invite_status: InvitationStatus
       }[]
+      group_count: number
       invite_status: InvitationStatus
     }
 
