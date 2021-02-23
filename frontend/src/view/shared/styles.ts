@@ -548,6 +548,8 @@ export const ProfileAvatar = styled(Avatar)`
   background: #DEE5F2;
   margin: -160px auto 30px;
   border: 6px solid #FFFFFF;
+  position: relative;
+  z-index: 20;
 
   @media (max-width: 1025px){
     width: 160px;
@@ -797,10 +799,10 @@ export const CoverBarCounters = styled.div`
 `
 
 export const CoverBarButtonsWrapper = styled.div`
-  /* margin-left: 290px; */
+  margin-left: 290px;
 
   @media (max-width: 1025px){
-    /* margin-left: 180px; */
+    margin-left: 180px;
   }
   
   @media (max-width: 770px){
