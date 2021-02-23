@@ -2,6 +2,7 @@ package userhub
 
 import (
 	"context"
+	"embed"
 	"errors"
 	"fmt"
 	"log"
@@ -26,6 +27,9 @@ import (
 	"github.com/mreider/koto/backend/userhub/rpc"
 	"github.com/mreider/koto/backend/userhub/services"
 )
+
+//go:embed _templates/email
+var emailTemplateFS embed.FS
 
 const (
 	cookieAuthenticationKey    = "oSKDA9fDNa6jIHArw8MHGBPe0XZm4hnY"
@@ -66,6 +70,11 @@ func NewServer(cfg config.Config, pubKeyPEM string, repos repo.Repos, userCache 
 }
 
 func (s *Server) Run() error {
+	rootEmailTemplate, err := common.ParseTemplates(emailTemplateFS, "_templates/email")
+	if err != nil {
+		return err
+	}
+
 	r := chi.NewRouter()
 	s.setupMiddlewares(r)
 
@@ -105,7 +114,7 @@ func (s *Server) Run() error {
 	notificationSender := services.NewNotificationSender(s.repos, s.userCache, firebaseClient, mailSender)
 	notificationSender.Start()
 	baseService := services.NewBase(s.repos, s.userCache, s.s3Storage, s.tokenGenerator, s.tokenParser, mailSender,
-		s.cfg, notificationSender)
+		s.cfg, notificationSender, rootEmailTemplate)
 	notificationSender.SetGetUserAttachments(baseService.GetUserAttachments)
 
 	passwordHash := bcrypt.NewPasswordHash()

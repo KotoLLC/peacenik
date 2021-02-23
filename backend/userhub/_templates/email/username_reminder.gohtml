@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>Peacenik</title>
+    <style>
+        {{ template "style.css" . }}
+    </style>
+</head>
+<body>
+<table id="email-body">
+    <tbody>
+    <tr>
+        <td class="side-space"></td>
+        <td>
+            <p>Thanks for requesting a username reminder.<br>
+                Your email address is associated with the following usernames:</p>
+        </td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td class="space-in-between"></td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td class="usernames">
+            {{ range .Users -}}
+            <p>{{ .Name }}{{ if .FullName }} <span class="color-gray">({{ .FullName }})</span>{{ end }}</p>
+            {{- end }}
+        </td>
+        <td class="side-space"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
