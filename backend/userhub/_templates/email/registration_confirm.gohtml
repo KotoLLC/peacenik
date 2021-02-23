@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>Peacenik</title>
+    <style>
+        {{ template "style.css" . }}
+    </style>
+</head>
+<body>
+<table id="email-body">
+    <tbody>
+    <tr>
+        <td class="side-space"></td>
+        <td>
+            <p>Thanks for registering with Peacenik.<br>
+                Please confirm your account by clicking:</p>
+        </td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td class="space-in-between"></td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td class="button-cell">
+            <a class="button" href="{{ .Link }}">Confirm Account</a>
+        </td>
+        <td class="side-space"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

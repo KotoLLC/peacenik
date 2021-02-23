@@ -1,0 +1,265 @@
+/* HTML tags */
+
+html
+{
+    font-family: sans-serif;
+    -ms-text-size-adjust:100%;
+    -webkit-text-size-adjust:100%
+}
+body{
+    background-color: #eaeded;
+    padding: 1%;
+}
+h1{
+    font-size: 1.8rem;
+}
+h3{
+    font-size: 1.1rem;
+}
+h1,p{
+    margin: 0 !important;
+}
+h3, h4{
+    margin: 5px 0;
+    letter-spacing: 1px;
+}
+p{
+    font-size: 1.04rem;
+    line-height: 1.8rem;
+    font-weight: 500;
+}
+a{
+    color: rgb(89, 156, 11);
+}
+
+
+/* Common classes */
+
+.button-cell{
+    padding-top: 32px;
+    padding-bottom: 17px;
+}
+.button{
+    color: #fff;
+    background-color: rgb(89, 156, 11);
+    padding: 17px 50px;
+    border: 1px solid rgb(89, 156, 11);
+    border-radius: 100px;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    margin-top: 15px;
+    margin-right: 10px;
+    text-decoration: none;
+    white-space: nowrap;
+    display: inline-block;
+}
+.button:hover{
+    /* background-color: rgb(80, 139, 12); */
+    background-color: rgba(89, 156, 11, 0.9);
+}
+.button:active{
+    /* background-color: rgb(55, 97, 7); */
+    background-color: rgba(89, 156, 11, 0.8);
+}
+.button-border{
+    color: rgb(161, 174, 200);
+    background-color: transparent;
+    padding: 17px 50px;
+    border: 1px solid rgb(161, 174, 200);
+    border-radius: 100px;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    margin-top: 15px;
+    margin-right: 10px;
+    text-decoration: none;
+    white-space: nowrap;
+    display: inline-block;
+
+}
+.button-border:hover{
+    background-color: rgba(161, 174, 200, 0.1);
+}
+.button-border:active{
+    background-color: rgba(161, 174, 200, 0.2);
+}
+.extra-padding{
+    padding-left: 70px;
+    padding-right: 70px;
+}
+
+.align-center{
+    text-align: center;
+}
+.italics{
+    font-style: italic;
+}
+.color-green{
+    color: rgb(89, 156, 11);
+}
+.color-gray{
+    color: rgb(161, 174, 200);
+}
+.bgcolor-light-gray{
+    background-color: rgb(248, 248, 250);
+}
+.bgcolor-white{
+    background-color: #fff;
+}
+.color-white{
+    color: #dcdcdc;
+}
+.top-space{
+    height: 80px;
+}
+.side-space{
+    width: 50px;
+}
+.below-logo-space{
+    height: 35px;
+}
+.space-in-between{
+    height: 20px;
+}
+.bottom-space{
+    height: 70px;
+}
+.usernames p{
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    line-height: 2rem;
+}
+
+
+
+/* Particular elements */
+
+#email-body{
+    height: 100%;
+    width: 95%;
+    max-width: 640px;
+    border: 1px solid rgb(235, 236, 238);
+    border-top: 2px solid rgb(89, 156, 11);
+    border-collapse: collapse;
+    box-shadow: 0 0 5px -3px #5b5b74;
+    margin: auto;
+    background-color: #fff;
+}
+
+#logo, #logo img{
+    width: 55px;
+    height: 45px;
+    text-align: left;
+}
+
+#footer{
+    border: 1px solid rgb(235, 236, 238);
+
+}
+#footer p{
+    text-align: center;
+    padding: 20px;
+    color: rgb(166, 178, 203);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+
+/* Smallscreen media query */
+
+@media only screen and (min-width: 200px) and (max-width: 767px)
+{
+    h1{
+        font-size: 1.4rem;
+    }
+    h3{
+        font-size: 1rem;
+    }
+    p{
+        font-size: 0.95rem;
+        line-height: 1.6rem;
+    }
+    .button-cell{
+        padding-top: 20px;
+        padding-bottom: 15px;
+    }
+    .button{
+        padding: 15px 35px;
+        font-size: 0.85rem;
+        margin-top: 10px;
+        margin-right: 2px;
+    }
+    .button-border{
+        padding: 15px 35px;
+        font-size: 0.85rem;
+        margin-top: 10px;
+        margin-right: 2px;
+    }
+    .extra-padding{
+        padding-left: 40px;
+        padding-right: 40px;
+    }
+    .top-space{
+        height: 70px;
+    }
+    .side-space{
+        width: 20px;
+    }
+    .below-logo-space{
+        height: 25px;
+    }
+    .space-in-between{
+        height: 30px;
+    }
+    .bottom-space{
+        height: 60px;
+    }
+}
+
+@media only screen and (max-width: 200px)
+{
+    h1{
+        font-size: 1.4rem;
+    }
+    h3{
+        font-size: 1rem;
+    }
+    p{
+        font-size: 0.95rem;
+        line-height: 1.6rem;
+    }
+    .button-cell{
+        padding-top: 20px;
+        padding-bottom: 15px;
+    }
+    .button{
+        padding: 15px 35px;
+        font-size: 0.85rem;
+        margin-top: 10px;
+        margin-right: 2px;
+    }
+    .button-border{
+        padding: 15px 35px;
+        font-size: 0.85rem;
+        margin-top: 10px;
+        margin-right: 2px;
+    }
+    .extra-padding{
+        padding-left: 40px;
+        padding-right: 40px;
+    }
+    .top-space{
+        height: 70px;
+    }
+    .side-space{
+        width: 20px;
+    }
+    .below-logo-space{
+        height: 25px;
+    }
+    .space-in-between{
+        height: 30px;
+    }
+    .bottom-space{
+        height: 60px;
+    }
+}

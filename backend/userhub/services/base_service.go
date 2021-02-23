@@ -3,6 +3,7 @@ package services
 import (
 	"bytes"
 	"context"
+	"html/template"
 	"log"
 	"path/filepath"
 	"strings"
@@ -28,10 +29,11 @@ type BaseService struct {
 	mailSender         *common.MailSender
 	cfg                config.Config
 	notificationSender NotificationSender
+	rootEmailTemplate  *template.Template
 }
 
 func NewBase(repos repo.Repos, userCache caches.Users, s3Storage *common.S3Storage, tokenGenerator token.Generator, tokenParser token.Parser,
-	mailSender *common.MailSender, cfg config.Config, notificationSender NotificationSender) *BaseService {
+	mailSender *common.MailSender, cfg config.Config, notificationSender NotificationSender, rootEmailTemplate *template.Template) *BaseService {
 	return &BaseService{
 		repos:              repos,
 		userCache:          userCache,
@@ -41,6 +43,7 @@ func NewBase(repos repo.Repos, userCache caches.Users, s3Storage *common.S3Stora
 		mailSender:         mailSender,
 		cfg:                cfg,
 		notificationSender: notificationSender,
+		rootEmailTemplate:  rootEmailTemplate,
 	}
 }
 

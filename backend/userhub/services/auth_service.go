@@ -1,6 +1,7 @@
 package services
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log"
@@ -14,6 +15,7 @@ import (
 
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/token"
+	"github.com/mreider/koto/backend/userhub/caches"
 	"github.com/mreider/koto/backend/userhub/repo"
 	"github.com/mreider/koto/backend/userhub/rpc"
 )
@@ -21,14 +23,9 @@ import (
 const (
 	confirmFrontendPath = "/confirm-user?token=%s"
 	confirmEmailSubject = "Confirm your Peacenik account"
-	confirmEmailBody    = `<p>Thanks for registering with Peacenik.</p>
-<p>Please confirm your account by clicking <a href="%s" target="_blank">this link</a>.</p>`
 
 	resetPasswordSubject      = "Peacenik password reset"
 	resetPasswordFrontendPath = "/reset-password?name=%s&email=%s&token=%s"
-	resetPasswordEmailBody    = `<p>Thanks for requesting to reset your password.</p>
-<p>If you did not make this request, you can ignore this email.</p>
-<p>Otherwise you can reset your password by clicking <a href="%s" target="_blank">this link</a>.</p>`
 
 	SessionDefaultMaxAge = time.Hour * 24 * 365 * 10
 )
@@ -206,7 +203,15 @@ func (s *authService) SendResetPasswordLink(_ context.Context, r *rpc.AuthSendRe
 	}
 
 	link := fmt.Sprintf("%s"+resetPasswordFrontendPath, s.cfg.FrontendAddress, url.QueryEscape(r.Name), url.QueryEscape(r.Email), resetToken)
-	err = s.mailSender.SendHTMLEmail([]string{r.Email}, resetPasswordSubject, fmt.Sprintf(resetPasswordEmailBody, link), nil)
+	var message bytes.Buffer
+	err = s.rootEmailTemplate.ExecuteTemplate(&message, "password_reset.gohtml", map[string]interface{}{
+		"Link": link,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.mailSender.SendHTMLEmail([]string{r.Email}, resetPasswordSubject, message.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -262,7 +267,15 @@ func (s *authService) sendConfirmLink(user repo.User) error {
 	}
 
 	link := fmt.Sprintf("%s"+confirmFrontendPath, s.cfg.FrontendAddress, confirmToken)
-	return s.mailSender.SendHTMLEmail([]string{userInfo.Email}, confirmEmailSubject, fmt.Sprintf(confirmEmailBody, link), nil)
+	var message bytes.Buffer
+	err = s.rootEmailTemplate.ExecuteTemplate(&message, "registration_confirm.gohtml", map[string]interface{}{
+		"Link": link,
+	})
+	if err != nil {
+		return err
+	}
+
+	return s.mailSender.SendHTMLEmail([]string{userInfo.Email}, confirmEmailSubject, message.String(), nil)
 }
 
 func (s *authService) confirmUser(ctx context.Context, confirmToken string) error {
@@ -355,26 +368,20 @@ func (s *authService) RecallNames(_ context.Context, r *rpc.AuthRecallNamesReque
 		return &rpc.Empty{}, nil
 	}
 
-	userNames := make([]string, len(users))
+	userInfos := make([]caches.User, len(users))
 	for i, user := range users {
-		userInfo := s.userCache.UserFullAccess(user.ID)
-		userNames[i] = userInfo.DisplayName
+		userInfos[i] = s.userCache.UserFullAccess(user.ID)
 	}
 
-	var message strings.Builder
-	message.WriteString("<p>Thanks for requesting a username reminder.</p>\n")
-	if len(userNames) == 0 {
-		message.WriteString("<p>Your email address is not associated with username.</p>\n")
-	} else {
-		message.WriteString("<p>Your email address is associated with the following usernames:</p>\n")
-		for _, userName := range userNames {
-			message.WriteString("<p>")
-			message.WriteString(userName)
-			message.WriteString("</p>\n")
-		}
+	var message bytes.Buffer
+	err := s.rootEmailTemplate.ExecuteTemplate(&message, "username_reminder.gohtml", map[string]interface{}{
+		"Users": userInfos,
+	})
+	if err != nil {
+		return nil, err
 	}
 
-	err := s.mailSender.SendHTMLEmail([]string{r.Email}, "Peacenik username reminder", message.String(), nil)
+	err = s.mailSender.SendHTMLEmail([]string{r.Email}, "Peacenik username reminder", message.String(), nil)
 	if err != nil {
 		return nil, err
 	}
