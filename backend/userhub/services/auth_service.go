@@ -224,7 +224,7 @@ func (s *authService) ResetPassword(_ context.Context, r *rpc.AuthResetPasswordR
 	}
 	var userName string
 	var ok bool
-	if userName, ok = claims["name"].(string); !ok {
+	if userName, ok = claims["id"].(string); !ok {
 		return nil, token.ErrInvalidToken.Here()
 	}
 
