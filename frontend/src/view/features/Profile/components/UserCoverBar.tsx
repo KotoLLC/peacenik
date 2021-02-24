@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'
@@ -21,7 +20,6 @@ import { ButtonOutlinedStyled, ButtonContainedStyled } from './styles'
 interface Props {
   id?: string
   userName?: string
-  friends: ApiTypes.Friends.Friend[] | null
   className?: string
   friendsLenght: number
   inviteStatus?: ApiTypes.Friends.InvitationStatus
@@ -31,11 +29,10 @@ interface Props {
   onAddFriend: (data: ApiTypes.Friends.Request) => void
 }
 
-const UserCoverBar: React.FC<Props> = (props) => {
+const UserCoverBar: React.FC<Props> = React.memo((props) => {
   const {
     className,
     friendsLenght,
-    friends,
     id,
     onAddFriend,
     userName,
@@ -102,14 +99,14 @@ const UserCoverBar: React.FC<Props> = (props) => {
         <CoverBarCounters>
           <CoverBarCounterWrapper>
             <CoverBarCounterName>GROUPS</CoverBarCounterName>
-            <CoverBarCounter>{groupCount}</CoverBarCounter>
+            <CoverBarCounter>{groupCount || 0}</CoverBarCounter>
           </CoverBarCounterWrapper>
           <CoverBarCounterWrapper>
             <CoverBarCounterName>FRIENdS</CoverBarCounterName>
             <CoverBarCounter>{friendsLenght}</CoverBarCounter>
           </CoverBarCounterWrapper>
         </CoverBarCounters>
-        <CoverBarButtonsWrapper>
+        <CoverBarButtonsWrapper className="profile">
           {renderCurrentButton()}
           <ButtonOutlinedStyled disabled className="large">
             Send message
@@ -125,11 +122,10 @@ const UserCoverBar: React.FC<Props> = (props) => {
       />
     </CoverBarWrapper>
   )
-}
+})
 
- type StateProps = Pick<Props, 'friends' | 'errorMessage'>
+ type StateProps = Pick<Props, 'errorMessage'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  friends: selectors.friends.friends(state),
   errorMessage: selectors.common.errorMessage(state),
 })
 

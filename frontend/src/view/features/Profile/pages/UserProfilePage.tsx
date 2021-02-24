@@ -44,46 +44,51 @@ interface Props extends RouteComponentProps {
 
 const UserProfilePage: React.FC<Props> = React.memo((props) => {
   const {
-    userName,
     onGetUser,
     users,
     friends,
     onGetFriends,
-    onAddFriend,
     location,
   } = props
-  const [friendsLength, setFriendsLength] = useState<number>(0)
 
   const url = location.search
   const params = queryString.parse(url)
   const userId = params.id ? params.id : ''
 
   useEffect(() => {
-    onGetUser(userId as string)
-    onGetFriends()
+    if (users[0]?.id !== userId) {
+      onGetUser(userId as string)
+      onGetFriends()
+    }
   }, [
-    props,
     users,
-    onGetUser,
     userId,
     friends,
-    onGetFriends,
-    friendsLength,
   ])
 
-  let selectedFriend = friends?.find(item => item.user.id === userId) || null
+  const setCurrentUserData = () => {
+    const currentFriend = friends?.find(item => item.user.id === userId) || null
+    
+    if (currentFriend && users.length) {
+      currentFriend.user = users[0]
+    }
+
+    return currentFriend
+  }
+
+  const currentUser = setCurrentUserData()
 
   let commonFriends: ApiTypes.Friends.Friend[] = []
 
-  selectedFriend?.friends?.forEach(item => {
+  currentUser?.friends?.forEach(item => {
     if (friends?.some(myFriend => myFriend.user.id === item.user.id)) {
       commonFriends.push(item as never)
     }
   })
 
   const mapFriendsList = () => {
-    if (selectedFriend?.friends?.length) {
-      return selectedFriend.friends.map(item => {
+    if (currentUser?.friends?.length) {
+      return currentUser.friends.map(item => {
         const { user, invite_status } = item
 
         return <ProfileFriend
@@ -143,32 +148,32 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
         <PageCover resource={getGroupCoverUrl('')}/>
       </PageCoverWrapper>
       <UserCoverBar
-        id={selectedFriend?.user?.id}
-        userName={selectedFriend?.user?.name}
-        inviteStatus={selectedFriend?.invite_status}
-        groupCount={selectedFriend?.group_count}
-        friendsLenght={selectedFriend?.friends?.length || 0}
+        id={currentUser?.user?.id}
+        userName={currentUser?.user?.name}
+        inviteStatus={currentUser?.user?.invite_status}
+        groupCount={currentUser?.group_count}
+        friendsLenght={currentUser?.friends?.length || 0}
         className="desktop-only"
       />
       <Container>
         <PageColumnBarsWrapper>
           <LeftSideBar>
             <ProfileAvatar src={getAvatarUrl(userId as string)} />
-            <ProfileName>{selectedFriend?.user?.full_name}</ProfileName>
-            <ProfileNote>@{selectedFriend?.user?.name}</ProfileNote>
+            <ProfileName>{currentUser?.user?.full_name}</ProfileName>
+            <ProfileNote>@{currentUser?.user?.name}</ProfileNote>
             <UserCoverBar
-              id={selectedFriend?.user?.id}
-              userName={selectedFriend?.user?.name}
-              groupCount={selectedFriend?.group_count}
-              inviteStatus={selectedFriend?.invite_status}
-              friendsLenght={selectedFriend?.friends?.length || 0}
+              id={currentUser?.user?.id}
+              userName={currentUser?.user?.name}
+              groupCount={currentUser?.group_count}
+              inviteStatus={currentUser?.user?.invite_status}
+              friendsLenght={currentUser?.friends?.length || 0}
               className="mobile-only"
             />
           </LeftSideBar>
           <CentralBar>
             <PageBarTitle>
-              {`${capitalizeFirstLetter(selectedFriend?.user?.name || '')}\`s 
-              friends (${selectedFriend?.friends?.length || 0})`}
+              {`${capitalizeFirstLetter(currentUser?.user?.name || '')}\`s 
+              friends (${currentUser?.friends?.length || 0})`}
             </PageBarTitle>
             {mapFriendsList()}
           </CentralBar>

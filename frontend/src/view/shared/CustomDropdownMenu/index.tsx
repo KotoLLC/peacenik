@@ -51,7 +51,7 @@ const DropdownMenu2: React.FC<Props> = (props) => {
           <Avatar src={getAvatarUrl(userId)} />
         </AvatarWrapper>
         {isMenuOpen && <Dropdown>
-          <CustomMenuItem>
+          <CustomMenuItem onClick={() => goToPage('/profile/settings')}>
             <ListItemIconStyled>
               <SettingsIcon fontSize="small" />
             </ListItemIconStyled>

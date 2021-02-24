@@ -801,6 +801,10 @@ export const CoverBarCounters = styled.div`
 export const CoverBarButtonsWrapper = styled.div`
   margin-left: 290px;
 
+  &.profile {
+    margin-left: 0;
+  }
+
   @media (max-width: 1025px){
     margin-left: 180px;
   }

@@ -8,7 +8,7 @@ export declare namespace ApiTypes {
     password: string
     invite_token?: string
   }
-
+ 
   export interface CheckUser {
     user_name: string
   }
@@ -40,6 +40,7 @@ export declare namespace ApiTypes {
     email: string
     full_name: string
     is_confirmed?: boolean
+    invite_status?: Friends.InvitationStatus
   }
 
   export interface UploadLink {

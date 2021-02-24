@@ -2,6 +2,7 @@ import { put } from 'redux-saga/effects'
 import Actions from '@store/actions'
 import { API } from '@services/api'
 import { ApiTypes } from 'src/types'
+import { usersInviteStatusFromBackToFront } from '@services/dataTransforms/usersInviteStatusFromBackToFront'
 
 export function* watchGetProfile() {
   
@@ -70,7 +71,9 @@ export function* watchGetUsers(action: { type: string, payload: string[] }) {
   const response = yield API.profile.getUsers(action.payload)
 
   if (response.status === 200) {
-    yield put(Actions.profile.getUsersSucces(response.data?.users))
+    yield put(Actions.profile.getUsersSucces(
+      usersInviteStatusFromBackToFront(response.data?.users, response.data?.invite_statuses)
+    ))
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
