@@ -285,8 +285,11 @@ func (s *userService) User(ctx context.Context, r *rpc.UserUserRequest) (*rpc.Us
 		IsConfirmed:  user.ConfirmedAt.Valid,
 		HideIdentity: userInfo.HideIdentity,
 	}
+	inviteStatuses := s.repos.Invite.InviteStatuses(me)
+
 	return &rpc.UserUserResponse{
-		User: rpcUser,
+		User:         rpcUser,
+		InviteStatus: inviteStatuses[user.ID],
 	}, nil
 }
 

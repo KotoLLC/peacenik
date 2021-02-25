@@ -79,6 +79,7 @@ message UserUserRequest {
 
 message UserUserResponse {
     User user = 1;
+    string invite_status = 2;
 }
 
 message UserRegisterFCMTokenRequest {
