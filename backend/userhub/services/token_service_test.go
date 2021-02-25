@@ -12,7 +12,6 @@ import (
 	"github.com/mreider/koto/backend/testutils"
 	"github.com/mreider/koto/backend/token"
 	"github.com/mreider/koto/backend/userhub/caches"
-	"github.com/mreider/koto/backend/userhub/config"
 	"github.com/mreider/koto/backend/userhub/migrate"
 	"github.com/mreider/koto/backend/userhub/repo"
 	"github.com/mreider/koto/backend/userhub/rpc"
@@ -44,7 +43,10 @@ func (s *TokenServiceTestSuite) SetupSuite() {
 	s.te = testutils.NewTestEnvironment("token_service", migrate.Migrate)
 	s.repos = repo.NewRepos(s.te.DB)
 	userCache := caches.NewUsers(s.te.DB)
-	base := services.NewBase(s.repos, userCache, s.te.Storage, nil, nil, nil, config.Config{}, nil)
+	base := services.NewBase(s.repos, services.BaseServiceOptions{
+		UserCache: userCache,
+		S3Storage: s.te.Storage,
+	})
 	s.service = services.NewToken(base, tokenGenerator, time.Minute)
 }
 

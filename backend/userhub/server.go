@@ -113,8 +113,17 @@ func (s *Server) Run() error {
 	}
 	notificationSender := services.NewNotificationSender(s.repos, s.userCache, firebaseClient, mailSender)
 	notificationSender.Start()
-	baseService := services.NewBase(s.repos, s.userCache, s.s3Storage, s.tokenGenerator, s.tokenParser, mailSender,
-		s.cfg, notificationSender, rootEmailTemplate)
+
+	baseService := services.NewBase(s.repos, services.BaseServiceOptions{
+		UserCache:          s.userCache,
+		S3Storage:          s.s3Storage,
+		TokenGenerator:     s.tokenGenerator,
+		TokenParser:        s.tokenParser,
+		MailSender:         mailSender,
+		Cfg:                s.cfg,
+		NotificationSender: notificationSender,
+		RootEmailTemplate:  rootEmailTemplate,
+	})
 	notificationSender.SetGetUserAttachments(baseService.GetUserAttachments)
 
 	passwordHash := bcrypt.NewPasswordHash()
