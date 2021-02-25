@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>Peacenik</title>
+    <style>
+        {{ template "style.css" . }}
+    </style>
+</head>
+<body>
+<table id="email-body">
+    <tbody>
+    <tr>
+        <td class="side-space"></td>
+        <td>
+            <p>Greetings from Peacenik!<br>
+                <b>{{ .AdminDisplayName }}</b> added you to the group <b>{{ .GroupName }}</b>.<br>
+                You can view group messages by choosing the group on your <a href="{{ .FeedLink }}">Peacenik feed</a></p>
+        </td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td class="space-in-between"></td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td>
+            <p>If you do not want to be a member of the group go to the <a href="{{ .GroupLink }}}">group page</a> and click the "leave" button.</p>
+        </td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td class="space-in-between"></td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td>
+            <p class="color-gray italics">Thanks!</p>
+        </td>
+        <td class="side-space"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

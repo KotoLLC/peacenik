@@ -1,6 +1,7 @@
 package services
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log"
@@ -17,18 +18,8 @@ import (
 )
 
 const (
-	registerFrontendPath            = "/registration?email=%s&invite=%s"
-	inviteUnregisteredUserEmailBody = inviteRegisteredUserEmailBody
-
-	invitationsFrontendPath       = "/friends/invitations"
-	inviteRegisteredUserEmailBody = `%s
-<p>%s invited you to be friends on Peacenik.</p>
-<p>To accept the invitation click <a href="%s" target="_blank">here</a>.</p>
-<p>Peacenik is an ad-free, hate-free social network for sharing ideas, photos, and videos.
-The community agrees to a code of conduct prohibiting bullying, bating, hate speech etc.
-Peacenik is also distributed, which means member messages are stored on independent servers all over the world.</p>
-<p>Thanks!</p>
-`
+	registerFrontendPath    = "/registration?email=%s&invite=%s"
+	invitationsFrontendPath = "/friends/invitations"
 )
 
 type inviteService struct {
@@ -187,9 +178,16 @@ func (s *inviteService) sendInviteLinkToUnregisteredUser(ctx context.Context, in
 
 	inviterInfo := s.userCache.UserFullAccess(inviter.ID)
 	link := fmt.Sprintf("%s"+registerFrontendPath, s.cfg.FrontendAddress, url.QueryEscape(userEmail), inviteToken)
+	var message bytes.Buffer
+	err = s.rootEmailTemplate.ExecuteTemplate(&message, "friend_request.gohtml", map[string]interface{}{
+		"InviterDisplayName": inviterInfo.DisplayName,
+		"AcceptLink":         link,
+	})
+	if err != nil {
+		return err
+	}
 	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviterInfo.DisplayName+" invited you to be friends",
-		fmt.Sprintf(inviteUnregisteredUserEmailBody, attachments.InlineHTML("avatar"), inviterInfo.DisplayName, link),
-		attachments)
+		message.String(), attachments)
 }
 
 func (s *inviteService) sendInviteLinkToRegisteredUser(ctx context.Context, inviter repo.User, userEmail string) error {
@@ -201,7 +199,15 @@ func (s *inviteService) sendInviteLinkToRegisteredUser(ctx context.Context, invi
 
 	inviterInfo := s.userCache.UserFullAccess(inviter.ID)
 	link := fmt.Sprintf("%s"+invitationsFrontendPath, s.cfg.FrontendAddress)
+	var message bytes.Buffer
+	err := s.rootEmailTemplate.ExecuteTemplate(&message, "friend_request.gohtml", map[string]interface{}{
+		"InviterDisplayName": inviterInfo.DisplayName,
+		"AcceptLink":         link,
+	})
+	if err != nil {
+		return err
+	}
+
 	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviterInfo.DisplayName+" invited you to be friends",
-		fmt.Sprintf(inviteRegisteredUserEmailBody, attachments.InlineHTML("avatar"), inviterInfo.DisplayName, link),
-		attachments)
+		message.String(), attachments)
 }

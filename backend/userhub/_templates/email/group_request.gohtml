@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>Peacenik</title>
+    <style>
+        {{ template "style.css" . }}
+    </style>
+</head>
+<body>
+<table id="email-body">
+    <tbody>
+    <tr>
+        <td class="side-space"></td>
+        <td>
+            <p>Greetings group admin!<br>
+                It looks like <b>{{ .UserDisplayName }}</b> would like to join the group <b>{{ .GroupName }}</b>.<br>
+                Please review <b>{{ .UserName }}'s</b> message below and accept or reject their request.</p>
+        </td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td class="space-in-between"></td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td>
+            <p class="color-gray italics">&lt;&lt; {{ .Message }} &gt;&gt;</p>
+        </td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td class="space-in-between"></td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td>
+            <p>To accept or reject <b>{{ .UserName }}'s</b> request click below.</p>
+        </td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td class="space-in-between"></td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td class="button-cell">
+            <a class="button extra-padding"
+                    href="{{ .AcceptLink }}">Accept</a> <a class="button-border extra-padding"
+                    href="{{ .RejectLink }}">Reject</a>
+        </td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td class="space-in-between"></td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td>
+            <p class="color-gray italics">Thanks!</p>
+        </td>
+        <td class="side-space"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
