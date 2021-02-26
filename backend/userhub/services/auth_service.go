@@ -353,9 +353,16 @@ func (s *authService) sendInviteLinkToRegisteredUser(ctx context.Context, invite
 
 	inviterInfo := s.userCache.UserFullAccess(inviter.ID)
 	link := fmt.Sprintf("%s"+invitationsFrontendPath, s.cfg.FrontendAddress)
+	var message bytes.Buffer
+	err := s.rootEmailTemplate.ExecuteTemplate(&message, "friend_request.gohtml", map[string]interface{}{
+		"InviterDisplayName": inviterInfo.DisplayName,
+		"AcceptLink":         link,
+	})
+	if err != nil {
+		return err
+	}
 	return s.mailSender.SendHTMLEmail([]string{userEmail}, inviterInfo.DisplayName+" invited you to be friends",
-		fmt.Sprintf(inviteRegisteredUserEmailBody, attachments.InlineHTML("avatar"), inviterInfo.DisplayName, link),
-		attachments)
+		message.String(), attachments)
 }
 
 func (s *authService) RecallNames(_ context.Context, r *rpc.AuthRecallNamesRequest) (*rpc.Empty, error) {

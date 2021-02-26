@@ -1,6 +1,7 @@
 package services
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"html"
@@ -222,6 +223,29 @@ func (s *groupService) AddUser(ctx context.Context, r *rpc.GroupAddUserRequest) 
 
 	if user != nil && s.repos.Friend.AreFriends(me.ID, user.ID) {
 		s.repos.Group.AddUserToGroup(r.GroupId, user.ID)
+
+		if s.mailSender != nil {
+			messagesLink := fmt.Sprintf("%s/messages", s.cfg.FrontendAddress)
+			groupLink := fmt.Sprintf("%s/groups/group?id=%s", s.cfg.FrontendAddress, group.ID)
+
+			userInfo := s.userCache.UserFullAccess(user.ID)
+			meInfo := s.userCache.UserFullAccess(me.ID)
+			var message bytes.Buffer
+			err := s.rootEmailTemplate.ExecuteTemplate(&message, "group_add.gohtml", map[string]interface{}{
+				"AdminDisplayName": meInfo.DisplayName,
+				"GroupName":        group.Name,
+				"FeedLink":         messagesLink,
+				"GroupLink":        groupLink,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			err = s.mailSender.SendHTMLEmail([]string{userInfo.Email}, fmt.Sprintf("You've been added to %s", group.Name), message.String(), nil)
+			if err != nil {
+				return nil, err
+			}
+		}
 	} else {
 		invited := userEmail
 		if user != nil {
@@ -241,11 +265,37 @@ func (s *groupService) AddUser(ctx context.Context, r *rpc.GroupAddUserRequest) 
 
 func (s *groupService) RequestJoin(ctx context.Context, r *rpc.GroupRequestJoinRequest) (*rpc.Empty, error) {
 	me := s.getMe(ctx)
-	return s.CreateInvite(ctx, &rpc.GroupCreateInviteRequest{
+	_, err := s.CreateInvite(ctx, &rpc.GroupCreateInviteRequest{
 		GroupId: r.GroupId,
 		Invited: me.ID,
 		Message: r.Message,
 	})
+	if err != nil {
+		return nil, err
+	}
+	if s.mailSender == nil {
+		return &rpc.Empty{}, nil
+	}
+
+	group, _ := s.getGroup(ctx, r.GroupId)
+	groupAdminInfo := s.userCache.UserFullAccess(group.AdminID)
+
+	meInfo := s.userCache.UserFullAccess(me.ID)
+	var message bytes.Buffer
+	err = s.rootEmailTemplate.ExecuteTemplate(&message, "group_request.gohtml", map[string]interface{}{
+		"UserName":        meInfo.Name,
+		"UserDisplayName": meInfo.DisplayName,
+		"GroupName":       group.Name,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.mailSender.SendHTMLEmail([]string{groupAdminInfo.Email}, fmt.Sprintf("%s wants to join %s", meInfo.DisplayName, group.Name), message.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+	return &rpc.Empty{}, nil
 }
 
 func (s *groupService) DeleteJoinRequest(ctx context.Context, r *rpc.GroupDeleteJoinRequestRequest) (*rpc.Empty, error) {
@@ -302,7 +352,7 @@ func (s *groupService) CreateInvite(ctx context.Context, r *rpc.GroupCreateInvit
 		}
 
 		s.repos.Group.AddInvite(group.ID, me.ID, invitedUser.ID, r.Message)
-		if s.notificationSender != nil {
+		if s.notificationSender != nil && me.ID != invitedUser.ID {
 			meInfo := s.userCache.UserFullAccess(me.ID)
 			s.notificationSender.SendNotification([]string{invitedUser.ID}, meInfo.DisplayName+" invited you to the group "+group.Name+"", "group-invite/add", map[string]interface{}{
 				"group_id": group.ID,

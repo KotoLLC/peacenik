@@ -32,18 +32,28 @@ type BaseService struct {
 	rootEmailTemplate  *template.Template
 }
 
-func NewBase(repos repo.Repos, userCache caches.Users, s3Storage *common.S3Storage, tokenGenerator token.Generator, tokenParser token.Parser,
-	mailSender *common.MailSender, cfg config.Config, notificationSender NotificationSender, rootEmailTemplate *template.Template) *BaseService {
+type BaseServiceOptions struct {
+	UserCache          caches.Users
+	S3Storage          *common.S3Storage
+	TokenGenerator     token.Generator
+	TokenParser        token.Parser
+	MailSender         *common.MailSender
+	Cfg                config.Config
+	NotificationSender NotificationSender
+	RootEmailTemplate  *template.Template
+}
+
+func NewBase(repos repo.Repos, options BaseServiceOptions) *BaseService {
 	return &BaseService{
 		repos:              repos,
-		userCache:          userCache,
-		s3Storage:          s3Storage,
-		tokenGenerator:     tokenGenerator,
-		tokenParser:        tokenParser,
-		mailSender:         mailSender,
-		cfg:                cfg,
-		notificationSender: notificationSender,
-		rootEmailTemplate:  rootEmailTemplate,
+		userCache:          options.UserCache,
+		s3Storage:          options.S3Storage,
+		tokenGenerator:     options.TokenGenerator,
+		tokenParser:        options.TokenParser,
+		mailSender:         options.MailSender,
+		cfg:                options.Cfg,
+		notificationSender: options.NotificationSender,
+		rootEmailTemplate:  options.RootEmailTemplate,
 	}
 }
 

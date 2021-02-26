@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>Peacenik</title>
+    <style>
+        {{ template "style.css" . }}
+    </style>
+</head>
+<body>
+<table id="email-body">
+    <tbody>
+    <tr>
+        <td class="side-space"></td>
+        <td>
+            <p><b>{{ .InviterDisplayName }}</b> invited you to be friends on Peacenik.<br>
+                To accept the invitation click:</p>
+        </td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td class="space-in-between"></td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td class="button-cell">
+            <a class="button"
+                    href="{{ .AcceptLink }}">Accept Friend</a> <a class="button-border"
+                    href="{{ .RejectLink }}">Reject Friend</a>
+        </td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td class="space-in-between"></td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td>
+            <p class="color-gray italics"
+                    style="padding-top: 10px;">Peacenik is an ad-free, hate-free social network for sharing ideas, photos, and videos. The community agrees to a code of conduct prohibiting bullying, bating, hate speech etc. Peacenik is also distributed,
+                which means member messages are stored on independant servers all over the world.</p>
+        </td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td class="space-in-between"></td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td>
+            <p class="color-gray italics">Thanks!</p>
+        </td>
+        <td class="side-space"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
