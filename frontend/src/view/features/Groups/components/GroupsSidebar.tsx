@@ -7,8 +7,7 @@ import {
   SidebarItem,
   SidebarButtonWrapper,
   SidebarButtonLink,
-  // SidebarButton,
-} from './styles'
+} from '@view/shared/styles'
 
 interface Props {
   ownedHubs: string[]

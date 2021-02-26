@@ -9,27 +9,31 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import queryString from 'query-string'
 import loadImage from 'blueimp-load-image'
 import { getGroupAvatarUrl, getGroupCoverUrl } from '@services/avatarUrl'
-import { ErrorMessage, ButtonContained, ButtonOutlined } from '@view/shared/styles'
+import { 
+  ErrorMessage, 
+  ButtonContained, 
+  ButtonOutlined,
+  UploadInput,
+  EditCoverWrapper,
+  EditCoverIconWrapper,
+  EditCoverAddButton,
+  EditCoverAddButtonWrapper,
+  EditsAvatar,
+  EditsAvatarWrapper,
+  EditFormWrapper,
+  EditFieldWrapper,
+  EditFieldPlaceholder,
+  EditInputField,
+  EditTextareaField,
+  EditButtonsWrapper,
+ } from '@view/shared/styles'
 import {
   CreateGroupContainer,
-  CoverWrapper,
-  CoverIconWrapper,
-  AddCoverButton,
-  AddCoverButtonWrapper,
-  CreateGroupAvatar,
-  AvatarsBlock,
   AvatarsNote,
-  FormWrapper,
-  FieldWrapper,
-  FieldPlaceholder,
-  InputField,
-  TextareaField,
-  ButtonsWrapper,
   // RadioStyled,
   // FormControlLabelStyled,
   // RadiosWrapper,
 } from './../components/styles'
-import { UploadInput } from '../components/styles'
 
 interface Props extends RouteComponentProps {
   isGroupEditedSuccessfully: boolean
@@ -263,26 +267,26 @@ const EditGroupPage: React.FC<Props> = (props) => {
   const renderAvatar = () => {
     if (avatarFile) {
       return (
-        <CreateGroupAvatar src={URL.createObjectURL(avatarFile)} />
+        <EditsAvatar src={URL.createObjectURL(avatarFile)} />
       )
     }
 
     return (
-      <CreateGroupAvatar src={initialGroup?.id ? getGroupAvatarUrl(initialGroup?.id) : ''} />
+      <EditsAvatar src={initialGroup?.id ? getGroupAvatarUrl(initialGroup?.id) : ''} />
     )
   }
 
   return (
     <>
       <CreateGroupContainer>
-        <CoverWrapper resource={(coverFile) ? coverFileObjectUrl : getGroupCoverUrl(initialGroup?.id!)}>
+        <EditCoverWrapper resource={(coverFile) ? coverFileObjectUrl : getGroupCoverUrl(initialGroup?.id!)}>
           <label>
-            <CoverIconWrapper>
+            <EditCoverIconWrapper>
               <img src={CoverIcon} alt="icon" />
-            </CoverIconWrapper>
-            <AddCoverButtonWrapper>
-              <AddCoverButton>Add cover picture</AddCoverButton>
-            </AddCoverButtonWrapper>
+            </EditCoverIconWrapper>
+            <EditCoverAddButtonWrapper>
+              <EditCoverAddButton>Add cover picture</EditCoverAddButton>
+            </EditCoverAddButtonWrapper>
             <UploadInput
               type="file"
               id="cover"
@@ -291,8 +295,8 @@ const EditGroupPage: React.FC<Props> = (props) => {
               accept="image/*"
             />
           </label>
-        </CoverWrapper>
-        <AvatarsBlock>
+        </EditCoverWrapper>
+        <EditsAvatarWrapper>
           <label>
             {renderAvatar()}
             <UploadInput
@@ -304,9 +308,9 @@ const EditGroupPage: React.FC<Props> = (props) => {
             />
           </label>
           <AvatarsNote>Upload jpg or png file. Up to 1 MB</AvatarsNote>
-        </AvatarsBlock>
-        <FormWrapper>
-          <FieldWrapper className="radios" onSubmit={onSubmit}>
+        </EditsAvatarWrapper>
+        <EditFormWrapper>
+          <EditFieldWrapper className="radios" onSubmit={onSubmit}>
             {/* <FieldPlaceholder className="radios">Group Type</FieldPlaceholder>
             <RadioGroup aria-label="publicity" name="publicity">
               <RadiosWrapper>
@@ -322,25 +326,25 @@ const EditGroupPage: React.FC<Props> = (props) => {
                   label={<div className="title">Public <span className="title-note">Listed for all users</span></div>} />
               </RadiosWrapper>
             </RadioGroup> */}
-          </FieldWrapper>
-          <FieldWrapper>
-            <FieldPlaceholder>Group Name</FieldPlaceholder>
-            <InputField disabled value={groupName} onChange={(event) => setGroupName(event.target.value)} />
-          </FieldWrapper>
-          <FieldWrapper>
-            <FieldPlaceholder>Description</FieldPlaceholder>
-            <TextareaField value={groupDescription} onChange={(event) => setGroupDescription(event.target.value)} />
-          </FieldWrapper>
+          </EditFieldWrapper>
+          <EditFieldWrapper>
+            <EditFieldPlaceholder>Group Name</EditFieldPlaceholder>
+            <EditInputField disabled value={groupName} onChange={(event) => setGroupName(event.target.value)} />
+          </EditFieldWrapper>
+          <EditFieldWrapper>
+            <EditFieldPlaceholder>Description</EditFieldPlaceholder>
+            <EditTextareaField value={groupDescription} onChange={(event) => setGroupDescription(event.target.value)} />
+          </EditFieldWrapper>
           {invalideMessage && <ErrorMessage>{invalideMessage}</ErrorMessage>}
-          <ButtonsWrapper>
+          <EditButtonsWrapper>
             <Link to="/groups">
               <ButtonOutlined>Cancel</ButtonOutlined>
             </Link>
             <ButtonContained disabled={isRequested} onClick={onSubmit}>
               {isRequested ? <CircularProgress size={20} color={'inherit'} /> : 'Save'}
             </ButtonContained>
-          </ButtonsWrapper>
-        </FormWrapper>
+          </EditButtonsWrapper>
+        </EditFormWrapper>
       </CreateGroupContainer>
     </>
   )

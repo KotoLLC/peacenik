@@ -1,7 +1,6 @@
 import styled from 'styled-components'
 import { ButtonContained } from '@view/shared/styles'
 import { TextField } from '@material-ui/core'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
 import { Link } from 'react-router-dom'
 import IconButton from '@material-ui/core/IconButton'
 
@@ -172,26 +171,6 @@ export const TextFieldStyled = styled(TextField)`
 	
 	svg {
 		color: #A1AEC8;
-	}
-`
-
-export const CheckboxLabel = styled(FormControlLabel)`
-	&& {
-		margin: 0 0 0 -14px;
-
-		span:nth-child(1) { 
-			color: #A1AEC8;
-			
-			input:checked + svg {
-				color: #599C0B;
-			}
-		}
-		
-		span:nth-child(2) {
-			font-family: 'SFUITextRegular';
-			font-size: 12px;
-			color: #A1AEC8;
-		}     
 	}
 `
 

@@ -12,6 +12,7 @@ import { Link, RouteComponentProps } from 'react-router-dom'
 import Checkbox from '@material-ui/core/Checkbox'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import { CheckboxLabel } from '@view/shared/styles'
 import {
   AuthForm,
   FormSubtitle,
@@ -19,7 +20,6 @@ import {
   TextFieldStyled,
   Separator,
   LinkBlock,
-  CheckboxLabel,
   CheckboxFieldWrapper,
   FormLink,
 } from './../components/styles'

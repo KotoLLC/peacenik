@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
@@ -7,11 +7,13 @@ import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import MenuItem from '@material-ui/core/MenuItem'
 import Menu from '@material-ui/core/Menu'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Avatar from '@material-ui/core/Avatar'
+import Radio from '@material-ui/core/Radio'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
 
 export const Container = styled.main`
   width: 100%;
@@ -938,4 +940,373 @@ export const UsersListButtonsWrapperSidebar = styled.div`
   @media (max-width: 770px){
     justify-content: start;
   }
+`
+
+export const SidebarWrapper = styled.ul`
+  padding: 0;
+  margin: 0;
+  width: 262px;
+  background: #fff;  
+  position: sticky;
+  left: 0;
+  top: 94px;
+  box-shadow: 0px 1px 3px #D4D4D4;
+
+  @media (max-width: 770px) {
+    width: 100%;
+    position: static;
+    margin-bottom: 15px;
+  }
+`
+
+export const SidebarItem = styled(NavLink)`
+  height: 55px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(190, 196, 204, 0.5);
+  text-transform: uppercase;
+  cursor: pointer;
+  position: relative;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'SFUITextBold';
+  color: #88909D;
+  transition: 0.15s;
+
+  &.active {
+    color: #262626;
+
+    &:before {
+      display: inline-block;
+      width: 4px;
+      height: 44px;
+      border-radius: 10px;
+      background: #599C0B;
+      position: absolute;
+      left: 0;
+      top: 5px;
+      content: '';
+    }
+  }
+
+  &:hover {
+    color: #262626;
+    
+  }
+`
+
+export const SidebarButtonWrapper = styled.li`
+  list-style: none;
+  padding: 20px;
+`
+
+const sidebarButtonStyles = css`
+  display: inline-block;
+  height: 30px;
+  line-height: 30px;
+  width: 100%;
+  background: #599C0B;
+  border-radius: 15px;
+  font-size: 13px;
+  text-align: center;
+  text-decoration: none;
+  font-family: 'SFUITextMedium';
+  color: #fff;
+  transition: 0.15s;
+  cursor: pointer;
+
+  &:hover {
+    background: #4e8c07;
+  }
+`
+
+export const SidebarButtonLink = styled(Link)`
+  ${sidebarButtonStyles}
+`
+
+export const SidebarButton = styled.span`
+  ${sidebarButtonStyles}
+  background: #A1AEC8;
+  cursor: default;
+
+  &:hover {
+    background: #A1AEC8;
+  }
+
+`
+
+export const EditCoverWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  height: 200px;
+  width: 100%;
+  background-color: #A1AEC8;
+  background-image:  ${props => `url(${props.resource})`};
+  background-position: center;
+  background-size: cover;
+
+  @media (max-width: 770px){
+    height: 100px;
+    
+    label {
+      margin-left: 30px;
+    }
+  }
+`
+
+export const EditCoverIconWrapper = styled.figure`
+  border: 2px solid #FFFFFF;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  @media (max-width: 770px){
+    width: 36px;
+    height: 36px;
+    border: 1px solid #FFFFFF;
+
+    img {
+      width: 16px;
+    }
+  }
+`
+
+export const EditCoverAddButtonWrapper = styled.div`
+  text-align: center;
+  width: 100%;
+  margin-top: 20px;
+
+  @media (max-width: 770px){
+    margin-top: 5px;
+  }
+`
+
+export const EditCoverAddButton = styled.span`
+  display: inline-block;
+  font-family: 'SFUITextMedium';
+  color: #fff;
+  font-size: 16px;
+  padding-bottom: 2px;
+  line-height: 16px;
+  position: relative;
+  cursor: pointer;
+
+  &:after {
+    display: inline-block;
+    content: '';
+    width: 100%;
+    height: 1px;
+    background: #fff;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transition: 0.15s;
+    opacity: 1;
+  }
+
+  &:hover {
+    &:after {
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 770px){
+    font-size: 12px;
+  }
+`
+
+export const UploadInput = styled.input`
+  display: none;
+`
+
+export const EditsAvatar = styled(Avatar)`
+  background: #DEE5F2;
+  border: 4px solid #FFFFFF;
+  width: 140px;
+  height: 140px;
+  cursor: pointer;
+  margin-left: 23px;
+
+  @media (max-width: 770px){
+    width: 90px;
+    height: 90px;
+    border: 2px solid #FFFFFF;
+    margin-left: 15px;
+
+    .avatar-icon {
+      width: 24px;
+    }
+  }
+`
+
+export const EditsAvatarWrapper = styled.div`
+  display: flex;
+  align-items: flex-end;
+  margin-top: -72px;
+  width: 100%;
+
+  @media (max-width: 770px) {
+    margin-top: -45px;
+  }
+`
+
+export const EditFormWrapper = styled.form`
+  padding: 30px 97px 30px 60px;
+  width: 100%; 
+
+  @media (max-width: 770px) {
+    padding: 15px 15px 20px;
+  }
+`
+
+export const EditFieldWrapper = styled.div`
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+
+  &.radios {
+    align-items: flex-start;
+  }
+
+  @media (max-width: 770px) {
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+`
+
+export const EditFieldPlaceholder = styled.span`
+  color: #A1AEC8;
+  padding-right: 20px;
+  text-align: right;
+  width: 130px;
+
+  &.radios {
+    /* padding-right: 9px; */
+  }
+
+  @media (max-width: 770px) {
+    text-align: left;
+    padding-right: 0;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+`
+
+export const EditInputField = styled.input`
+  border: 1px solid #C8CFD4;
+  border-radius: 4px;
+  height: 30px;
+  width: 460px;
+  padding: 0 10px;
+  outline: none;
+  transition: 0.15s;
+  color: #262626;
+  font-size: 14px;
+  font-family: 'SFUITextMedium';
+
+  &:focus {
+    border-color: #A1AEC8;
+  }
+
+  @media (max-width: 770px) {
+    width: 100%;
+  }
+`
+
+export const EditTextareaField = styled.textarea`
+  border: 1px solid #C8CFD4;
+  border-radius: 4px;
+  height: 80px;
+  width: 460px;
+  padding: 4px 10px;
+  outline: none;
+  transition: 0.15s;
+  color: #262626;
+  font-size: 14px;
+  font-family: 'SFUITextMedium';
+  resize: none;
+
+  &:focus {
+    border-color: #A1AEC8;
+  }
+
+  @media (max-width: 770px) {
+    width: 100%;
+  }
+`
+
+export const EditButtonsWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`
+
+export const EditRadioStyled = styled(Radio)`
+  && {
+    color: #599C0B;
+    padding: 0 9px 0 0;
+
+    &:checked {
+      color: #599C0B;     
+    }
+  }
+`
+
+export const EditControlLabelStyled = styled(FormControlLabel)`
+  
+  && {
+    margin-right: 30px;
+    align-items: flex-start;
+  }
+
+  .title {
+    width: 100px;
+    font-size: 14px;
+    font-family: 'SFUITextSemibold';
+    position: relative;
+  }
+
+  .title-note {
+    display: block;
+    left: 0;
+    bottom: -14px;
+    font-size: 10px;
+    color: #A1AEC8;
+  }
+  
+`
+
+export const EditRadiosWrapper = styled.div`
+  display: flex;
+  margin-bottom: 2px;
+  margin-left: 9px;
+`
+
+export const CheckboxLabel = styled(FormControlLabel)`
+	&& {
+		margin: 0 0 0 -14px;
+
+		span:nth-child(1) { 
+			color: #A1AEC8;
+			
+			input:checked + svg {
+				color: #599C0B;
+			}
+		}
+		
+		span:nth-child(2) {
+			font-family: 'SFUITextRegular';
+			font-size: 12px;
+			color: #A1AEC8;
+		}     
+	}
 `

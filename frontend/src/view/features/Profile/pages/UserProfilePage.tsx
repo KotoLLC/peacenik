@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'
 import { ApiTypes, StoreTypes } from 'src/types'
 import { v4 as uuidv4 } from 'uuid'
 import UserCoverBar from './../components/UserCoverBar'
-import { getGroupAvatarUrl, getGroupCoverUrl, getAvatarUrl } from '@services/avatarUrl'
-import { withRouter, RouteComponentProps, Link } from 'react-router-dom'
+import { getAvatarUrl } from '@services/avatarUrl'
+import { withRouter, RouteComponentProps } from 'react-router-dom'
 import queryString from 'query-string'
 import ProfileFriend from '../components/ProfileFriend'
 import { capitalizeFirstLetter } from '@services/capitalizeFirstLetter'
@@ -145,7 +145,7 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
         <PageCoverIconWrapper>
           <ImageIcon/>
         </PageCoverIconWrapper>
-        <PageCover resource={getGroupCoverUrl('')}/>
+        <PageCover resource={''}/>
       </PageCoverWrapper>
       <UserCoverBar
         id={currentUser?.user?.id}

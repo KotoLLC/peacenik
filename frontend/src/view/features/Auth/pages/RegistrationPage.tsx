@@ -12,7 +12,7 @@ import Checkbox from '@material-ui/core/Checkbox'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import queryString from 'query-string'
-
+import { CheckboxLabel } from '@view/shared/styles'
 import {
   AuthForm,
   FormSubtitle,
@@ -21,7 +21,6 @@ import {
   TextFieldNote,
   Separator,
   LinkBlock,
-  CheckboxLabel,
   CheckboxFieldWrapper,
   LabelLink,
 } from '../components/styles'

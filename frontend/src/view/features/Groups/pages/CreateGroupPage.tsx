@@ -9,31 +9,35 @@ import { Link, RouteComponentProps } from 'react-router-dom'
 import selectors from '@selectors/index'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import loadImage from 'blueimp-load-image'
-import { ErrorMessage, ButtonContained, ButtonOutlined } from '@view/shared/styles'
+import { 
+  ErrorMessage, 
+  ButtonContained, 
+  ButtonOutlined,
+  UploadInput,
+  EditCoverWrapper,
+  EditCoverIconWrapper,
+  EditCoverAddButton,
+  EditCoverAddButtonWrapper,
+  EditsAvatar,
+  EditsAvatarWrapper,
+  EditFormWrapper,
+  EditFieldWrapper,
+  EditFieldPlaceholder,
+  EditInputField,
+  EditTextareaField,
+  EditButtonsWrapper,
+  EditRadioStyled,
+  EditControlLabelStyled,
+  EditRadiosWrapper,
+ } from '@view/shared/styles'
 import {
   CreateGroupContainer,
-  CoverWrapper,
-  CoverIconWrapper,
-  AddCoverButton,
-  AddCoverButtonWrapper,
-  CreateGroupAvatar,
-  AvatarsBlock,
   AvatarsNote,
-  FormWrapper,
-  FieldWrapper,
-  FieldPlaceholder,
-  InputField,
-  TextareaField,
-  ButtonsWrapper,
-  RadioStyled,
-  FormControlLabelStyled,
-  RadiosWrapper,
   EmptyScrenWrapper,
   EmptyGroupsText,
   EmptyGroupsTextWrapper,
   EmptyGroupsIconWrapper,
   EmptyGroupsTextLink,
-  UploadInput,
 } from './../components/styles'
 
 interface Props extends RouteComponentProps {
@@ -239,14 +243,14 @@ const CreateGroupPage: React.FC<Props> = (props) => {
   const renderAvatar = () => {
     if (avatarFile) {
       return (
-        <CreateGroupAvatar src={URL.createObjectURL(avatarFile)} />
+        <EditsAvatar src={URL.createObjectURL(avatarFile)} />
       )
     }
 
     return (
-      <CreateGroupAvatar>
+      <EditsAvatar>
         <img className="avatar-icon" src={AvatarIcon} alt="" />
-      </CreateGroupAvatar>
+      </EditsAvatar>
     )
   }
 
@@ -256,14 +260,14 @@ const CreateGroupPage: React.FC<Props> = (props) => {
 
   const renderForm = () => (
     <CreateGroupContainer>
-      <CoverWrapper resource={(coverFile) ? coverFileObjectUrl : ''}>
+      <EditCoverWrapper resource={(coverFile) ? coverFileObjectUrl : ''}>
         <label>
-          <CoverIconWrapper>
+          <EditCoverIconWrapper>
             <img src={CoverIcon} alt="icon" />
-          </CoverIconWrapper>
-          <AddCoverButtonWrapper>
-            <AddCoverButton>Add cover picture</AddCoverButton>
-          </AddCoverButtonWrapper>
+          </EditCoverIconWrapper>
+          <EditCoverAddButtonWrapper>
+            <EditCoverAddButton>Add cover picture</EditCoverAddButton>
+          </EditCoverAddButtonWrapper>
           <UploadInput
             type="file"
             id="cover"
@@ -272,8 +276,8 @@ const CreateGroupPage: React.FC<Props> = (props) => {
             accept="image/*"
           />
         </label>
-      </CoverWrapper>
-      <AvatarsBlock>
+      </EditCoverWrapper>
+      <EditsAvatarWrapper>
         <label>
           {renderAvatar()}
           <UploadInput
@@ -285,43 +289,43 @@ const CreateGroupPage: React.FC<Props> = (props) => {
           />
         </label>
         <AvatarsNote>Upload jpg or png file. Up to 1 MB</AvatarsNote>
-      </AvatarsBlock>
-      <FormWrapper>
-        <FieldWrapper className="radios" onSubmit={onSubmit}>
-          <FieldPlaceholder className="radios">Group Type</FieldPlaceholder>
+      </EditsAvatarWrapper>
+      <EditFormWrapper>
+        <EditFieldWrapper className="radios" onSubmit={onSubmit}>
+          <EditFieldPlaceholder className="radios">Group Type</EditFieldPlaceholder>
           <RadioGroup aria-label="publicity" name="publicity">
-            <RadiosWrapper>
-              <FormControlLabelStyled
+            <EditRadiosWrapper>
+              <EditControlLabelStyled
                 onClick={() => setPublic(false)}
                 value="private"
-                control={<RadioStyled checked={!isPublic} size="small" color="primary" />}
+                control={<EditRadioStyled checked={!isPublic} size="small" color="primary" />}
                 label={<div className="title">Private <span className="title-note">Invitation only</span></div>} />
-              <FormControlLabelStyled
+              <EditControlLabelStyled
                 onClick={() => setPublic(true)}
                 value="public"
-                control={<RadioStyled checked={isPublic} size="small" color="primary" />}
+                control={<EditRadioStyled checked={isPublic} size="small" color="primary" />}
                 label={<div className="title">Public <span className="title-note">Listed for all users</span></div>} />
-            </RadiosWrapper>
+            </EditRadiosWrapper>
           </RadioGroup>
-        </FieldWrapper>
-        <FieldWrapper>
-          <FieldPlaceholder>Group Name</FieldPlaceholder>
-          <InputField value={groupName} onChange={(event) => setGroupName(event.target.value)} />
-        </FieldWrapper>
-        <FieldWrapper>
-          <FieldPlaceholder>Description</FieldPlaceholder>
-          <TextareaField value={groupDescription} onChange={(event) => setGroupDescription(event.target.value)} />
-        </FieldWrapper>
+        </EditFieldWrapper>
+        <EditFieldWrapper>
+          <EditFieldPlaceholder>Group Name</EditFieldPlaceholder>
+          <EditInputField value={groupName} onChange={(event) => setGroupName(event.target.value)} />
+        </EditFieldWrapper>
+        <EditFieldWrapper>
+          <EditFieldPlaceholder>Description</EditFieldPlaceholder>
+          <EditTextareaField value={groupDescription} onChange={(event) => setGroupDescription(event.target.value)} />
+        </EditFieldWrapper>
         {invalideMessage && <ErrorMessage>{invalideMessage}</ErrorMessage>}
-        <ButtonsWrapper>
+        <EditButtonsWrapper>
           <Link to="/groups">
             <ButtonOutlined>Cancel</ButtonOutlined>
           </Link>
           <ButtonContained disabled={isRequested} onClick={onSubmit}>
             {isRequested ? <CircularProgress size={20} color={'inherit'} /> : 'Save'}
           </ButtonContained>
-        </ButtonsWrapper>
-      </FormWrapper>
+        </EditButtonsWrapper>
+      </EditFormWrapper>
     </CreateGroupContainer>
   )
 

@@ -8,9 +8,8 @@ import selectors from '@selectors/index'
 import { StoreTypes } from 'src/types'
 import ListItemText from '@material-ui/core/ListItemText'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
-import EditIcon from '@material-ui/icons/Edit'
-import SettingsIcon from '@material-ui/icons/Settings'
 import ClickAwayListener from '@material-ui/core/ClickAwayListener'
+import PersonIcon from '@material-ui/icons/Person'
 import {
   AvatarWrapper,
   ListItemIconStyled,
@@ -51,17 +50,11 @@ const DropdownMenu2: React.FC<Props> = (props) => {
           <Avatar src={getAvatarUrl(userId)} />
         </AvatarWrapper>
         {isMenuOpen && <Dropdown>
-          <CustomMenuItem onClick={() => goToPage('/profile/settings')}>
+          <CustomMenuItem onClick={() => goToPage('/settings')}>
             <ListItemIconStyled>
-              <SettingsIcon fontSize="small" />
+              <PersonIcon fontSize="small" />
             </ListItemIconStyled>
-            <ListItemText primary="Settings" />
-          </CustomMenuItem>
-          <CustomMenuItem onClick={() => goToPage('/profile/me')}>
-            <ListItemIconStyled>
-              <EditIcon fontSize="small" />
-            </ListItemIconStyled>
-            <ListItemText primary="Edit Profile" />
+            <ListItemText primary="View profile" />
           </CustomMenuItem>
           <CustomMenuItem className="logout" onClick={onLogoutClick}>
             <ListItemIconStyled>

@@ -20,6 +20,7 @@ import { PageLayout } from '@view/shared/PageLayout'
 import FriendsPages from '@view/features/Friends/pages'
 import GroupsPages from '@view/features/Groups/pages'
 import AuthPages from '@view/features/Auth/pages'
+import { SettingsPages }  from '@view/features/Settings/pages'
 
 export const history = createBrowserHistory()
 
@@ -96,9 +97,9 @@ export const Routes = () => {
               <PrivateRoute path="/hubs" component={HubPages} />
               <PrivateRoute path="/messages" component={MessagesPage} />
               <PrivateRoute path="/notifications" component={NotificationsPage} />
-
+              
+              <PrivateRoute path="/settings" component={SettingsPages} />
               <PrivateRoute path="/profile" component={ProfilePage} />
-
               <PrivateRoute path="/friends" component={FriendsPages} />
               <PrivateRoute path="/groups" component={GroupsPages} />
               <AuthPages/>   
