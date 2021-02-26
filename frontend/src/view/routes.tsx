@@ -20,7 +20,7 @@ import { PageLayout } from '@view/shared/PageLayout'
 import FriendsPages from '@view/features/Friends/pages'
 import GroupsPages from '@view/features/Groups/pages'
 import AuthPages from '@view/features/Auth/pages'
-import { SettingsPages }  from '@view/features/Settings/pages'
+import { SettingsPages } from '@view/features/Settings/pages'
 
 export const history = createBrowserHistory()
 

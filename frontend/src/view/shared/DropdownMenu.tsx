@@ -8,8 +8,7 @@ import Avatar from '@material-ui/core/Avatar'
 import { getAvatarUrl } from '@services/avatarUrl'
 import selectors from '@selectors/index'
 import { StoreTypes } from 'src/types'
-import EditIcon from '@material-ui/icons/Edit'
-import SettingsIcon from '@material-ui/icons/Settings'
+import PersonIcon from '@material-ui/icons/Person'
 import {
   ListItemIconStyled,
   AvatarWrapper,
@@ -58,17 +57,11 @@ const CustomDropdownMenu: React.FC<Props> = (props) => {
         open={Boolean(anchorEl)}
         onClose={onMenuClose}
       >
-        <MenuItemStyled>
+        <MenuItemStyled onClick={() => goToPage('/settings')}>
           <ListItemIconStyled>
-            <SettingsIcon fontSize="small" />
+            <PersonIcon fontSize="small" />
           </ListItemIconStyled>
-          <ListItemText primary="Settings" />
-        </MenuItemStyled>
-        <MenuItemStyled onClick={() => goToPage('/profile/me')}>
-          <ListItemIconStyled>
-            <EditIcon fontSize="small" />
-          </ListItemIconStyled>
-          <ListItemText primary="Edit Profile" />
+          <ListItemText primary="View Profile" />
         </MenuItemStyled>
         <MenuItemStyled className="logout" onClick={onLogoutClick}>
           <ListItemIconStyled>

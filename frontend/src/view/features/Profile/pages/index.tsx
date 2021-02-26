@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import selectors from '@selectors/index'
 import { StoreTypes } from 'src/types'
 import UserProfilePage from './UserProfilePage'
-import MyProfile from '@view/pages/ProfilePage/MyProfile'
+import MyProfile from '@view/pages/_legacycode/ProfilePage/MyProfile'
 import queryString from 'query-string'
 
 interface Props extends RouteComponentProps {
@@ -19,9 +19,8 @@ const ProfilePage: React.FC<Props> = (props) => {
 
   return (
     <Switch>
-      <Route path="/profile/me" component={MyProfile} />
       <Route path="/profile/user">
-        {(myUserId === currentUserId) ? <Redirect to="/profile/me" /> : <UserProfilePage />}
+        {(myUserId === currentUserId) ? <Redirect to="/settings" /> : <UserProfilePage />}
       </Route>
     </Switch>
   )

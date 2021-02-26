@@ -92,13 +92,22 @@ export const TextFieldStyled = styled(TextField)`
 	
 	svg {
 		color: #A1AEC8;
+    margin-right: 10px;
 	}
 `
 
 export const CheckboxFieldWrapper = styled.div`
   padding-left: 162px;
+  margin-bottom: 20px;
 `
 
 export const ButtonContainedStyled = styled(ButtonContained)`
   min-width: 200px;
 ` 
+
+export const FormTitle = styled.h3`
+  font-family: 'SFUITextRegular';
+  font-size: 16px;
+  padding-left: 160px;
+  margin-bottom: 20px;
+`

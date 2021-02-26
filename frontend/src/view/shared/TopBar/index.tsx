@@ -10,7 +10,7 @@ import logo from './../../../assets/images/logo-1.png'
 import { Link } from 'react-router-dom'
 import HomeIcon from '@material-ui/icons/Home'
 import ChatBubbleIcon from '@material-ui/icons/ChatBubble'
-import PersonIcon from '@material-ui/icons/Person'
+// import PersonIcon from '@material-ui/icons/Person'
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt'
 import logoMobile from '@assets/images/icon.png'
 import { Container } from '@view/shared/styles'
@@ -65,11 +65,11 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
                 <PeopleAltIcon />
               </MenuLink>
             </MenuItem>
-            <MenuItem>
+            {/* <MenuItem>
               <MenuLink to={`/settings`}>
                 <PersonIcon />
               </MenuLink>
-            </MenuItem>
+            </MenuItem> */}
             <MenuItem>
               <MenuLink to="/groups">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

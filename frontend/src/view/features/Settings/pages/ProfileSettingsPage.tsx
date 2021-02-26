@@ -1,16 +1,16 @@
 import React from 'react'
 import { ProfileSettingsContent } from './../components/styles'
-import { ProfileForm } from './../components/ProfileForm'
-import { PasswordForm } from './../components/PasswordForm'
+import SettingsProfileForm from '../components/SettingsProfileForm'
+import ChangePasswordForm from '../components/ChangePasswordForm'
 
 export const ProfileSettingsPage = () => {
   return (
     <>
       <ProfileSettingsContent>
-        <ProfileForm />
+        <SettingsProfileForm />
       </ProfileSettingsContent>
       <ProfileSettingsContent>
-        <PasswordForm/>
+        <ChangePasswordForm/>
       </ProfileSettingsContent>
     </>
   )
