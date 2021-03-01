@@ -5,7 +5,7 @@ import selectors from '@selectors/index'
 import { ApiTypes, StoreTypes } from 'src/types'
 import { v4 as uuidv4 } from 'uuid'
 import UserCoverBar from './../components/UserCoverBar'
-import { getAvatarUrl } from '@services/avatarUrl'
+import { getAvatarUrl, getProfileCoverUrl } from '@services/avatarUrl'
 import { withRouter, RouteComponentProps } from 'react-router-dom'
 import queryString from 'query-string'
 import ProfileFriend from '../components/ProfileFriend'
@@ -145,7 +145,7 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
         <PageCoverIconWrapper>
           <ImageIcon/>
         </PageCoverIconWrapper>
-        <PageCover resource={''}/>
+        <PageCover resource={getProfileCoverUrl(userId as string)}/>
       </PageCoverWrapper>
       <UserCoverBar
         id={currentUser?.user?.id}

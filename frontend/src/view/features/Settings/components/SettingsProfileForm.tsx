@@ -9,7 +9,7 @@ import PersonIcon from '@material-ui/icons/Person'
 import FaceIcon from '@material-ui/icons/Face'
 import MailIcon from '@material-ui/icons/Mail'
 import Checkbox from '@material-ui/core/Checkbox'
-import { getAvatarUrl } from '@services/avatarUrl'
+import { getAvatarUrl, getProfileCoverUrl } from '@services/avatarUrl'
 import { validate } from '@services/validation'
 import loadImage from 'blueimp-load-image'
 import {
@@ -17,6 +17,7 @@ import {
   EditCoverIconWrapper,
   EditCoverAddButton,
   EditCoverAddButtonWrapper,
+  EditCoverLabel,
   UploadInput,
   EditsAvatar,
   EditsAvatarWrapper,
@@ -38,13 +39,17 @@ interface Props {
   userFullName: string
   userEmail: string
   userId: string
-  uploadLink: ApiTypes.UploadLink | null
+  userHideIdentity: boolean
+  avatarUploadLink: ApiTypes.UploadLink | null
+  coverUploadLink: ApiTypes.UploadLink | null
   profileErrorMessage: string
 
   onGetUploadLink: (value: ApiTypes.Profile.UploadLinkRequest) => void
   onSetAvatar: (data: ApiTypes.Profile.Avatar) => void
   onEditProfile: (data: ApiTypes.Profile.EditProfile) => void
   onGetProfile: () => void
+  onGetProfileCoverUploadLink: (value: ApiTypes.UploadLinkRequest) => void
+  onSetProfileCover: (data: ApiTypes.Attachment) => void
 }
 
 type FieldsType = 'email' | ''
@@ -53,8 +58,11 @@ interface State {
   email: string | null
   isRequestSend: boolean
   errorMessage: string
-  isFileUploaded: boolean
-  file: File | null
+  isAvatarFileUploaded: boolean
+  isCoverFileUploaded: boolean
+  hideIdentity: boolean
+  avatarFile: File | null
+  coverFile: File | null
   fullName: string
   noValideField: FieldsType
   isCurrentPasswordVisible: boolean
@@ -67,9 +75,12 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
     email: null,
     isRequestSend: false,
     errorMessage: '',
-    isFileUploaded: false,
-    file: null,
+    isAvatarFileUploaded: false,
+    isCoverFileUploaded: false,
+    avatarFile: null,
+    coverFile: null,
     fullName: this.props?.userFullName || '',
+    hideIdentity: this.props?.userHideIdentity,
     noValideField: '' as FieldsType,
     isCurrentPasswordVisible: false,
     isNewPasswordVisible: false,
@@ -84,6 +95,12 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
   onFullNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       fullName: event.currentTarget.value,
+    })
+  }
+
+  onHideIdentityChange = (value: boolean) => {
+    this.setState({
+      hideIdentity: value
     })
   }
 
@@ -112,19 +129,28 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
   onFormSubmit = (event: FormEvent) => {
     event.preventDefault()
 
-    const { email, fullName } = this.state
-    const { uploadLink, userEmail, onEditProfile, userFullName } = this.props
+    const { email, fullName, hideIdentity } = this.state
+    const { avatarUploadLink, userEmail, onEditProfile, userFullName, userHideIdentity, coverUploadLink } = this.props
 
     if (!this.onValidate()) return
 
     let avatarData = {}
+    let coverData = {}
     let emailData = {}
     let fullNameData = {}
+    let hideIdentityData = {}
 
-    if (uploadLink?.blob_id) {
+    if (avatarUploadLink?.blob_id) {
       avatarData = {
         avatar_changed: true,
-        avatar_id: uploadLink.blob_id
+        avatar_id: avatarUploadLink.blob_id
+      }
+    }
+    
+    if (coverUploadLink?.blob_id) {
+      coverData = {
+        background_changed: true,
+        background_id: coverUploadLink.blob_id
       }
     }
 
@@ -142,7 +168,20 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
       }
     }
 
-    const data = { ...emailData, ...avatarData, ...fullNameData }
+    if (userHideIdentity !== hideIdentity) {
+      hideIdentityData = {
+        hide_identity_changed: true,
+        hide_identity: hideIdentity,
+      }
+    }
+
+    const data = { 
+      ...emailData, 
+      ...avatarData, 
+      ...fullNameData, 
+      ...hideIdentityData,
+      ...coverData,
+    }
     onEditProfile(data)
 
     this.setState({
@@ -156,7 +195,7 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
     const { onGetUploadLink } = this.props
 
     this.setState({
-      isFileUploaded: false,
+      isAvatarFileUploaded: false,
     })
 
     const file = event.target.files
@@ -179,13 +218,57 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
             img.toBlob(function (blob) {
               loadImage.replaceHead(blob, data.imageHead, function (newBlob) {
                 self.setState({
-                  file: newBlob,
+                  avatarFile: newBlob,
                 })
               })
             }, 'image/jpeg')
           } else {
             self.setState({
-              file: file[0],
+              avatarFile: file[0],
+            })
+          }
+        },
+        { meta: true, orientation: true, canvas: true }
+      )
+      /* tslint:enable */
+
+    }
+  }
+  
+  onCoverUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const { onGetProfileCoverUploadLink } = this.props
+
+    this.setState({
+      isCoverFileUploaded: false,
+    })
+
+    const file = event.target.files
+
+    if (file && file[0]) {
+      onGetProfileCoverUploadLink({
+        content_type: file[0].type,
+        file_name: file[0].name,
+      })
+
+      const self = this
+
+      /* tslint:disable */
+      loadImage(
+        file[0],
+        function (img, data) {
+          if (data.imageHead && data.exif) {
+            // Reset Exif Orientation data:
+            loadImage.writeExifData(data.imageHead, data, 'Orientation', 1)
+            img.toBlob(function (blob) {
+              loadImage.replaceHead(blob, data.imageHead, function (newBlob) {
+                self.setState({
+                  coverFile: newBlob,
+                })
+              })
+            }, 'image/jpeg')
+          } else {
+            self.setState({
+              coverFile: file[0],
             })
           }
         },
@@ -210,24 +293,45 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
 
   static getDerivedStateFromProps(newProps: Props, prevState: State) {
 
-    if (newProps?.uploadLink && prevState?.file) {
+    if (newProps?.avatarUploadLink && prevState?.avatarFile) {
 
-      const { form_data } = newProps?.uploadLink
+      const { form_data } = newProps?.avatarUploadLink
       const data = new FormData()
 
       for (let key in form_data) {
         data.append(key, form_data[key])
       }
 
-      data.append('file', prevState?.file, prevState?.file.name)
+      data.append('file', prevState?.avatarFile, prevState?.avatarFile.name)
 
       newProps.onSetAvatar({
-        link: newProps?.uploadLink.link,
+        link: newProps?.avatarUploadLink.link,
         form_data: data,
       })
 
       return {
-        isFileUploaded: true
+        isAvatarFileUploaded: true
+      }
+    }
+    
+    if (newProps?.coverUploadLink && prevState?.coverFile) {
+
+      const { form_data } = newProps?.coverUploadLink
+      const data = new FormData()
+
+      for (let key in form_data) {
+        data.append(key, form_data[key])
+      }
+
+      data.append('file', prevState?.coverFile, prevState?.coverFile.name)
+
+      newProps.onSetProfileCover({
+        link: newProps?.coverUploadLink.link,
+        form_data: data,
+      })
+
+      return {
+        isAvatarFileUploaded: true
       }
     }
 
@@ -253,11 +357,11 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
   }
 
   renderAvatar = () => {
-    const { file } = this.state
+    const { avatarFile } = this.state
     const { userName, userId } = this.props
 
-    if (file) {
-      return <EditsAvatar src={URL.createObjectURL(file)} alt={userName} />
+    if (avatarFile) {
+      return <EditsAvatar src={URL.createObjectURL(avatarFile)} alt={userName} />
     }
 
     return <EditsAvatar src={getAvatarUrl(userId)} alt={userName} />
@@ -268,7 +372,7 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { userName } = this.props
+    const { userName, userId } = this.props
 
     const {
       errorMessage,
@@ -276,14 +380,14 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
       noValideField,
       fullName,
       isRequestSend,
+      hideIdentity,
+      coverFile,
     } = this.state
 
     return (
       <>
-
-        {/* <EditCoverWrapper resource={(coverFile) ? coverFileObjectUrl : getGroupCoverUrl(initialGroup?.id!)}> */}
-        <EditCoverWrapper>
-          <label>
+        <EditCoverWrapper resource={(coverFile) ? URL.createObjectURL(coverFile) : getProfileCoverUrl(userId)}>
+          <EditCoverLabel>
             <EditCoverIconWrapper>
               <img src={CoverIcon} alt="icon" />
             </EditCoverIconWrapper>
@@ -292,23 +396,23 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
             </EditCoverAddButtonWrapper>
             <UploadInput
               type="file"
-              id="cover"
-              name="cover"
-              // onChange={onCoverFileUpload}
-              accept="image/*"
+              id="coverFile"
+              name="coverFile"
+              onChange={this.onCoverUpload}
+              accept="image/x-png,image/gif,image/jpeg"
             />
-          </label>
+          </EditCoverLabel>
         </EditCoverWrapper>
         <EditsAvatarWrapper>
-          <label htmlFor="file">
-            {this.renderAvatar()}
+          <label htmlFor="avataFile">
             <UploadInput
               type="file"
-              id="file"
-              name="file"
+              id="avataFile"
+              name="avatarFile"
               onChange={this.onAvatarUpload}
               accept="image/x-png,image/gif,image/jpeg"
             />
+            {this.renderAvatar()}
           </label>
         </EditsAvatarWrapper>
         <SettingsFormWrapper onSubmit={this.onFormSubmit}>
@@ -359,8 +463,8 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
             <CheckboxLabel
               control={
                 <Checkbox
-                  // checked={isRememberedMe}
-                  // onChange={(event) => onRememberMeChange(event.target.checked)}
+                  checked={hideIdentity}
+                  onChange={(event) => this.onHideIdentityChange(event.target.checked)}
                   name="rememberMe"
                   color="primary"
                 />
@@ -384,25 +488,38 @@ type StateProps = Pick<Props,
   | 'userName'
   | 'userFullName'
   | 'userEmail'
-  | 'uploadLink'
+  | 'userHideIdentity'
+  | 'avatarUploadLink'
   | 'userId'
   | 'profileErrorMessage'
+  | 'coverUploadLink'
 >
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   userName: selectors.profile.userName(state),
   userFullName: selectors.profile.userFullName(state),
   userEmail: selectors.profile.userEmail(state),
-  uploadLink: state.profile.uploadLink,
+  userHideIdentity: selectors.profile.userHideIdentity(state),
+  avatarUploadLink: state.profile.avatarUploadLink,
   userId: selectors.profile.userId(state),
   profileErrorMessage: selectors.profile.profileErrorMessage(state),
+  coverUploadLink: selectors.profile.coverUploadLink(state),
 })
 
-type DispatchProps = Pick<Props, 'onGetUploadLink' | 'onSetAvatar' | 'onEditProfile' | 'onGetProfile'>
+type DispatchProps = Pick<Props,
+  | 'onGetUploadLink'
+  | 'onSetAvatar'
+  | 'onEditProfile'
+  | 'onGetProfile'
+  | 'onGetProfileCoverUploadLink'
+  | 'onSetProfileCover'
+>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetUploadLink: (value: ApiTypes.Profile.UploadLinkRequest) => dispatch(Actions.profile.getUploadLinkRequest(value)),
   onSetAvatar: (data: ApiTypes.Profile.Avatar) => dispatch(Actions.profile.setAvatarRequest(data)),
   onEditProfile: (data: ApiTypes.Profile.EditProfile) => dispatch(Actions.profile.editProfileRequest(data)),
   onGetProfile: () => dispatch(Actions.profile.getProfileRequest()),
+  onGetProfileCoverUploadLink: (value: ApiTypes.UploadLinkRequest) => dispatch(Actions.profile.getProfileCoverLinkRequest(value)),
+  onSetProfileCover: (data: ApiTypes.Attachment) => dispatch(Actions.profile.setProfileCoverRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(SettingsProfileForm)

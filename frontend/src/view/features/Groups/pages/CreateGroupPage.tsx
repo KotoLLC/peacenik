@@ -382,8 +382,8 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onAddGroup: (data: ApiTypes.Groups.AddGroup) => dispatch(Actions.groups.addGroupRequest(data)),
   addGroupSucces: (value: boolean) => dispatch(Actions.groups.addGroupSucces(value)),
   onGetCoverUploadLinkRequest: (data: ApiTypes.Groups.UploadLinkRequest) =>
-    dispatch(Actions.groups.getCoverUploadLinkRequest(data)),
-  onSetCoverRequest: (data: ApiTypes.Groups.Image) => dispatch(Actions.groups.setCoverRequest(data)),
+    dispatch(Actions.groups.getGroupCoverUploadLinkRequest(data)),
+  onSetCoverRequest: (data: ApiTypes.Groups.Image) => dispatch(Actions.groups.setGroupCoverRequest(data)),
   onGetAvatarUploadLinkRequest: (data: ApiTypes.Groups.UploadLinkRequest) =>
     dispatch(Actions.groups.getAvatarUploadLinkRequest(data)),
   onSetAvatarRequest: (data: ApiTypes.Groups.Image) => dispatch(Actions.groups.setAvatarRequest(data))

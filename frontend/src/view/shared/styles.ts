@@ -176,7 +176,7 @@ export const AvatarWrapper = styled.div`
 export const ErrorMessage = styled.div`
   font-size: 14px;
   color: red;
-  margin-top: 20px;
+  margin: 20px 0 10px;
 `
 
 export const MenuItemWrapper = styled.div`
@@ -1056,6 +1056,12 @@ export const EditCoverWrapper = styled.div`
     label {
       margin-left: 30px;
     }
+  }
+`
+
+export const EditCoverLabel = styled.label`
+  @media (max-width: 1025px){
+    margin-left: 50px;
   }
 `
 

@@ -8,6 +8,7 @@ import messages from './messages'
 import notifications from './notifications'
 import dashboard from './dashboard'
 import groups from './groups'
+import common from './common'
 
 // @ts-ignore
 const URL: string = window.apiEndpoint
@@ -30,4 +31,5 @@ export const API = {
   notifications,
   dashboard,
   groups,
+  common,
 }

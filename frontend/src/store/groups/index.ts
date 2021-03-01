@@ -112,7 +112,7 @@ const reducer = (state = initialState, action) => {
         }
       }
     }
-    case Types.GET_COVER_UPLOAD_LINK_SUCCESS: {
+    case Types.GET_GROUP_COVER_UPLOAD_LINK_SUCCESS: {
       return {
         ...state, ...{ coverUploadLink: action.payload }
       }

@@ -92,3 +92,23 @@ export function* watchDisableUser(action: { type: string, payload: string }) {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
 }
+
+export function* watchGetProfileCoverUploadLink(action: { type: string, payload: ApiTypes.UploadLinkRequest }) {
+  const response = yield API.common.getUploadLink(action.payload)
+
+  if (response.status === 200) {
+    yield put(Actions.profile.getProfileCoverLinkSucces(response.data))
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
+export function* watchSetProfileCover(action: { type: string, payload: ApiTypes.Attachment }) {
+  const response = yield API.common.setAttachment(action.payload.link, action.payload.form_data)
+
+  if (response.status === 204 || response.status === 200) {
+    yield put(Actions.profile.setProfileCoverSuccess())
+  } else {
+    yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}

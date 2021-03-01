@@ -5,6 +5,7 @@ import {
   EditFieldWrapper,
   EditFieldPlaceholder,
   ButtonContained,
+  EditsAvatar,
 } from '@view/shared/styles'
 
 export const SettingsContainer = styled.main`
@@ -32,6 +33,7 @@ export const SettingsContentWrapper = styled.div`
 
   @media (max-width: 770px) {
     width: 100%;
+    padding-left: 0;
   }
 `
 
@@ -45,10 +47,22 @@ export const ProfileSettingsContent = styled.div`
 
 export const SettingsFormWrapper = styled(EditFormWrapper)`
   padding: 30px 170px 30px 140px;
+
+  @media (max-width: 1025px) {
+    padding: 30px 30px 30px 30px;
+  }
+
+  @media (max-width: 770px){
+    padding: 30px 15px 20px;
+  }
 `
 
 export const SettingsFieldWrapper = styled(EditFieldWrapper)`
   margin-bottom: 20px;
+
+  @media (max-width: 770px){
+    margin-bottom: 10px;
+  }
 
 `
 
@@ -94,15 +108,24 @@ export const TextFieldStyled = styled(TextField)`
 		color: #A1AEC8;
     margin-right: 10px;
 	}
+  
 `
 
 export const CheckboxFieldWrapper = styled.div`
   padding-left: 162px;
   margin-bottom: 20px;
+
+  @media (max-width: 770px){
+    padding-left: 0;
+  }
 `
 
 export const ButtonContainedStyled = styled(ButtonContained)`
   min-width: 200px;
+
+  @media (max-width: 770px){
+    min-width: 150px;
+  }
 ` 
 
 export const FormTitle = styled.h3`
@@ -110,4 +133,8 @@ export const FormTitle = styled.h3`
   font-size: 16px;
   padding-left: 160px;
   margin-bottom: 20px;
+
+  @media (max-width: 770px){
+    padding-left: 0;
+  }
 `

@@ -2,7 +2,6 @@ import React, { ChangeEvent, FormEvent } from 'react'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
-import IconButton from '@material-ui/core/IconButton'
 import LockIcon from '@material-ui/icons/Lock'
 import { validate } from '@services/validation'
 import { connect } from 'react-redux'
@@ -30,16 +29,18 @@ interface Props {
   onGetProfile: () => void
 }
 
-type FieldsType = 'newPassword' | 'currentPassword' | ''
+type FieldsType = 'newPassword' | 'currentPassword' | 'confirmPassword' | ''
 
 interface State {
   isRequestSend: boolean
   errorMessage: string
   currentPassword: string
   newPassword: string
+  confirmPassword: string
   noValideField: FieldsType
   isCurrentPasswordVisible: boolean
   isNewPasswordVisible: boolean
+  isConfirmPasswordVisible: boolean
 }
 
 class ChangePasswordForm extends React.PureComponent<Props, State> {
@@ -49,25 +50,33 @@ class ChangePasswordForm extends React.PureComponent<Props, State> {
     errorMessage: '',
     currentPassword: '',
     newPassword: '',
+    confirmPassword: '',
     noValideField: '' as FieldsType,
     isCurrentPasswordVisible: false,
     isNewPasswordVisible: false,
+    isConfirmPasswordVisible: false,
   }
 
-  onCurrentPaaswordChange = (event: ChangeEvent<HTMLInputElement>) => {
+  onCurrentPasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       currentPassword: event.currentTarget.value.trim(),
     })
   }
 
-  onNewPaaswordChange = (event: ChangeEvent<HTMLInputElement>) => {
+  onNewPasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       newPassword: event.currentTarget.value.trim(),
     })
   }
+  
+  onConfirmPasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      confirmPassword: event.currentTarget.value.trim(),
+    })
+  }
 
   onValidate = (): boolean => {
-    const { currentPassword, newPassword } = this.state
+    const { currentPassword, newPassword, confirmPassword } = this.state
 
     if (currentPassword || newPassword) {
       if (newPassword && !currentPassword) {
@@ -82,6 +91,14 @@ class ChangePasswordForm extends React.PureComponent<Props, State> {
         this.setState({
           errorMessage: 'New password is incorrect',
           noValideField: 'newPassword',
+        })
+        return false
+      }
+      
+      if (newPassword !== confirmPassword) {
+        this.setState({
+          errorMessage: 'Confirm password isn`t equel to new password',
+          noValideField: 'confirmPassword',
         })
         return false
       }
@@ -129,6 +146,12 @@ class ChangePasswordForm extends React.PureComponent<Props, State> {
       isNewPasswordVisible: value
     })
   }
+  
+  onConfirmPasswordOpen = (value: boolean) => {
+    this.setState({
+      isConfirmPasswordVisible: value
+    })
+  }
 
   render() {
     const {
@@ -136,9 +159,11 @@ class ChangePasswordForm extends React.PureComponent<Props, State> {
       noValideField,
       currentPassword,
       newPassword,
+      confirmPassword,
       isCurrentPasswordVisible,
       isNewPasswordVisible,
       isRequestSend,
+      isConfirmPasswordVisible,
     } = this.state
 
     return (
@@ -152,21 +177,19 @@ class ChangePasswordForm extends React.PureComponent<Props, State> {
               id="currentPassword"
               type={isCurrentPasswordVisible ? 'text' : 'password'}
               value={currentPassword}
-              onChange={this.onCurrentPaaswordChange}
+              onChange={this.onCurrentPasswordChange}
               error={(noValideField === 'currentPassword') ? true : false}
               InputProps={{
                 startAdornment: (
                   <LockIcon />
                 ),
                 endAdornment: (
-                  <IconButton
-                    aria-label="toggle password visibility"
+                  <span
                     onClick={() => this.onCurrentPasswordOpen(!isCurrentPasswordVisible)}
                     onMouseDown={() => this.onCurrentPasswordOpen(!isCurrentPasswordVisible)}
-                    edge="end"
                   >
                     {isCurrentPasswordVisible ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
+                  </span>
                 ),
               }}
             />
@@ -178,51 +201,47 @@ class ChangePasswordForm extends React.PureComponent<Props, State> {
               variant="outlined"
               type={isNewPasswordVisible ? 'text' : 'password'}
               value={newPassword}
-              onChange={this.onNewPaaswordChange}
+              onChange={this.onNewPasswordChange}
               error={(noValideField === 'newPassword') ? true : false}
               InputProps={{
                 startAdornment: (
                   <LockIcon />
                 ),
                 endAdornment: (
-                  <IconButton
-                    aria-label="toggle password visibility"
+                  <span
                     onClick={() => this.onNewPasswordOpen(!isNewPasswordVisible)}
                     onMouseDown={() => this.onNewPasswordOpen(!isNewPasswordVisible)}
-                    edge="end"
                   >
                     {isNewPasswordVisible ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
+                  </span>
                 ),
               }}
             />
           </SettingsFieldWrapper>
-          {/* <SettingsFieldWrapper>
+          <SettingsFieldWrapper>
             <SettingsFieldPlaceholder>Confirm password</SettingsFieldPlaceholder>
             <TextFieldStyled
               variant="outlined"
-              id="password"
-              type={isPasswordVisible ? 'text' : 'password'}
-              // value={password}
-              // onChange={(event) => onPasswordChange(event.currentTarget.value.trim())}
-              // error={(noValideField === 'password') ? true : false}
+              id="confirmPassword"
+              type={isConfirmPasswordVisible ? 'text' : 'password'}
+              value={confirmPassword}
+              onChange={this.onConfirmPasswordChange}
+              error={(noValideField === 'confirmPassword') ? true : false}
               InputProps={{
                 startAdornment: (
                   <LockIcon />
                 ),
                 endAdornment: (
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={() => onPasswordOpen(!isPasswordVisible)}
-                    onMouseDown={() => onPasswordOpen(!isPasswordVisible)}
-                    edge="end"
+                  <span
+                    onClick={() => this.onConfirmPasswordOpen(!isConfirmPasswordVisible)}
+                    onMouseDown={() => this.onConfirmPasswordOpen(!isConfirmPasswordVisible)}
                   >
-                    {isPasswordVisible ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
+                    {isConfirmPasswordVisible ? <Visibility /> : <VisibilityOff />}
+                  </span>
                 ),
               }}
             />
-          </SettingsFieldWrapper> */}
+          </SettingsFieldWrapper>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           <EditButtonsWrapper>
             <ButtonContainedStyled disabled={isRequestSend} onClick={this.onFormSubmit}>

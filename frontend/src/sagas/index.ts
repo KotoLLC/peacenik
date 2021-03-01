@@ -45,6 +45,8 @@ import {
     watchEditProfile,
     watchGetUsers,
     watchDisableUser,
+    watchGetProfileCoverUploadLink,
+    watchSetProfileCover,
 } from './profile'
 import {
     watchGetMessages,
@@ -139,6 +141,8 @@ export function* rootSaga() {
         takeEvery(ProfileTypes.EDIT_PROFILE_REQUEST, watchEditProfile),
         takeEvery(ProfileTypes.GET_USERS_REQUEST, watchGetUsers),
         takeEvery(ProfileTypes.DISABLE_USER_REQUEST, watchDisableUser),
+        takeEvery(ProfileTypes.GET_PROFILE_COVER_UPLOAD_LINK_REQUEST, watchGetProfileCoverUploadLink),
+        takeEvery(ProfileTypes.SET_PROFILE_COVER_REQUEST, watchSetProfileCover),
 
         takeEvery(MessagesTypes.GET_MESSAGES_REQUEST, watchGetMessages),
         takeEvery(MessagesTypes.GET_CURRENT_HUB_REQUEST, watchGetCurrentHub),
@@ -189,8 +193,8 @@ export function* rootSaga() {
         takeEvery(GroupsTypes.DELETE_MEMBER_REQUEST, watchDeleteMemberRequest),
         takeEvery(GroupsTypes.LEAVE_GROUP_REQUEST, watchLeaveGroupRequest),
         takeEvery(GroupsTypes.DELETE_JOIN_REQUEST, watchDeleteJoinRequest),
-        takeEvery(GroupsTypes.GET_COVER_UPLOAD_LINK_REQUEST, watchGetGroupCoverUploadLink),
-        takeEvery(GroupsTypes.SET_COVER_REQUEST, watchSetGroupCover),
+        takeEvery(GroupsTypes.GET_GROUP_COVER_UPLOAD_LINK_REQUEST, watchGetGroupCoverUploadLink),
+        takeEvery(GroupsTypes.SET_GROUP_COVER_REQUEST, watchSetGroupCover),
         takeEvery(GroupsTypes.GET_AVATAR_UPLOAD_LINK_REQUEST, watchGetGroupAvatarUploadLink),
         takeEvery(GroupsTypes.SET_AVATAR_REQUEST, watchSetGroupAvatar),
         takeEvery(GroupsTypes.ADD_USER_TO_GROUP_REQUEST, watchAddUserToGroup),

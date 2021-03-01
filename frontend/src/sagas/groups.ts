@@ -184,7 +184,7 @@ export function* watchGetGroupCoverUploadLink(action: { type: string, payload: A
   const response = yield API.groups.getUploadLink(action.payload)
 
   if (response.status === 200) {
-    yield put(Actions.groups.getCoverUploadLinkSucces(response.data))
+    yield put(Actions.groups.getGroupCoverUploadLinkSucces(response.data))
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
@@ -194,7 +194,7 @@ export function* watchSetGroupCover(action: { type: string, payload: ApiTypes.Pr
   const response = yield API.groups.setGroupImage(action.payload.link, action.payload.form_data)
 
   if (response.status === 204 || response.status === 200) {
-    yield put(Actions.groups.setCoverSuccess())
+    yield put(Actions.groups.setGroupCoverSuccess())
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }

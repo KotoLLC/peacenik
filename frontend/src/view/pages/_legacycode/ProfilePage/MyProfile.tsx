@@ -34,7 +34,7 @@ interface Props {
   userFullName: string
   userEmail: string
   userId: string
-  uploadLink: ApiTypes.UploadLink | null
+  avatarUploadLink: ApiTypes.UploadLink | null
   profileErrorMessage: string
 
   onGetUploadLink: (value: ApiTypes.Profile.UploadLinkRequest) => void
@@ -87,13 +87,13 @@ class MyProfile extends React.PureComponent<Props, State> {
     })
   }
 
-  onCurrentPaaswordChange = (event: ChangeEvent<HTMLInputElement>) => {
+  onCurrentPasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       currentPassword: event.currentTarget.value.trim(),
     })
   }
 
-  onNewPaaswordChange = (event: ChangeEvent<HTMLInputElement>) => {
+  onNewPasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       newPassword: event.currentTarget.value.trim(),
     })
@@ -143,7 +143,7 @@ class MyProfile extends React.PureComponent<Props, State> {
     event.preventDefault()
     
     const { email, currentPassword, newPassword, fullName } = this.state
-    const { uploadLink, userEmail, onEditProfile, userFullName } = this.props
+    const { avatarUploadLink, userEmail, onEditProfile, userFullName } = this.props
 
     if (!this.onValidate()) return
 
@@ -152,10 +152,10 @@ class MyProfile extends React.PureComponent<Props, State> {
     let passwordData = {}
     let fullNameData = {}
 
-    if (uploadLink?.blob_id) {
+    if (avatarUploadLink?.blob_id) {
       avatarData = {
         avatar_changed: true,
-        avatar_id: uploadLink.blob_id
+        avatar_id: avatarUploadLink.blob_id
       }
     }
 
@@ -249,9 +249,9 @@ class MyProfile extends React.PureComponent<Props, State> {
 
   static getDerivedStateFromProps(newProps: Props, prevState: State) {
 
-    if (newProps?.uploadLink && prevState?.file) {
+    if (newProps?.avatarUploadLink && prevState?.file) {
 
-      const { form_data } = newProps?.uploadLink
+      const { form_data } = newProps?.avatarUploadLink
       const data = new FormData()
 
       for (let key in form_data) {
@@ -261,7 +261,7 @@ class MyProfile extends React.PureComponent<Props, State> {
       data.append('file', prevState?.file, prevState?.file.name)
 
       newProps.onSetAvatar({
-        link: newProps?.uploadLink.link,
+        link: newProps?.avatarUploadLink.link,
         form_data: data,
       })
 
@@ -377,7 +377,7 @@ class MyProfile extends React.PureComponent<Props, State> {
                 id="currentPassword"
                 type={isCurrentPasswordVisible ? 'text' : 'password'}
                 value={currentPassword}
-                onChange={this.onCurrentPaaswordChange}
+                onChange={this.onCurrentPasswordChange}
                 error={(noValideField === 'currentPassword') ? true : false}
                 labelWidth={130}
                 endAdornment={
@@ -402,7 +402,7 @@ class MyProfile extends React.PureComponent<Props, State> {
                 id="newPassword"
                 type={isNewPasswordVisible ? 'text' : 'password'}
                 value={newPassword}
-                onChange={this.onNewPaaswordChange}
+                onChange={this.onNewPasswordChange}
                 error={(noValideField === 'newPassword') ? true : false}
                 labelWidth={110}
                 endAdornment={
@@ -431,15 +431,15 @@ type StateProps = Pick<Props,
   | 'userName'
   | 'userFullName'
   | 'userEmail'
-  | 'uploadLink'
+  | 'avatarUploadLink'
   | 'userId'
   | 'profileErrorMessage'
 >
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  userName: selectors.profile.userName(state),
+  userName: selectors.profile.userName(state), 
   userFullName: selectors.profile.userFullName(state),
   userEmail: selectors.profile.userEmail(state),
-  uploadLink: state.profile.uploadLink,
+  avatarUploadLink: state.profile.avatarUploadLink,
   userId: selectors.profile.userId(state),
   profileErrorMessage: selectors.profile.profileErrorMessage(state),
 })

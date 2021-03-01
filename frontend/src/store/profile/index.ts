@@ -11,18 +11,20 @@ const user: ApiTypes.Profile.UserProfile = profile ? JSON.parse(profile) : {
 }
 
 export interface State extends ApiTypes.Profile.UserProfile {
-  uploadLink: ApiTypes.UploadLink | null
+  avatarUploadLink: ApiTypes.UploadLink | null
   profileErrorMessage: string
   owned_hubs: string[]
   users: ApiTypes.User[]
+  coverUploadLink: ApiTypes.UploadLink | null
 }
 
 const initialState: State = {
   ...user,
-  uploadLink: null,
+  avatarUploadLink: null,
   profileErrorMessage: '',
   owned_hubs: [],
   users: [], 
+  coverUploadLink: null
 }
 
 const reducer = (state = initialState, action) => {
@@ -35,7 +37,7 @@ const reducer = (state = initialState, action) => {
     case Types.GET_UPLOAD_LINK_SUCCESS: {
       return {
         ...state, ...{
-          uploadLink: action.payload
+          avatarUploadLink: action.payload
         }
       }
     }
@@ -57,6 +59,13 @@ const reducer = (state = initialState, action) => {
       return {
         ...state, ...{
           users: action.payload
+        }
+      }
+    }
+    case Types.GET_PROFILE_COVER_UPLOAD_LINK_SUCCESS: {
+      return {
+        ...state, ...{ 
+          coverUploadLink: action.payload 
         }
       }
     }

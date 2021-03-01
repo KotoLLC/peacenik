@@ -43,11 +43,11 @@ export enum Types {
   DELETE_JOIN_REQUEST = 'DELETE_JOIN_REQUEST',
   DELETE_JOIN_SUCCESS = 'DELETE_JOIN_SUCCESS',
 
-  GET_COVER_UPLOAD_LINK_REQUEST = 'GET_COVER_UPLOAD_LINK_REQUEST',
-  GET_COVER_UPLOAD_LINK_SUCCESS = 'GET_COVER_UPLOAD_LINK_SUCCESS',
+  GET_GROUP_COVER_UPLOAD_LINK_REQUEST = 'GET_GROUP_COVER_UPLOAD_LINK_REQUEST',
+  GET_GROUP_COVER_UPLOAD_LINK_SUCCESS = 'GET_GROUP_COVER_UPLOAD_LINK_SUCCESS',
 
-  SET_COVER_REQUEST = 'SET_COVER_REQUEST',  
-  SET_COVER_SUCCESS = 'SET_COVER_SUCCESS',  
+  SET_GROUP_COVER_REQUEST = 'SET_GROUP_COVER_REQUEST',  
+  SET_GROUP_COVER_SUCCESS = 'SET_GROUP_COVER_SUCCESS',  
   
   GET_AVATAR_UPLOAD_LINK_REQUEST = 'GET_AVATAR_UPLOAD_LINK_REQUEST',
   GET_AVATAR_UPLOAD_LINK_SUCCESS = 'GET_AVATAR_UPLOAD_LINK_SUCCESS',
@@ -190,23 +190,23 @@ const deleteJoinSuccess = (payload: boolean) => ({
   payload
 })
 
-const getCoverUploadLinkRequest = (payload: ApiTypes.Groups.UploadLinkRequest) => ({
-  type: Types.GET_COVER_UPLOAD_LINK_REQUEST,
+const getGroupCoverUploadLinkRequest = (payload: ApiTypes.Groups.UploadLinkRequest) => ({
+  type: Types.GET_GROUP_COVER_UPLOAD_LINK_REQUEST,
   payload,
 })
 
-const getCoverUploadLinkSucces = (payload: ApiTypes.UploadLink | null) => ({
-  type: Types.GET_COVER_UPLOAD_LINK_SUCCESS,
+const getGroupCoverUploadLinkSucces = (payload: ApiTypes.UploadLink | null) => ({
+  type: Types.GET_GROUP_COVER_UPLOAD_LINK_SUCCESS,
   payload
 })
 
-const setCoverRequest = (payload: ApiTypes.Groups.Image) => ({
-  type: Types.SET_COVER_REQUEST,
+const setGroupCoverRequest = (payload: ApiTypes.Groups.Image) => ({
+  type: Types.SET_GROUP_COVER_REQUEST,
   payload,
 })
 
-const setCoverSuccess = () => ({
-  type: Types.SET_COVER_SUCCESS,
+const setGroupCoverSuccess = () => ({
+  type: Types.SET_GROUP_COVER_SUCCESS,
 })
 
 const getAvatarUploadLinkRequest = (payload: ApiTypes.Groups.UploadLinkRequest) => ({
@@ -261,10 +261,10 @@ export default {
   setCurrentGroupId,
   deleteJoinRequest,
   deleteJoinSuccess,
-  getCoverUploadLinkRequest,
-  getCoverUploadLinkSucces,
-  setCoverRequest,
-  setCoverSuccess,
+  getGroupCoverUploadLinkRequest,
+  getGroupCoverUploadLinkSucces,
+  setGroupCoverRequest,
+  setGroupCoverSuccess,
   getAvatarUploadLinkRequest,
   getAvatarUploadLinkSucces,
   setAvatarRequest,

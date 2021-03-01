@@ -22,6 +22,12 @@ export enum Types {
   EDIT_PROFILE_FAILED = 'EDIT_PROFILE_FAILED',
 
   RESET_PROFILE_ERROR_MESSAGE = 'RESET_PROFILE_ERROR_MESSAGE',
+
+  GET_PROFILE_COVER_UPLOAD_LINK_REQUEST = 'GET_PROFILE_COVER_UPLOAD_LINK_REQUEST',
+  GET_PROFILE_COVER_UPLOAD_LINK_SUCCESS = 'GET_PROFILE_COVER_UPLOAD_LINK_SUCCESS',
+
+  SET_PROFILE_COVER_REQUEST = 'SET_PROFILE_COVER_REQUEST',  
+  SET_PROFILE_COVER_SUCCESS = 'SET_PROFILE_COVER_SUCCESS',  
 }
 
 const getProfileRequest = () => ({
@@ -90,6 +96,25 @@ const disableUserSuccess = () => ({
   type: Types.DISABLE_USER_SUCCESS
 })
 
+const getProfileCoverLinkRequest = (payload: ApiTypes.UploadLinkRequest) => ({
+  type: Types.GET_PROFILE_COVER_UPLOAD_LINK_REQUEST,
+  payload,
+})
+
+const getProfileCoverLinkSucces = (payload: ApiTypes.UploadLink) => ({
+  type: Types.GET_PROFILE_COVER_UPLOAD_LINK_SUCCESS,
+  payload
+})
+
+const setProfileCoverRequest = (payload: ApiTypes.Attachment) => ({
+  type: Types.SET_PROFILE_COVER_REQUEST,
+  payload,
+})
+
+const setProfileCoverSuccess = () => ({
+  type: Types.SET_PROFILE_COVER_SUCCESS,
+})
+
 export default {
   getProfileRequest,
   getProfileSucces,
@@ -105,4 +130,8 @@ export default {
   getUsersSucces,
   disableUserRequest,
   disableUserSuccess,
+  getProfileCoverLinkRequest,
+  getProfileCoverLinkSucces,
+  setProfileCoverRequest,
+  setProfileCoverSuccess,
 }
