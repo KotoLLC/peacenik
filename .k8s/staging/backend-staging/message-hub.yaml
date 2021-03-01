@@ -16,7 +16,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: message-hub
-        image: ghcr.io/kotollc/koto/messagehub:<TAG>
+        image: ghcr.io/kotollc/kotollc/koto/messagehub:<TAG>
         imagePullPolicy: Always
         ports:
         - containerPort: 12002
