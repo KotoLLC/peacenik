@@ -1,8 +1,8 @@
-Koto is an ad-free, hate-free, distributed social network
+Peacenik is an ad-free, hate-free, distributed social network
 
 # About the project
 
-You can read more about Koto [here](https://docs.koto.at).
+You can read more about Koto [here](https://about.peacenik.app).
 
 # API Reference
 
@@ -10,7 +10,7 @@ API is documented [here](api.md).
 
 # Testing
 
-Koto can be tested as follows:
+Peacenik can be tested as follows:
 
 1. install minikube
 2. run `minikube addons enable ingress`
