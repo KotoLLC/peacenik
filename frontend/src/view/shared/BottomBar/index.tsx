@@ -23,13 +23,13 @@ export const BottomBar = React.memo(() => {
           </LogoWrapper>
           <FooterMenu>
             <FooterMenuItem>
-              <FooterMenuALink href="https://docs.koto.at/#/help">CONTACT US</FooterMenuALink>
+              <FooterMenuALink href="https://about.peacenik.app/contact-us">CONTACT US</FooterMenuALink>
             </FooterMenuItem>
             <FooterMenuItem>
-              <FooterMenuALink href="https://docs.koto.at">ABOUT Peacenik</FooterMenuALink>
+              <FooterMenuALink href="https://about.peacenik.app">ABOUT Peacenik</FooterMenuALink>
             </FooterMenuItem>
             <FooterMenuItem>
-              <FooterMenuLink to="/docs/code-of-conduct">TERMS OF USE</FooterMenuLink>
+              <FooterMenuALink href="https://about.peacenik.app/code-of-conduct">TERMS OF USE</FooterMenuALink>
             </FooterMenuItem>
           </FooterMenu>
         </FooterWrapper>
