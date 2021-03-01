@@ -16,7 +16,7 @@ jobs:
       - uses: mr-smithers-excellent/docker-build-push@v5
         name: Build and Publish Frontend
         with:
-          image: kotollc/koto/frontend
+          image: koto/frontend
           tags: ${{ github.run_number }},latest
           registry: ghcr.io
           githubOrg: kotollc
@@ -29,7 +29,7 @@ jobs:
       - uses: mr-smithers-excellent/docker-build-push@v5
         name: Build and Publish Userhub
         with:
-          image: kotollc/koto/userhub
+          image: koto/userhub
           tags: ${{ github.run_number }},latest 
           registry: ghcr.io
           githubOrg: kotollc
@@ -41,7 +41,7 @@ jobs:
       - uses: mr-smithers-excellent/docker-build-push@v5
         name: Build and Publish Messagehub
         with:
-          image: kotollc/koto/messagehub
+          image: koto/messagehub
           tags: ${{ github.run_number }},latest
           registry: ghcr.io
           githubOrg: kotollc
