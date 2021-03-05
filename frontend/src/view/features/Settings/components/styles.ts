@@ -7,6 +7,7 @@ import {
   EditFieldWrapper,
   EditFieldPlaceholder,
   ButtonContained,
+  ButtonOutlined,
 } from '@view/shared/styles'
 
 export const SettingsContainer = styled.main`
@@ -160,6 +161,15 @@ export const HubSettingsBlock = styled.div`
       display: none;
     }
   }
+
+  @media (max-width: 770px){
+    padding: 20px 15px;
+
+    &:after {
+      width: calc(100% - 30px);
+      left: 15px;
+    }
+  }
 `
 
 export const HubMajorInfo = styled.div`
@@ -170,6 +180,11 @@ export const CircleIconWrapper = styled.div`
   width: 108px;
   height: 108px;
   margin: 0 auto 16px;
+
+  @media (max-width: 770px){
+    transform: scale(0.9);
+    margin-bottom: 5px;
+  }
 `
 
 export const HubName = styled.h3`
@@ -177,6 +192,10 @@ export const HubName = styled.h3`
   font-size: 24px;
   margin-bottom: 5px;
   text-align: center;
+
+  @media (max-width: 770px){
+    font-size: 18px;
+  }
 `
 
 export const HubStatus = styled.div`
@@ -191,17 +210,29 @@ export const HubStatus = styled.div`
       color: #599C0B;
     }
   }
+
+  @media (max-width: 770px){
+    font-size: 14px;
+  }
 `
 
 export const HubLinkWrapper = styled.div`
   text-align: center;
   margin-bottom: 15px;
+
+  @media (max-width: 770px){
+    margin-bottom: 5px;
+  }
 `
 
 export const HubALink = styled.a`
   color: #0076FF;
   font-family: 'SFUITextMedium';
   text-decoration: underline;
+
+  @media (max-width: 770px){
+    font-size: 14px;
+  }
 `
 
 export const CreationHubWrapper = styled.div`
@@ -216,12 +247,27 @@ export const CreationHubTitle = styled.h3`
 export const CreationHubStepsWrapper = styled.div`
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+
+  @media (max-width: 1025px) {
+    justify-content: center;
+  }
 `
 
 export const CreationHubStepWrapper = styled.div`
   width: 200px;
   padding-top: 50px;
   position: relative;
+
+  @media (max-width: 1025px){
+   margin-bottom: 34px;
+   margin: 0 10px 30px;
+   /* width: 40%;  */
+  }
+
+  @media (max-width: 770px){
+    width: 200px;
+  }
 `
 
 export const CreationHubStepIcon = styled.img`
@@ -238,6 +284,16 @@ export const CreationHubStepDescription = styled.p`
 
 export const CreationHubNote = styled.p`
   margin-top: 50px;
+
+  b {
+    font-family: 'SFUITextBold';
+    color: #599C0B;  
+  }
+
+  @media (max-width: 770px){
+    font-size: 14px;
+    margin-top: 10px;
+  }
 `
 
 export const HubLink = styled(Link)`
@@ -251,10 +307,26 @@ export const HubOptionTitle = styled.h2`
   margin-bottom: 20px;
   font-family: 'SFUITextBold';
   text-decoration: underline;
+
+  @media (max-width: 770px){
+    font-size: 17px;
+    margin-bottom: 10px;
+  }
+`
+
+export const HubOptionText = styled.p`
+
+  @media (max-width: 770px){
+    font-size: 14px;
+  }
 `
 
 export const ButtonWrapper = styled.div`
   margin-top: 50px;
+
+  @media (max-width: 770px){
+    margin-top: 20px;
+  }
 `
 
 export const ButtonNote = styled.div`
@@ -263,15 +335,27 @@ export const ButtonNote = styled.div`
   font-size: 12px;
   margin-top: 8px;
   padding-left: 14px;
+
+  @media (max-width: 770px){
+    padding-left: 11px;
+  }
 `
 
 export const HubFieldWrapper = styled.div`
   margin-top: 24px;
+
+  @media (max-width: 770px){
+    margin-top: 15px;
+  }
 `
 
 export const SelectFieldWrapper = styled.div`
   display: flex;
   align-items: center;
+
+  @media (max-width: 770px){
+    flex-wrap: wrap;
+  }
 `
 
 export const HubFieldLabel = styled.p`
@@ -297,12 +381,26 @@ export const HubFieldInput = styled.input`
   font-family: 'SFUITextMedium';
   border-radius: 4px;
   color: #599C0B;
-  outline: none;
+  outline: none; 
 
   &::placeholder {
     font-size: 14px;
     font-family: 'SFUITextMedium';
     color: #599C0B;
+  }
+
+  &.error {
+    color: red;
+    border-color: red;
+
+    &::placeholder {
+      color: red;
+    }
+  }
+
+  @media (max-width: 770px){
+    width: 100%;
+    margin: 0 0 15px;
   }
 `
 
@@ -316,5 +414,19 @@ export const SelectStyled = styled(Select)`
       line-height: 30px;
       padding: 0px 30px 0 14px;
     }
+
+    @media (max-width: 770px){
+      width: 100%;
+      margin: 0 0 15px;
+    }
+  }
+`
+
+export const DestroyHubButton = styled(ButtonOutlined)`
+  width: 185px;
+  margin: 50px auto 0;
+
+  @media (max-width: 770px){
+    margin-top: 20px;
   }
 `

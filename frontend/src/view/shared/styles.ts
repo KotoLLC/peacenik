@@ -316,6 +316,7 @@ export const ButtonContained = styled(Button)`
   line-height: 32px;
   background: #599C0B;
   border-radius: 16px;
+  padding: 0 20px;
   font-family: 'SFUITextMedium';
   text-align: center;
   color: #fff;

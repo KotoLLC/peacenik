@@ -2,6 +2,7 @@ import React from 'react'
 import {
   HubSettingsBlock,
   HubOptionTitle,
+  HubOptionText,
   ButtonWrapper,
   ButtonNote,
 } from './styles'
@@ -13,9 +14,9 @@ export const HubOptionA = React.memo(() => {
       <HubOptionTitle>
         Option A: activate a sponsored hub
       </HubOptionTitle>
-      <p>This option is for non-technical folks or people who don't want to maintain their own server.</p>
+      <HubOptionText>This option is for non-technical folks or people who don't want to maintain their own server.</HubOptionText>
       <ButtonWrapper>
-        <ButtonContained>Activate</ButtonContained>
+        <ButtonContained disabled>Coming soon</ButtonContained>
         <ButtonNote>in-app purchase</ButtonNote>
       </ButtonWrapper>
     </HubSettingsBlock>

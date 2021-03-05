@@ -8,8 +8,13 @@ import {
   HubLinkWrapper,
 } from './styles'
 import AirplanIcon from '@assets/images/airplan-icon.svg'
+import { CommonTypes } from 'src/types'
 
-export const HubMajorInfo = React.memo(() => {
+interface Props extends CommonTypes.HubTypes.Hub { }
+
+export const HubMajorInfo: React.FC<Props> = React.memo((props) => {
+  const { domain, aproved } = props
+
   return (
     <HubSettingsBlock>
       <CircleIconWrapper>
@@ -17,9 +22,11 @@ export const HubMajorInfo = React.memo(() => {
       </CircleIconWrapper>
       <HubName>Your hub</HubName>
       <HubLinkWrapper>
-        <HubALink href="https://myhub.com">https://myhub.com</HubALink>
+        {domain && <HubALink href={domain}>{domain}</HubALink>}
       </HubLinkWrapper>
-      <HubStatus>Status: <span className="online">online</span></HubStatus>
+      <HubStatus>Status:
+        {aproved ? <span className="online">online</span> : <span>offline</span>}
+      </HubStatus>
     </HubSettingsBlock>
   )
 })

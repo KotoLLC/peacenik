@@ -15,6 +15,8 @@ export declare namespace CommonTypes {
       host: string,
       token: string,
     }
+
+    export type CreationStatus = 'pending' | 'approved' | ''
   }
 
   export namespace NotificationTypes {
