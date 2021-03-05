@@ -1313,6 +1313,18 @@ export const CheckboxLabel = styled(FormControlLabel)`
 			font-family: 'SFUITextRegular';
 			font-size: 12px;
 			color: #A1AEC8;
-		}     
+		}  
 	}
+
+  &.general {
+
+    && {
+      span:nth-child(2) {
+			font-family: 'SFUITextMedium';
+			font-size: 14px;
+			color: #262626;
+		  } 
+    }
+    
+  }
 `

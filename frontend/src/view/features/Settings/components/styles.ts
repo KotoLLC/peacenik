@@ -1,11 +1,12 @@
 import styled from 'styled-components'
 import { TextField } from '@material-ui/core'
+import { Link } from 'react-router-dom'
+import Select from '@material-ui/core/Select'
 import { 
   EditFormWrapper,
   EditFieldWrapper,
   EditFieldPlaceholder,
   ButtonContained,
-  EditsAvatar,
 } from '@view/shared/styles'
 
 export const SettingsContainer = styled.main`
@@ -136,5 +137,184 @@ export const FormTitle = styled.h3`
 
   @media (max-width: 770px){
     padding-left: 0;
+  }
+`
+
+export const HubSettingsBlock = styled.div`
+  padding: 30px;
+  position: relative;
+
+  &:after {
+    content: '';
+    height: 1px;
+    width: calc(100% - 60px);
+    position: absolute;
+    bottom: 0;
+    left: 30px;
+    background: rgba(200, 207, 212, 0.6);
+  }
+
+
+  &:last-child {
+    &:after {
+      display: none;
+    }
+  }
+`
+
+export const HubMajorInfo = styled.div`
+  text-align: center;
+`
+
+export const CircleIconWrapper = styled.div`
+  width: 108px;
+  height: 108px;
+  margin: 0 auto 16px;
+`
+
+export const HubName = styled.h3`
+  font-family: 'SFUITextMedium';
+  font-size: 24px;
+  margin-bottom: 5px;
+  text-align: center;
+`
+
+export const HubStatus = styled.div`
+  font-family: 'SFUITextMedium';
+  color: #A1AEC8;
+  text-align: center;
+
+  span {
+    font-family: 'SFUITextSemibold';
+
+    &.online {
+      color: #599C0B;
+    }
+  }
+`
+
+export const HubLinkWrapper = styled.div`
+  text-align: center;
+  margin-bottom: 15px;
+`
+
+export const HubALink = styled.a`
+  color: #0076FF;
+  font-family: 'SFUITextMedium';
+  text-decoration: underline;
+`
+
+export const CreationHubWrapper = styled.div`
+  text-align: center;
+`
+
+export const CreationHubTitle = styled.h3`
+  font-family: 'SFUITextBold';
+  margin-bottom: 30px;
+`
+
+export const CreationHubStepsWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+`
+
+export const CreationHubStepWrapper = styled.div`
+  width: 200px;
+  padding-top: 50px;
+  position: relative;
+`
+
+export const CreationHubStepIcon = styled.img`
+  width: 40px;
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, 0);
+`
+
+export const CreationHubStepDescription = styled.p`
+  font-size: 14px;
+`
+
+export const CreationHubNote = styled.p`
+  margin-top: 50px;
+`
+
+export const HubLink = styled(Link)`
+  font-family: 'SFUITextBold';
+  color: #599C0B;
+`
+
+export const HubOptionTitle = styled.h2`
+  color: #599C0B;
+  font-size: 21px;
+  margin-bottom: 20px;
+  font-family: 'SFUITextBold';
+  text-decoration: underline;
+`
+
+export const ButtonWrapper = styled.div`
+  margin-top: 50px;
+`
+
+export const ButtonNote = styled.div`
+  color: #A1AEC8;
+  font-family: 'SFUITextMedium';
+  font-size: 12px;
+  margin-top: 8px;
+  padding-left: 14px;
+`
+
+export const HubFieldWrapper = styled.div`
+  margin-top: 24px;
+`
+
+export const SelectFieldWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`
+
+export const HubFieldLabel = styled.p`
+  font-size: 14px;
+  width: 100%;
+  margin-bottom: 8px;
+`
+
+export const HubFieldNote = styled.p`
+  font-size: 12px;
+  color: #A1AEC8;
+  margin-bottom: 10px;
+`
+
+export const HubFieldInput = styled.input`
+  border: 1px solid #C8CFD4;
+  box-sizing: border-box;
+  font-size: 14px;
+  height: 32px;
+  padding: 0 10px;
+  margin-right: 10px;
+  width: 370px;
+  font-family: 'SFUITextMedium';
+  border-radius: 4px;
+  color: #599C0B;
+  outline: none;
+
+  &::placeholder {
+    font-size: 14px;
+    font-family: 'SFUITextMedium';
+    color: #599C0B;
+  }
+`
+
+export const SelectStyled = styled(Select)`
+  && {
+    margin: 0 10px;
+    width: 275px;
+
+    .MuiSelect-selectMenu {
+      min-height: 30px;
+      line-height: 30px;
+      padding: 0px 30px 0 14px;
+    }
   }
 `
