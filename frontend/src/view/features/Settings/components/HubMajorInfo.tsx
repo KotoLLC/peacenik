@@ -10,23 +10,47 @@ import {
 import AirplanIcon from '@assets/images/airplan-icon.svg'
 import { CommonTypes } from 'src/types'
 
-interface Props extends CommonTypes.HubTypes.Hub { }
+interface Props extends CommonTypes.HubTypes.Hub {
+  currentHub: CommonTypes.HubTypes.CurrentHub
+}
 
 export const HubMajorInfo: React.FC<Props> = React.memo((props) => {
-  const { domain, aproved } = props
+  const { domain, aproved, currentHub } = props
+
+  const checkHub = () => {
+    if (domain) {
+      return (
+        <>
+          <HubName>Your hub</HubName>
+          <HubLinkWrapper>
+            {domain && <HubALink href={domain}>{domain}</HubALink>}
+          </HubLinkWrapper>
+          <HubStatus>Status:
+            {aproved ? <span className="online">online</span> : <span>offline</span>}
+          </HubStatus>
+        </>
+      )
+    } else {
+      return (
+        <>
+          <HubName>Current hub</HubName>
+          <HubLinkWrapper>
+            {currentHub?.host && <HubALink href={currentHub?.host}>{currentHub?.host}</HubALink>}
+          </HubLinkWrapper>
+          <HubStatus>Status:
+            {currentHub?.host ? <span className="online">online</span> : <span>offline</span>}
+          </HubStatus>
+        </>
+      )
+    }
+  }
 
   return (
     <HubSettingsBlock>
       <CircleIconWrapper>
         <img src={AirplanIcon} alt="icon" />
       </CircleIconWrapper>
-      <HubName>Your hub</HubName>
-      <HubLinkWrapper>
-        {domain && <HubALink href={domain}>{domain}</HubALink>}
-      </HubLinkWrapper>
-      <HubStatus>Status:
-        {aproved ? <span className="online">online</span> : <span>offline</span>}
-      </HubStatus>
+      {checkHub()}
     </HubSettingsBlock>
   )
 })

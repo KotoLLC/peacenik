@@ -12,21 +12,25 @@ import HubOptionB from './../components/HubOptionB'
 interface Props {
   hubsList: CommonTypes.HubTypes.Hub[]
   userName: string
+  currentHub: CommonTypes.HubTypes.CurrentHub
+ 
   onGetHubs: () => void
+  onGetCurrentHub: () => void
 }
 
 const HubSettingsPage: React.FC<Props> = (props) => {
   const [isHubsRequested, setHubsRequested] = useState<boolean | null>(null)
   const [hubCreationStatus, setHubCreationStatus] = useState<CommonTypes.HubTypes.CreationStatus>('')
-  const [myActiveHub, setMyActiveHub] = useState<CommonTypes.HubTypes.Hub>({
+  const myActiveHubInitialState = {
     domain: '', 
     author: '', 
     created: '', 
     aproved: '', 
     description: '',
     id: ''
-  })
-  const { onGetHubs, hubsList, userName } = props
+  }
+  const [myActiveHub, setMyActiveHub] = useState<CommonTypes.HubTypes.Hub>(myActiveHubInitialState)
+  const { onGetHubs, hubsList, userName, currentHub, onGetCurrentHub } = props
 
   const checkIsPosiblyCreateHub = () => {
     if (isHubsRequested !== null) {
@@ -49,16 +53,16 @@ const HubSettingsPage: React.FC<Props> = (props) => {
     if (hubCreationStatus === 'approved') {
       return (
         <>
-          <HubMajorInfo {...myActiveHub} />
-          <HubStepsInfo isHubActive={true}/>
+          <HubMajorInfo {...myActiveHub} currentHub={currentHub}/>
+          <HubStepsInfo isHubActive={true} myActiveHub={myActiveHub}/>
         </>
       )
     }
 
     return (
       <>
-        <HubMajorInfo {...myActiveHub} />
-        <HubStepsInfo isHubActive={false}/>
+        <HubMajorInfo {...myActiveHub} currentHub={currentHub}/>
+        <HubStepsInfo isHubActive={false} myActiveHub={myActiveHub}/>
         <HubOptionA />
         <HubOptionB hubCreationStatus={hubCreationStatus} />
       </>
@@ -68,14 +72,18 @@ const HubSettingsPage: React.FC<Props> = (props) => {
   useEffect(() => {
     if (hubsList.length) {
       checkIsPosiblyCreateHub()
+    } else {
+      setMyActiveHub(myActiveHubInitialState)
+      setHubCreationStatus('')
     }
 
     if (isHubsRequested === null) {
       setHubsRequested(true)
       onGetHubs()
+      onGetCurrentHub()
     }
 
-  }, [isHubsRequested, hubsList, hubCreationStatus])
+  }, [isHubsRequested, hubsList, hubCreationStatus, currentHub])
 
   return (
     <ProfileSettingsContent>
@@ -84,15 +92,17 @@ const HubSettingsPage: React.FC<Props> = (props) => {
   )
 }
 
-type StateProps = Pick<Props, 'hubsList' | 'userName'>
+type StateProps = Pick<Props, 'hubsList' | 'userName' | 'currentHub'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   hubsList: selectors.hubs.hubsList(state),
   userName: selectors.profile.userName(state),
+  currentHub: selectors.messages.currentHub(state),
 })
 
-type DispatchProps = Pick<Props, 'onGetHubs'>
+type DispatchProps = Pick<Props, 'onGetHubs' | 'onGetCurrentHub'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetHubs: () => dispatch(Actions.hubs.getHubsRequest()),
+  onGetCurrentHub: () => dispatch(Actions.messages.getCurrentHubRequest()),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(HubSettingsPage)
