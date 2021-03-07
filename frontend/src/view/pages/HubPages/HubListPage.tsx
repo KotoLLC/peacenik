@@ -24,6 +24,7 @@ import {
   PendingText,
   PendingTextWrapper,
   HubListWrapper,
+  HubsListContainer,
 } from './styles'
 
 interface Props {
@@ -129,65 +130,67 @@ class HubList extends React.Component<Props, State> {
     const { currentPage, rowsPerPage, showList } = this.state
 
     return (
-      <HubListWrapper>
-        <FormControlLabelStyled
-          label="Filter approved"
-          control={
-            <Switch
-              onChange={this.onFilterChange}
-              color="primary"
-              size="small"
-            />
-          } />
-        <TableWrapper>
-          <TableContainer component={Paper}>
-            <Table aria-label="simple table">
-              <TableHeadStyled>
-                <TableRow>
-                  <TableCell>IP / Domain</TableCell>
-                  <TableCell align="center">Requested by</TableCell>
-                  <TableCell align="center">Requested</TableCell>
-                  <TableCell align="center">Approved</TableCell>
-                  <TableCell align="right">Description</TableCell>
-                  <TableCell />
-                </TableRow>
-              </TableHeadStyled>
-              <TableBody>
-                {(rowsPerPage > 0
-                  ? showList.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage)
-                  : showList
-                ).map((row: CommonTypes.HubTypes.Hub) => (
-                  <TableRow key={row.domain}>
-                    <TableCell component="th" scope="row">
-                      {row.domain}
-                    </TableCell>
-                    <TableCell align="center">{row.author}</TableCell>
-                    <TableCell align="center">{moment(row.created).format('DD, MMMM YYYY, h:mm a')}</TableCell>
-                    <TableCell align="center">
-                      {(row.aproved)
-                        ? moment(row.aproved).format('DD, MMMM YYYY, h:mm a')
-                        : this.renderApproveButton(row.id)
-                      }</TableCell>
-                    <TableCell align="right">{row.description}</TableCell>
-                    <TableCellStyled align="right">
-                      <RemoveMessageHubDialog {...row} />
-                    </TableCellStyled>
+      <HubsListContainer>
+        <HubListWrapper>
+          <FormControlLabelStyled
+            label="Filter approved"
+            control={
+              <Switch
+                onChange={this.onFilterChange}
+                color="primary"
+                size="small"
+              />
+            } />
+          <TableWrapper>
+            <TableContainer component={Paper}>
+              <Table aria-label="simple table">
+                <TableHeadStyled>
+                  <TableRow>
+                    <TableCell>IP / Domain</TableCell>
+                    <TableCell align="center">Requested by</TableCell>
+                    <TableCell align="center">Requested</TableCell>
+                    <TableCell align="center">Approved</TableCell>
+                    <TableCell align="right">Description</TableCell>
+                    <TableCell />
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component="div"
-              count={showList?.length}
-              rowsPerPage={rowsPerPage}
-              page={currentPage}
-              onChangePage={this.onChangePage}
-              onChangeRowsPerPage={this.onChangeRowsPerPage}
-            />
-          </TableContainer>
-        </TableWrapper>
-      </HubListWrapper>
+                </TableHeadStyled>
+                <TableBody>
+                  {(rowsPerPage > 0
+                    ? showList.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage)
+                    : showList
+                  ).map((row: CommonTypes.HubTypes.Hub) => (
+                    <TableRow key={row.domain}>
+                      <TableCell component="th" scope="row">
+                        {row.domain}
+                      </TableCell>
+                      <TableCell align="center">{row.author}</TableCell>
+                      <TableCell align="center">{moment(row.created).format('DD, MMMM YYYY, h:mm a')}</TableCell>
+                      <TableCell align="center">
+                        {(row.aproved)
+                          ? moment(row.aproved).format('DD, MMMM YYYY, h:mm a')
+                          : this.renderApproveButton(row.id)
+                        }</TableCell>
+                      <TableCell align="right">{row.description}</TableCell>
+                      <TableCellStyled align="right">
+                        <RemoveMessageHubDialog {...row} />
+                      </TableCellStyled>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25]}
+                component="div"
+                count={showList?.length}
+                rowsPerPage={rowsPerPage}
+                page={currentPage}
+                onChangePage={this.onChangePage}
+                onChangeRowsPerPage={this.onChangeRowsPerPage}
+              />
+            </TableContainer>
+          </TableWrapper>
+        </HubListWrapper>
+      </HubsListContainer>
     )
   }
 }

@@ -7,6 +7,24 @@ import TableCell from '@material-ui/core/TableCell'
 import TableHead from '@material-ui/core/TableHead'
 import { Link } from 'react-router-dom'
 
+
+export const HubsListContainer = styled.main`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  max-width: 1170px;
+  width: 100%;
+  margin: 65px auto 0;
+  padding: 30px 15px 30px;
+
+  @media (max-width: 770px) {
+    flex-wrap: wrap;
+    margin-top: 50px;
+    padding: 10px 15px 15px;
+}
+`
+
 export const ContainerStyled = styled(Container)`
   && {
     display: flex;

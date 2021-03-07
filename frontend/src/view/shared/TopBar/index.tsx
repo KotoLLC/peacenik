@@ -56,7 +56,7 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
               </MenuLink>
             </MenuItem>
             <MenuItem>
-              <MenuLink to="/hubs">
+              <MenuLink to="/hubs/list">
                 <ChatBubbleIcon />
               </MenuLink>
             </MenuItem>
