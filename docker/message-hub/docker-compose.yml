@@ -45,3 +45,4 @@ services:
     environment:
       MINIO_ROOT_USER: ${KOTO_S3_KEY}
       MINIO_ROOT_PASSWORD: ${KOTO_S3_SECRET}
+    command: server /data
