@@ -4,7 +4,7 @@ import {
   CircleIconWrapper,
   HubName,
   HubStatus,
-  HubALink,
+  HubPath,
   HubLinkWrapper,
 } from './styles'
 import AirplanIcon from '@assets/images/airplan-icon.svg'
@@ -23,7 +23,7 @@ export const HubMajorInfo: React.FC<Props> = React.memo((props) => {
         <>
           <HubName>Your hub</HubName>
           <HubLinkWrapper>
-            {domain && <HubALink href={domain}>{domain}</HubALink>}
+            {domain && <HubPath>{domain}</HubPath>}
           </HubLinkWrapper>
           <HubStatus>Status:
             {aproved ? <span className="online">online</span> : <span>offline</span>}
@@ -35,7 +35,7 @@ export const HubMajorInfo: React.FC<Props> = React.memo((props) => {
         <>
           <HubName>Current hub</HubName>
           <HubLinkWrapper>
-            {currentHub?.host && <HubALink href={currentHub?.host}>{currentHub?.host}</HubALink>}
+            {currentHub?.host && <HubPath>{currentHub?.host}</HubPath>}
           </HubLinkWrapper>
           <HubStatus>Status:
             {currentHub?.host ? <span className="online">online</span> : <span>offline</span>}

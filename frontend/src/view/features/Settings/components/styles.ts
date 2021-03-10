@@ -225,7 +225,7 @@ export const HubLinkWrapper = styled.div`
   }
 `
 
-export const HubALink = styled.a`
+export const HubPath = styled.span`
   color: #0076FF;
   font-family: 'SFUITextMedium';
   text-decoration: underline;

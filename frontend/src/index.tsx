@@ -7,7 +7,7 @@ import { CssBaseline } from '@material-ui/core'
 import { store } from '@store/store'
 import { Routes } from '@view/routes'
 import Notify from '@view/shared/Notify'
-import ConnectionErrorPopup from './view/shared/ConnectionErrorPopup'
+// import ConnectionErrorPopup from './view/shared/ConnectionErrorPopup'
 import { StoreTypes } from 'src/types'
 import selectors from '@selectors/index'
 import Actions from '@store/actions'
@@ -164,7 +164,7 @@ class AppComponent extends React.Component<Props, State> {
           <CssBaseline />
           <Routes />
           <Notify />
-          <ConnectionErrorPopup />
+          {/* <ConnectionErrorPopup /> */}
         </ThemeProvider>
         <GlobalStyle />
       </ErrorBoundary>
