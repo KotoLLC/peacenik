@@ -2,10 +2,9 @@ version: "3.7"
 
 services:
   message-hub:
-    image: k0t0/node:latest
+    image: ghcr.io/kotollc/koto/messagehub:latest
     restart: on-failure
     volumes:
-      - ${VOLUME_HUB}:/data
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - 12001:12001
@@ -13,9 +12,9 @@ services:
       KOTO_LISTEN_ADDRESS: :12001
       KOTO_EXTERNAL_ADDRESS: ${KOTO_EXTERNAL_ADDRESS}
       KOTO_USER_HUB_ADDRESS: ${KOTO_USER_HUB_ADDRESS}
-      KOTO_PRIVATE_KEY: /data/key.rsa
-      KOTO_DB_HOST: db
-      KOTO_DB_SSL_MODE: disable
+      KOTO_DB_HOST: ${KOTO_DB_HOST}
+      KOTO_DB_PORT: ${KOTO_DB_PORT}
+      KOTO_DB_SSL_MODE: ${KOTO_DB_SSL_MODE}
       KOTO_DB_USER: ${KOTO_DB_USER}
       KOTO_DB_PASSWORD: ${KOTO_DB_PASSWORD}
       KOTO_DB_NAME: ${KOTO_DB_NAME}
@@ -26,9 +25,10 @@ services:
       KOTO_S3_BUCKET: ${KOTO_S3_BUCKET}
     depends_on:
       - db
+      - s3
 
   db:
-    image: postgres:12.3
+    image: postgres:13
     restart: unless-stopped
     volumes:
       - ${VOLUME_DB}:/var/lib/postgresql/data/
@@ -36,3 +36,13 @@ services:
       POSTGRES_DB: ${KOTO_DB_NAME}
       POSTGRES_USER: ${KOTO_DB_USER}
       POSTGRES_PASSWORD: ${KOTO_DB_PASSWORD}
+
+  s3:
+    image: minio/minio:latest
+    restart: on-failure
+    volumes:
+      - ${VOLUME_MINIO}:/data/
+    environment:
+      MINIO_ROOT_USER: ${KOTO_S3_KEY}
+      MINIO_ROOT_PASSWORD: ${KOTO_S3_SECRET}
+    command: server /data
