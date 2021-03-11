@@ -37,7 +37,7 @@ const ConnectionErrorPopup: React.FC<Props> = (props) => {
           color="primary"
           onClick={onRefresh}
         >refresh</Button>
-      </RefreshButtonWrapper>
+      </RefreshButtonWrapper> 
     </ConnectionErrorWrapper>
   )
 }

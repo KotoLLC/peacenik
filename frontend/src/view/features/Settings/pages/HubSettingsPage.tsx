@@ -4,7 +4,7 @@ import selectors from '@selectors/index'
 import Actions from '@store/actions'
 import { StoreTypes, CommonTypes } from 'src/types'
 import { ProfileSettingsContent } from '../components/styles'
-import { HubMajorInfo } from './../components/HubMajorInfo'
+import HubMajorInfo from './../components/HubMajorInfo'
 import { HubStepsInfo } from './../components/HubStepsInfo'
 import { HubOptionA } from './../components/HubOptionA'
 import HubOptionB from './../components/HubOptionB'
@@ -13,6 +13,7 @@ interface Props {
   hubsList: CommonTypes.HubTypes.Hub[]
   userName: string
   currentHub: CommonTypes.HubTypes.CurrentHub
+  isConnectionError: boolean
  
   onGetHubs: () => void
   onGetCurrentHub: () => void
@@ -92,11 +93,12 @@ const HubSettingsPage: React.FC<Props> = (props) => {
   )
 }
 
-type StateProps = Pick<Props, 'hubsList' | 'userName' | 'currentHub'>
+type StateProps = Pick<Props, 'hubsList' | 'userName' | 'currentHub' | 'isConnectionError'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   hubsList: selectors.hubs.hubsList(state),
   userName: selectors.profile.userName(state),
   currentHub: selectors.messages.currentHub(state),
+  isConnectionError: selectors.common.isConnectionError(state),
 })
 
 type DispatchProps = Pick<Props, 'onGetHubs' | 'onGetCurrentHub'>

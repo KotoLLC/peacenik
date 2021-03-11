@@ -1,4 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { connect } from 'react-redux'
+import selectors from '@selectors/index'
+import { StoreTypes, CommonTypes } from 'src/types'
 import {
   HubSettingsBlock,
   CircleIconWrapper,
@@ -8,15 +11,17 @@ import {
   HubLinkWrapper,
 } from './styles'
 import AirplanIcon from '@assets/images/airplan-icon.svg'
-import { CommonTypes } from 'src/types'
 
 interface Props extends CommonTypes.HubTypes.Hub {
   currentHub: CommonTypes.HubTypes.CurrentHub
+  isConnectionError: boolean
 }
 
-export const HubMajorInfo: React.FC<Props> = React.memo((props) => {
-  const { domain, aproved, currentHub } = props
+const HubMajorInfo: React.FC<Props> = React.memo((props) => {
+  const { domain, aproved, currentHub, isConnectionError } = props
 
+  console.log(props)
+  
   const checkHub = () => {
     if (domain) {
       return (
@@ -26,7 +31,7 @@ export const HubMajorInfo: React.FC<Props> = React.memo((props) => {
             {domain && <HubPath>{domain}</HubPath>}
           </HubLinkWrapper>
           <HubStatus>Status:
-            {aproved ? <span className="online">online</span> : <span>offline</span>}
+            {!isConnectionError ? <span className="online">online</span> : <span>offline</span>}
           </HubStatus>
         </>
       )
@@ -38,7 +43,7 @@ export const HubMajorInfo: React.FC<Props> = React.memo((props) => {
             {currentHub?.host && <HubPath>{currentHub?.host}</HubPath>}
           </HubLinkWrapper>
           <HubStatus>Status:
-            {currentHub?.host ? <span className="online">online</span> : <span>offline</span>}
+            {!isConnectionError ? <span className="online">online</span> : <span>offline</span>}
           </HubStatus>
         </>
       )
@@ -54,3 +59,10 @@ export const HubMajorInfo: React.FC<Props> = React.memo((props) => {
     </HubSettingsBlock>
   )
 })
+
+type StateProps = Pick<Props, 'isConnectionError'>
+const mapStateToProps = (state: StoreTypes): StateProps => ({
+  isConnectionError: selectors.common.isConnectionError(state),
+})
+
+export default connect(mapStateToProps)(HubMajorInfo)
