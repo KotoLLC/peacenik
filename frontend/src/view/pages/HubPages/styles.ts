@@ -7,7 +7,6 @@ import TableCell from '@material-ui/core/TableCell'
 import TableHead from '@material-ui/core/TableHead'
 import { Link } from 'react-router-dom'
 
-
 export const HubsListContainer = styled.main`
   display: flex;
   justify-content: space-between;

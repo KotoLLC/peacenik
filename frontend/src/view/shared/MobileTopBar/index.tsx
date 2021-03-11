@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import CustomDropdownMenu from '../CustomDropdownMenu'
-import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive'
 import selectors from '@selectors/index'
 import { StoreTypes, ApiTypes } from 'src/types'
 import logoMobile from './../../../assets/images/icon.png'
@@ -12,12 +11,11 @@ import PeopleAltIcon from '@material-ui/icons/PeopleAlt'
 import MenuIcon from '@material-ui/icons/Menu'
 import CloseIcon from '@material-ui/icons/Close'
 import ClickAwayListener from '@material-ui/core/ClickAwayListener'
+import NotificationsModal from '@view/features/Notifications/components/NotificationsModal'
 import {
   NavigationsWrapper,
-  BadgeStyled,
   Logo,
   MenuItem,
-  MenuLink,
   MobileTopBarWrapper,
   HamburgerMenu,
   HamburgerMenuItem,
@@ -88,13 +86,8 @@ const MobileTopBar: React.FC<Props> = React.memo((props) => {
               </HamburgerMenuItem>
             </HamburgerMenu>
           }
-
           <MenuItem>
-            <MenuLink to="/notifications">
-              <BadgeStyled badgeContent={notificationsUnread.length} color="secondary">
-                <NotificationsActiveIcon />
-              </BadgeStyled>
-            </MenuLink>
+            <NotificationsModal/>
           </MenuItem>
           <CustomDropdownMenu />
         </NavigationsWrapper>

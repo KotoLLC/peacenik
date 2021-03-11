@@ -44,7 +44,7 @@ export const NavigationsWrapper = styled.div`
 export const MenuItem = styled.span`
   padding: 0 30px;
   display: inline-block;
-  position: relative;
+  /* position: relative; */
 
   &:after {
     display: inline-block;

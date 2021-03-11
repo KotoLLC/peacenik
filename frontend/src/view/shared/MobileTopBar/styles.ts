@@ -38,14 +38,14 @@ export const NavigationsWrapper = styled.div`
 export const MenuItem = styled.span`
   padding: 0 10px;
   display: inline-block;
-  position: relative;
+  /* position: relative; */
 `
 
 export const MenuLink = styled(NavLink)`
   display: inline-block;
   color: #C9CFD4;
   transition: 0.15s;
-  position: relative;
+  /* position: relative; */
   height: 47px;
   display: flex;
   justify-content: center;

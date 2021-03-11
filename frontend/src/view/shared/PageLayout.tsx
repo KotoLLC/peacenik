@@ -1,6 +1,6 @@
 import React from 'react'
 import { PageWrapper, PageContent } from './styles'
-import TopBar from './TopBar'
+import { TopBar } from './TopBar'
 import MobileTopBar from './MobileTopBar'
 import selectors from '@selectors/index'
 import { connect } from 'react-redux'

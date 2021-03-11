@@ -1,22 +1,15 @@
 import React from 'react'
-import Toolbar from '@material-ui/core/Toolbar'
-import { connect } from 'react-redux'
-// import DropdownMenu from '../DropdownMenu'
 import CustomDropdownMenu from '../CustomDropdownMenu'
-import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive'
-import selectors from '@selectors/index'
-import { StoreTypes, ApiTypes } from 'src/types'
 import logo from './../../../assets/images/logo-1.png'
 import { Link } from 'react-router-dom'
 import HomeIcon from '@material-ui/icons/Home'
 import ChatBubbleIcon from '@material-ui/icons/ChatBubble'
-// import PersonIcon from '@material-ui/icons/Person'
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt'
 import logoMobile from '@assets/images/icon.png'
 import { Container } from '@view/shared/styles'
+import NotificationsModal from '@view/features/Notifications/components/NotificationsModal'
 import {
   NavigationsWrapper,
-  BadgeStyled,
   Logo,
   LogoMobile,
   AppBarStyled,
@@ -25,13 +18,7 @@ import {
   ToolbarStyled,
 } from './styles'
 
-interface Props {
-  userId: string
-  notificationsUnread: ApiTypes.Notifications.Notification[]
-}
-
-const TopBar: React.SFC<Props> = React.memo((props) => {
-  const { notificationsUnread, /*userId*/ } = props
+export const TopBar = React.memo(() => {
 
   return (
     <AppBarStyled position="fixed" color="primary">
@@ -49,11 +36,7 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
               </MenuLink>
             </MenuItem>
             <MenuItem>
-              <MenuLink to="/notifications">
-                <BadgeStyled badgeContent={notificationsUnread.length} color="secondary">
-                  <NotificationsActiveIcon />
-                </BadgeStyled>
-              </MenuLink>
+              <NotificationsModal/>
             </MenuItem>
             <MenuItem>
               <MenuLink to="/hubs/list">
@@ -87,11 +70,3 @@ const TopBar: React.SFC<Props> = React.memo((props) => {
     </AppBarStyled>
   )
 })
-
-type StateProps = Pick<Props, 'notificationsUnread' | 'userId'>
-const mapStateToProps = (state: StoreTypes): StateProps => ({
-  notificationsUnread: selectors.notifications.notificationsUnread(state),
-  userId: selectors.profile.userId(state),
-})
-
-export default connect(mapStateToProps)(TopBar)
