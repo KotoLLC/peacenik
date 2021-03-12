@@ -55,7 +55,7 @@ func configure(envPath string) (externalAddress string, err error) {
 
 	var envContent bytes.Buffer
 	addEnvItem(&envContent, "KOTO_EXTERNAL_ADDRESS", externalAddress)
-	addEnvItem(&envContent, "KOTO_USER_HUB_ADDRESS", "https://peacenik.app")
+	addEnvItem(&envContent, "KOTO_USER_HUB_ADDRESS", "https://central.peacenik.app")
 	addEnvItem(&envContent, "KOTO_DB_HOST", postgresCfg.Host)
 	addEnvItem(&envContent, "KOTO_DB_PORT", strconv.Itoa(postgresCfg.Port))
 	if !postgresCfg.SSLRequired {
