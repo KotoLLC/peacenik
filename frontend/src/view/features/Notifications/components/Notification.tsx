@@ -127,8 +127,8 @@ export const Notification: React.FC<Props> = (props) => {
       </AvatarBlock>
       <NotifyBlock>
         <NotifyText>
-          <NotifyName>{text}</NotifyName>
           <NotifyContent>
+            <NotifyName>{text}</NotifyName>
             {/* <span>{act}</span> */}
             {/* {text} */}
           </NotifyContent>

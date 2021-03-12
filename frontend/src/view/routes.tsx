@@ -3,7 +3,6 @@ import { createBrowserHistory } from 'history'
 import { Router, Switch, Route, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { StoreTypes } from 'src/types'
-import HubListPage from './pages/HubPages/HubListPage'
 import { MessagesPage } from './pages/MessagesPage'
 import { NotificationsPage } from './pages/NotificationsPage'
 import NoHubsPage from './pages/NoHubsPage'
@@ -94,7 +93,6 @@ export const Routes = () => {
               <Route path="/docs" component={DocsPages} />
               <Route path="/no-hubs" component={NoHubsPage} />
               <PrivateRoute path="/dashboard" component={DashboardPage} />
-              <PrivateRoute path="/hubs/list" component={HubListPage} />
               <PrivateRoute path="/messages" component={MessagesPage} />
               <PrivateRoute path="/notifications" component={NotificationsPage} />
               

@@ -20,8 +20,6 @@ interface Props extends CommonTypes.HubTypes.Hub {
 const HubMajorInfo: React.FC<Props> = React.memo((props) => {
   const { domain, aproved, currentHub, isConnectionError } = props
 
-  console.log(props)
-  
   const checkHub = () => {
     if (domain) {
       return (

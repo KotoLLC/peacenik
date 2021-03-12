@@ -56,14 +56,6 @@ const MobileTopBar: React.FC<Props> = React.memo((props) => {
               </HamburgerMenuItem>
               <HamburgerMenuItem>
                 <HamburgerMenuLink
-                  to="/hubs/list"
-                  onClick={() => openHamburgerMenu(false)}>
-                  <ChatBubbleIcon className="icon" />
-                Message Hubs
-              </HamburgerMenuLink>
-              </HamburgerMenuItem>
-              <HamburgerMenuItem>
-                <HamburgerMenuLink
                   to="/friends"
                   onClick={() => openHamburgerMenu(false)}>
                   <PeopleAltIcon className="icon" />

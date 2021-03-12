@@ -14,7 +14,7 @@ export const NotificationWrapper = styled(Link)`
   border-bottom: 1px solid #dee2e5;
   display: flex;
   width: 100%;
-  height: 92px;
+  min-height: 92px;
   position: relative;
   transition: 0.2s;
   
@@ -105,6 +105,7 @@ export const TimeBlock = styled.div`
   margin-left: 16px;
   align-self: start;
   flex-shrink: 0;
+  max-width: 120px;
 
   @media (max-width: 375px) {
     position: absolute;
@@ -127,17 +128,18 @@ export const NotifyBlock = styled.div`
   }
 `
 export const NotifyText = styled.div`
-  flex-grow: 1;
+  /* flex-grow: 1; */
+  @media (max-width: 770px) {
+    max-width: calc(100% - 120px);
+  }
 `
 export const NotifyName = styled.p`
   color: #000;
   font-size: 14px;
   font-family: "SFUITextBold";
   line-height: 24px;
-
-  @media (max-width: 770px) {
-    max-width: calc(100% - 100px);
-  }
+  max-height: 50px;
+  /* overflow: hidden; */
 `
 export const NotifyContent = styled.p`
   font-size: 12px;
@@ -336,6 +338,10 @@ export const MenuIconWrapper = styled.div`
 
   @media (max-width: 770px) {
     position: static;
+
+    &:after {
+      display: none;
+    }
   }
 `
 
