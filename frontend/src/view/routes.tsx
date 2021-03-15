@@ -3,8 +3,6 @@ import { createBrowserHistory } from 'history'
 import { Router, Switch, Route, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { StoreTypes } from 'src/types'
-import { MessagesPage } from './pages/MessagesPage'
-import { NotificationsPage } from './pages/NotificationsPage'
 import NoHubsPage from './pages/NoHubsPage'
 import ProfilePage from './features/Profile/pages'
 import DocsPages from './pages/DocsPages'
@@ -18,8 +16,10 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import { PageLayout } from '@view/shared/PageLayout'
 import FriendsPages from '@view/features/Friends/pages'
 import GroupsPages from '@view/features/Groups/pages'
+import FeedPage from '@view/features/Feed/pages'
 import AuthPages from '@view/features/Auth/pages'
 import { SettingsPages } from '@view/features/Settings/pages'
+import { MessagesPage } from '@view/pages/MessagesPage'
 
 export const history = createBrowserHistory()
 
@@ -93,13 +93,13 @@ export const Routes = () => {
               <Route path="/docs" component={DocsPages} />
               <Route path="/no-hubs" component={NoHubsPage} />
               <PrivateRoute path="/dashboard" component={DashboardPage} />
-              <PrivateRoute path="/messages" component={MessagesPage} />
-              <PrivateRoute path="/notifications" component={NotificationsPage} />
               
               <PrivateRoute path="/settings" component={SettingsPages} />
               <PrivateRoute path="/profile" component={ProfilePage} />
               <PrivateRoute path="/friends" component={FriendsPages} />
               <PrivateRoute path="/groups" component={GroupsPages} />
+              <PrivateRoute path="/feed" component={FeedPage} />
+              <PrivateRoute path="/messages" component={MessagesPage} />
               <AuthPages/>   
               <Route component={() => <>404 not found</>} />
             </Switch>

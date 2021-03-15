@@ -13,12 +13,14 @@ import {
   NotifyContent,
   AvatarBlock,
   // ImagePreviewBlock,
-  TimeBlock,
-  AccessTimeIconStyled,
   LikeIconStyled,
   CommentIconStyled,
   StorageIconStyled,
 } from './styles'
+import { 
+  TimeBlock,
+  AccessTimeIconStyled 
+} from '@view/shared/styles'
 
 interface Props extends ApiTypes.Notifications.Notification {
   onClick?: () => void

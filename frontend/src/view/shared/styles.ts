@@ -14,6 +14,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import Avatar from '@material-ui/core/Avatar'
 import Radio from '@material-ui/core/Radio'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
+import AccessTimeIcon from '@material-ui/icons/AccessTime'
 
 export const Container = styled.main`
   width: 100%;
@@ -1328,4 +1329,27 @@ export const CheckboxLabel = styled(FormControlLabel)`
     }
     
   }
+`
+
+export const TimeBlock = styled.div`
+  color: #9baac6;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  margin-left: 16px;
+  align-self: start;
+  flex-shrink: 0;
+  max-width: 120px;
+  line-height: 1;
+
+  @media (max-width: 375px) {
+    position: absolute;
+    top: 12px;
+    right: 13px;
+  }
+`
+
+export const AccessTimeIconStyled = styled(AccessTimeIcon)`
+  font-size: inherit;
+  margin-left: 5px;
 `

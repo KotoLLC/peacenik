@@ -24,14 +24,14 @@ export const TopBar = React.memo(() => {
     <AppBarStyled position="fixed" color="primary">
       <Container>
         <ToolbarStyled>
-          <Link to="/messages">
+          <Link to="/feed">
             <Logo src={logo} />
             <LogoMobile src={logoMobile} />
           </Link>
 
           <NavigationsWrapper>
             <MenuItem>
-              <MenuLink to="/messages">
+              <MenuLink to="/feed">
                 <HomeIcon />
               </MenuLink>
             </MenuItem>

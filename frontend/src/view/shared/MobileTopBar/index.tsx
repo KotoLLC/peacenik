@@ -34,7 +34,7 @@ const MobileTopBar: React.FC<Props> = React.memo((props) => {
 
   return (
     <MobileTopBarWrapper>
-      <Link to="/messages">
+      <Link to="/feed">
         <Logo src={logoMobile} />
       </Link>
 
@@ -48,7 +48,7 @@ const MobileTopBar: React.FC<Props> = React.memo((props) => {
             <HamburgerMenu>
               <HamburgerMenuItem>
                 <HamburgerMenuLink
-                  to="/messages"
+                  to="/feed"
                   onClick={() => openHamburgerMenu(false)}>
                   <HomeIcon className="icon" />
                 Messages

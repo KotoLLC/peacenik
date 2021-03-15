@@ -2,7 +2,6 @@ import styled from 'styled-components'
 import Avatar from '@material-ui/core/Avatar'
 import AddIcon from '@material-ui/icons/Add'
 import FavoriteIcon from '@material-ui/icons/Favorite'
-import AccessTimeIcon from '@material-ui/icons/AccessTime'
 import NotificationsIcon from '@material-ui/icons/Notifications'
 import Badge from '@material-ui/core/Badge'
 import StorageIcon from '@material-ui/icons/Storage'
@@ -97,27 +96,6 @@ export const ImagePreviewBlock = styled.div`
   }
 `
 
-export const TimeBlock = styled.div`
-  color: #9baac6;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  margin-left: 16px;
-  align-self: start;
-  flex-shrink: 0;
-  max-width: 120px;
-
-  @media (max-width: 375px) {
-    position: absolute;
-    top: 12px;
-    right: 13px;
-  }
-`
-
-export const AccessTimeIconStyled = styled(AccessTimeIcon)`
-  font-size: inherit;
-  margin-left: 5px;
-`
 export const NotifyBlock = styled.div`
   width: 100%;
   display: flex;
@@ -128,7 +106,7 @@ export const NotifyBlock = styled.div`
   }
 `
 export const NotifyText = styled.div`
-  /* flex-grow: 1; */
+  flex-grow: 1;
   @media (max-width: 770px) {
     max-width: calc(100% - 120px);
   }

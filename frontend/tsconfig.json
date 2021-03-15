@@ -24,7 +24,7 @@
     "noErrorTruncation": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "downlevelIteration": true,
+    "downlevelIteration": true
   },
   "include": [
     "src"
