@@ -6,8 +6,7 @@ import { connect } from 'react-redux'
 import { ApiTypes } from 'src/types'
 import Actions from '@store/actions'
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline'
-import ListItemText from '@material-ui/core/ListItemText'
-
+import { TextFieldStyled, ListItemTextStyled } from './styles'
 import {
   ListItemIconStyled,
   DialogTextWrapper,
@@ -16,7 +15,6 @@ import {
   ErrorMessage,
   MenuItemWrapper,
 } from '@view/shared/styles'
-import { TextFieldStyled } from './styles'
 
 interface Props {
   message: string
@@ -55,7 +53,7 @@ const ComplainContentDialog: React.SFC<Props> = (props) => {
         <ListItemIconStyled>
           <ErrorOutlineIcon fontSize="small" />
         </ListItemIconStyled>
-        <ListItemText primary="Report" />
+        <ListItemTextStyled primary="Report" />
       </MenuItemWrapper>
       <Dialog
         open={open}

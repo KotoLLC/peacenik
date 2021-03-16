@@ -36,10 +36,10 @@ export const IconButtonStyled = styled(IconButton)`
 `
 
 export const ListItemIconStyled = styled(ListItemIcon)`
-  color: #262626;
+  color: #A1AEC8;
   
   && {
-    min-width: 40px;
+    min-width: 30px;
   }
 `
 

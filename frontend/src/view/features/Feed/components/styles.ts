@@ -7,6 +7,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import Avatar from '@material-ui/core/Avatar'
 import TextField from '@material-ui/core/TextField'
 import { Link } from 'react-router-dom'
+import ListItemText from '@material-ui/core/ListItemText'
 
 export const ContainerStyled = styled.div`
   margin: 0 auto;
@@ -511,4 +512,11 @@ export const FeedFooter = styled.div`
 
 export const ReactionNawWrapper = styled.div`
   /* display: inline-flex; */
+`
+
+export const ListItemTextStyled = styled(ListItemText)`
+  .MuiTypography-body1 {
+    font-size: 13px;
+    color: #262626;
+  }
 `

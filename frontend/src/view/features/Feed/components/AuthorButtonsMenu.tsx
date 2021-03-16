@@ -6,7 +6,7 @@ import EditIcon from '@material-ui/icons/Edit'
 import IconButton from '@material-ui/core/IconButton'
 import RemoveMessageDialog from './RemoveMessageDialog'
 import { ListItemIconStyled } from '@view/shared/styles'
-import ListItemText from '@material-ui/core/ListItemText'
+import { ListItemTextStyled } from './styles'
  
 interface Props {
   isEditer: boolean
@@ -51,7 +51,7 @@ export const AuthorButtonsMenu: React.FC<Props> = React.memo((props) => {
           <ListItemIconStyled>
             <EditIcon fontSize="small" />
           </ListItemIconStyled>
-          <ListItemText primary="Edit" />
+          <ListItemTextStyled primary="Edit" />
         </MenuItem>
         <RemoveMessageDialog {...{ message, id, sourceHost }} />
       </Menu>
