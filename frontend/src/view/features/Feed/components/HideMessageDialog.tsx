@@ -1,13 +1,17 @@
 import React from 'react'
-import Button from '@material-ui/core/Button'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
 import { connect } from 'react-redux'
 import { ApiTypes } from 'src/types'
 import Actions from '@store/actions'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
-import { ListItemIconStyled, DialogTitleStyled, MenuItemWrapper } from '@view/shared/styles'
+import { ListItemIconStyled, MenuItemWrapper } from '@view/shared/styles'
 import { ListItemTextStyled } from './styles'
+import { ModalDialog } from '@view/shared/ModalDialog'
+import {
+  ModalSubTitle,
+  ModalButtonsGroup,
+  ModalCancelButton,
+  ModalAllowButton,
+} from '@view/shared/ModalDialog/styles'
 
 interface Props {
   id: string
@@ -17,7 +21,7 @@ interface Props {
 }
 
 const HideMessageDialog: React.SFC<Props> = (props) => {
-  const [open, setOpen] = React.useState(false)
+  const [isOpen, setOpen] = React.useState(false)
   const { onHideMessage, id, sourceHost } = props
 
   const onHide = () => {
@@ -36,22 +40,20 @@ const HideMessageDialog: React.SFC<Props> = (props) => {
         </ListItemIconStyled>
         <ListItemTextStyled primary="Hide" />
       </MenuItemWrapper>
-      <Dialog
-        open={open}
-        onClose={() => setOpen(false)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
+      <ModalDialog
+        isModalOpen={isOpen}
+        setOpenModal={() => setOpen(!isOpen)}
       >
-        <DialogTitleStyled id="alert-dialog-title">Are you sure, there is no way to undo this?</DialogTitleStyled>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)}>
+        <ModalSubTitle>Are you sure, there is no way to undo this?</ModalSubTitle>
+        <ModalButtonsGroup>
+          <ModalCancelButton onClick={() => setOpen(false)}>
             Cancel
-          </Button>
-          <Button color="secondary" onClick={onHide} autoFocus>
+        </ModalCancelButton>
+          <ModalAllowButton onClick={onHide}>
             Hide
-          </Button>
-        </DialogActions>
-      </Dialog>
+        </ModalAllowButton>
+        </ModalButtonsGroup>
+      </ModalDialog>
     </>
   )
 }

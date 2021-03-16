@@ -1,20 +1,24 @@
 import React from 'react'
-import Button from '@material-ui/core/Button'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
 import { connect } from 'react-redux'
 import { ApiTypes } from 'src/types'
 import Actions from '@store/actions'
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline'
-import { TextFieldStyled, ListItemTextStyled } from './styles'
+import { ListItemTextStyled } from './styles'
 import {
   ListItemIconStyled,
-  DialogTextWrapper,
-  DialogTitleStyled,
-  DialogContentStyled,
   ErrorMessage,
   MenuItemWrapper,
 } from '@view/shared/styles'
+import { ModalDialog } from '@view/shared/ModalDialog'
+import {
+  ModalSubTitle,
+  ModalButtonsGroup,
+  ModalCancelButton,
+  ModalAllowButton,
+  TextFieldWrapper,
+  TextFieldLabel,
+  TextareaStyled,
+} from '@view/shared/ModalDialog/styles'
 
 interface Props {
   message: string
@@ -24,7 +28,7 @@ interface Props {
 }
 
 const ComplainContentDialog: React.SFC<Props> = (props) => {
-  const [open, setOpen] = React.useState<boolean>(false)
+  const [isOpen, setOpen] = React.useState<boolean>(false)
   const [description, setDescription] = React.useState<string>('')
   const [isError, setError] = React.useState<boolean>(false)
   const { onComplainContent, id, sourceHost } = props
@@ -44,7 +48,7 @@ const ComplainContentDialog: React.SFC<Props> = (props) => {
       setOpen(false)
       setError(false)
     }
-    
+
   }
 
   return (
@@ -55,36 +59,28 @@ const ComplainContentDialog: React.SFC<Props> = (props) => {
         </ListItemIconStyled>
         <ListItemTextStyled primary="Report" />
       </MenuItemWrapper>
-      <Dialog
-        open={open}
-        onClose={() => setOpen(false)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
+      <ModalDialog
+        isModalOpen={isOpen}
+        setOpenModal={() => setOpen(false)}
       >
-        <DialogTitleStyled id="alert-dialog-title">Tell us why you find this content objectionable:</DialogTitleStyled>
-        <DialogContentStyled>
-          <DialogTextWrapper>
-            <TextFieldStyled
-              id="outlined-multiline-static"
-              label="Description"
-              multiline
-              rows={4}
-              onChange={(event) => setDescription(event?.target?.value)}
-              defaultValue={description}
-              variant="outlined"
-            />
-          </DialogTextWrapper>
+        <ModalSubTitle>Tell us why you find this content objectionable:</ModalSubTitle>
+        <br />
+        <TextFieldWrapper>
+          <TextFieldLabel>Description</TextFieldLabel>
+          <TextareaStyled
+            rows={4}
+            onChange={(event) => setDescription(event?.target?.value)}
+            defaultValue={description}
+          />
           {isError && <ErrorMessage>The message cannot be empty</ErrorMessage>}
-        </DialogContentStyled>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)}>
+        </TextFieldWrapper>
+        <ModalButtonsGroup>
+          <ModalCancelButton onClick={() => setOpen(false)}>
             Cancel
-          </Button>
-          <Button color="secondary" onClick={onComplane} autoFocus>
-            Report
-          </Button>
-        </DialogActions>
-      </Dialog>
+          </ModalCancelButton>
+          <ModalAllowButton onClick={onComplane}>Report</ModalAllowButton>
+        </ModalButtonsGroup>
+      </ModalDialog>
     </>
   )
 }

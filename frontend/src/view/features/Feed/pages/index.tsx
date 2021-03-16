@@ -1,6 +1,5 @@
 import React from 'react'
 import Editor from '../components/Editor'
-import Message from '../components/Message'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'
