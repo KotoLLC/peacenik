@@ -10,7 +10,7 @@ export function* watchGetMessageReports() {
   const ownedHubs = selectors.profile.ownedHubs(state)
 
   yield all(ownedHubs.map(item => call(watchGetMessageReportsFromHub, {
-    type: DashboardTypes.GET_MESSAGE_REPORTS_FROM_HUB_REQUEST,
+    type: DashboardTypes.GET_FEED_TOKENS_MESSAGES_REPORTS_FROM_HUB_REQUEST,
     payload: item,
   })))
 }

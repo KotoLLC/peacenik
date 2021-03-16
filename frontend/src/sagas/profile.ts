@@ -84,8 +84,8 @@ export function* watchDisableUser(action: { type: string, payload: string }) {
 
   if (response.status === 200) {
     yield put(Actions.authorization.getAuthTokenRequest())
-    yield put(Actions.messages.cleanAllMessages())
-    yield put(Actions.messages.getMessagesRequest())
+    yield put(Actions.feed.cleanAllFeeds())
+    yield put(Actions.feed.getFeedTokensRequest())
     yield put(Actions.friends.getFriendsRequest())
     yield put(Actions.common.setSuccessNotify('Blocked successfuly'))
   } else {

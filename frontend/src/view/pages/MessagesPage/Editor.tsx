@@ -34,15 +34,15 @@ import {
 interface Props {
   authToken: string
   currentHub: CommonTypes.HubTypes.CurrentHub
-  isMessagePostedSuccess: boolean
+  isFeedMessagePostedSuccess: boolean
   uploadLink: ApiTypes.UploadLink | null
   userId: string
   friends: ApiTypes.Friends.Friend[] | null
 
-  onMessagePost: (data: ApiTypes.Messages.PostMessage) => void
+  onMessagePost: (data: ApiTypes.Feed.PostMessage) => void
   onPostMessageSucces: (value: boolean) => void
-  onGetMessageUploadLink: (data: ApiTypes.Messages.UploadLinkRequest) => void
-  onSetAttachment: (data: ApiTypes.Messages.Attachment) => void
+  onGetMessageUploadLink: (data: ApiTypes.Feed.UploadLinkRequest) => void
+  onSetAttachment: (data: ApiTypes.Feed.Attachment) => void
 }
 
 const Editor: React.SFC<Props> = (props) => {
@@ -51,7 +51,7 @@ const Editor: React.SFC<Props> = (props) => {
   const [isHubsEmptyMessageShowed, showHubsEmptyMessage] = useState<boolean>(false)
   const [file, setFile] = useState<File | null>(null)
   const [mentionFriends, setMentionFriends] = useState<MentionFriend[]>([])
-  const { isMessagePostedSuccess, onPostMessageSucces, uploadLink, friends } = props
+  const { isFeedMessagePostedSuccess, onPostMessageSucces, uploadLink, friends } = props
 
   const onMessageSend = () => {
 
@@ -138,7 +138,7 @@ const Editor: React.SFC<Props> = (props) => {
   }
 
   useEffect(() => {
-    if (isMessagePostedSuccess) {
+    if (isFeedMessagePostedSuccess) {
       onValueChange('')
     }
 
@@ -164,7 +164,7 @@ const Editor: React.SFC<Props> = (props) => {
       setMentionFriends(friendsToMentionFriends(friends))
     }
   }, [
-    isMessagePostedSuccess, 
+    isFeedMessagePostedSuccess, 
     uploadLink, 
     file, 
     isFileUploaded, 
@@ -237,15 +237,15 @@ const Editor: React.SFC<Props> = (props) => {
 type StateProps = Pick<Props, 
   | 'authToken' 
   | 'currentHub' 
-  | 'isMessagePostedSuccess' 
+  | 'isFeedMessagePostedSuccess' 
   | 'uploadLink' 
   | 'userId'
   | 'friends'
   >
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   authToken: state.authorization.authToken,
-  currentHub: selectors.messages.currentHub(state),
-  isMessagePostedSuccess: selectors.messages.isMessagePostedSuccess(state),
+  currentHub: selectors.feed.currentHub(state),
+  isFeedMessagePostedSuccess: selectors.feed.isFeedMessagePostedSuccess(state),
   uploadLink: state.messages.uploadLink,
   userId: selectors.profile.userId(state),
   friends: selectors.friends.friends(state),
@@ -258,10 +258,10 @@ type DispatchProps = Pick<Props,
   | 'onSetAttachment'
   >
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onMessagePost: (data: ApiTypes.Messages.PostMessage) => dispatch(Actions.messages.postMessageRequest(data)),
-  onPostMessageSucces: (value: boolean) => dispatch(Actions.messages.postMessageSucces(value)),
-  onGetMessageUploadLink: (data: ApiTypes.Messages.UploadLinkRequest) => dispatch(Actions.messages.getMessageUploadLinkRequest(data)),
-  onSetAttachment: (data: ApiTypes.Messages.Attachment) => dispatch(Actions.messages.setAttachmentRequest(data)),
+  onMessagePost: (data: ApiTypes.Feed.PostMessage) => dispatch(Actions.feed.postFeedMessageRequest(data)),
+  onPostMessageSucces: (value: boolean) => dispatch(Actions.feed.postFeedMessageSucces(value)),
+  onGetMessageUploadLink: (data: ApiTypes.Feed.UploadLinkRequest) => dispatch(Actions.feed.getFeedMessageUploadLinkRequest(data)),
+  onSetAttachment: (data: ApiTypes.Feed.Attachment) => dispatch(Actions.feed.setAttachmentRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Editor)

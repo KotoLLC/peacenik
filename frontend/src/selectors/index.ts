@@ -1,7 +1,7 @@
 import friends from './friends'
 import hubs from './hubs'
 import profile from './profile'
-import messages from './messages'
+import feed from './feed'
 import authorization from './authorization'
 import registration from './registration'
 import common from './common'
@@ -13,7 +13,7 @@ export default {
     friends,
     hubs,
     profile,
-    messages,
+    feed,
     authorization,
     registration,
     common,

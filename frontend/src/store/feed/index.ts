@@ -2,37 +2,37 @@ import { Types } from './actions'
 import { CommonTypes, ApiTypes } from 'src/types'
 import uniqBy from 'lodash.uniqby'
 export interface State {
-  messageTokens: CommonTypes.HubTypes.CurrentHub[]
+  feedsTokens: CommonTypes.HubTypes.CurrentHub[]
   currentHub: CommonTypes.HubTypes.CurrentHub
   isCurrentHubRequested: boolean
-  isMessagePostedSuccess: boolean
-  messages: ApiTypes.Messages.Message[]
+  isFeedMessagePostedSuccess: boolean
+  messages: ApiTypes.Feed.Message[]
   hubsWithMessages: Map<string, {
-    messages: ApiTypes.Messages.Message[],
+    messages: ApiTypes.Feed.Message[],
     lastMessageDate: string | null
   }>
   isMoreMessagesRequested: boolean
   isMessagesRequested: boolean | null
   uploadLink: ApiTypes.UploadLink | null
-  currentMessageLikes: ApiTypes.Messages.LikesInfoData | null
-  currentCommentLikes: ApiTypes.Messages.LikesInfoData | null
-  messageById: ApiTypes.Messages.Message | null | undefined
+  currentMessageLikes: ApiTypes.Feed.LikesInfoData | null
+  currentCommentLikes: ApiTypes.Feed.LikesInfoData | null
+  messageById: ApiTypes.Feed.Message | null | undefined
 }
 
-const peacenikMessageTokens = localStorage.getItem('peacenikMessageTokens') 
-let messageTokensLocal
-if (peacenikMessageTokens !== 'undefined' && peacenikMessageTokens !== null) {
-  messageTokensLocal = JSON.parse(peacenikMessageTokens)?.tokens
+const peacenikfeedsTokens = localStorage.getItem('peacenikfeedsTokens') 
+let feedsTokensLocal
+if (peacenikfeedsTokens !== 'undefined' && peacenikfeedsTokens !== null) {
+  feedsTokensLocal = JSON.parse(peacenikfeedsTokens)?.tokens
 }
 
 const initialState: State = {
-  messageTokens: messageTokensLocal || [],
+  feedsTokens: feedsTokensLocal || [],
   currentHub: {
     host: '',
     token: '',
   },
   isCurrentHubRequested: false,
-  isMessagePostedSuccess: false,
+  isFeedMessagePostedSuccess: false,
   messages: [],
   isMoreMessagesRequested: false,
   isMessagesRequested: null,
@@ -45,10 +45,10 @@ const initialState: State = {
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case Types.GET_MESSAGES_SUCCESS: {
+    case Types.GET_FEED_TOKENS_SUCCESS: {
       return {
         ...state, ...{ 
-          messageTokens: action.payload,
+          feedsTokens: action.payload,
         }
       }
     }
@@ -78,45 +78,45 @@ const reducer = (state = initialState, action) => {
       }
       }
     }
-    case Types.POST_MESSAGE_SUCCESS: {
+    case Types.POST_FEED_MESSAGE_SUCCESS: {
       return {
-        ...state, ...{ isMessagePostedSuccess: action.payload }
+        ...state, ...{ isFeedMessagePostedSuccess: action.payload }
       }
     }
-    case Types.DELETE_MESSAGE_REQUEST: {
+    case Types.DELETE_FEED_MESSAGES_REQUEST: {
       return {
         ...state, ...{ messages: state.messages.filter(item => item.id !== action.payload.body.message_id) }
       }
     }
-    case Types.HIDE_MESSAGE_REQUEST: {
+    case Types.HIDE_FEED_MESSAGES_REQUEST: {
       return {
         ...state, ...{ messages: state.messages.filter(item => item.id !== action.payload.id) }
       }
     }
-    case Types.GET_MORE_MESSAGES_REQUEST: {
+    case Types.GET_MORE_FEED_REQUEST: {
       return {
         ...state, ...{ isMoreMessagesRequested: true }
       }
     }
-    case Types.GET_MORE_MESSAGES_FAILED: {
+    case Types.GET_MORE_FEED_FAILED: {
       return {
         ...state, ...{ isMoreMessagesRequested: false }
       }
     }
-    case Types.GET_MORE_MESSAGES_FROM_HUB_FAILED: {
+    case Types.GET_MORE_FEED_FROM_HUB_FAILED: {
       return {
         ...state, ...{ isMoreMessagesRequested: false }
       }
     }
-    case Types.GET_MORE_MESSAGES_SUCCESS: {
+    case Types.GET_MORE_FEED_SUCCESS: {
       return {
         ...state, ...{ 
-          messageTokens: action.payload,
+          feedsTokens: action.payload,
           isMessagesRequested: false,
         }
       }
     }
-    case Types.GET_MESSAGES_FROM_HUB_SUCCESS: {
+    case Types.GET_FEED_TOKENS_FROM_HUB_SUCCESS: {
       const { messages, hub } = action.payload
 
       const addMassagesToHubsWithMessages = () => {
@@ -138,45 +138,45 @@ const reducer = (state = initialState, action) => {
         }
       }
     }
-    case Types.GET_MESSAGES_FROM_HUB_FAILED: {
+    case Types.GET_FEED_TOKENS_FROM_HUB_FAILED: {
       return {
         ...state, ...{ isMessagesRequested: false }
       }
     }
-    case Types.GET_MESSAGE_UPLOAD_LINK_SUCCESS: {
+    case Types.GET_FEED_TOKENS_MESSAGES_UPLOAD_LINK_SUCCESS: {
       return {
         ...state, ...{ uploadLink: action.payload }
       }
     }
-    case Types.GET_LIKES_FOR_MESSAGE_SUCCESS: {
+    case Types.GET_LIKES_FOR_FEED_MESSAGES_SUCCESS: {
       return {
         ...state, ...{ currentMessageLikes: action.payload }
       }
     }
-    case Types.GET_LIKES_FOR_COMMENT_SUCCESS: {
+    case Types.GET_LIKES_FOR_FEED_COMMENT_SUCCESS: {
       return {
         ...state, ...{ currentCommentLikes: action.payload }
       }
     }
-    case Types.GET_MESSAGE_BY_ID_FROM_HUB_SUCCESS: {
+    case Types.GET_FEED_TOKENS_MESSAGES_BY_ID_FROM_HUB_SUCCESS: {
       return {
         ...state, ...{ messageById: action.payload }
       }
     }
-    case Types.RESET_MESSAGE_BY_ID: {
+    case Types.RESET_FEED_MESSAGES_BY_ID: {
       return {
         ...state, ...{ messageById: null }
       }
     }
-    case Types.GET_MESSAGE_BY_ID_FROM_HUB_FAILED: {
+    case Types.GET_FEED_TOKENS_MESSAGES_BY_ID_FROM_HUB_FAILED: {
       return {
         ...state, ...{ messageById: undefined }
       }
     }
-    case Types.CLEAN_ALL_MESSAGES: {
+    case Types.CLEAN_ALL_FEED: {
       return {
         ...state, ...{ 
-          messageTokens: [],
+          feedsTokens: [],
           messages: [],
          }
       }

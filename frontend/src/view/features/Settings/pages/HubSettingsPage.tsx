@@ -97,14 +97,14 @@ type StateProps = Pick<Props, 'hubsList' | 'userName' | 'currentHub' | 'isConnec
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   hubsList: selectors.hubs.hubsList(state),
   userName: selectors.profile.userName(state),
-  currentHub: selectors.messages.currentHub(state),
+  currentHub: selectors.feed.currentHub(state),
   isConnectionError: selectors.common.isConnectionError(state),
 })
 
 type DispatchProps = Pick<Props, 'onGetHubs' | 'onGetCurrentHub'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetHubs: () => dispatch(Actions.hubs.getHubsRequest()),
-  onGetCurrentHub: () => dispatch(Actions.messages.getCurrentHubRequest()),
+  onGetCurrentHub: () => dispatch(Actions.feed.getCurrentHubRequest()),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(HubSettingsPage)

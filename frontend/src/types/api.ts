@@ -165,7 +165,7 @@ export declare namespace ApiTypes {
     }
   }
 
-  export namespace Messages {
+  export namespace Feed {
 
     export interface PostMessage {
       host: string,

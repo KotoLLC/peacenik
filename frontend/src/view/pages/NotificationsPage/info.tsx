@@ -15,11 +15,11 @@ import Actions from '@store/actions'
 import { connect } from 'react-redux'
 
 interface Props extends RouteComponentProps {
-  messageById: ApiTypes.Messages.Message | null | undefined
+  messageById: ApiTypes.Feed.Message | null | undefined
   currentHub: CommonTypes.HubTypes.CurrentHub
 
-  onGetMessagesByIdFromHub: (data: ApiTypes.Messages.MessagesById) => void
-  onResetMessageById: () => void
+  onGetMessagesByIdFromHub: (data: ApiTypes.Feed.MessagesById) => void
+  onresetFeedMessageById: () => void
 }
 
 interface State {
@@ -58,7 +58,7 @@ class NotificationsInfo extends React.PureComponent<Props, State> {
   }
 
   componentWillUnmount() {
-    this.props.onResetMessageById()
+    this.props.onresetFeedMessageById()
   }
 
   render() {
@@ -122,14 +122,14 @@ class NotificationsInfo extends React.PureComponent<Props, State> {
 
 type StateProps = Pick<Props, 'messageById' | 'currentHub'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  messageById: selectors.messages.messageById(state),
-  currentHub: selectors.messages.currentHub(state),
+  messageById: selectors.feed.messageById(state),
+  currentHub: selectors.feed.currentHub(state),
 })
 
-type DispatchProps = Pick<Props, 'onResetMessageById' | 'onGetMessagesByIdFromHub'>
+type DispatchProps = Pick<Props, 'onresetFeedMessageById' | 'onGetMessagesByIdFromHub'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onGetMessagesByIdFromHub: (data: ApiTypes.Messages.MessagesById) => dispatch(Actions.messages.getMessagesByIdFromHubRequest(data)),
-  onResetMessageById: () => dispatch(Actions.messages.resetMessageById()),
+  onGetMessagesByIdFromHub: (data: ApiTypes.Feed.MessagesById) => dispatch(Actions.feed.getFeedMessagesByIdFromHubRequest(data)),
+  onresetFeedMessageById: () => dispatch(Actions.feed.resetFeedMessageById()),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(NotificationsInfo)

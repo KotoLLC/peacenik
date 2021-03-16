@@ -22,14 +22,14 @@ const ColoredLine = ({ color }) => (
 )
 
 interface Props extends RouteComponentProps {
-  messageTokens: CommonTypes.HubTypes.CurrentHub[]
+  feedsTokens: CommonTypes.HubTypes.CurrentHub[]
   currentHub: CommonTypes.HubTypes.CurrentHub
 
   onSetAboutUsViewed: () => void
 }
 
 export const NoHubs: React.FC<Props> = (props) => {
-  const { messageTokens, currentHub } = props
+  const { feedsTokens, currentHub } = props
 
   const onGoToInvites = () => {
     props.history.push('/friends/invite')
@@ -37,11 +37,11 @@ export const NoHubs: React.FC<Props> = (props) => {
   } 
 
   useEffect(() => {
-    if (messageTokens?.length || currentHub?.token) {
+    if (feedsTokens?.length || currentHub?.token) {
       props.history.push('/messages')
     }
   }, [
-    messageTokens,
+    feedsTokens,
     currentHub,
   ])
 
@@ -114,12 +114,12 @@ You can host your own hub on Amazon, Google, Digital Ocean, etc. Of course, this
 }
 
 type StateProps = Pick<Props,
-  | 'messageTokens'
+  | 'feedsTokens'
   | 'currentHub'
 >
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  messageTokens: selectors.messages.messageTokens(state),
-  currentHub: selectors.messages.currentHub(state),
+  feedsTokens: selectors.feed.feedsTokens(state),
+  currentHub: selectors.feed.currentHub(state),
 })
 
 type DispatchProps = Pick<Props, 'onSetAboutUsViewed'>

@@ -14,7 +14,7 @@ export default {
     }).catch(error => ({ error }))
   },
  
-  postMessage: async (data: ApiTypes.Messages.PostMessage) => {
+  postMessage: async (data: ApiTypes.Feed.PostMessage) => {
     const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
@@ -27,7 +27,7 @@ export default {
     }).catch(error => ({ error }))
   },
  
-  deleteMessage: async (data: ApiTypes.Messages.DeleteMessage) => {
+  deleteMessage: async (data: ApiTypes.Feed.DeleteMessage) => {
     const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
@@ -40,7 +40,7 @@ export default {
     }).catch(error => ({ error }))
   },
   
-  editMessage: async (data: ApiTypes.Messages.EditMessage) => {
+  editMessage: async (data: ApiTypes.Feed.EditMessage) => {
     const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
@@ -53,7 +53,7 @@ export default {
     }).catch(error => ({ error }))
   },
   
-  getMessagesFromHub: async (data: ApiTypes.Messages.MessagesFromHub) => {
+  getMessagesFromHub: async (data: ApiTypes.Feed.MessagesFromHub) => {
     const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
@@ -66,7 +66,7 @@ export default {
     }).catch(error => ({ error }))
   },
 
-  getMessageById: async (data: ApiTypes.Messages.MessagesById) => {
+  getMessageById: async (data: ApiTypes.Feed.MessagesById) => {
     const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
@@ -79,7 +79,7 @@ export default {
     }).catch(error => ({ error }))
   },
 
-  postComment: async (data: ApiTypes.Messages.PostComment) => {
+  postComment: async (data: ApiTypes.Feed.PostComment) => {
     const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
@@ -92,7 +92,7 @@ export default {
     }).catch(error => ({ error }))
   },
 
-  editComment: async (data: ApiTypes.Messages.EditComment) => {
+  editComment: async (data: ApiTypes.Feed.EditComment) => {
     const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
@@ -105,7 +105,7 @@ export default {
     }).catch(error => ({ error }))
   },
   
-  deleteComment: async (data: ApiTypes.Messages.DeleteComment) => {
+  deleteComment: async (data: ApiTypes.Feed.DeleteComment) => {
     const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
@@ -118,7 +118,7 @@ export default {
     }).catch(error => ({ error }))
   },
 
-  getUploadLink: async (data: ApiTypes.Messages.UploadLinkRequest) => {
+  getUploadLink: async (data: ApiTypes.Feed.UploadLinkRequest) => {
     const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
@@ -146,7 +146,7 @@ export default {
     }).catch(error => ({ error }))
   },
   
-  likeMessage: async (data: ApiTypes.Messages.Like) => {
+  likeMessage: async (data: ApiTypes.Feed.Like) => {
     const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
@@ -163,7 +163,7 @@ export default {
     }).catch(error => ({ error }))
   },
   
-  likeComment: async (data: ApiTypes.Messages.Like) => {
+  likeComment: async (data: ApiTypes.Feed.Like) => {
     const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
@@ -179,7 +179,7 @@ export default {
     }).catch(error => ({ error }))
   },
 
-  hideMessage: async (data: ApiTypes.Messages.Hide) => {
+  hideMessage: async (data: ApiTypes.Feed.Hide) => {
     const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
@@ -195,7 +195,7 @@ export default {
     }).catch(error => ({ error }))
   },
   
-  hideComment: async (data: ApiTypes.Messages.Hide) => {
+  hideComment: async (data: ApiTypes.Feed.Hide) => {
     const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
@@ -211,7 +211,7 @@ export default {
     }).catch(error => ({ error }))
   },
   
-  getlikesForMessage: async (data: ApiTypes.Messages.Like) => {
+  getlikesForMessage: async (data: ApiTypes.Feed.Like) => {
     const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
@@ -226,7 +226,7 @@ export default {
     }).catch(error => ({ error }))
   },
  
-  getlikesForComment: async (data: ApiTypes.Messages.Like) => {
+  getlikesForComment: async (data: ApiTypes.Feed.Like) => {
     const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
@@ -241,7 +241,7 @@ export default {
     }).catch(error => ({ error }))
   },
  
-  reportMessageHub: async (data: ApiTypes.Messages.ReportMessageHub) => {
+  reportMessageHub: async (data: ApiTypes.Feed.ReportMessageHub) => {
     const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
     const config = {
       withCredentials: false,
@@ -257,7 +257,7 @@ export default {
     }).catch(error => ({ error }))
   },
   
-  reportMessageCentral: async (data: ApiTypes.Messages.ReportMessageCentral) => {
+  reportMessageCentral: async (data: ApiTypes.Feed.ReportMessageCentral) => {
     return await axiosInstance.post(`/rpc.MessageHubService/ReportMessage`, data).then(response => {
       return response
     }).catch(error => ({ error }))

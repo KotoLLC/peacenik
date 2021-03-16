@@ -20,7 +20,7 @@ interface Props {
   message: string
   id: string
   sourceHost: string
-  onComplainContent: (data: ApiTypes.Messages.ReportMessageHub) => void
+  onComplainContent: (data: ApiTypes.Feed.ReportMessageHub) => void
 }
 
 const ComplainContentDialog: React.SFC<Props> = (props) => {
@@ -91,7 +91,7 @@ const ComplainContentDialog: React.SFC<Props> = (props) => {
 
 type DispatchProps = Pick<Props, 'onComplainContent'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onComplainContent: (data: ApiTypes.Messages.ReportMessageHub) => dispatch(Actions.messages.reportMessageHubRequest(data)),
+  onComplainContent: (data: ApiTypes.Feed.ReportMessageHub) => dispatch(Actions.feed.reportFeedMessageHubRequest(data)),
 })
 
 export default connect(null, mapDispatchToProps)(ComplainContentDialog)

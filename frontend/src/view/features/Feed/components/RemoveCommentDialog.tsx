@@ -19,7 +19,7 @@ interface Props {
   id: string
   comment: string
   sourceHost: string
-  onDeleteComment: (data: ApiTypes.Messages.DeleteComment) => void
+  onDeleteComment: (data: ApiTypes.Feed.DeleteComment) => void
 }
 
 const RemoveCommentDialog: React.SFC<Props> = (props) => {
@@ -70,7 +70,7 @@ const RemoveCommentDialog: React.SFC<Props> = (props) => {
 
 type DispatchProps = Pick<Props, 'onDeleteComment'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onDeleteComment: (data: ApiTypes.Messages.DeleteComment) => dispatch(Actions.messages.deleteCommentRequest(data)),
+  onDeleteComment: (data: ApiTypes.Feed.DeleteComment) => dispatch(Actions.feed.deleteCommentRequest(data)),
 })
 
 export default connect(null, mapDispatchToProps)(RemoveCommentDialog)

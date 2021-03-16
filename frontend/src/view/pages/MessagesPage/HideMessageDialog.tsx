@@ -13,7 +13,7 @@ interface Props {
   id: string
   sourceHost: string
 
-  onHideMessage: (data: ApiTypes.Messages.Hide) => void
+  onHideMessage: (data: ApiTypes.Feed.Hide) => void
 }
 
 const HideMessageDialog: React.SFC<Props> = (props) => {
@@ -58,7 +58,7 @@ const HideMessageDialog: React.SFC<Props> = (props) => {
 
 type DispatchProps = Pick<Props, 'onHideMessage'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onHideMessage: (data: ApiTypes.Messages.Hide) => dispatch(Actions.messages.hideMessageRequest(data)),
+  onHideMessage: (data: ApiTypes.Feed.Hide) => dispatch(Actions.feed.hideFeedMessageRequest(data)),
 })
 
 export default connect(null, mapDispatchToProps)(HideMessageDialog)

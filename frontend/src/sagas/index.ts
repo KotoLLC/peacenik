@@ -4,7 +4,7 @@ import { Types as AuthorizationTypes } from '@store/authorization/actions'
 import { Types as FriendTypes } from '@store/friends/actions'
 import { Types as HubTypes } from '@store/hubs/actions'
 import { Types as ProfileTypes } from '@store/profile/actions'
-import { Types as MessagesTypes } from '@store/messages/actions'
+import { Types as MessagesTypes } from '@store/feed/actions'
 import { Types as NotificationsTypes } from '@store/notifications/actions'
 import { Types as DashboardTypes } from '@store/dashboard/actions'
 import { Types as GroupsTypes } from '@store/groups/actions'
@@ -71,7 +71,7 @@ import {
     watchHideComment,
     watchReportMessageHub,
     watchReportMessageCentral,
-} from './messages'
+} from './feed'
 import {
     watchGetNotifications,
     watchCleanNotificationsInUserHub,
@@ -144,28 +144,28 @@ export function* rootSaga() {
         takeEvery(ProfileTypes.GET_PROFILE_COVER_UPLOAD_LINK_REQUEST, watchGetProfileCoverUploadLink),
         takeEvery(ProfileTypes.SET_PROFILE_COVER_REQUEST, watchSetProfileCover),
 
-        takeEvery(MessagesTypes.GET_MESSAGES_REQUEST, watchGetMessages),
+        takeEvery(MessagesTypes.GET_FEED_TOKENS_REQUEST, watchGetMessages),
         takeEvery(MessagesTypes.GET_CURRENT_HUB_REQUEST, watchGetCurrentHub),
-        takeEvery(MessagesTypes.POST_MESSAGE_REQUEST, watchPostMessage),
-        takeEvery(MessagesTypes.GET_MESSAGES_FROM_HUB_REQUEST, watchGetMessagesFromHub),
-        takeEvery(MessagesTypes.DELETE_MESSAGE_REQUEST, watchDeleteMessage),
-        takeEvery(MessagesTypes.EDIT_MESSAGE_REQUEST, watchEditMessage),
-        takeEvery(MessagesTypes.POST_COMMENT_REQUEST, watchPostComment),
-        takeEvery(MessagesTypes.EDIT_COMMENT_REQUEST, watchEditComment),
-        takeEvery(MessagesTypes.DELETE_COMMENT_REQUEST, watchDeleteComment),
-        takeEvery(MessagesTypes.GET_MESSAGE_UPLOAD_LINK_REQUEST, watchGetMessageUploadLink),
-        takeEvery(MessagesTypes.SET_MESSAGE_ATTACHMENT_REQUEST, watchSetAttachment),
-        takeEvery(MessagesTypes.LIKE_MESSAGE_REQUEST, watchLikeMessage),
-        takeEvery(MessagesTypes.LIKE_COMMENT_REQUEST, watchLikeComment),
-        takeEvery(MessagesTypes.GET_LIKES_FOR_MESSAGE_REQUEST, watchGetLikesForMessage),
-        takeEvery(MessagesTypes.GET_LIKES_FOR_COMMENT_REQUEST, watchGetLikesForComment),
-        takeEvery(MessagesTypes.GET_MORE_MESSAGES_REQUEST, watchGetMoreMessages),
-        takeEvery(MessagesTypes.GET_MORE_MESSAGES_FROM_HUB_REQUEST, watchGetMoreMessagesFromHub),
-        takeEvery(MessagesTypes.GET_MESSAGE_BY_ID_FROM_HUB_REQUEST, watchGetMessagesByIdFromHub),
-        takeEvery(MessagesTypes.HIDE_MESSAGE_REQUEST, watchHideMessage),
-        takeEvery(MessagesTypes.HIDE_COMMENT_REQUEST, watchHideComment),
-        takeEvery(MessagesTypes.REPORT_MESSAGE_HUB_REQUEST, watchReportMessageHub),
-        takeEvery(MessagesTypes.REPORT_MESSAGE_CENTRAL_REQUEST, watchReportMessageCentral),
+        takeEvery(MessagesTypes.POST_FEED_MESSAGE_REQUEST, watchPostMessage),
+        takeEvery(MessagesTypes.GET_FEED_TOKENS_FROM_HUB_REQUEST, watchGetMessagesFromHub),
+        takeEvery(MessagesTypes.DELETE_FEED_MESSAGES_REQUEST, watchDeleteMessage),
+        takeEvery(MessagesTypes.EDIT_FEED_MESSAGES_REQUEST, watchEditMessage),
+        takeEvery(MessagesTypes.POST_FEED_COMMENT_REQUEST, watchPostComment),
+        takeEvery(MessagesTypes.EDIT_FEED_COMMENT_REQUEST, watchEditComment),
+        takeEvery(MessagesTypes.DELETE_FEED_COMMENT_REQUEST, watchDeleteComment),
+        takeEvery(MessagesTypes.GET_FEED_TOKENS_MESSAGES_UPLOAD_LINK_REQUEST, watchGetMessageUploadLink),
+        takeEvery(MessagesTypes.SET_FEED_MESSAGES_ATTACHMENT_REQUEST, watchSetAttachment),
+        takeEvery(MessagesTypes.LIKE_FEED_MESSAGES_REQUEST, watchLikeMessage),
+        takeEvery(MessagesTypes.LIKE_FEED_COMMENT_REQUEST, watchLikeComment),
+        takeEvery(MessagesTypes.GET_LIKES_FOR_FEED_MESSAGES_REQUEST, watchGetLikesForMessage),
+        takeEvery(MessagesTypes.GET_LIKES_FOR_FEED_COMMENT_REQUEST, watchGetLikesForComment),
+        takeEvery(MessagesTypes.GET_MORE_FEED_REQUEST, watchGetMoreMessages),
+        takeEvery(MessagesTypes.GET_MORE_FEED_FROM_HUB_REQUEST, watchGetMoreMessagesFromHub),
+        takeEvery(MessagesTypes.GET_FEED_TOKENS_MESSAGES_BY_ID_FROM_HUB_REQUEST, watchGetMessagesByIdFromHub),
+        takeEvery(MessagesTypes.HIDE_FEED_MESSAGES_REQUEST, watchHideMessage),
+        takeEvery(MessagesTypes.HIDE_FEED_COMMENT_REQUEST, watchHideComment),
+        takeEvery(MessagesTypes.REPORT_FEED_MESSAGES_HUB_REQUEST, watchReportMessageHub),
+        takeEvery(MessagesTypes.REPORT_FEED_MESSAGES_CENTRAL_REQUEST, watchReportMessageCentral),
         
         takeEvery(NotificationsTypes.GET_NOTIFICATIONS_REQUEST, watchGetNotifications),
         takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_USER_HUB_REQUEST, watchCleanNotificationsInUserHub),
@@ -173,10 +173,10 @@ export function* rootSaga() {
         takeEvery(NotificationsTypes.MARK_AS_READ_NOTIFICATIONS_IN_USER_HUB_REQUEST, watchMarkAsReadNotificationsInUserHub),
         takeEvery(NotificationsTypes.MARK_AS_READ_NOTIFICATIONS_IN_HUB_REQUEST, watchMarkAsReadNotificationsInHub),
       
-        takeEvery(DashboardTypes.GET_MESSAGE_REPORTS_REQUEST, watchGetMessageReports),
-        takeEvery(DashboardTypes.GET_MESSAGE_REPORTS_FROM_HUB_REQUEST, watchGetMessageReportsFromHub),
+        takeEvery(DashboardTypes.GET_FEED_TOKENS_MESSAGES_REPORTS_REQUEST, watchGetMessageReports),
+        takeEvery(DashboardTypes.GET_FEED_TOKENS_MESSAGES_REPORTS_FROM_HUB_REQUEST, watchGetMessageReportsFromHub),
         takeEvery(DashboardTypes.RESOLVE_REPORT_REQUEST, watchResolveReport),
-        takeEvery(DashboardTypes.DELETE_REPORTED_MESSAGE_REQUEST, watchDeleteReportedMessage),
+        takeEvery(DashboardTypes.DELETE_REPORTED_FEED_MESSAGES_REQUEST, watchDeleteReportedMessage),
         takeEvery(DashboardTypes.BLOCK_REPORTED_USER_REQUEST, watchBlockReportedUser),
         takeEvery(DashboardTypes.BLOCK_USER_REQUEST, watchBlockUser),
         

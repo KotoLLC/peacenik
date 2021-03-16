@@ -2,12 +2,12 @@ import { createSelector } from 'reselect'
 import { selector, deepEqualSelector } from '../common'
 
 const state = createSelector(selector, data => data.messages)
-const messageTokens = deepEqualSelector(state, data => data.messageTokens)
+const feedsTokens = deepEqualSelector(state, data => data.feedsTokens)
 const currentHub = createSelector(state, data => data.currentHub)
 const isCurrentHubRequested = createSelector(state, data => data.isCurrentHubRequested)
 const isMoreMessagesRequested = createSelector(state, data => data.isMoreMessagesRequested)
 const isMessagesRequested = createSelector(state, data => data.isMessagesRequested)
-const isMessagePostedSuccess = createSelector(state, data => data.isMessagePostedSuccess)
+const isFeedMessagePostedSuccess = createSelector(state, data => data.isFeedMessagePostedSuccess)
 const messages = deepEqualSelector(state, data => data.messages)
 const hubsWithMessages = deepEqualSelector(state, data => data.hubsWithMessages)
 const currentMessageLikes = deepEqualSelector(state, data => data.currentMessageLikes)
@@ -15,10 +15,10 @@ const currentCommentLikes = deepEqualSelector(state, data => data.currentComment
 const messageById = deepEqualSelector(state, data => data.messageById)
 
 export default {
-  messageTokens,
+  feedsTokens,
   currentHub,
   isCurrentHubRequested,
-  isMessagePostedSuccess,
+  isFeedMessagePostedSuccess,
   messages,
   currentMessageLikes,
   currentCommentLikes,

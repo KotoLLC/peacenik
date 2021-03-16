@@ -20,10 +20,10 @@ import {
 } from '../components/styles'
 
 interface Props extends RouteComponentProps {
-  messageTokens: CommonTypes.HubTypes.CurrentHub[]
+  feedsTokens: CommonTypes.HubTypes.CurrentHub[]
   currentHub: CommonTypes.HubTypes.CurrentHub
   isCurrentHubReqyested: boolean
-  messages: ApiTypes.Messages.Message[]
+  messages: ApiTypes.Feed.Message[]
   userId: string
   authToken: string
   isMoreMessagesRequested: boolean
@@ -119,7 +119,7 @@ class FeedPage extends React.Component<Props, State> {
     window.removeEventListener('scroll', this.onScrollList)
   }
 
-  mapMessages = (messages: ApiTypes.Messages.Message[]) => {
+  mapMessages = (messages: ApiTypes.Feed.Message[]) => {
     const { userId } = this.props
     const sortedData = sortByDate(messages)
 
@@ -180,10 +180,10 @@ class FeedPage extends React.Component<Props, State> {
   }
  
   componentDidUpdate() {
-    const { isMessagesRequested, messageTokens, isAboutUsViewed, currentHub } = this.props
+    const { isMessagesRequested, feedsTokens, isAboutUsViewed, currentHub } = this.props
     if (isAboutUsViewed) return false
 
-    if (isMessagesRequested === false && !messageTokens.length && !currentHub?.token) {
+    if (isMessagesRequested === false && !feedsTokens.length && !currentHub?.token) {
       this.props.history.push('/no-hubs')
     }
   }
@@ -209,7 +209,7 @@ class FeedPage extends React.Component<Props, State> {
 }
 
 type StateProps = Pick<Props,
-  | 'messageTokens'
+  | 'feedsTokens'
   | 'currentHub'
   | 'messages'
   | 'userId'
@@ -221,15 +221,15 @@ type StateProps = Pick<Props,
   | 'friends'
 >
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  messageTokens: selectors.messages.messageTokens(state),
-  currentHub: selectors.messages.currentHub(state),
-  messages: selectors.messages.messages(state),
+  feedsTokens: selectors.feed.feedsTokens(state),
+  currentHub: selectors.feed.currentHub(state),
+  messages: selectors.feed.messages(state),
   userId: selectors.profile.userId(state),
   authToken: selectors.authorization.authToken(state),
-  isMoreMessagesRequested: selectors.messages.isMoreMessagesRequested(state),
-  isMessagesRequested: selectors.messages.isMessagesRequested(state),
+  isMoreMessagesRequested: selectors.feed.isMoreMessagesRequested(state),
+  isMessagesRequested: selectors.feed.isMessagesRequested(state),
   isAboutUsViewed: selectors.common.isAboutUsViewed(state),
-  isCurrentHubReqyested: selectors.messages.isCurrentHubRequested(state),
+  isCurrentHubReqyested: selectors.feed.isCurrentHubRequested(state),
   friends: selectors.friends.friends(state),
 })
 
@@ -240,9 +240,9 @@ type DispatchProps = Pick<Props,
   | 'onGetFriends'
   >
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onGetMessages: () => dispatch(Actions.messages.getMessagesRequest()),
-  onGetCurrentHub: () => dispatch(Actions.messages.getCurrentHubRequest()),
-  onGetMoreMessages: () => dispatch(Actions.messages.getMoreMessagesRequest()),
+  onGetMessages: () => dispatch(Actions.feed.getFeedTokensRequest()),
+  onGetCurrentHub: () => dispatch(Actions.feed.getCurrentHubRequest()),
+  onGetMoreMessages: () => dispatch(Actions.feed.getMoreFeedRequest()),
   onGetFriends: () => dispatch(Actions.friends.getFriendsRequest()),
 })
 

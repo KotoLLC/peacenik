@@ -11,7 +11,7 @@ const initialState: State = {
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case Types.GET_MESSAGE_REPORTS_FROM_HUB_SUCCESS: {
+    case Types.GET_FEED_TOKENS_MESSAGES_REPORTS_FROM_HUB_SUCCESS: {
       return {
         ...state, ...{
           objectionableContent: action.payload

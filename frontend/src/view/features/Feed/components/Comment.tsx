@@ -28,15 +28,15 @@ import {
   LikeCommentButton,
 } from './styles'
 
-interface Props extends ApiTypes.Messages.Comment {
+interface Props extends ApiTypes.Feed.Comment {
   userId: string
-  currentCommentLikes: ApiTypes.Messages.LikesInfoData | null
+  currentCommentLikes: ApiTypes.Feed.LikesInfoData | null
   friends: ApiTypes.Friends.Friend[] | null
 
-  onCommentEdit: (data: ApiTypes.Messages.EditComment) => void
-  onCommentDelete: (data: ApiTypes.Messages.DeleteComment) => void
-  onLikeComment: (data: ApiTypes.Messages.Like) => void
-  getLikesForComment: (data: ApiTypes.Messages.Like) => void
+  onCommentEdit: (data: ApiTypes.Feed.EditComment) => void
+  onCommentDelete: (data: ApiTypes.Feed.DeleteComment) => void
+  onLikeComment: (data: ApiTypes.Feed.Like) => void
+  getLikesForComment: (data: ApiTypes.Feed.Like) => void
 }
 
 const Comment: React.SFC<Props> = (props) => {
@@ -190,16 +190,16 @@ const Comment: React.SFC<Props> = (props) => {
 type StateProps = Pick<Props, 'userId' | 'currentCommentLikes' | 'friends'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   userId: selectors.profile.userId(state),
-  currentCommentLikes: selectors.messages.currentCommentLikes(state),
+  currentCommentLikes: selectors.feed.currentCommentLikes(state),
   friends: selectors.friends.friends(state),
 })
 
 type DispatchProps = Pick<Props, 'onCommentEdit' | 'onCommentDelete' | 'onLikeComment' | 'getLikesForComment'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onCommentEdit: (data: ApiTypes.Messages.EditComment) => dispatch(Actions.messages.editCommentRequest(data)),
-  onCommentDelete: (data: ApiTypes.Messages.DeleteComment) => dispatch(Actions.messages.deleteCommentRequest(data)),
-  onLikeComment: (data: ApiTypes.Messages.Like) => dispatch(Actions.messages.linkCommnetRequest(data)),
-  getLikesForComment: (data: ApiTypes.Messages.Like) => dispatch(Actions.messages.getLikesForCommentRequest(data)),
+  onCommentEdit: (data: ApiTypes.Feed.EditComment) => dispatch(Actions.feed.editFeedCommentRequest(data)),
+  onCommentDelete: (data: ApiTypes.Feed.DeleteComment) => dispatch(Actions.feed.deleteCommentRequest(data)),
+  onLikeComment: (data: ApiTypes.Feed.Like) => dispatch(Actions.feed.linkFeedCommnetRequest(data)),
+  getLikesForComment: (data: ApiTypes.Feed.Like) => dispatch(Actions.feed.getLikesForFeedCommentRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Comment)

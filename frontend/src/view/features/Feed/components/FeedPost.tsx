@@ -47,21 +47,21 @@ import {
   ReactionNavItem,
 } from './styles'
 
-interface Props extends ApiTypes.Messages.Message {
+interface Props extends ApiTypes.Feed.Message {
   isAuthor: boolean
   uploadLink: ApiTypes.UploadLink | null
   currentHub: CommonTypes.HubTypes.CurrentHub
-  currentMessageLikes: ApiTypes.Messages.LikesInfoData | null
+  currentMessageLikes: ApiTypes.Feed.LikesInfoData | null
   isCommentsOpenByDeafult?: boolean
   friends: ApiTypes.Friends.Friend[] | null
 
-  onMessageEdit: (data: ApiTypes.Messages.EditMessage) => void
-  onCommentPost: (data: ApiTypes.Messages.PostComment) => void
-  onGetMessageUploadLink: (data: ApiTypes.Messages.UploadLinkRequest) => void
-  onSetAttachment: (data: ApiTypes.Messages.Attachment) => void
+  onMessageEdit: (data: ApiTypes.Feed.EditMessage) => void
+  onCommentPost: (data: ApiTypes.Feed.PostComment) => void
+  onGetMessageUploadLink: (data: ApiTypes.Feed.UploadLinkRequest) => void
+  onSetAttachment: (data: ApiTypes.Feed.Attachment) => void
   onResetMessageUploadLink: () => void
-  onLikeMessage: (data: ApiTypes.Messages.Like) => void
-  getLikesForMessage: (data: ApiTypes.Messages.Like) => void
+  onLikeMessage: (data: ApiTypes.Feed.Like) => void
+  getLikesForMessage: (data: ApiTypes.Feed.Like) => void
   callback?: () => void
 }
 
@@ -291,8 +291,8 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
 type StateProps = Pick<Props, 'uploadLink' | 'currentHub' | 'currentMessageLikes' | 'friends'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   uploadLink: state.messages.uploadLink,
-  currentHub: selectors.messages.currentHub(state),
-  currentMessageLikes: selectors.messages.currentMessageLikes(state),
+  currentHub: selectors.feed.currentHub(state),
+  currentMessageLikes: selectors.feed.currentMessageLikes(state),
   friends: selectors.friends.friends(state),
 })
 
@@ -306,13 +306,13 @@ type DispatchProps = Pick<Props,
   | 'getLikesForMessage'
 >
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onMessageEdit: (data: ApiTypes.Messages.EditMessage) => dispatch(Actions.messages.editMessageRequest(data)),
-  onCommentPost: (data: ApiTypes.Messages.PostComment) => dispatch(Actions.messages.postCommentRequest(data)),
-  onGetMessageUploadLink: (data: ApiTypes.Messages.UploadLinkRequest) => dispatch(Actions.messages.getMessageUploadLinkRequest(data)),
-  onSetAttachment: (data: ApiTypes.Messages.Attachment) => dispatch(Actions.messages.setAttachmentRequest(data)),
-  onResetMessageUploadLink: () => dispatch(Actions.messages.getMessageUploadLinkSucces(null)),
-  onLikeMessage: (data: ApiTypes.Messages.Like) => dispatch(Actions.messages.linkMessageRequest(data)),
-  getLikesForMessage: (data: ApiTypes.Messages.Like) => dispatch(Actions.messages.getLikesForMessageRequest(data)),
+  onMessageEdit: (data: ApiTypes.Feed.EditMessage) => dispatch(Actions.feed.editFeedMessageRequest(data)),
+  onCommentPost: (data: ApiTypes.Feed.PostComment) => dispatch(Actions.feed.postFeedCommentRequest(data)),
+  onGetMessageUploadLink: (data: ApiTypes.Feed.UploadLinkRequest) => dispatch(Actions.feed.getFeedMessageUploadLinkRequest(data)),
+  onSetAttachment: (data: ApiTypes.Feed.Attachment) => dispatch(Actions.feed.setAttachmentRequest(data)),
+  onResetMessageUploadLink: () => dispatch(Actions.feed.getFeedMessageUploadLinkSucces(null)),
+  onLikeMessage: (data: ApiTypes.Feed.Like) => dispatch(Actions.feed.linkFeedMessageRequest(data)),
+  getLikesForMessage: (data: ApiTypes.Feed.Like) => dispatch(Actions.feed.getLikesForFeedMessageRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(FeedPost)

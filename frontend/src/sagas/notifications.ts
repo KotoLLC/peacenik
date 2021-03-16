@@ -6,12 +6,12 @@ import { Types as NotificationsTypes } from '@store/notifications/actions'
 import { CommonTypes } from 'src/types'
 
 export function* watchGetNotifications() {
-  const response = yield API.messages.getMessages()
+  const response = yield API.feed.getMessages()
 
   if (response.status === 200) {
-    const messageTokens = hubsForMessagesBack2Front(response.data?.tokens)
+    const feedsTokens = hubsForMessagesBack2Front(response.data?.tokens)
 
-    yield all(messageTokens.map(item => call(watchGetNotificationsFromHub, {
+    yield all(feedsTokens.map(item => call(watchGetNotificationsFromHub, {
       type: NotificationsTypes.GET_NOTIFICATIONS_FROM_HUB_REQUEST,
       payload: item,
     })))

@@ -23,7 +23,7 @@ interface Props {
   id: string
   sourceHost: string
 
-  onDeleteMessage: (data: ApiTypes.Messages.DeleteMessage) => void
+  onDeleteMessage: (data: ApiTypes.Feed.DeleteMessage) => void
 }
 
 const RemoveMessageDialog: React.SFC<Props> = (props) => {
@@ -64,7 +64,7 @@ const RemoveMessageDialog: React.SFC<Props> = (props) => {
 
 type DispatchProps = Pick<Props, 'onDeleteMessage'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onDeleteMessage: (data: ApiTypes.Messages.DeleteMessage) => dispatch(Actions.messages.deleteMessageRequest(data)),
+  onDeleteMessage: (data: ApiTypes.Feed.DeleteMessage) => dispatch(Actions.feed.deleteFeedMessageRequest(data)),
 })
 
 export default connect(null, mapDispatchToProps)(RemoveMessageDialog)
