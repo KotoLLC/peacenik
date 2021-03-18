@@ -114,22 +114,6 @@ export const EditorMarkup: React.FC<Props> = (props) => {
     }
   }
 
-  const renderAttachment = () => {
-    if (file && file?.type.indexOf('image') !== -1) {
-      return <ImagePreview src={URL.createObjectURL(file)} />
-    }
-
-    if (file && file?.type.indexOf('video') !== -1) {
-      return (
-        <Player>
-          <source src={URL.createObjectURL(file)} />
-        </Player>
-      )
-    }
-
-    return null
-  }
-
   const onFileDelete = () => {
     setFile(null)
   }
@@ -170,6 +154,35 @@ export const EditorMarkup: React.FC<Props> = (props) => {
     friends,
   ])
 
+  const renderAttachment = () => {
+    if (file && file?.type.indexOf('image') !== -1) {
+      return (
+        <AttachmentWrapper>
+          <ImagePreview src={URL.createObjectURL(file)} />
+          <DeleteAttachmentButton onClick={onFileDelete}>
+            <ClearIcon fontSize="small" />
+          </DeleteAttachmentButton>
+        </AttachmentWrapper>
+      )
+
+    }
+
+    if (file && file?.type.indexOf('video') !== -1) {
+      return (
+        <AttachmentWrapper>
+          <Player>
+            <source src={URL.createObjectURL(file)} />
+          </Player>
+          <DeleteAttachmentButton onClick={onFileDelete}>
+            <ClearIcon fontSize="small" />
+          </DeleteAttachmentButton>
+        </AttachmentWrapper>
+      )
+    }
+
+    return null
+  }
+
   return (
     <EditorBlockWrapper>
       <EditorContentWrapper>
@@ -193,15 +206,10 @@ export const EditorMarkup: React.FC<Props> = (props) => {
           </MentionsInput>
         </MentionsInputWrapper>
       </EditorContentWrapper>
-      
-      <AttachmentWrapper>
-        {renderAttachment()}
-        {file && <DeleteAttachmentButton onClick={onFileDelete}>
-          <ClearIcon fontSize="small" />
-        </DeleteAttachmentButton>}
-      </AttachmentWrapper>
 
-      {isHubsEmptyMessageShowed ?      
+      {renderAttachment()}
+
+      {isHubsEmptyMessageShowed ?
         <ErrorMessage>
           You cannot post messages until you are friends with someone
           who has their own node. Alternatively, you can start a node yourself.

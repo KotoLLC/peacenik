@@ -25,6 +25,10 @@ import MoreHorizIcon from '@material-ui/icons/MoreHoriz'
 import { AuthorButtonsMenu } from './AuthorButtonsMenu'
 import { NoAuthorButtonsMenu } from './NoAuthorButtonsMenu'
 import IconButton from '@material-ui/core/IconButton'
+import SendIcon from '@material-ui/icons/Send'
+import CameraAltOutlinedIcon from '@material-ui/icons/CameraAltOutlined'
+import loadImage from 'blueimp-load-image'
+import ClearIcon from '@material-ui/icons/Clear'
 import {
   FeedWrapper,
   FeedHeader,
@@ -45,6 +49,14 @@ import {
   FeedFooter,
   ReactionNawWrapper,
   ReactionNavItem,
+  EditorContentWrapper,
+  MentionsInputWrapper,
+  EditorButtonsWrapper,
+  AttachmentButton,
+  UploadInput,
+  ButtonSend,
+  AttachmentWrapper,
+  DeleteAttachmentButton,
 } from './styles'
 
 interface Props extends ApiTypes.Feed.Message {
@@ -103,85 +115,7 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
   const [mentionFriends, setMentionFriends] = useState<MentionFriend[]>([])
   const userName = user_full_name || user_name
 
-  const renderAttachment = () => {
-
-    if (isAttacmentDeleted) {
-      return null
-    }
-
-    if (file?.size && file?.type.indexOf('image') !== -1) {
-      return <ImagePreview src={URL.createObjectURL(file)} />
-    }
-
-    if (file?.name && file?.type.indexOf('video') !== -1) {
-      return (
-        <Player>
-          <source src={URL.createObjectURL(file)} />
-        </Player>
-      )
-    }
-
-    if (attachment_type && attachment_type.indexOf('image') !== -1) {
-      return <ImagePreview src={attachment} />
-    }
-
-    if (attachment_type && attachment_type.indexOf('video') !== -1) {
-      return (
-        <Player>
-          <source src={attachment} />
-        </Player>
-      )
-    }
-
-    return null
-  }
-
-  const getLikesInfo = () => {
-    if (currentMessageLikes?.id === id) {
-      setLikesInfoRequest(false)
-    }
-
-    if (currentMessageLikes?.id !== id) {
-      setLikesInfoRequest(true)
-      getLikesForMessage({
-        host: sourceHost,
-        id: id
-      })
-    }
-  }
-
- /* 
-  const rendreLikeButton = () => {
-    let likesInfo = 'No likes yet'
-    let usersLikes = ''
-
-    if (currentMessageLikes?.id === id) {
-      currentMessageLikes.likes.length && currentMessageLikes.likes.forEach((item, counter) => {
-
-        if (counter < 15) {
-          const likedByUserName = item.user_full_name || item.user_name
-          const comma = ((currentMessageLikes.likes.length - 1) === counter) ? '' : ', '
-          usersLikes += `${likedByUserName}${comma}`
-        }
-
-        if (counter === 15) {
-          usersLikes += `...`
-        }
-
-      })
-    }
-
-    return (
-      <Tooltip
-        title={(isLikesInfoRequested) ? <CircularProgressStyled size={30} /> : <>{usersLikes || likesInfo}</>}
-        interactive onOpen={() => getLikesInfo()}>
-        <ActionCounter>
-          <ActionCounterIcon src={likeIconContained} /><b>{likes || 0}</b> likes
-        </ActionCounter>
-      </Tooltip>
-    )
-  }
-  */
+  /*  READ VIEW  */
 
   const renderReactions = () => {
     return (
@@ -226,6 +160,246 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
     )
   }
 
+  const renderViewAttachment = () => {
+
+    if (isAttacmentDeleted) {
+      return null
+    }
+
+    if (attachment_type && attachment_type.indexOf('image') !== -1) {
+      return <ImagePreview src={attachment} />
+    }
+
+    if (attachment_type && attachment_type.indexOf('video') !== -1) {
+      return (
+        <Player>
+          <source src={attachment} />
+        </Player>
+      )
+    }
+
+    return null
+  }
+
+  const renderRaedView = () => (
+    <>
+      <FeedText className="markdown-body">
+        <ReactMarkdown escapeHtml={true} renderers={{ link: LinkRenderer }}>{message}</ReactMarkdown>
+      </FeedText>
+      <FeedAttachmentWrapper>
+        <YoutubeFrame text={message} />
+        {renderViewAttachment()}
+      </FeedAttachmentWrapper>
+      {renderReactions()}
+      <FeedFooter>
+        {renderReactionNav()}
+        {
+          isAuthor ?
+            <AuthorButtonsMenu {...{ isEditer, setEditor, message, id, sourceHost }} /> :
+            <NoAuthorButtonsMenu {...{ message, id, sourceHost }} />
+        }
+      </FeedFooter>
+    </>
+  )
+
+  /*  EDIT VIEW  */
+
+  const onMessageSave = () => {
+
+    let attachment_changed = (file?.size) ? true : false
+    let attachment_id = file?.size ? uploadLink?.blob_id : ''
+
+    if (isAttacmentDeleted) {
+      attachment_changed = true
+      attachment_id = ''
+    }
+
+    props.onMessageEdit({
+      host: sourceHost,
+      body: {
+        message_id: id,
+        text: message,
+        text_changed: true,
+        attachment_changed,
+        attachment_id,
+      }
+    })
+    setEditor(false)
+    onResetMessageUploadLink()
+  }
+
+  const onComandEnterDownInMessage = (event) => {
+    if (event.keyCode === 13 && (event.metaKey || event.ctrlKey)) {
+      onMessageSave()
+    }
+  }
+
+  const onFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const { onGetMessageUploadLink } = props
+    setUploadedFile(false)
+    onAttachmentDelete(false)
+
+    const uploadedFile = event.target.files
+    if (uploadedFile && uploadedFile[0]) {
+      onGetMessageUploadLink({
+        host: props.currentHub.host,
+        content_type: uploadedFile[0].type,
+        file_name: uploadedFile[0].name,
+      })
+
+      /* tslint:disable */
+      loadImage(
+        uploadedFile[0],
+        function (img, data) {
+          if (data.imageHead && data.exif) {
+            // Reset Exif Orientation data:
+            loadImage.writeExifData(data.imageHead, data, 'Orientation', 1)
+            img.toBlob(function (blob) {
+              loadImage.replaceHead(blob, data.imageHead, function (newBlob) {
+                setFile(newBlob)
+              })
+            }, 'image/jpeg')
+          } else {
+            setFile(uploadedFile[0])
+          }
+        },
+        { meta: true, orientation: true, canvas: true }
+      )
+      /* tslint:enable */
+
+    }
+  }
+
+  const onFileDelete = () => {
+    onAttachmentDelete(true)
+    setFile(null)
+  }
+
+  const renderEditAttachment = () => {
+
+    if (isAttacmentDeleted) {
+      return null
+    }
+
+    if (file?.size && file?.type.indexOf('image') !== -1) {
+      return (
+        <AttachmentWrapper>
+          <ImagePreview src={URL.createObjectURL(file)} />
+          <DeleteAttachmentButton onClick={onFileDelete}>
+            <ClearIcon fontSize="small" />
+          </DeleteAttachmentButton>
+        </AttachmentWrapper>
+      )
+    }
+
+    if (file?.name && file?.type.indexOf('video') !== -1) {
+      return (
+        <AttachmentWrapper>
+          <Player>
+            <source src={URL.createObjectURL(file)} />
+          </Player>
+          <DeleteAttachmentButton onClick={onFileDelete}>
+            <ClearIcon fontSize="small" />
+          </DeleteAttachmentButton>
+        </AttachmentWrapper>
+      )
+    }
+
+    if (attachment_type && attachment_type.indexOf('image') !== -1) {
+      return (
+        <AttachmentWrapper>
+          <ImagePreview src={attachment} />
+          <DeleteAttachmentButton onClick={onFileDelete}>
+            <ClearIcon fontSize="small" />
+          </DeleteAttachmentButton>
+        </AttachmentWrapper>
+      )
+    }
+
+    if (attachment_type && attachment_type.indexOf('video') !== -1) {
+      return (
+        <AttachmentWrapper>
+          <Player>
+            <source src={attachment} />
+          </Player>
+          <DeleteAttachmentButton onClick={onFileDelete}>
+            <ClearIcon fontSize="small" />
+          </DeleteAttachmentButton>
+        </AttachmentWrapper>
+      )
+    }
+
+    return null
+  }
+
+  const renderEditView = () => (
+    <>
+      <EditorContentWrapper>
+        <MentionsInputWrapper>
+          <MentionsInput
+            className="mentions"
+            placeholder="What’s new?"
+            value={message}
+            onChange={(evant) => onMessageChange(evant.target.value)}
+            onKeyDown={onComandEnterDownInMessage}
+          >
+            <Mention
+              trigger="@"
+              data={mentionFriends}
+              className={'mentions__mention'}
+              markup="[@__display__](/profile/user?id=__id__)"
+            />
+          </MentionsInput>
+        </MentionsInputWrapper>
+      </EditorContentWrapper>
+
+      {renderEditAttachment()}
+
+      <EditorButtonsWrapper>
+        <AttachmentButton>
+          <CameraAltOutlinedIcon />
+          <UploadInput
+            type="file"
+            id="file"
+            name="file"
+            onChange={onFileUpload}
+            accept="video/*,image/*"
+          />
+        </AttachmentButton>
+        <ButtonSend
+          type="submit"
+          onClick={onMessageSave}>
+          <SendIcon />
+        </ButtonSend>
+      </EditorButtonsWrapper>
+
+      {/* <Tooltip title={`Attach image or video`}>
+        <IconButtonWrapper>
+          <IconButton component="label">
+            <PhotoIcon fontSize="small" color="primary" />
+            <UploadInput
+              type="file"
+              id="file"
+              name="file"
+              onChange={onFileUpload}
+              accept="video/*,image/*"
+            />
+          </IconButton>
+        </IconButtonWrapper>
+      </Tooltip>
+      {(file || attachment_type) && <Tooltip title={`Delete attachment`}>
+        <IconButtonWrapper>
+          <IconButton component="label" onClick={onFileDelete}>
+            <LayersClearIcon fontSize="small" color="primary" />
+          </IconButton>
+        </IconButtonWrapper>
+      </Tooltip>} */}
+    </>
+
+  )
+
+  /*  BOTH VIEWS  */
+
   useEffect(() => {
     if (props.uploadLink && file && !isFileUploaded) {
       const { form_data } = props?.uploadLink
@@ -256,6 +430,7 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
 
   return (
     <FeedWrapper>
+      {/* HEADER */}
       <FeedHeader>
         <UserInfo>
           <AvatarWrapperLink to={`/profile/user?id=${user_id}`}>
@@ -268,22 +443,9 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
           <AccessTimeIconStyled />
         </TimeBlock>
       </FeedHeader>
-      <FeedText className="markdown-body">
-        <ReactMarkdown escapeHtml={true} renderers={{ link: LinkRenderer }}>{message}</ReactMarkdown>
-      </FeedText>
-      <FeedAttachmentWrapper>
-        <YoutubeFrame text={message} />
-        {renderAttachment()}
-      </FeedAttachmentWrapper>
-      {renderReactions()}
-      <FeedFooter>
-        {renderReactionNav()}
-        {
-          isAuthor ?
-            <AuthorButtonsMenu {...{ isEditer, setEditor, message, id, sourceHost }} /> :
-            <NoAuthorButtonsMenu {...{ message, id, sourceHost }} />
-        }
-      </FeedFooter>
+
+      { isEditer ? renderEditView() : renderRaedView()}
+
     </FeedWrapper>
   )
 })

@@ -11,7 +11,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 
 export const ContainerStyled = styled.div`
   margin: 0 auto;
-  padding: 100px 15px 40px;
+  padding: 95px 15px 40px;
   width: 100%;
   max-width: 586px;
 `
