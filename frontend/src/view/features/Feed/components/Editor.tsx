@@ -3,10 +3,7 @@ import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
 import selectors from '@selectors/index'
-import IconButton from '@material-ui/core/IconButton'
-import Tooltip from '@material-ui/core/Tooltip'
-import LayersClearIcon from '@material-ui/icons/LayersClear'
-import PhotoIcon from '@material-ui/icons/Photo'
+import ClearIcon from '@material-ui/icons/Clear'
 import { Player } from 'video-react'
 import { getAvatarUrl } from '@services/avatarUrl'
 import Avatar from '@material-ui/core/Avatar'
@@ -15,20 +12,20 @@ import SendIcon from '@material-ui/icons/Send'
 import { urlify } from '@services/urlify'
 import { MentionsInput, Mention } from 'react-mentions'
 import { friendsToMentionFriends, MentionFriend } from '@services/dataTransforms/friendsToMentionFriends'
-
+import CameraAltOutlinedIcon from '@material-ui/icons/CameraAltOutlined'
 import {
-  IconButtonWrapper,
-  EditorPaperWrapper,
-  TextareaTitle,
-  CreateWrapper,
-  EditorWrapper,
-  MessageSticky,
+  EditorBlockWrapper,
   EditorButtonsWrapper,
+  ButtonSend,
   UploadInput,
-  ImagePreview,
+  AttachmentButton,
+  EditorContentWrapper,
   AvatarWrapper,
+  ImagePreview,
+  MentionsInputWrapper,
+  DeleteAttachmentButton,
+  AttachmentWrapper,
   ErrorMessage,
-  EditMessageField,
 } from './styles'
 
 interface Props {
@@ -45,7 +42,7 @@ interface Props {
   onSetAttachment: (data: ApiTypes.Feed.Attachment) => void
 }
 
-const Editor: React.SFC<Props> = (props) => {
+export const EditorMarkup: React.FC<Props> = (props) => {
   const [value, onValueChange] = useState<string>('')
   const [isFileUploaded, setUploadedFile] = useState<boolean>(false)
   const [isHubsEmptyMessageShowed, showHubsEmptyMessage] = useState<boolean>(false)
@@ -164,84 +161,84 @@ const Editor: React.SFC<Props> = (props) => {
       setMentionFriends(friendsToMentionFriends(friends))
     }
   }, [
-    isFeedMessagePostedSuccess, 
-    uploadLink, 
-    file, 
-    isFileUploaded, 
-    onPostMessageSucces, 
+    isFeedMessagePostedSuccess,
+    uploadLink,
+    file,
+    isFileUploaded,
+    onPostMessageSucces,
     props,
     friends,
   ])
 
   return (
-    <MessageSticky>
-      <EditorPaperWrapper>
-        <CreateWrapper>
-          <AvatarWrapper>
-            <Avatar src={getAvatarUrl(props.userId)} />
-          </AvatarWrapper>
+    <EditorBlockWrapper>
+      <EditorContentWrapper>
+        <AvatarWrapper className="small">
+          <Avatar src={getAvatarUrl(props.userId)} />
+        </AvatarWrapper>
+        <MentionsInputWrapper>
+          <MentionsInput
+            className="mentions"
+            value={value}
+            placeholder="What’s new?"
+            onChange={(evant) => onValueChange(evant.target.value)}
+            onKeyDown={onComandEnterDown}
+          >
+            <Mention
+              trigger="@"
+              data={mentionFriends}
+              className={'mentions__mention'}
+              markup="[@__display__](/profile/user?id=__id__)"
+            />
+          </MentionsInput>
+        </MentionsInputWrapper>
+      </EditorContentWrapper>
+      
+      <AttachmentWrapper>
+        {renderAttachment()}
+        {file && <DeleteAttachmentButton onClick={onFileDelete}>
+          <ClearIcon fontSize="small" />
+        </DeleteAttachmentButton>}
+      </AttachmentWrapper>
 
-          <EditorWrapper>
-            <TextareaTitle className={value.length ? 'active' : ''}>Post a message to your friends</TextareaTitle>
-            <EditMessageField>
-              <MentionsInput
-                className="mentions"
-                value={value}
-                onChange={(evant) => onValueChange(evant.target.value)}
-                onKeyDown={onComandEnterDown}
-              >
-                <Mention 
-                  trigger="@" 
-                  data={mentionFriends} 
-                  className={'mentions__mention'} 
-                  markup="[@__display__](/profile/user?id=__id__)"
-                  />
-              </MentionsInput>
-              <IconButton onClick={onMessageSend}>
-                <SendIcon fontSize="small" />
-              </IconButton>
-            </EditMessageField>
-            {renderAttachment()}
-            <EditorButtonsWrapper>
-              <Tooltip title={`Attach image or video`}>
-                <IconButtonWrapper>
-                  <IconButton component="label">
-                    <PhotoIcon fontSize="small" color="primary" />
-                    <UploadInput
-                      type="file"
-                      id="file"
-                      name="file"
-                      onChange={onFileUpload}
-                      accept="video/*,image/*"
-                    />
-                  </IconButton>
-                </IconButtonWrapper>
-              </Tooltip>
-              {file && <Tooltip title={`Delete attachment`}>
-                <IconButtonWrapper>
-                  <IconButton component="label" onClick={onFileDelete}>
-                    <LayersClearIcon fontSize="small" color="primary" />
-                  </IconButton>
-                </IconButtonWrapper>
-              </Tooltip>}
-            </EditorButtonsWrapper>
-            {isHubsEmptyMessageShowed && <ErrorMessage>You cannot post messages until you are friends with someone
-                who has their own node. Alternatively, you can start a node yourself.</ErrorMessage>}
-          </EditorWrapper>
-        </CreateWrapper>
-      </EditorPaperWrapper>
-    </MessageSticky>
+      {isHubsEmptyMessageShowed ?      
+        <ErrorMessage>
+          You cannot post messages until you are friends with someone
+          who has their own node. Alternatively, you can start a node yourself.
+        </ErrorMessage> :
+
+        <EditorButtonsWrapper>
+          <AttachmentButton>
+            <CameraAltOutlinedIcon />
+            <UploadInput
+              type="file"
+              id="file"
+              name="file"
+              onChange={onFileUpload}
+              accept="video/*,image/*"
+            />
+          </AttachmentButton>
+          <ButtonSend
+            type="submit"
+            onClick={onMessageSend}>
+            <SendIcon />
+          </ButtonSend>
+        </EditorButtonsWrapper>
+      }
+
+    </EditorBlockWrapper>
   )
+
 }
 
-type StateProps = Pick<Props, 
-  | 'authToken' 
-  | 'currentHub' 
-  | 'isFeedMessagePostedSuccess' 
-  | 'uploadLink' 
+type StateProps = Pick<Props,
+  | 'authToken'
+  | 'currentHub'
+  | 'isFeedMessagePostedSuccess'
+  | 'uploadLink'
   | 'userId'
   | 'friends'
-  >
+>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   authToken: state.authorization.authToken,
   currentHub: selectors.feed.currentHub(state),
@@ -251,12 +248,12 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   friends: selectors.friends.friends(state),
 })
 
-type DispatchProps = Pick<Props, 
-  | 'onMessagePost' 
-  | 'onPostMessageSucces' 
-  | 'onGetMessageUploadLink' 
+type DispatchProps = Pick<Props,
+  | 'onMessagePost'
+  | 'onPostMessageSucces'
+  | 'onGetMessageUploadLink'
   | 'onSetAttachment'
-  >
+>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onMessagePost: (data: ApiTypes.Feed.PostMessage) => dispatch(Actions.feed.postFeedMessageRequest(data)),
   onPostMessageSucces: (value: boolean) => dispatch(Actions.feed.postFeedMessageSucces(value)),
@@ -264,4 +261,4 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onSetAttachment: (data: ApiTypes.Feed.Attachment) => dispatch(Actions.feed.setAttachmentRequest(data)),
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(Editor)
+export default connect(mapStateToProps, mapDispatchToProps)(EditorMarkup)

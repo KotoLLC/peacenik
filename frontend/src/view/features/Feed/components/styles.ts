@@ -37,15 +37,9 @@ export const IconButtonWrapper = styled.span`
   }
 `
 
-export const EditorPaperWrapper = styled(Paper)`
-  && {
-    padding: 20px 0px 10px;
-    margin-bottom: 12px;
-  }
-
-  @media (max-width: 600px) {
-    padding: 15px 0px 10px;
-  }
+export const EditorBlockWrapper = styled.div`
+  background: #fff;
+  margin-bottom: 30px;
 `
 
 export const CommentsWrapepr = styled.div`
@@ -81,26 +75,63 @@ export const TextareaAutosizeStyled = styled(TextareaAutosize)`
   outline: none;
   resize:none;
   border: none;
-  width: 100%;
-  padding: 10px 10px;
+  width: calc(100% - 30px);
+  padding: 4px 10px 10px;
   border-radius: 0;
-  font-family: 'Arial';
-  font-size: 14px;
+  font-family: 'SFUITextRegular';
+  font-size: 16px;
   line-height: 1.5;
   background: transparent;
+`
+
+export const MentionsInputWrapper = styled.div`
+  width: calc(100% - 30px);
+  padding: 3px 10px 10px;
+  display: flex;
+  flex-grow: 2;
+  align-items: flex-end;
+  position: relative;
+
+
+  textarea {
+    font-family: 'SFUITextRegular' !important;
+    /* font-size: 16px !important; */
+  }
+`
+
+export const EditorContentWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
 `
 
 export const EditorButtonsWrapper = styled.div`
   display: flex;
   align-items: center;
-  padding-right: 40px;
-  position: relative;
+  justify-content: space-between;
+  background: #EDF1F2;
+  height: 66px;
 `
 
 export const ButtonSend = styled(Button)`
-  position: absolute;
-  right: 0;
-  bottom: 0;
+  background: #599C0B;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 86px;
+  height: 66px;
+  color: #fff;
+  border-radius: 0;
+`
+
+export const AttachmentButton = styled.label`
+  height: 66px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #ABB4BD;
 `
 
 export const TextareaTitle = styled.p`
@@ -240,13 +271,13 @@ export const EditMessageWrapper = styled.div`
 export const EditMessageField = styled.div`
   display: flex;
   flex-grow: 2;
-  padding-left: 10px;
   align-items: flex-end;
-  margin-bottom: 10px;
-  border-radius: 22px;
-  border: 1px solid #ccc;
-  background: #ededed;
   position: relative;
+  /* padding-left: 10px; */
+  /* margin-bottom: 10px; */
+  /* border-radius: 22px; */
+  /* border: 1px solid #ccc; */
+  /* background: #ededed; */
 `
 
 export const CroppedText = styled.p`
@@ -304,7 +335,9 @@ export const UploadInput = styled.input`
 
 export const ImagePreview = styled.img`
   max-width: 100%;
+  display: inline-flex;
   /* max-height: 500px; */
+  
   
   @media (max-width: 600px) {
     display: inline-block;
@@ -312,8 +345,11 @@ export const ImagePreview = styled.img`
 `
 
 export const AttachmentWrapper = styled.div`
-  display: flex;
+  display: inline-flex;
   justify-content: center;
+  position: relative;
+  max-width: 50%;
+  margin: 0 0 20px 15px;
 
   @media (max-width: 600px) {
     display: block;
@@ -346,6 +382,17 @@ export const AvatarWrapper = styled.div`
   width: 50px;
   height: 50px;
   flex-shrink: 0;
+
+  &.small {
+    width: 30px;
+    height: 30px;
+
+    .MuiAvatar-fallback,
+    .MuiAvatar-root {
+      width: 100%;
+      height: 100%;
+    }
+  }
 `
 
 export const AvatarWrapperLink = styled(Link)`
@@ -425,9 +472,9 @@ export const BoldText = styled.span`
 `
 
 export const ErrorMessage = styled.div`
-  font-size: 14px;
-  color: red;
-  margin-top: 20px;
+  font-size: 16px;
+  color: #F22229;
+  padding: 10px 15px;
 `
 
 export const TextFieldStyled = styled(TextField)`
@@ -518,5 +565,24 @@ export const ListItemTextStyled = styled(ListItemText)`
   .MuiTypography-body1 {
     font-size: 13px;
     color: #262626;
+  }
+`
+
+export const DeleteAttachmentButton = styled.span`
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  background: #A1AEC8;
+  color: #fff;
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  cursor: pointer;
+
+
+  &:hover {
+   background: #8a93a6; 
   }
 `

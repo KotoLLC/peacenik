@@ -60,13 +60,12 @@ const ComplainContentDialog: React.SFC<Props> = (props) => {
         <ListItemTextStyled primary="Report" />
       </MenuItemWrapper>
       <ModalDialog
+        title="Report"
         isModalOpen={isOpen}
         setOpenModal={() => setOpen(false)}
       >
-        <ModalSubTitle>Tell us why you find this content objectionable:</ModalSubTitle>
-        <br />
         <TextFieldWrapper>
-          <TextFieldLabel>Description</TextFieldLabel>
+          <TextFieldLabel>Tell us why is this content offensive?</TextFieldLabel>
           <TextareaStyled
             rows={4}
             onChange={(event) => setDescription(event?.target?.value)}
@@ -75,7 +74,7 @@ const ComplainContentDialog: React.SFC<Props> = (props) => {
           {isError && <ErrorMessage>The message cannot be empty</ErrorMessage>}
         </TextFieldWrapper>
         <ModalButtonsGroup>
-          <ModalCancelButton onClick={() => setOpen(false)}>
+          <ModalCancelButton className="grey" onClick={() => setOpen(false)}>
             Cancel
           </ModalCancelButton>
           <ModalAllowButton onClick={onComplane}>Report</ModalAllowButton>

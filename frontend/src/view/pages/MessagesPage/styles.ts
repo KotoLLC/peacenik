@@ -37,7 +37,7 @@ export const IconButtonWrapper = styled.span`
   }
 `
 
-export const EditorPaperWrapper = styled(Paper)`
+export const EditorBlockWrapper = styled(Paper)`
   && {
     padding: 20px 0px 10px;
     margin-bottom: 12px;

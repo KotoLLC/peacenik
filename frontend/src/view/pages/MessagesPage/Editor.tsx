@@ -18,7 +18,7 @@ import { friendsToMentionFriends, MentionFriend } from '@services/dataTransforms
 
 import {
   IconButtonWrapper,
-  EditorPaperWrapper,
+  EditorBlockWrapper,
   TextareaTitle,
   CreateWrapper,
   EditorWrapper,
@@ -175,7 +175,7 @@ const Editor: React.SFC<Props> = (props) => {
 
   return (
     <MessageSticky>
-      <EditorPaperWrapper>
+      <EditorBlockWrapper>
         <CreateWrapper>
           <AvatarWrapper>
             <Avatar src={getAvatarUrl(props.userId)} />
@@ -229,7 +229,7 @@ const Editor: React.SFC<Props> = (props) => {
                 who has their own node. Alternatively, you can start a node yourself.</ErrorMessage>}
           </EditorWrapper>
         </CreateWrapper>
-      </EditorPaperWrapper>
+      </EditorBlockWrapper>
     </MessageSticky>
   )
 }

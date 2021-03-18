@@ -238,16 +238,12 @@ export const BackIconWrapper = styled.span`
 `
 
 export const MentionLink = styled(Link)`
-  font-weight: bold;
-  color: #000;
+  font-family: 'SFUITextMedium';
+  color: #599C0B;
   transition: 0.2s;
 
   &.mention {
-    color: #000;
-  }
-
-  &:hover {
-    text-decoration: underline;
+    color: #599C0B;
   }
 `
 
