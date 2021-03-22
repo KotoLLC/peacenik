@@ -14,8 +14,9 @@
     <tr>
         <td class="side-space"></td>
         <td>
-            <p>Thanks for registering with Peacenik.<br>
-                Please confirm your account by clicking:</p>
+            <p>Greetings from Peacenik!<br>
+                <b>{{ .UserDisplayName }}</b> mentioned you in a message.<br>
+                To view the message click:</p>
         </td>
         <td class="side-space"></td>
     </tr>
@@ -27,7 +28,20 @@
     <tr>
         <td class="side-space"></td>
         <td class="button-cell">
-            <a class="button" href="{{ .Link }}">Confirm Account</a>
+            <a class="button"
+                    href="{{ .MessageLink }}">View message</a>
+        </td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td class="space-in-between"></td>
+        <td class="side-space"></td>
+    </tr>
+    <tr>
+        <td class="side-space"></td>
+        <td>
+            <p class="color-gray italics">Thanks!</p>
         </td>
         <td class="side-space"></td>
     </tr>

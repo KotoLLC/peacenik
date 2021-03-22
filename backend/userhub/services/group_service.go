@@ -281,11 +281,14 @@ func (s *groupService) RequestJoin(ctx context.Context, r *rpc.GroupRequestJoinR
 	groupAdminInfo := s.userCache.UserFullAccess(group.AdminID)
 
 	meInfo := s.userCache.UserFullAccess(me.ID)
+	link := fmt.Sprintf("%s/groups", s.cfg.FrontendAddress)
 	var message bytes.Buffer
 	err = s.rootEmailTemplate.ExecuteTemplate(&message, "group_request.gohtml", map[string]interface{}{
 		"UserName":        meInfo.Name,
 		"UserDisplayName": meInfo.DisplayName,
 		"GroupName":       group.Name,
+		"AcceptLink":      link,
+		"RejectLink":      link,
 	})
 	if err != nil {
 		return nil, err

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
-	"fmt"
 	"image/jpeg"
 	"log"
 	"path/filepath"
@@ -23,12 +22,8 @@ import (
 )
 
 const (
-	fileTypeBufSize     = 8192
-	mentionMailTemplate = `<p>Greetings from Peacenik!</p>
-<p>%s mentioned you in a message.</p>
-<p>To view the message click [here].</p>
-<p>Thanks!</p>`
-) // TODO: link [here]
+	fileTypeBufSize = 8192
+)
 
 type messageService struct {
 	*BaseService
@@ -146,8 +141,6 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		notification := Notification{
 			UserIDs:     notifyUsers,
 			Text:        user.DisplayName() + " mentioned you in a message",
-			MailSubject: user.DisplayName() + " mentioned you in a message",
-			MailBody:    fmt.Sprintf(mentionMailTemplate, user.DisplayName()),
 			MessageType: "message/tag",
 			Data:        notifyData,
 		}
