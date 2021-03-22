@@ -111,7 +111,7 @@ func (s *Server) Run() error {
 			return merry.Prepend(err, "can't create Firebase client")
 		}
 	}
-	notificationSender := services.NewNotificationSender(s.repos, s.userCache, firebaseClient, mailSender)
+	notificationSender := services.NewNotificationSender(s.repos, s.userCache, firebaseClient, mailSender, rootEmailTemplate)
 	notificationSender.Start()
 
 	baseService := services.NewBase(s.repos, services.BaseServiceOptions{

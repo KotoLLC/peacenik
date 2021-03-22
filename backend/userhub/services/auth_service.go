@@ -357,6 +357,7 @@ func (s *authService) sendInviteLinkToRegisteredUser(ctx context.Context, invite
 	err := s.rootEmailTemplate.ExecuteTemplate(&message, "friend_request.gohtml", map[string]interface{}{
 		"InviterDisplayName": inviterInfo.DisplayName,
 		"AcceptLink":         link,
+		"RejectLink":         link,
 	})
 	if err != nil {
 		return err

@@ -1,9 +1,10 @@
 package services
 
 import (
+	"bytes"
 	"context"
 	"fmt"
-	"html"
+	"html/template"
 	"log"
 	"strings"
 
@@ -26,6 +27,7 @@ type notificationSender struct {
 	userCache          caches.Users
 	firebaseClient     *fcm.Client
 	mailSender         *common.MailSender
+	rootEmailTemplate  *template.Template
 	notifications      chan []Notification
 	getUserAttachments func(ctx context.Context, userID string) common.MailAttachmentList
 }
@@ -33,20 +35,19 @@ type notificationSender struct {
 type Notification struct {
 	UserIDs     []string
 	Text        string
-	MailSubject string
-	MailBody    string
 	MessageType string
 	Data        map[string]interface{}
 	IsExternal  bool
 }
 
-func NewNotificationSender(repos repo.Repos, userCache caches.Users, firebaseClient *fcm.Client, mailSender *common.MailSender) NotificationSender {
+func NewNotificationSender(repos repo.Repos, userCache caches.Users, firebaseClient *fcm.Client, mailSender *common.MailSender, rootEmailTemplate *template.Template) NotificationSender {
 	return &notificationSender{
-		repos:          repos,
-		userCache:      userCache,
-		firebaseClient: firebaseClient,
-		mailSender:     mailSender,
-		notifications:  make(chan []Notification, 10000),
+		repos:             repos,
+		userCache:         userCache,
+		firebaseClient:    firebaseClient,
+		mailSender:        mailSender,
+		rootEmailTemplate: rootEmailTemplate,
+		notifications:     make(chan []Notification, 10000),
 	}
 }
 
@@ -111,14 +112,45 @@ func (s *notificationSender) sendFCMNotifications(n Notification) {
 }
 
 func (s *notificationSender) sendEmailNotifications(n Notification) {
-	if !s.mailSender.Enabled() || (n.MailSubject == "" && n.MailBody == "") {
+	if !s.mailSender.Enabled() {
 		return
 	}
 
-	if n.MailSubject == "" {
-		n.MailSubject = n.Text
-	} else if n.MailBody == "" {
-		n.MailBody = html.EscapeString(n.Text)
+	var subject, body string
+	switch n.MessageType {
+	case "message/tag":
+		userInfo := s.userCache.UserFullAccess(n.Data["user_id"].(string))
+		var message bytes.Buffer
+		err := s.rootEmailTemplate.ExecuteTemplate(&message, "message_mention.gohtml", map[string]interface{}{
+			"UserDisplayName": userInfo.DisplayName,
+			"MessageLink":     "", // TODO
+		})
+		if err != nil {
+			log.Println("can't execute message_mention template:", err)
+			return
+		}
+		subject = userInfo.DisplayName + " mentioned you in a message"
+		body = message.String()
+	case "message/post":
+		_, isDirectMessage := n.Data["friend_id"]
+		if !isDirectMessage {
+			return
+		}
+
+		userInfo := s.userCache.UserFullAccess(n.Data["user_id"].(string))
+		var message bytes.Buffer
+		err := s.rootEmailTemplate.ExecuteTemplate(&message, "message_direct.gohtml", map[string]interface{}{
+			"UserDisplayName": userInfo.DisplayName,
+			"MessageLink":     "", // TODO
+		})
+		if err != nil {
+			log.Println("can't execute message_mention template:", err)
+			return
+		}
+		subject = userInfo.DisplayName + " sent you in a direct message"
+		body = message.String()
+	default:
+		return
 	}
 
 	var userAttachments common.MailAttachmentList
@@ -135,8 +167,8 @@ func (s *notificationSender) sendEmailNotifications(n Notification) {
 			continue
 		}
 		userInfo := s.userCache.UserFullAccess(user.ID)
-		var body = strings.ReplaceAll(n.MailBody, "@@avatar@@", userAttachments.InlineHTML("avatar"))
-		err := s.mailSender.SendHTMLEmail([]string{userInfo.Email}, n.MailSubject, body, userAttachments)
+		body = strings.ReplaceAll(body, "@@avatar@@", userAttachments.InlineHTML("avatar")) // TODO
+		err := s.mailSender.SendHTMLEmail([]string{userInfo.Email}, subject, body, userAttachments)
 		if err != nil {
 			log.Printf("can't send email to '%s': %v", userInfo.Email, err)
 		}

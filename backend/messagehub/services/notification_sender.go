@@ -29,8 +29,6 @@ type notificationSender struct {
 type Notification struct {
 	UserIDs     []string               `json:"users"`
 	Text        string                 `json:"text"`
-	MailSubject string                 `json:"mail_subject"`
-	MailBody    string                 `json:"mail_body"`
 	MessageType string                 `json:"message_type"`
 	Data        map[string]interface{} `json:"data"`
 }

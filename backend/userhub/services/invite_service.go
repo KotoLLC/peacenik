@@ -182,6 +182,7 @@ func (s *inviteService) sendInviteLinkToUnregisteredUser(ctx context.Context, in
 	err = s.rootEmailTemplate.ExecuteTemplate(&message, "friend_request.gohtml", map[string]interface{}{
 		"InviterDisplayName": inviterInfo.DisplayName,
 		"AcceptLink":         link,
+		"RejectLink":         link,
 	})
 	if err != nil {
 		return err
@@ -203,6 +204,7 @@ func (s *inviteService) sendInviteLinkToRegisteredUser(ctx context.Context, invi
 	err := s.rootEmailTemplate.ExecuteTemplate(&message, "friend_request.gohtml", map[string]interface{}{
 		"InviterDisplayName": inviterInfo.DisplayName,
 		"AcceptLink":         link,
+		"RejectLink":         link,
 	})
 	if err != nil {
 		return err
