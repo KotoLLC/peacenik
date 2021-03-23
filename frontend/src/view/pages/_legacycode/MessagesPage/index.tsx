@@ -4,6 +4,6 @@ import MessageFeed from './MessageFeed'
 
 export const MessagesPage = () => (
   <Switch>
-    <Route path="/messages" exact component={MessageFeed} />
+    <Route path="/feed" exact component={MessageFeed} />
   </Switch>
 )

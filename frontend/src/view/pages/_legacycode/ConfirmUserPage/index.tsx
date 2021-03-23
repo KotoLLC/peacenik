@@ -40,7 +40,7 @@ export const ConfirmUser: React.SFC<Props> = React.memo((props) => {
     }
 
     if (isEmailConfirmed === true) {
-      history.push('/messages')
+      history.push('/feed')
     }
 
   }, [isLogged, history, isEmailConfirmed, isConfirmUserSuccess, props])

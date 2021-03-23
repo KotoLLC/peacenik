@@ -97,9 +97,9 @@ const LoginPage = (props) => {
           history.push('/friends/invitations')
         }
         if (checkExcludedRoutes(lastLoactionPathname)) {
-          history.push('/messages')
+          history.push('/feed')
         } else {
-          history.push(lastLoactionPathname ? `${lastLoactionPathname}` : '/messages')
+          history.push(lastLoactionPathname ? `${lastLoactionPathname}` : '/feed')
         }
       }
       setRequest(false)

@@ -2,6 +2,8 @@ import styled from 'styled-components'
 import Container from '@material-ui/core/Container'
 import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button'
+import Avatar from '@material-ui/core/Avatar'
+import { Link } from 'react-router-dom'
 
 export const ContainerStyled = styled(Container)`
   && {
@@ -110,4 +112,106 @@ export const MessageContent = styled.div`
   margin: 10px 0;
   padding: 0;
   white-space: pre-wrap;
+`
+
+
+export const UserInfo = styled.div`
+  display: flex;
+  align-items: center;
+`
+
+export const UserNameWrapper = styled.div`
+  margin-left: 20px;
+
+  @media (max-width: 600px) {
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    span {
+      width: 100%;
+      margin: 0;
+    }
+  }
+`
+
+export const UserName = styled.span`
+  font-weight: bold;
+  
+  @media (max-width: 600px) {
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 130px; 
+  }
+`
+
+export const UserNameLink = styled(Link)`
+  font-weight: bold;
+  color: #000;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+  
+  @media (max-width: 600px) {
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 130px;
+  }
+`
+
+export const MessageDate = styled.span`
+  display: inline-block;
+  margin-left: 10px;
+`
+
+
+export const AvatarWrapper = styled.div`
+  border-radius: 50%;
+  overflow: hidden;
+  background: #bdbdbd;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+`
+
+export const AvatarWrapperLink = styled(Link)`
+  border-radius: 50%;
+  overflow: hidden;
+  background: #bdbdbd;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+`
+
+export const AvatarStyled = styled(Avatar)`
+  && {
+    margin-right: 10px;
+    background: #bdbdbd;
+  }
+`
+
+export const ImagePreview = styled.img`
+  max-width: 100%;
+  max-height: 500px;
+  
+  @media (max-width: 600px) {
+    display: inline-block;
+  }
+`
+
+export const AttachmentWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+
+  @media (max-width: 600px) {
+    display: block;
+    text-align: center;
+  }
 `

@@ -19,7 +19,6 @@ import GroupsPages from '@view/features/Groups/pages'
 import FeedPage from '@view/features/Feed/pages'
 import AuthPages from '@view/features/Auth/pages'
 import { SettingsPages } from '@view/features/Settings/pages'
-import { MessagesPage } from '@view/pages/MessagesPage'
 
 export const history = createBrowserHistory()
 
@@ -99,7 +98,6 @@ export const Routes = () => {
               <PrivateRoute path="/friends" component={FriendsPages} />
               <PrivateRoute path="/groups" component={GroupsPages} />
               <PrivateRoute path="/feed" component={FeedPage} />
-              <PrivateRoute path="/messages" component={MessagesPage} />
               <AuthPages/>   
               <Route component={() => <>404 not found</>} />
             </Switch>

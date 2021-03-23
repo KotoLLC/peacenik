@@ -156,7 +156,7 @@ export const UserName = styled.span`
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    max-width: 130px;
+    max-width: 130px; 
   }
 `
 
@@ -252,12 +252,6 @@ export const EditMessageField = styled.div`
   position: relative;
 `
 
-export const CroppedText = styled.p`
-  white-space: nowrap;
-  overflow: hidden; 
-  text-overflow: ellipsis; 
-`
-
 export const MessageSticky = styled.div`
   /* position: sticky; */
   /* bottom: 0; */
@@ -305,24 +299,7 @@ export const UploadInput = styled.input`
   display: none;
 `
 
-export const ImagePreview = styled.img`
-  max-width: 100%;
-  max-height: 500px;
-  
-  @media (max-width: 600px) {
-    display: inline-block;
-  }
-`
 
-export const AttachmentWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-
-  @media (max-width: 600px) {
-    display: block;
-    text-align: center;
-  }
-`
 
 export const PreloaderWrapper = styled.div`
   position: fixed;
@@ -451,3 +428,28 @@ export const TextFieldStyled = styled(TextField)`
     }
   }
 ` 
+
+export const CroppedText = styled.p`
+  white-space: nowrap;
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+`
+
+export const ImagePreview = styled.img`
+  max-width: 100%;
+  max-height: 500px;
+  
+  @media (max-width: 600px) {
+    display: inline-block;
+  }
+` 
+
+export const AttachmentWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+
+  @media (max-width: 600px) {
+    display: block;
+    text-align: center;
+  }
+`

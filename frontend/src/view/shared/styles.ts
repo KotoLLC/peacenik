@@ -1349,3 +1349,9 @@ export const AccessTimeIconStyled = styled(AccessTimeIcon)`
   font-size: inherit;
   margin-left: 5px;
 `
+
+export const CroppedText = styled.p`
+  white-space: nowrap;
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+`
