@@ -130,7 +130,7 @@ export const MentionsInputWrapper = styled.div`
   position: relative;
 
   textarea {
-    font-family: 'SFUITextRegular' !important;
+    /* font-family: 'SFUITextRegular' !important; */
     /* font-size: 16px !important; */
   }
 
