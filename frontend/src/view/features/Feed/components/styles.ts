@@ -14,6 +14,10 @@ export const ContainerStyled = styled.div`
   padding: 95px 15px 40px;
   width: 100%;
   max-width: 586px;
+
+  @media (max-width: 770px) {
+    padding-top: 65px;
+  }
 `
 
 export const PaperStyled = styled(Paper)`
@@ -40,6 +44,10 @@ export const IconButtonWrapper = styled.span`
 export const EditorBlockWrapper = styled.div`
   background: #fff;
   margin-bottom: 30px;
+  
+  @media (max-width: 770px){
+    margin-bottom: 20px;
+  }
 `
 
 export const CommentsWrapepr = styled.div`
@@ -72,6 +80,12 @@ export const CommentWrapper = styled.div`
   &.no-bottom-line {
     &:after { 
       display: none;
+    }
+  }
+
+  @media (max-width: 770px) {
+    &:after {
+      width: calc(100% - 60px);
     }
   }
 `
@@ -135,6 +149,14 @@ export const EditorContentWrapper = styled.div`
     padding: 0 0 0 75px;
     width: 100%;
   }
+
+  @media (max-width: 770px){
+    
+    &.comments {
+      padding-left: 60px;
+    }
+    
+  }
 `
 
 export const EditorButtonsWrapper = styled.div`
@@ -147,6 +169,14 @@ export const EditorButtonsWrapper = styled.div`
   &.comments {
     width: 100%;
     height: 56px;
+  }
+
+  @media (max-width: 770px){
+    height: 44px;
+
+    &.comments {
+      height: 44px;
+    }
   }
 `
 
@@ -162,6 +192,15 @@ export const ButtonSend = styled(Button)`
 
   &.small {
     height: 56px;
+  }
+
+  @media (max-width: 770px){
+    height: 44px;
+    width: 58px;
+
+    &.small {
+      height: 44px;
+    }    
   }
 `
 
@@ -238,6 +277,10 @@ export const UserNameLink = styled(Link)`
   margin-left: 16px;
   color: #000;
 
+  @media (max-width: 770px){
+    font-size: 16px;
+  }
+
   @media (max-width: 600px) {
     display: inline-block;
     text-overflow: ellipsis;
@@ -269,11 +312,19 @@ export const CommentContent = styled.pre`
   font-family: 'SFUITextRegular';
   white-space: pre-wrap;
   margin-top: 8px;
+
+  @media (max-width: 770px){
+    font-size: 14px;
+  }
 `
 
 export const CommentTextWrapper = styled.div`
   width: calc(100% - 30px);
   padding-left: 75px;
+
+  @media (max-width: 770px) {
+    padding-left: 60px;
+  }
 `
 
 export const CommentReactionsNavWrapper = styled.ul`
@@ -285,6 +336,10 @@ export const CommentReactionsNavWrapper = styled.ul`
   padding-left: 63px;
   padding-right: 5px;
   padding-bottom: 5px;
+
+  @media (max-width: 770px){
+    padding-left: 47px;
+  }
 `
 
 export const CommentReactionsNav = styled.li`
@@ -433,6 +488,16 @@ export const AvatarWrapper = styled.div`
       height: 100%;
     }
   }
+
+  @media (max-width: 770px) {
+    width: 36px;
+    height: 36px;
+
+    &.small {
+      width: 30px;
+      height: 30px;
+    }
+  }
 `
 
 export const AvatarWrapperLink = styled(Link)`
@@ -454,6 +519,16 @@ export const AvatarWrapperLink = styled(Link)`
     }
   }
 
+  @media (max-width: 770px) {
+    width: 36px;
+    height: 36px;
+
+    &.small {
+      width: 30px;
+      height: 30px;
+    }
+  }
+
   /* .MuiAvatar-root {
     width: 50px !important;
     height: 50px !important;
@@ -466,6 +541,11 @@ export const AvatarStyled = styled(Avatar)`
     background: #bdbdbd;
     width: 50px;
     height: 50px;
+
+    @media (max-width: 770px) {
+      width: 36px;
+      height: 36px;
+    }
   }
 `
 
@@ -551,6 +631,10 @@ export const FeedWrapper = styled.div`
   background: #fff;
   box-shadow: 0px 1px 3px #D4D4D4;
   margin-bottom: 30px;
+
+  @media (max-width: 770px){
+    margin-bottom: 10px;
+  }
 `
 
 export const FeedHeader = styled.header`
@@ -559,9 +643,14 @@ export const FeedHeader = styled.header`
   align-items: center;
   padding: 20px 20px 0px;
   width: 100%;
+  position: relative;
 
   &.comments {
     padding: 0px 20px;
+  }
+
+  @media (max-width: 770px) {
+    padding: 11px 15px 0px;
   }
 `
 
@@ -574,6 +663,11 @@ export const FeedText = styled.div`
   font-size: 16px;
   font-family: 'SFUITextRegular';
   padding: 10px 20px 15px; 
+
+  @media (max-width: 770px) {
+    font-size: 14px;
+    padding: 10px 15px 15px; 
+  }
 `
 
 export const FeedAttachmentWrapper = styled.div`
