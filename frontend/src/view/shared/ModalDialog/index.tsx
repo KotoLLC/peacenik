@@ -11,12 +11,13 @@ import {
 
 interface Props {
   title?: string
+  className?: string
   isModalOpen: boolean
   setOpenModal: (value: boolean) => void
 }
 
 export const ModalDialog: React.FC<Props> = (props) => {
-  const { title, isModalOpen, setOpenModal } = props
+  const { title, isModalOpen, setOpenModal, className } = props
 
   return (
     <ModalStyled
@@ -30,7 +31,7 @@ export const ModalDialog: React.FC<Props> = (props) => {
         timeout: 500,
       }}>
       <Fade in={isModalOpen}>
-        <ModalViewport>
+        <ModalViewport className={className}>
           <ModalCloseBtn>
             <CloseIcon onClick={() => setOpenModal(false)} />
           </ModalCloseBtn>

@@ -61,6 +61,10 @@ const GlobalStyle = createGlobalStyle`
     outline: none;
     text-decoration: none;
   }
+
+  pre {
+    margin: 0;
+  }
 `
 
 const defaultTheme = createMuiTheme({

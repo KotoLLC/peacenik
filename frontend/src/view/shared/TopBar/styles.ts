@@ -44,27 +44,6 @@ export const NavigationsWrapper = styled.div`
 export const MenuItem = styled.span`
   padding: 0 30px;
   display: inline-block;
-  /* position: relative; */
-
-  &:after {
-    display: inline-block;
-    position: absolute;
-    right: 0;
-    top: 22px;
-    width: 1px;
-    height: 20px;
-    background: #C8CFD4;
-    opacity: 0.6;
-    content: '';
-  }
-
-  &:nth-child(6) {
-
-    &:after {
-      display: none;
-    }
-
-  }
 `
 
 export const MenuLink = styled(NavLink)`

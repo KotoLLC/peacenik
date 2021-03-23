@@ -1335,7 +1335,7 @@ export const TimeBlock = styled.div`
   margin-left: 16px;
   align-self: start;
   flex-shrink: 0;
-  max-width: 120px;
+  max-width: 130px;
   line-height: 1;
 
   @media (max-width: 375px) {
