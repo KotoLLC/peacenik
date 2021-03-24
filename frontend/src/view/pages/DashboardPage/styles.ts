@@ -114,7 +114,6 @@ export const MessageContent = styled.div`
   white-space: pre-wrap;
 `
 
-
 export const UserInfo = styled.div`
   display: flex;
   align-items: center;
@@ -170,7 +169,6 @@ export const MessageDate = styled.span`
   display: inline-block;
   margin-left: 10px;
 `
-
 
 export const AvatarWrapper = styled.div`
   border-radius: 50%;

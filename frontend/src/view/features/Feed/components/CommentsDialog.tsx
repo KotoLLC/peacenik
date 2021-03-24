@@ -17,6 +17,7 @@ import SendIcon from '@material-ui/icons/Send'
 import { urlify } from '@services/urlify'
 import selectors from '@selectors/index'
 import { friendsToMentionFriends, MentionFriend } from '@services/dataTransforms/friendsToMentionFriends'
+import { getUserNameByUserId } from '@services/userNames'
 import {
   FeedHeader,
   UserInfo,
@@ -122,7 +123,7 @@ const CommentsDialog = (props) => {
             <AvatarWrapperLink className="small" to={`/profile/user?id=${userId}`}>
               <AvatarStyled className="small" src={getAvatarUrl(userId)} alt={userName} />
             </AvatarWrapperLink>
-            <UserNameLink to={`/profile/user?id=${userId}`}>{userFullName ? userFullName : `@${userName}`}</UserNameLink>
+            <UserNameLink to={`/profile/user?id=${userId}`}>{getUserNameByUserId(userId)}</UserNameLink>
           </UserInfo>
         </FeedHeader>
         <EditorContentWrapper className="comments">
@@ -179,9 +180,9 @@ const CommentsDialog = (props) => {
         <FeedHeader className="comments">
           <UserInfo>
             <AvatarWrapperLink to={`/profile/user?id=${user_id}`}>
-              <AvatarStyled src={getAvatarUrl(user_id)} alt={user_name} />
+              <AvatarStyled src={getAvatarUrl(user_id)} alt={getUserNameByUserId(user_id)} />
             </AvatarWrapperLink>
-            <UserNameLink to={`/profile/user?id=${user_id}`}>{user_name}</UserNameLink>
+            <UserNameLink to={`/profile/user?id=${user_id}`}>{getUserNameByUserId(user_id)}</UserNameLink>
           </UserInfo>
           <TimeBlock>
             {moment(created_at).fromNow()}

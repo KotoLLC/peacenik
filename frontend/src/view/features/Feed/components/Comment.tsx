@@ -16,6 +16,7 @@ import Avatar from '@material-ui/core/Avatar'
 import { MentionsInput, Mention } from 'react-mentions'
 import { friendsToMentionFriends, MentionFriend } from '@services/dataTransforms/friendsToMentionFriends'
 import { TimeBlock, AccessTimeIconStyled } from '@view/shared/styles'
+import { getUserNameByUserId } from '@services/userNames'
 import {
   CommentWrapper,
   UserNameLink,
@@ -237,10 +238,10 @@ const Comment: React.SFC<Props> = (props) => {
         <UserInfo>
           <AvatarWrapperLink className="small" to={`/profile/user?id=${user_id}`}>
             <AvatarWrapper className="small">
-              <Avatar src={getAvatarUrl(user_id)} alt={user_name} />
+              <Avatar src={getAvatarUrl(user_id)} alt={getUserNameByUserId(user_id)} />
             </AvatarWrapper>
           </AvatarWrapperLink>
-          <UserNameLink to={`/profile/user?id=${user_id}`}>{user_name}</UserNameLink>
+          <UserNameLink to={`/profile/user?id=${user_id}`}>{getUserNameByUserId(user_id)}</UserNameLink>
         </UserInfo>
         <TimeBlock >
           {moment(created_at).fromNow()}

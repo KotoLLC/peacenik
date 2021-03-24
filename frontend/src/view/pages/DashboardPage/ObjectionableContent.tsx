@@ -29,7 +29,6 @@ import {
   ImagePreview,
 } from './styles'
 
-
 interface Props {
   objectionableContent: ApiTypes.Dashboard.ObjectionableContent[],
   ownedHubs: string[]

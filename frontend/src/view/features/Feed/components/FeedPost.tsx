@@ -22,6 +22,7 @@ import CameraAltOutlinedIcon from '@material-ui/icons/CameraAltOutlined'
 import loadImage from 'blueimp-load-image'
 import ClearIcon from '@material-ui/icons/Clear'
 import CommentsDialog from './../components/CommentsDialog'
+import { getUserNameByUserId } from '@services/userNames'
 import {
   FeedWrapper,
   FeedHeader,
@@ -403,7 +404,7 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
           <AvatarWrapperLink to={`/profile/user?id=${user_id}`}>
             <AvatarStyled src={getAvatarUrl(user_id)} alt={user_name} />
           </AvatarWrapperLink>
-          <UserNameLink to={`/profile/user?id=${user_id}`}>{user_name}</UserNameLink>
+          <UserNameLink to={`/profile/user?id=${user_id}`}>{getUserNameByUserId(user_id)}</UserNameLink>
         </UserInfo>
         <TimeBlock>
           {moment(created_at).fromNow()}

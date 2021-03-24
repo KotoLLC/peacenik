@@ -299,8 +299,6 @@ export const UploadInput = styled.input`
   display: none;
 `
 
-
-
 export const PreloaderWrapper = styled.div`
   position: fixed;
   bottom: 50%;

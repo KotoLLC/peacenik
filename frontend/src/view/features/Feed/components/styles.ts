@@ -279,6 +279,7 @@ export const UserNameLink = styled(Link)`
 
   @media (max-width: 770px){
     font-size: 16px;
+    margin-left: 10px;
   }
 
   @media (max-width: 600px) {
