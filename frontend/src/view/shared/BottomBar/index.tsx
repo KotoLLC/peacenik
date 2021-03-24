@@ -8,7 +8,6 @@ import {
   LogoIcon,
   FooterMenu,
   FooterMenuItem,
-  FooterMenuLink,
   FooterMenuALink,
   LogoWrapper,
 } from './styles'
