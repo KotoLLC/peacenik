@@ -19,9 +19,8 @@ export const Member: React.FC<Props> = (props) => {
     full_name,
     name,
     id,
-    is_confirmed,
     isAdminLayout,
-    groupId,
+    groupId, 
   } = props
 
   return (

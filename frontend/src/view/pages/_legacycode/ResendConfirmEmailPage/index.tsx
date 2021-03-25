@@ -40,7 +40,7 @@ export const ResendConfirmEmail: React.SFC<Props> = React.memo((props) => {
     }
 
     if (isEmailConfirmed === true) {
-      history.push(lastLoactionPathname ? lastLoactionPathname : '/messages')
+      history.push(lastLoactionPathname ? lastLoactionPathname : '/feed')
     }
 
   }, [isLogged, history, isEmailConfirmed, lastLoactionPathname])

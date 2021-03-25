@@ -8,7 +8,6 @@ import {
   LogoIcon,
   FooterMenu,
   FooterMenuItem,
-  FooterMenuLink,
   FooterMenuALink,
   LogoWrapper,
 } from './styles'
@@ -18,7 +17,7 @@ export const BottomBar = React.memo(() => {
     <BottomBarWrapper>
       <Container>
         <FooterWrapper>
-          <LogoWrapper to="/messages">
+          <LogoWrapper to="/feed">
             <LogoIcon src={LogoIconImage} />
           </LogoWrapper>
           <FooterMenu>

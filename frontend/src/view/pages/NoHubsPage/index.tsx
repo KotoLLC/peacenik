@@ -38,7 +38,7 @@ export const NoHubs: React.FC<Props> = (props) => {
 
   useEffect(() => {
     if (feedsTokens?.length || currentHub?.token) {
-      props.history.push('/messages')
+      props.history.push('/feed')
     }
   }, [
     feedsTokens,

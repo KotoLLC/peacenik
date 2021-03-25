@@ -14,6 +14,10 @@ export const ContainerStyled = styled.div`
   padding: 95px 15px 40px;
   width: 100%;
   max-width: 586px;
+
+  @media (max-width: 770px) {
+    padding-top: 65px;
+  }
 `
 
 export const PaperStyled = styled(Paper)`
@@ -40,6 +44,10 @@ export const IconButtonWrapper = styled.span`
 export const EditorBlockWrapper = styled.div`
   background: #fff;
   margin-bottom: 30px;
+  
+  @media (max-width: 770px){
+    margin-bottom: 20px;
+  }
 `
 
 export const CommentsWrapepr = styled.div`
@@ -48,9 +56,38 @@ export const CommentsWrapepr = styled.div`
 
 export const CommentWrapper = styled.div`
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
-  margin-bottom: 15px;
+  position: relative;
   width: 100%;
+
+  &:last-child {
+    &:after {
+      display: none;
+    }
+  }
+
+  &:after {
+    content: '';
+    width: calc(100% - 75px);
+    height: 1px;
+    background: #D8D8D8;
+    bottom: 0;
+    right: 0;
+    position: absolute;
+  }
+
+  &.no-bottom-line {
+    &:after { 
+      display: none;
+    }
+  }
+
+  @media (max-width: 770px) {
+    &:after {
+      width: calc(100% - 60px);
+    }
+  }
 `
 
 export const CreateWrapper = styled.div`
@@ -92,10 +129,14 @@ export const MentionsInputWrapper = styled.div`
   align-items: flex-end;
   position: relative;
 
-
   textarea {
-    font-family: 'SFUITextRegular' !important;
+    /* font-family: 'SFUITextRegular' !important; */
     /* font-size: 16px !important; */
+  }
+
+  
+  &.comments {
+    padding: 0 ;
   }
 `
 
@@ -103,6 +144,19 @@ export const EditorContentWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 15px;
+
+  &.comments {
+    padding: 0 0 0 75px;
+    width: 100%;
+  }
+
+  @media (max-width: 770px){
+    
+    &.comments {
+      padding-left: 60px;
+    }
+    
+  }
 `
 
 export const EditorButtonsWrapper = styled.div`
@@ -111,6 +165,19 @@ export const EditorButtonsWrapper = styled.div`
   justify-content: space-between;
   background: #EDF1F2;
   height: 66px;
+
+  &.comments {
+    width: 100%;
+    height: 56px;
+  }
+
+  @media (max-width: 770px){
+    height: 44px;
+
+    &.comments {
+      height: 44px;
+    }
+  }
 `
 
 export const ButtonSend = styled(Button)`
@@ -122,6 +189,19 @@ export const ButtonSend = styled(Button)`
   height: 66px;
   color: #fff;
   border-radius: 0;
+
+  &.small {
+    height: 56px;
+  }
+
+  @media (max-width: 770px){
+    height: 44px;
+    width: 58px;
+
+    &.small {
+      height: 44px;
+    }    
+  }
 `
 
 export const AttachmentButton = styled.label`
@@ -197,6 +277,11 @@ export const UserNameLink = styled(Link)`
   margin-left: 16px;
   color: #000;
 
+  @media (max-width: 770px){
+    font-size: 16px;
+    margin-left: 10px;
+  }
+
   @media (max-width: 600px) {
     display: inline-block;
     text-overflow: ellipsis;
@@ -217,7 +302,6 @@ export const ButtonsWrapper = styled.div`
 `
 
 export const MessageContent = styled.div`
-  font-family: Raleway, Arial;
   font-size: 14px;
   margin: 10px 0;
   padding: 0 20px;
@@ -225,26 +309,38 @@ export const MessageContent = styled.div`
 `
 
 export const CommentContent = styled.pre`
-  font-family: Raleway, Arial;
-  display: inline-block;
-  font-size: 14px;
-  margin: 0 0 5px;
-  padding: 5px 10px;
-  border-radius: 22px;
-  background: #ededed;
-  max-width: 100%;
+  font-size: 16px;
+  font-family: 'SFUITextRegular';
   white-space: pre-wrap;
+  margin-top: 8px;
+
+  @media (max-width: 770px){
+    font-size: 14px;
+  }
 `
 
 export const CommentTextWrapper = styled.div`
-  flex-grow: 1;
+  width: calc(100% - 30px);
+  padding-left: 75px;
+
+  @media (max-width: 770px) {
+    padding-left: 60px;
+  }
 `
 
 export const CommentReactionsNavWrapper = styled.ul`
-  padding-left: 10px;
   list-style-type: none;
   display: flex;
+  justify-content: space-between;
   margin: 0;
+  width: 100%;
+  padding-left: 63px;
+  padding-right: 5px;
+  padding-bottom: 5px;
+
+  @media (max-width: 770px){
+    padding-left: 47px;
+  }
 `
 
 export const CommentReactionsNav = styled.li`
@@ -384,13 +480,23 @@ export const AvatarWrapper = styled.div`
   flex-shrink: 0;
 
   &.small {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
 
     .MuiAvatar-fallback,
     .MuiAvatar-root {
       width: 100%;
       height: 100%;
+    }
+  }
+
+  @media (max-width: 770px) {
+    width: 36px;
+    height: 36px;
+
+    &.small {
+      width: 30px;
+      height: 30px;
     }
   }
 `
@@ -403,10 +509,31 @@ export const AvatarWrapperLink = styled(Link)`
   height: 50px;
   flex-shrink: 0;
 
-  .MuiAvatar-root {
+  &.small {
+    width: 40px;
+    height: 40px;
+
+    .MuiAvatar-fallback,
+    .MuiAvatar-root {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  @media (max-width: 770px) {
+    width: 36px;
+    height: 36px;
+
+    &.small {
+      width: 30px;
+      height: 30px;
+    }
+  }
+
+  /* .MuiAvatar-root {
     width: 50px !important;
     height: 50px !important;
-  }
+  } */
 `
 
 export const AvatarStyled = styled(Avatar)`
@@ -415,6 +542,11 @@ export const AvatarStyled = styled(Avatar)`
     background: #bdbdbd;
     width: 50px;
     height: 50px;
+
+    @media (max-width: 770px) {
+      width: 36px;
+      height: 36px;
+    }
   }
 `
 
@@ -444,7 +576,15 @@ export const ReactionNavWrapper = styled.div`
 `
 
 export const ReactionNavItem = styled.div`
-  
+
+`
+
+export const ReactionCounter = styled.span`
+  color: #A1AEC8;
+  font-family: 'SFUITextLight';
+  position: relative;
+  top: 1px;
+  left: 2px;
 `
 
 export const ReactionNavText = styled.span`
@@ -492,12 +632,27 @@ export const FeedWrapper = styled.div`
   background: #fff;
   box-shadow: 0px 1px 3px #D4D4D4;
   margin-bottom: 30px;
+
+  @media (max-width: 770px){
+    margin-bottom: 10px;
+  }
 `
 
 export const FeedHeader = styled.header`
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 20px 20px 0px;
+  width: 100%;
+  position: relative;
+
+  &.comments {
+    padding: 0px 20px;
+  }
+
+  @media (max-width: 770px) {
+    padding: 11px 15px 0px;
+  }
 `
 
 export const FeedAvatarWrapper = styled.div`
@@ -509,6 +664,11 @@ export const FeedText = styled.div`
   font-size: 16px;
   font-family: 'SFUITextRegular';
   padding: 10px 20px 15px; 
+
+  @media (max-width: 770px) {
+    font-size: 14px;
+    padding: 10px 15px 15px; 
+  }
 `
 
 export const FeedAttachmentWrapper = styled.div`
@@ -559,6 +719,7 @@ export const FeedFooter = styled.div`
 
 export const ReactionNawWrapper = styled.div`
   /* display: inline-flex; */
+  display: flex;
 `
 
 export const ListItemTextStyled = styled(ListItemText)`
@@ -585,4 +746,10 @@ export const DeleteAttachmentButton = styled.span`
   &:hover {
    background: #8a93a6; 
   }
+`
+
+export const CommentEditorWrapper = styled.div`
+  padding-top: 10px;
+  border-top: 1px solid #D8D8D8;
+  margin-top: -1px;
 `

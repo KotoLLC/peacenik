@@ -11,7 +11,6 @@ import {
 } from '@view/shared/styles'
 import { ModalDialog } from '@view/shared/ModalDialog'
 import {
-  ModalSubTitle,
   ModalButtonsGroup,
   ModalCancelButton,
   ModalAllowButton,

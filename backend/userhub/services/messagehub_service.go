@@ -70,6 +70,14 @@ func (s *messageHubService) Register(ctx context.Context, r *rpc.MessageHubRegis
 			})
 		}
 	}
+
+	hub := s.repos.MessageHubs.HubByID(hubID)
+	s.repos.MessageHubs.ApproveHub(hubID)
+	s.notificationSender.SendNotification([]string{hub.AdminID}, "Your message hub is approved", "message-hub/approve", map[string]interface{}{
+		"user_id": me.ID,
+		"hub_id":  hubID,
+	})
+
 	return &rpc.Empty{}, nil
 }
 

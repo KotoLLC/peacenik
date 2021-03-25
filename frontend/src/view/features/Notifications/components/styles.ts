@@ -42,6 +42,11 @@ export const AvatarStyled = styled(Avatar)`
   width: 60px;
   height: 60px;
   z-index: 1;
+
+  @media (max-width: 770px){
+    width: 50px;
+    height: 50px;
+  }
 `
 export const IconBackground = styled.div`
   width: 24px;
@@ -56,6 +61,11 @@ export const IconBackground = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @media (max-width: 770px){
+    bottom: 4px;
+    right: 0;
+  }
 `
 
 export const AddIconStyled = styled(AddIcon)`

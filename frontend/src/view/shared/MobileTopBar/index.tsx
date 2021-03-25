@@ -6,7 +6,6 @@ import { StoreTypes, ApiTypes } from 'src/types'
 import logoMobile from './../../../assets/images/icon.png'
 import { Link } from 'react-router-dom'
 import HomeIcon from '@material-ui/icons/Home'
-import ChatBubbleIcon from '@material-ui/icons/ChatBubble'
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt'
 import MenuIcon from '@material-ui/icons/Menu'
 import CloseIcon from '@material-ui/icons/Close'
@@ -30,7 +29,6 @@ interface Props {
 
 const MobileTopBar: React.FC<Props> = React.memo((props) => {
   const [isHamburgerMenuOpen, openHamburgerMenu] = useState<boolean>(false)
-  const { notificationsUnread, /*userId*/ } = props
 
   return (
     <MobileTopBarWrapper>

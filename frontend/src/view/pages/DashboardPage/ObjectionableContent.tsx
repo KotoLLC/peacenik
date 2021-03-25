@@ -20,17 +20,14 @@ import {
   ReportText,
   ReportTitle,
   MessageContent,
-} from './styles'
-
-import {
   UserInfo,
-  AvatarWrapper,
+  AvatarWrapper, 
   UserNameWrapper,
   UserName,
   MessageDate,
   AttachmentWrapper,
   ImagePreview,
-} from '@view/pages/MessagesPage/styles'
+} from './styles'
 
 interface Props {
   objectionableContent: ApiTypes.Dashboard.ObjectionableContent[],

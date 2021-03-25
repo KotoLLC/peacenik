@@ -45,7 +45,7 @@ const ConfirmUserPage: React.FC<Props> = React.memo((props) => {
     }
 
     if (isEmailConfirmed === true) {
-      history.push('/messages')
+      history.push('/feed')
     }
 
   }, [isLogged, history, isEmailConfirmed, isConfirmUserSuccess, props])

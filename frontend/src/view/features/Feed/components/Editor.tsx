@@ -42,7 +42,7 @@ interface Props {
   onSetAttachment: (data: ApiTypes.Feed.Attachment) => void
 }
 
-export const EditorMarkup: React.FC<Props> = (props) => {
+export const Editor: React.FC<Props> = (props) => {
   const [value, onValueChange] = useState<string>('')
   const [isFileUploaded, setUploadedFile] = useState<boolean>(false)
   const [isHubsEmptyMessageShowed, showHubsEmptyMessage] = useState<boolean>(false)
@@ -269,4 +269,4 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onSetAttachment: (data: ApiTypes.Feed.Attachment) => dispatch(Actions.feed.setAttachmentRequest(data)),
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditorMarkup)
+export default connect(mapStateToProps, mapDispatchToProps)(Editor)

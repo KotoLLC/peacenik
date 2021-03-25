@@ -27,4 +27,10 @@ export declare namespace CommonTypes {
     }
   }
 
+  export interface UserNameData {
+    userName: string
+    userFullName: string
+    userId: string
+  }
+
 }

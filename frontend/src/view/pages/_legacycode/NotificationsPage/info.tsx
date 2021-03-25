@@ -1,8 +1,8 @@
 
 import React from 'react'
-import Message from '@view/pages/MessagesPage/Message'
+import Message from './../MessagesPage/Message'
+import { EmptyMessage, PreloaderWrapper, EmptyMessageFeed } from './../MessagesPage/styles'
 import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
-import { EmptyMessage, PreloaderWrapper, EmptyMessageFeed } from '@view/pages/MessagesPage/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Button from '@material-ui/core/Button'
 import { ButtonsWrapper, ContainerStyled } from './styles'
@@ -91,7 +91,7 @@ class NotificationsInfo extends React.PureComponent<Props, State> {
               variant="contained"
               color="primary"
               endIcon={<ArrowForwardIcon />}
-              onClick={() => history.push('/messages')}
+              onClick={() => history.push('/feed')}
             >Messages</Button>
           </ButtonsWrapper>
         </ContainerStyled>
@@ -111,7 +111,7 @@ class NotificationsInfo extends React.PureComponent<Props, State> {
               variant="contained"
               color="primary"
               endIcon={<ArrowForwardIcon />}
-              onClick={() => history.push('/messages')}
+              onClick={() => history.push('/feed')}
             >Messages</Button>
           </ButtonsWrapper>
         </ContainerStyled>

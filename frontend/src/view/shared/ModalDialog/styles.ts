@@ -16,14 +16,24 @@ export const ModalViewport = styled.div`
   transform: translate(-50%, -50%);
   padding: 18px 45px 31px 45px;
   max-width: 555px;
+  max-height: 90vh;
+  overflow-y: auto;
   width: 100%;
   background: #FFFFFF;
   border: none;
   outline: none;
 
+  &.comments {
+    padding: 18px 0px 0px;
+  }
+
   @media (max-width: 570px) {
     padding: 16px 15px 20px 15px;
     width: calc(100% - 30px);
+
+    &.comments {
+      padding: 16px 0px 0px;
+    }
   }
 `
 
