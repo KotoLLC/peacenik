@@ -13,9 +13,9 @@ spec:
       labels:
         app: message-hub
     spec:
-      terminationGracePeriodSeconds: 5
+      terminationGracePeriodSeconds: 60
       hostAliases:
-      - ip: "192.168.64.10"
+      - ip: "192.168.54.99"
         hostnames:
         - "central.orbits.local"
       containers:
