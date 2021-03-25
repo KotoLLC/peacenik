@@ -11,47 +11,36 @@ import {
 import Actions from "@store/actions";
 import { FriendsPageTabs } from "@view/features/Friends/components/FriendsPageTabs";
 import {
-  MessagesContentWrapper,
-  MessagesSideBarWrapper,
+  ContentWrapper,
+  SideBarWrapper,
   MessagesWrapper,
 } from "../components/styles";
 import MesssageSidebar from "../components/MesssageSidebar";
 import DriectMessageBox from "../components/DriectMessageBox";
 import GroupMessageBox from "../components/GroupMessageBox";
-import MesssageNoSelectBox from "../components/MesssageNoSelectBox";
+import MesssageNoSelectBox from "../components/MessageNoSelectBox";
 
-interface Props extends RouteComponentProps {
-  onGetFriends: () => void;
-  onGetInvitations: () => void;
-}
+interface Props extends RouteComponentProps {}
 
 const MessagesPage: React.FC<Props> = (props) => {
   const baseUrl = useRouteMatch().path;
-  console.log(baseUrl);
-
   return (
     <>
       <FriendsPageTabs />
       <MessagesWrapper>
-        <MessagesSideBarWrapper>
+        <SideBarWrapper>
           <MesssageSidebar />
-        </MessagesSideBarWrapper>
-        <MessagesContentWrapper>
+        </SideBarWrapper>
+        <ContentWrapper>
           <Switch>
-            <Route path={`${baseUrl}/d`} component={DriectMessageBox} />
-            <Route path={`${baseUrl}/g`} component={GroupMessageBox} />
+            <Route path={`${baseUrl}/d/:slug`} component={DriectMessageBox} />
+            <Route path={`${baseUrl}/g/:slug`} component={GroupMessageBox} />
             <Route component={MesssageNoSelectBox} />
           </Switch>
-        </MessagesContentWrapper>
+        </ContentWrapper>
       </MessagesWrapper>
     </>
   );
 };
 
-type DispatchProps = Pick<Props, "onGetFriends" | "onGetInvitations">;
-const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onGetFriends: () => dispatch(Actions.friends.getFriendsRequest()),
-  onGetInvitations: () => dispatch(Actions.friends.getInvitationsRequest()),
-});
-
-export default connect(null, mapDispatchToProps)(withRouter(MessagesPage));
+export default MessagesPage;

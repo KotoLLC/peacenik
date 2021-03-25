@@ -5,7 +5,7 @@ import { ReactComponent as SendIcon } from "@assets/images/send-outline.svg";
 import { SendOutlineWrapper } from "./styles";
 import { IconWrapper, Text, TextUnderlined } from "@view/shared/styles";
 
-const MesssageNoSelectBox: React.FC = () => (
+const MessageNoSelectBox: React.FC = () => (
   <SendOutlineWrapper>
     <IconWrapper>
       <SendIcon fill="#e9ecee" />
@@ -16,4 +16,4 @@ const MesssageNoSelectBox: React.FC = () => (
   </SendOutlineWrapper>
 );
 
-export default MesssageNoSelectBox;
+export default MessageNoSelectBox;

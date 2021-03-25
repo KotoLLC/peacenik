@@ -1407,3 +1407,11 @@ export const TextUnderlined = styled.span`
     border-bottom: transparent;
   }
 `
+
+// export const ButtonContainedStyled = styled(ButtonContained)`
+//   min-width: 200px;
+
+//   @media (max-width: 770px){
+//     min-width: 150px;
+//   }
+// ` 
