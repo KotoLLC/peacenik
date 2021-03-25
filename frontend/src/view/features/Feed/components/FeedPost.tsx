@@ -3,25 +3,17 @@ import ReactMarkdown from 'react-markdown'
 import moment from 'moment'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
-import Comment from './Comment'
 import selectors from '@selectors/index'
 import { Player } from 'video-react'
 import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
 import { getAvatarUrl } from '@services/avatarUrl'
 import { TimeBlock, AccessTimeIconStyled } from '@view/shared/styles'
-import Tooltip from '@material-ui/core/Tooltip'
 import commentIconContained from '@assets/images/comment-icon-contained.svg'
 import likeIconContained from '@assets/images/like-icon-contained.svg'
-import likeIconContainedRed from '@assets/images/like-icon-contained-red.svg'
-import likeIconOutlined from '@assets/images/like-icon-outlined.svg'
-import FavoriteIcon from '@material-ui/icons/Favorite'
-import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder'
 import { MentionsInput, Mention } from 'react-mentions'
 import { friendsToMentionFriends, MentionFriend } from '@services/dataTransforms/friendsToMentionFriends'
 import { LinkRenderer } from '@view/shared/LinkRenderer'
 import { YoutubeFrame } from './YoutubeFrame'
-import Badge from '@material-ui/core/Badge'
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz'
 import { AuthorButtonsMenu } from './AuthorButtonsMenu'
 import { NoAuthorButtonsMenu } from './NoAuthorButtonsMenu'
 import IconButton from '@material-ui/core/IconButton'
@@ -29,6 +21,8 @@ import SendIcon from '@material-ui/icons/Send'
 import CameraAltOutlinedIcon from '@material-ui/icons/CameraAltOutlined'
 import loadImage from 'blueimp-load-image'
 import ClearIcon from '@material-ui/icons/Clear'
+import CommentsDialog from './../components/CommentsDialog'
+import { getUserNameByUserId } from '@services/userNames'
 import {
   FeedWrapper,
   FeedHeader,
@@ -42,10 +36,6 @@ import {
   ActionCounterIcon,
   ActionCounter,
   ImagePreview,
-  ReactionsWrapper,
-  LikesWrapper,
-  LikesNamesList,
-  CircularProgressStyled,
   FeedFooter,
   ReactionNawWrapper,
   ReactionNavItem,
@@ -93,25 +83,18 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
     uploadLink,
     onResetMessageUploadLink,
     onLikeMessage,
-    getLikesForMessage,
     likes,
-    currentMessageLikes,
     liked_by_me,
     user_id,
-    liked_by,
-    isCommentsOpenByDeafult,
     callback,
     friends,
   } = props
 
   const [isEditer, setEditor] = useState<boolean>(false)
   const [message, onMessageChange] = useState<string>(text)
-  const [comment, onCommentChange] = useState<string>('')
-  const [isCommentsOpen, openComments] = useState<boolean>(isCommentsOpenByDeafult || false)
   const [isFileUploaded, setUploadedFile] = useState<boolean>(false)
   const [file, setFile] = useState<File | null>(null)
   const [isAttacmentDeleted, onAttachmentDelete] = useState<boolean>(false)
-  const [isLikesInfoRequested, setLikesInfoRequest] = useState<boolean>(false)
   const [mentionFriends, setMentionFriends] = useState<MentionFriend[]>([])
   const userName = user_full_name || user_name
 
@@ -151,11 +134,22 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
             }
           </IconButton>
         </ReactionNavItem>
-        {/* <ReactionNavItem onClick={onCommentClick}>
-          <ReactionNavText>
-            Comment
-        </ReactionNavText> */}
-        {/* </ReactionNavItem> */}
+        <CommentsDialog
+          user_name={userName}
+          {...{
+            user_id, 
+            created_at, 
+            message, 
+            isAttacmentDeleted, 
+            attachment, 
+            attachment_type,
+            comments,
+            sourceHost,
+            id,
+            friends,
+            messageToken,
+          }}
+        />
       </ReactionNawWrapper>
     )
   }
@@ -372,28 +366,6 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
           <SendIcon />
         </ButtonSend>
       </EditorButtonsWrapper>
-
-      {/* <Tooltip title={`Attach image or video`}>
-        <IconButtonWrapper>
-          <IconButton component="label">
-            <PhotoIcon fontSize="small" color="primary" />
-            <UploadInput
-              type="file"
-              id="file"
-              name="file"
-              onChange={onFileUpload}
-              accept="video/*,image/*"
-            />
-          </IconButton>
-        </IconButtonWrapper>
-      </Tooltip>
-      {(file || attachment_type) && <Tooltip title={`Delete attachment`}>
-        <IconButtonWrapper>
-          <IconButton component="label" onClick={onFileDelete}>
-            <LayersClearIcon fontSize="small" color="primary" />
-          </IconButton>
-        </IconButtonWrapper>
-      </Tooltip>} */}
     </>
 
   )
@@ -417,10 +389,6 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
       })
     }
 
-    if (props.currentMessageLikes?.id === id) {
-      setLikesInfoRequest(false)
-    }
-
     if (!mentionFriends?.length && friends?.length) {
       setMentionFriends(friendsToMentionFriends(friends))
     }
@@ -436,7 +404,7 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
           <AvatarWrapperLink to={`/profile/user?id=${user_id}`}>
             <AvatarStyled src={getAvatarUrl(user_id)} alt={user_name} />
           </AvatarWrapperLink>
-          <UserNameLink to={`/profile/user?id=${user_id}`}>{user_name}</UserNameLink>
+          <UserNameLink to={`/profile/user?id=${user_id}`}>{getUserNameByUserId(user_id)}</UserNameLink>
         </UserInfo>
         <TimeBlock>
           {moment(created_at).fromNow()}

@@ -13,12 +13,12 @@ import {
   DialogContentStyled,
 } from '@view/shared/styles'
 import { 
+  ButtonStyled,
   AvatarWrapper, 
   UserNameWrapper,
   UserName,
   UserInfo,
-} from '@view/pages/MessagesPage/styles'
-import { ButtonStyled } from './styles'
+} from './styles'
 
 interface Props {
   reportId: string

@@ -2,6 +2,7 @@ import { put } from 'redux-saga/effects'
 import Actions from '@store/actions'
 import { API } from '@services/api'
 import { ApiTypes } from 'src/types'
+import { setUserNames } from '@services/userNames'
 
 export function* watchGetFriends() { 
 
@@ -10,6 +11,7 @@ export function* watchGetFriends() {
 
     if (response.status === 200) {
       yield put(Actions.friends.getFriendsSucces(response.data.friends || []))
+      setUserNames(response.data.friends)
     } else if (response.error.response.status === 401) {
       localStorage.clear()
       window.location.reload()

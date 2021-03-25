@@ -9,8 +9,8 @@ import {
   DialogTextWrapper,
   DialogTitleStyled,
   DialogContentStyled,
+  CroppedText,
 } from '@view/shared/styles'
-import { CroppedText } from '../MessagesPage/styles'
 import { ButtonStyled } from './styles'
 
 interface Props {

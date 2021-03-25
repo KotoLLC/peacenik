@@ -26,7 +26,7 @@
 .mentions--singleLine .mentions__input {}
 
 .mentions--multiLine .mentions__control {
-  /* font-family: 'Arial'; */
+  font-family: 'Arial';
   font-size: 14px;
   line-height: 1.5; 
 }

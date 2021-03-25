@@ -14,8 +14,6 @@ import {
 } from '@view/shared/ModalDialog/styles'
 import {
   ListItemIconStyled,
-  DialogTextWrapper,
-  DialogContentStyled,
 } from '@view/shared/styles'
 
 interface Props {
@@ -28,7 +26,7 @@ interface Props {
 
 const RemoveMessageDialog: React.SFC<Props> = (props) => {
   const [isOpen, setOpen] = React.useState(false)
-  const { message, onDeleteMessage, id, sourceHost } = props
+  const { onDeleteMessage, id, sourceHost } = props
 
   const onRemove = () => {
     onDeleteMessage({
@@ -52,7 +50,6 @@ const RemoveMessageDialog: React.SFC<Props> = (props) => {
         isModalOpen={isOpen}
         setOpenModal={() => setOpen(!isOpen)}>
         <ModalSubTitle>You really want to remove this message?</ModalSubTitle>
-        {/* <DialogContentStyled>{message}</DialogContentStyled> */}
         <ModalButtonsGroup>
           <ModalCancelButton onClick={() => setOpen(false)}>Cancel</ModalCancelButton>
           <ModalAllowButton onClick={onRemove}>Remove</ModalAllowButton>

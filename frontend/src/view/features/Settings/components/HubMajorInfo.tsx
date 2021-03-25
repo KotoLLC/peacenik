@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import selectors from '@selectors/index'
 import { StoreTypes, CommonTypes } from 'src/types'
@@ -18,7 +18,7 @@ interface Props extends CommonTypes.HubTypes.Hub {
 }
 
 const HubMajorInfo: React.FC<Props> = React.memo((props) => {
-  const { domain, aproved, currentHub, isConnectionError } = props
+  const { domain, currentHub, isConnectionError } = props
 
   const checkHub = () => {
     if (domain) {

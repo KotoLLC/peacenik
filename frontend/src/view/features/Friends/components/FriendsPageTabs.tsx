@@ -7,6 +7,6 @@ import {
 export const FriendsPageTabs = () => (
     <PageTabsWrapper>
       <PageTab to="/friends">FRIENDS</PageTab>
-      <PageTab to="/messages">MESSAGES</PageTab>
+      <PageTab to="/feed">MESSAGES</PageTab>
     </PageTabsWrapper>
 )

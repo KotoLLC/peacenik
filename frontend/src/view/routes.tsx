@@ -6,7 +6,7 @@ import { StoreTypes } from 'src/types'
 import NoHubsPage from './pages/NoHubsPage'
 import ProfilePage from './features/Profile/pages'
 import DocsPages from './pages/DocsPages'
-import { DashboardPage } from '@view/pages/DashboardPage' 
+import { DashboardPage } from '@view/pages/DashboardPage'
 import selectors from '@selectors/index'
 import { LastLocationProvider } from 'react-router-last-location'
 import { useSwipeable } from 'react-swipeable'
@@ -19,7 +19,6 @@ import GroupsPages from '@view/features/Groups/pages'
 import FeedPage from '@view/features/Feed/pages'
 import AuthPages from '@view/features/Auth/pages'
 import { SettingsPages } from '@view/features/Settings/pages'
-import { MessagesPage } from '@view/pages/MessagesPage'
 
 export const history = createBrowserHistory()
 
@@ -56,18 +55,15 @@ export const Routes = () => {
     onSwiping: (event) => {
       if (swipeType === event?.dir) return
 
-      // if (event?.dir === 'Left' && history.length !== history.index + 1) {
       if (event?.dir === 'Left') {
         setSwipeType(event?.dir)
       }
 
-      // if (event?.dir === 'Right' && history.length - 1 !== 0) {
       if (event?.dir === 'Right') {
         setSwipeType(event?.dir)
       }
     },
     onSwipedLeft: () => {
-      // if (history.length !== history.index + 1) {
       if (history.length) {
         history.goForward()
       }
@@ -78,8 +74,6 @@ export const Routes = () => {
       }
     },
     delta: 50,
-    // trackMouse: true
-    // preventDefaultTouchmoveEvent: true,
   })
 
   return (
@@ -93,14 +87,13 @@ export const Routes = () => {
               <Route path="/docs" component={DocsPages} />
               <Route path="/no-hubs" component={NoHubsPage} />
               <PrivateRoute path="/dashboard" component={DashboardPage} />
-              
+
               <PrivateRoute path="/settings" component={SettingsPages} />
               <PrivateRoute path="/profile" component={ProfilePage} />
               <PrivateRoute path="/friends" component={FriendsPages} />
               <PrivateRoute path="/groups" component={GroupsPages} />
               <PrivateRoute path="/feed" component={FeedPage} />
-              <PrivateRoute path="/messages" component={MessagesPage} />
-              <AuthPages/>   
+              <AuthPages />
               <Route component={() => <>404 not found</>} />
             </Switch>
           </PageLayout>
