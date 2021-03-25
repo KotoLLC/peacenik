@@ -1355,3 +1355,55 @@ export const CroppedText = styled.p`
   overflow: hidden; 
   text-overflow: ellipsis; 
 `
+
+export const IconWrapper = styled.div`
+  width: 196px;
+  height: 196px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 35px;
+  background: #FFFFFF;
+  box-shadow: 0px 1px 10px 2px rgba(216, 216, 216, 0.3);
+  border-radius: 38px;
+
+  svg {
+    width: 110px;
+    height: 110px;
+    color: #C8CFD4;
+  }
+
+  @media (max-width: 770px) {
+    width: 157px;
+    height: 158px;
+    margin-bottom: 21px;
+    svg {
+      width: 87px;
+      height: 88px;
+    }
+  }
+`
+
+export const Text = styled.div`
+  font-size: 18px;
+  line-height: 27px;
+  font-family: 'SFUITextRegular';
+  width: 100%;
+  text-align: center;
+
+  @media (max-width: 770px) {
+    font-size: 16px;
+  }
+`
+
+export const TextUnderlined = styled.span`
+  color: #599C0B;
+  text-decoration: none;
+  border-bottom: 1px solid #599C0B;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+
+  &:hover {
+    border-bottom: transparent;
+  }
+`

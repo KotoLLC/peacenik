@@ -37,11 +37,11 @@ export const TopBar = React.memo(() => {
             <MenuItem>
               <NotificationsModal />
             </MenuItem>
-            {/* <MenuItem>
+            <MenuItem>
               <MenuLink to="/messages">
                 <ChatBubbleIcon />
               </MenuLink>
-            </MenuItem> */}
+            </MenuItem>
             <MenuItem>
               <MenuLink to="/friends">
                 <PeopleAltIcon />
