@@ -206,7 +206,7 @@ class HubOptionB extends React.PureComponent<Props, State> {
         <HubOptionTitle>
           Option B: create a hub
         </HubOptionTitle>
-        {(isHubCreatedSuccessfully || hubCreationStatus !== '') ? this.renderSuccessfulyMessage() : this.renderForm()}
+        {(isHubCreatedSuccessfully || ((isHubCreatedSuccessfully !== false) && (hubCreationStatus !== '') )) ? this.renderSuccessfulyMessage() : this.renderForm()}
       </HubSettingsBlock>
     )
   }

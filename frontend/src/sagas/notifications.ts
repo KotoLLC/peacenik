@@ -53,9 +53,9 @@ export function* watchGetNotificationsFromHub(action: { type: string, payload: C
     }
 
   } catch (error) {
-    if (!error.response) {
-      yield put(Actions.common.setConnectionError(true))
-    }
+    // if (!error.response) {
+    //   yield put(Actions.common.setConnectionError(true))
+    // }
   }
 }
 
