@@ -80,7 +80,7 @@ const HubSettingsPage: React.FC<Props> = (props) => {
 
     if (isHubsRequested === null) {
       setHubsRequested(true)
-      onGetHubs()
+      // onGetHubs()
       onGetCurrentHub()
     }
 

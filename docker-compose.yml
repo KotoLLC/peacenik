@@ -69,15 +69,15 @@ services:
     restart: on-failure
     depends_on:
       - db-message-hub
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: ./Dockerfile.development
-    stdin_open: true
-    tty: true
-    working_dir: /app
-    ports:
-      - 3000:3000
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: ./Dockerfile.development
+  #   stdin_open: true
+  #   tty: true
+  #   working_dir: /app
+  #   ports:
+  #     - 3000:3000
 
   db-user-hub:
     image: postgres:12.5

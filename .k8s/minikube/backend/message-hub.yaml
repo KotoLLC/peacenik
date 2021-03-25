@@ -15,7 +15,7 @@ spec:
     spec:
       terminationGracePeriodSeconds: 5
       hostAliases:
-      - ip: "192.168.64.10"
+      - ip: "172.17.0.3"
         hostnames:
         - "central.orbits.local"
       containers:

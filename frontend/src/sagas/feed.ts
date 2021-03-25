@@ -130,8 +130,9 @@ export function* watchGetMoreMessagesFromHub(action: { type: string, payload: Ap
   } else {
     yield put(Actions.feed.getMoreFeedFromHubFailed())
     if (response.error.response.status === 400) {
-      yield put(Actions.authorization.getAuthTokenRequest())
-      yield put(Actions.feed.getFeedTokensRequest())
+      console.log("watchGetMoreMessagesFromHub getMoreFeedFromHubFailed")
+      // yield put(Actions.authorization.getAuthTokenRequest())
+      // yield put(Actions.feed.getFeedTokensRequest())
     }
   }
 }
@@ -157,8 +158,9 @@ export function* watchGetMessagesFromHub(action: { type: string, payload: ApiTyp
       }))
     } else {
       if (response.error.response.status === 400) {
-        yield put(Actions.authorization.getAuthTokenRequest())
-        yield put(Actions.feed.getFeedTokensRequest())
+        console.log("watchGetMessagesFromHub getMessagesFromHub failed")
+        // yield put(Actions.authorization.getAuthTokenRequest())
+        // yield put(Actions.feed.getFeedTokensRequest())
       }
     }
     

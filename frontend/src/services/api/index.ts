@@ -12,6 +12,7 @@ import common from './common'
 
 // @ts-ignore
 const URL: string = window.apiEndpoint
+// const URL: string = "https://central.peacenik.app/"
 
 export const axiosInstance = axios.create({
   baseURL: URL,
