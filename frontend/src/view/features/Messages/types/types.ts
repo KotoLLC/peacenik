@@ -13,3 +13,9 @@ export enum MessageDirection {
   INCOMMING_MESSAGE = 1,
   OUTGOING_MESSAGE = 2,
 }
+
+export enum MessageInfoTextStatus {
+  HIGHLIGHT = "HIGHLIGHT",
+  NORMAL = "NORMAL",
+  UNKNOWN = "UNKNOWN",
+}

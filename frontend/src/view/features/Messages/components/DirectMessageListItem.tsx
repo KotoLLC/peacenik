@@ -4,6 +4,7 @@ import { Link, useRouteMatch } from "react-router-dom";
 import {
   ContactAvatarStyled,
   MessageCard,
+  MessageCardContent,
   MessageInfo,
   MessageInfoBlock,
   MessageInfoContent,
@@ -16,12 +17,18 @@ import {
   StatusWrapper,
 } from "./styles";
 
-import { ReactComponent as DoubleTickIcon } from "@assets/images/double-tick-indicator.svg";
-import { ReactComponent as TickIcon } from "@assets/images/tick-indicator.svg";
 import { ReactComponent as CircleInfoIcon } from "@assets/images/circle_info.svg";
+
+import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import DonutLargeIcon from "@material-ui/icons/DonutLarge";
+import DoneIcon from "@material-ui/icons/Done";
+import DoneAllIcon from "@material-ui/icons/DoneAll";
 import { IconWrapper, Text, TextUnderlined } from "@view/shared/styles";
-import { MessageDirection, OutGoingMessageStatus } from "../types/types";
+import {
+  MessageDirection,
+  MessageInfoTextStatus,
+  OutGoingMessageStatus,
+} from "../types/types";
 
 interface Props {
   roomId: string;
@@ -61,60 +68,62 @@ const DirectMessageListItem: React.FC<Props> = ({
         case OutGoingMessageStatus.PENDING_STATUS:
           return <DonutLargeIcon />;
         case OutGoingMessageStatus.ACCEPTED_STATUS:
-          return <TickIcon />;
+          return <DoneIcon />;
         case OutGoingMessageStatus.READ_STATUS:
-          return <DoubleTickIcon />;
+          return <DoneAllIcon style={{ color: "#599C0B" }} />;
         case OutGoingMessageStatus.NOT_SENT_STATUS:
         case OutGoingMessageStatus.UNKNOWN_STATUS:
       }
-      return <CircleInfoIcon />;
+      return <InfoOutlinedIcon />;
     },
     []
   );
 
   return (
     <MessageCard>
-      <Link to={`/profile/user?id=${userId}`}>
-        <ContactAvatarStyled alt={fullName} src={getAvatarUrl(userId)} />
-      </Link>
-      <MessageInfoBlock to={`${baseURL}/${userId}`}>
-        <MessageInfoHeader>
-          <MessageInfoDisplayName>{fullName}</MessageInfoDisplayName>
-          <MessageInfoLastAccessTime>{accessTime}</MessageInfoLastAccessTime>
-        </MessageInfoHeader>
-        <MessageInfoContent
-          flex-direction={
-            msgType === MessageDirection.INCOMMING_MESSAGE ? "row" : "reverse"
-          }
-        >
-          <MessageInfoText
-            color={
-              msgType === MessageDirection.INCOMMING_MESSAGE &&
-              missedCount &&
-              missedCount > 0
-                ? "hot"
-                : "normal"
+      <MessageCardContent>
+        <Link to={`/profile/user?id=${userId}`}>
+          <ContactAvatarStyled alt={fullName} src={getAvatarUrl(userId)} />
+        </Link>
+        <MessageInfoBlock to={`${baseURL}/${userId}`}>
+          <MessageInfoHeader>
+            <MessageInfoDisplayName>{fullName}</MessageInfoDisplayName>
+            <MessageInfoLastAccessTime>{accessTime}</MessageInfoLastAccessTime>
+          </MessageInfoHeader>
+          <MessageInfoContent
+            flex-direction={
+              msgType === MessageDirection.INCOMMING_MESSAGE ? "row" : "reverse"
             }
           >
-            {lastMsg}
-          </MessageInfoText>
-          {msgType === MessageDirection.INCOMMING_MESSAGE &&
-            (missedCount && missedCount > 0 ? (
-              <MessageMissedCount>
-                <span>{missedCount}</span>
-              </MessageMissedCount>
-            ) : (
-              <></>
-            ))}
-          {msgType === MessageDirection.OUTGOING_MESSAGE && (
-            <StatusWrapper>
-              <StatusIconWrapper>
-                {renderOutgoingSwitch(messageStatus)}
-              </StatusIconWrapper>
-            </StatusWrapper>
-          )}
-        </MessageInfoContent>
-      </MessageInfoBlock>
+            <MessageInfoText
+              color={
+                msgType === MessageDirection.INCOMMING_MESSAGE &&
+                missedCount &&
+                missedCount > 0
+                  ? MessageInfoTextStatus.HIGHLIGHT
+                  : MessageInfoTextStatus.NORMAL
+              }
+            >
+              {lastMsg}
+            </MessageInfoText>
+            {msgType === MessageDirection.INCOMMING_MESSAGE &&
+              (missedCount && missedCount > 0 ? (
+                <MessageMissedCount>
+                  <span>{missedCount}</span>
+                </MessageMissedCount>
+              ) : (
+                <></>
+              ))}
+            {msgType === MessageDirection.OUTGOING_MESSAGE && (
+              <StatusWrapper>
+                <StatusIconWrapper>
+                  {renderOutgoingSwitch(messageStatus)}
+                </StatusIconWrapper>
+              </StatusWrapper>
+            )}
+          </MessageInfoContent>
+        </MessageInfoBlock>
+      </MessageCardContent>
     </MessageCard>
   );
 };

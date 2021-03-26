@@ -39,7 +39,7 @@ const DirectMessageList = () => {
         accessTime="123"
         lastMsg="The rules of travel have altered so much in the last few years, with strict reulation regarding."
         msgType={MessageDirection.OUTGOING_MESSAGE}
-        messageStatus={OutGoingMessageStatus.PENDING_STATUS}
+        messageStatus={OutGoingMessageStatus.ACCEPTED_STATUS}
       />
       <DirectMessageListItem
         roomId="123"
@@ -49,6 +49,15 @@ const DirectMessageList = () => {
         lastMsg="The rules of travel have altered so much in the last few years, with strict reulation regarding."
         msgType={MessageDirection.OUTGOING_MESSAGE}
         messageStatus={OutGoingMessageStatus.PENDING_STATUS}
+      />
+      <DirectMessageListItem
+        roomId="123"
+        userId="123"
+        fullName="Austin Larson"
+        accessTime="123"
+        lastMsg="The rules of travel have altered so much in the last few years, with strict reulation regarding."
+        msgType={MessageDirection.OUTGOING_MESSAGE}
+        messageStatus={OutGoingMessageStatus.NOT_SENT_STATUS}
       />
     </>
   );

@@ -4,6 +4,8 @@ import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
 import Avatar from '@material-ui/core/Avatar'
 import { IconWrapper } from '@view/shared/styles'
+import { MessageInfoTextStatus } from '../types/types'
+
 
 export const MessagesWrapper = styled.div`
   position: relative;
@@ -204,13 +206,16 @@ export const ListTabsWrapper = styled.div`
   align-items: flex-end;    
   height: 54px;
 `
-export const MessageCard = styled.div`
+
+export const MessageCardContent = styled.div`  
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 20px 0;
+  
   border-bottom: 1px solid rgba(200,207,212,0.6);
-
+  
+  
   @media (max-width: 770px) {
     position: relative;
     flex-wrap: wrap;
@@ -218,7 +223,7 @@ export const MessageCard = styled.div`
     width: calc(100% - 10px);
     margin-left: auto;
     border: none;
-
+  
     &::before {
       content: '';
       position: absolute;
@@ -228,6 +233,12 @@ export const MessageCard = styled.div`
       width: calc(100% - 10px);
       height: 1px;
     }
+  }
+`;
+export const MessageCard = styled.div`
+  padding-left: 20px;
+  &:hover {
+    background-color: #599C0B20;    
   }
 `
 export const MessageInfoBlock = styled(Link)`
@@ -260,7 +271,7 @@ export const MessageInfoDisplayName = styled.div`
   }
 `
 export const MessagesListContent = styled.div`
-  padding-left: 20px;
+  
 `
 
 export const MessageInfoHeader = styled.div`
@@ -283,13 +294,13 @@ export const MessageInfoLastAccessTime = styled.span`
   color: #abb7cd;
 `
 interface MessageInfoTextProps {
-  color: 'hot' | 'normal' | undefined 
+  color: MessageInfoTextStatus | undefined 
 }
 export const MessageInfoText = styled.div<MessageInfoTextProps>`
   font-size: 14px;  
   width: 330px;
-  color: ${props => props && props.color === 'hot' ? '#262626' : '#abb7cd'};
-  font-weight: ${props => props && props.color === 'hot' ? 'bold' : 'normal'};
+  color: ${props => props && props.color === MessageInfoTextStatus.HIGHLIGHT ? '#262626' : '#abb7cd'};
+  font-weight: ${props => props && props.color === MessageInfoTextStatus.HIGHLIGHT ? 'bold' : 'normal'};
 `
 export const MessageMissedCount = styled.div`
   font-size: 14px;
