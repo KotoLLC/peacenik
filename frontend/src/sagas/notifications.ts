@@ -4,6 +4,7 @@ import { API } from '@services/api'
 import { hubsForMessagesBack2Front } from '@services/dataTransforms/hubsForMessagesTransform'
 import { Types as NotificationsTypes } from '@store/notifications/actions'
 import { CommonTypes } from 'src/types'
+import { store } from '@store/store'
 
 export function* watchGetNotifications() {
   const response = yield API.feed.getMessages()
@@ -53,9 +54,13 @@ export function* watchGetNotificationsFromHub(action: { type: string, payload: C
     }
 
   } catch (error) {
-    // if (!error.response) {
-    //   yield put(Actions.common.setConnectionError(true))
-    // }
+    if (!error.response) {
+      let currentHub = store.getState().messages.currentHub.host
+      
+      if ( currentHub === action.payload.host) {
+        yield put(Actions.common.setConnectionError(true))
+      }
+    }
   }
 }
 
