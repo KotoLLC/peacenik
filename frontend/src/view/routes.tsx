@@ -84,7 +84,7 @@ export const Routes = () => {
           <ForwardIconWrapper className={swipeType === 'Left' ? 'visible' : ''}><ArrowForwardIcon /></ForwardIconWrapper>
           <PageLayout>
             <Switch>
-              <Route path="/docs" component={DocsPages} />
+              {/* <Route path="/docs" component={DocsPages} /> */}
               <Route path="/no-hubs" component={NoHubsPage} />
               <PrivateRoute path="/dashboard" component={DashboardPage} />
 
