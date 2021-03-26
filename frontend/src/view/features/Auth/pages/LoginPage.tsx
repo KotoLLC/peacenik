@@ -38,7 +38,7 @@ export interface Props extends RouteComponentProps {
 const LoginPage = (props) => {
   const [username, onEmailChange] = useState<string>('')
   const [password, onPasswordChange] = useState<string>('')
-  const [isRememberedMe] = useState<boolean>(false)
+  const [isRememberedMe, onRememberMeChange] = useState<boolean>(false)
   const [isPasswordVisible, onPasswordOpen] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [noValideField, setNoValideField] = useState<FieldsType>('')
@@ -144,6 +144,20 @@ const LoginPage = (props) => {
           }}
         />
         <FormLink to="/forgot-password">Forgot password?</FormLink>
+        <CheckboxFieldWrapper>
+          <CheckboxLabel
+            control={
+              <Checkbox
+                checked={isRememberedMe}
+                onChange={(event) => onRememberMeChange(event.target.checked)}
+                name="rememberMe"
+                color="primary"
+              />
+            }
+            label="Remember me"
+          />
+        </CheckboxFieldWrapper>
+
         <CheckboxFieldWrapper>
           <CheckboxLabel
             control={
