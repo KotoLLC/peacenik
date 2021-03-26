@@ -5,7 +5,6 @@ import {
   ContactAvatarStyled,
   MessageCard,
   MessageCardContent,
-  MessageInfo,
   MessageInfoBlock,
   MessageInfoContent,
   MessageInfoDisplayName,
@@ -17,13 +16,10 @@ import {
   StatusWrapper,
 } from "@view/features/Messages/components/styles";
 
-import { ReactComponent as CircleInfoIcon } from "@assets/images/circle_info.svg";
-
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import DonutLargeIcon from "@material-ui/icons/DonutLarge";
 import DoneIcon from "@material-ui/icons/Done";
 import DoneAllIcon from "@material-ui/icons/DoneAll";
-import { IconWrapper, Text, TextUnderlined } from "@view/shared/styles";
 import {
   MessageDirection,
   MessageInfoTextStatus,

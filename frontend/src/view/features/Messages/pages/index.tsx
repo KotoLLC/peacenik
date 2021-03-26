@@ -33,8 +33,8 @@ const MessagesPage: React.FC<Props> = (props) => {
         </SideBarWrapper>
         <ContentWrapper>
           <Switch>
-            <Route path={`${baseUrl}/d/:slug`} component={DirectMessageBox} />
-            <Route path={`${baseUrl}/g/:slug`} component={GroupMessageBox} />
+            <Route path={`${baseUrl}/d/:id`} component={DirectMessageBox} />
+            <Route path={`${baseUrl}/g/:id`} component={GroupMessageBox} />
             <Route component={MesssageNoSelectBox} />
           </Switch>
         </ContentWrapper>

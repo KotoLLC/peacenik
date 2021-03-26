@@ -19,3 +19,10 @@ export enum MessageInfoTextStatus {
   NORMAL = "NORMAL",
   UNKNOWN = "UNKNOWN",
 }
+
+export enum UserStatus {
+  ONLINE = "online",
+  OFFLINE = "offline",
+  BUSY = "busy",
+  UNKNOWN = "UNKNOWN",
+}

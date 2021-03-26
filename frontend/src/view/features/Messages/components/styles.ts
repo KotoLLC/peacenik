@@ -207,7 +207,7 @@ export const ListTabsWrapper = styled.div`
   height: 54px;
 `
 
-export const MessageCardContent = styled.div`  
+export const MessageCardContent = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -331,5 +331,56 @@ export const StatusWrapper = styled.div`
   height: 100%;
 `
 export const DirectMessageWrapper = styled.div`
+  
+`
+export const ContactUserInfo = styled.div`
+  display: flex;
 
 `
+export const UserInfoBlock = styled.div`
+  margin-left: 15px;
+`
+
+export const UserInfoName = styled.div`
+  font-family: 'SFUITextMedium';
+  font-size: 18px;
+  line-height: 21px;
+  color: #262626;
+`
+export const UserInfoStatus = styled.div`
+  color: #599c0b;
+`
+
+export const DirectMessageBoxWapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`
+export const DMContentWrapper = styled.div`
+  flex: 1 0 auto;
+`
+
+export const DMInHeaderWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  background-color: #ffffff;
+  margin-left: 2px;
+  padding: 20px;
+`
+export const DMHeaderWrapper = styled.div`
+  flex-shrink: 0;
+  height: 86px;  
+`
+export const DMFooterWapper = styled.div`
+  flex-shrink: 0;
+  height: 70px;
+  background-color: #a1aec8;
+  padding: 10px 20px;
+
+`
+export const DMInFooterWrapper = styled.div`
+  display:flex;
+  justify-content:space-between;
+  align-item:center;  
+`
+  
