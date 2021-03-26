@@ -1,6 +1,6 @@
 import React from "react";
 import DirectMessageListItem from "./DirectMessageListItem";
-import { MessageDirection, OutGoingMessageStatus } from "../../types/types";
+import { MessageDirection, MessagePublishStatus } from "../../types/types";
 
 const DirectMessageList = () => {
   return (
@@ -30,7 +30,7 @@ const DirectMessageList = () => {
         accessTime="123"
         lastMsg="The rules of travel have altered so much in the last few years, with strict reulation regarding."
         msgType={MessageDirection.OUTGOING_MESSAGE}
-        messageStatus={OutGoingMessageStatus.READ_STATUS}
+        messageStatus={MessagePublishStatus.READ_STATUS}
       />
       <DirectMessageListItem
         roomId="123"
@@ -39,7 +39,7 @@ const DirectMessageList = () => {
         accessTime="123"
         lastMsg="The rules of travel have altered so much in the last few years, with strict reulation regarding."
         msgType={MessageDirection.OUTGOING_MESSAGE}
-        messageStatus={OutGoingMessageStatus.ACCEPTED_STATUS}
+        messageStatus={MessagePublishStatus.ACCEPTED_STATUS}
       />
       <DirectMessageListItem
         roomId="123"
@@ -48,7 +48,7 @@ const DirectMessageList = () => {
         accessTime="123"
         lastMsg="The rules of travel have altered so much in the last few years, with strict reulation regarding."
         msgType={MessageDirection.OUTGOING_MESSAGE}
-        messageStatus={OutGoingMessageStatus.PENDING_STATUS}
+        messageStatus={MessagePublishStatus.PENDING_STATUS}
       />
       <DirectMessageListItem
         roomId="123"
@@ -57,7 +57,7 @@ const DirectMessageList = () => {
         accessTime="123"
         lastMsg="The rules of travel have altered so much in the last few years, with strict reulation regarding."
         msgType={MessageDirection.OUTGOING_MESSAGE}
-        messageStatus={OutGoingMessageStatus.NOT_SENT_STATUS}
+        messageStatus={MessagePublishStatus.NOT_SENT_STATUS}
       />
     </>
   );

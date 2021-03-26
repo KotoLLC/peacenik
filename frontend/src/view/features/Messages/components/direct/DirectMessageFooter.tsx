@@ -25,6 +25,13 @@ const useStyles = makeStyles((theme: Theme) =>
         padding: "0px 14px",
       },
     },
+    button: {
+      color: "#fff",
+    },
+    notchedOutline: {
+      borderWidth: "0px",
+      borderColor: "#43619d !important",
+    },
   })
 );
 const DirectMessageFooter = () => {
@@ -33,7 +40,10 @@ const DirectMessageFooter = () => {
   return (
     <DMInFooterWrapper>
       <OutlinedInput
-        className={msgInputStyles.root}
+        classes={{
+          root: msgInputStyles.root,
+          notchedOutline: msgInputStyles.notchedOutline,
+        }}
         type="text"
         placeholder="Write something"
         value={msgValue}
@@ -47,7 +57,11 @@ const DirectMessageFooter = () => {
           </InputAdornment>
         }
       />
-      <IconButton color="primary" aria-label="upload picture" component="span">
+      <IconButton
+        className={msgInputStyles.button}
+        aria-label="upload picture"
+        component="span"
+      >
         <SendIcon />
       </IconButton>
     </DMInFooterWrapper>

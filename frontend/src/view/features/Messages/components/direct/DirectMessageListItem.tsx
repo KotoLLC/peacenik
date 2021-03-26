@@ -23,7 +23,7 @@ import DoneAllIcon from "@material-ui/icons/DoneAll";
 import {
   MessageDirection,
   MessageInfoTextStatus,
-  OutGoingMessageStatus,
+  MessagePublishStatus,
 } from "@view/features/Messages/types/types";
 
 interface Props {
@@ -34,7 +34,7 @@ interface Props {
   lastMsg: string;
   msgType: MessageDirection;
   missedCount?: number;
-  messageStatus?: OutGoingMessageStatus;
+  messageStatus?: MessagePublishStatus;
 }
 
 const DirectMessageListItem: React.FC<Props> = ({
@@ -59,16 +59,16 @@ const DirectMessageListItem: React.FC<Props> = ({
   const accessTime = getLastMessageTime();
 
   const renderOutgoingSwitch = useCallback(
-    (status: OutGoingMessageStatus | undefined) => {
+    (status: MessagePublishStatus | undefined) => {
       switch (status) {
-        case OutGoingMessageStatus.PENDING_STATUS:
+        case MessagePublishStatus.PENDING_STATUS:
           return <DonutLargeIcon />;
-        case OutGoingMessageStatus.ACCEPTED_STATUS:
+        case MessagePublishStatus.ACCEPTED_STATUS:
           return <DoneIcon />;
-        case OutGoingMessageStatus.READ_STATUS:
+        case MessagePublishStatus.READ_STATUS:
           return <DoneAllIcon style={{ color: "#599C0B" }} />;
-        case OutGoingMessageStatus.NOT_SENT_STATUS:
-        case OutGoingMessageStatus.UNKNOWN_STATUS:
+        case MessagePublishStatus.NOT_SENT_STATUS:
+        case MessagePublishStatus.UNKNOWN_STATUS:
       }
       return <InfoOutlinedIcon />;
     },

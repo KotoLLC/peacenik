@@ -384,3 +384,18 @@ export const DMInFooterWrapper = styled.div`
   align-item:center;  
 `
   
+
+export const MessageItemWrapper = styled.div`
+  display: flex;
+  flex-direction: "row";
+`
+export const MessageContent = styled.div`
+  max-width: 635px;
+  
+`
+export const MessageContentBody = styled.div`
+`
+export const MessageContentFooter = styled.div`
+  max-width: '635px';
+`
+
