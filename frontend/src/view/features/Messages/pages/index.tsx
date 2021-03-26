@@ -16,8 +16,8 @@ import {
   MessagesWrapper,
 } from "../components/styles";
 import MesssageSidebar from "../components/MesssageSidebar";
-import DriectMessageBox from "../components/DriectMessageBox";
-import GroupMessageBox from "../components/GroupMessageBox";
+import DirectMessageBox from "../components/direct/DirectMessageBox";
+import GroupMessageBox from "../components/group/GroupMessageBox";
 import MesssageNoSelectBox from "../components/MessageNoSelectBox";
 
 interface Props extends RouteComponentProps {}
@@ -33,7 +33,7 @@ const MessagesPage: React.FC<Props> = (props) => {
         </SideBarWrapper>
         <ContentWrapper>
           <Switch>
-            <Route path={`${baseUrl}/d/:slug`} component={DriectMessageBox} />
+            <Route path={`${baseUrl}/d/:slug`} component={DirectMessageBox} />
             <Route path={`${baseUrl}/g/:slug`} component={GroupMessageBox} />
             <Route component={MesssageNoSelectBox} />
           </Switch>

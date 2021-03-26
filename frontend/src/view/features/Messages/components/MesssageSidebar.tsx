@@ -3,7 +3,7 @@ import { useRouteMatch, Switch, Route } from "react-router-dom";
 import styled from "styled-components";
 
 import { ButtonContained } from "@view/shared/styles";
-import DirectMessageList from "./DirectMessageList";
+import DirectMessageList from "./direct/DirectMessageList";
 import {
   UserAvatarStyled,
   AvatarWrapperLink,

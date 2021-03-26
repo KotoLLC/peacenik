@@ -330,3 +330,6 @@ export const StatusIconWrapper = styled(IconWrapper)`
 export const StatusWrapper = styled.div`
   height: 100%;
 `
+export const DirectMessageWrapper = styled.div`
+
+`

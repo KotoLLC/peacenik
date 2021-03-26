@@ -15,7 +15,7 @@ import {
   MessageMissedCount,
   StatusIconWrapper,
   StatusWrapper,
-} from "./styles";
+} from "@view/features/Messages/components/styles";
 
 import { ReactComponent as CircleInfoIcon } from "@assets/images/circle_info.svg";
 
@@ -28,7 +28,7 @@ import {
   MessageDirection,
   MessageInfoTextStatus,
   OutGoingMessageStatus,
-} from "../types/types";
+} from "@view/features/Messages/types/types";
 
 interface Props {
   roomId: string;

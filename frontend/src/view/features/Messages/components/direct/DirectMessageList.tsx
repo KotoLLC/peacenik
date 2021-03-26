@@ -1,6 +1,6 @@
 import React from "react";
 import DirectMessageListItem from "./DirectMessageListItem";
-import { MessageDirection, OutGoingMessageStatus } from "../types/types";
+import { MessageDirection, OutGoingMessageStatus } from "../../types/types";
 
 const DirectMessageList = () => {
   return (
