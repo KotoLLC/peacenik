@@ -5,15 +5,16 @@ import styled from "styled-components";
 import { ButtonContained } from "@view/shared/styles";
 import DirectMessageList from "./DirectMessageList";
 import {
-  AvatarStyled,
+  UserAvatarStyled,
   AvatarWrapperLink,
   SidebarHeader,
   SidebarWrapper,
   UserNameLink,
-  UserInfo,
+  MessageInfo,
   SidebarContent,
   ListTabs,
   ListTab,
+  MessagesListContent,
 } from "./styles";
 import { MessagesListTab } from "./MessagesListTab";
 
@@ -34,22 +35,24 @@ const MesssageSidebar: React.FC = () => {
   return (
     <SidebarWrapper>
       <SidebarHeader>
-        <UserInfo>
+        <MessageInfo>
           <AvatarWrapperLink to={`/profile/user?id=${user_id}`}>
-            <AvatarStyled src={getAvatarUrl(user_id)} alt={user_name} />
+            <UserAvatarStyled src={getAvatarUrl(user_id)} alt={user_name} />
           </AvatarWrapperLink>
           <UserNameLink to={`/profile/user?id=${user_id}`}>
             {getUserNameByUserId(user_id)}
           </UserNameLink>
-        </UserInfo>
+        </MessageInfo>
         <ButtonContainedStyled>Compose</ButtonContainedStyled>
       </SidebarHeader>
       <SidebarContent>
         <MessagesListTab />
-        <Switch>
-          <Route exact path={`${baseUrl}`} component={DirectMessageList} />
-          <Route exact path={`${baseUrl}/d`} component={DirectMessageList} />
-        </Switch>
+        <MessagesListContent>
+          <Switch>
+            <Route exact path={`${baseUrl}`} component={DirectMessageList} />
+            <Route path={`${baseUrl}/d`} component={DirectMessageList} />
+          </Switch>
+        </MessagesListContent>
       </SidebarContent>
     </SidebarWrapper>
   );

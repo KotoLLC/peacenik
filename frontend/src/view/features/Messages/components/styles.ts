@@ -3,6 +3,7 @@ import { Link, NavLink } from 'react-router-dom'
 import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
 import Avatar from '@material-ui/core/Avatar'
+import { IconWrapper } from '@view/shared/styles'
 
 export const MessagesWrapper = styled.div`
   position: relative;
@@ -54,8 +55,8 @@ export const AvatarWrapperLink = styled(Link)`
   border-radius: 50%;
   overflow: hidden;
   background: #bdbdbd;
-  width: 50px;
-  height: 50px;
+  width: 42px;
+  height: 42px;
   flex-shrink: 0;
 
   &.small {
@@ -85,12 +86,25 @@ export const AvatarWrapperLink = styled(Link)`
   } */
 `
 
-export const AvatarStyled = styled(Avatar)`
+export const UserAvatarStyled = styled(Avatar)`
   && {
     /* margin-right: 16px; */
     background: #bdbdbd;
-    width: 50px;
-    height: 50px;
+    width: 42px;
+    height: 42px;
+
+    @media (max-width: 770px) {
+      width: 36px;
+      height: 36px;
+    }
+  }
+`
+export const ContactAvatarStyled = styled(Avatar)`
+  && {
+    /* margin-right: 16px; */
+    background: #bdbdbd;
+    width: 45px;
+    height: 45px;
 
     @media (max-width: 770px) {
       width: 36px;
@@ -118,7 +132,7 @@ export const UserNameLink = styled(Link)`
   }
 `
 
-export const UserInfo = styled.div`
+export const MessageInfo = styled.div`
   display: flex;
   align-items: center;
   max-width: 250px;
@@ -136,7 +150,6 @@ export const SidebarHeader = styled.div`
   box-shadow: 1px 1px 3px 1px #d4d4d4;
 `;
 export const SidebarContent = styled.div`
-  
 `;
 
 export const ListTabs = styled(Tabs)`
@@ -190,4 +203,119 @@ export const ListTabsWrapper = styled.div`
   display: flex;
   align-items: flex-end;    
   height: 54px;
+`
+export const MessageCard = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(200,207,212,0.6);
+
+  @media (max-width: 770px) {
+    position: relative;
+    flex-wrap: wrap;
+    padding: 20px 5px;
+    width: calc(100% - 10px);
+    margin-left: auto;
+    border: none;
+
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background: rgba(200,207,212,0.6);
+      width: calc(100% - 10px);
+      height: 1px;
+    }
+  }
+`
+export const MessageInfoBlock = styled(Link)`
+  display: flex;
+  flex-direction: column;
+  min-width: 380px;
+  height: 70px;
+  justify-content: space-between;
+  padding-right: 20px;
+`
+
+export const MessageInfoDisplayName = styled.div`
+  width: 100%;
+  max-width: 250px;
+  display: block;
+  font-family: 'SFUITextMedium';
+  font-size: 18px;
+  line-height: 21px;
+  color: #262626;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  overflow: hidden; 
+  white-space: nowrap;
+
+
+  @media (max-width: 770px) {
+    font-size: 16px;
+    line-height: 19px;
+    margin-bottom: 8px;
+  }
+`
+export const MessagesListContent = styled.div`
+  padding-left: 20px;
+`
+
+export const MessageInfoHeader = styled.div`
+  height: 20px;
+  display:flex;
+  justify-content: space-between;
+`
+
+
+export const MessageInfoContent = styled.div`
+  height: 35px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;  
+  flex-direction: ${props => props && props['flex-direction'] !== 'reverse' ? 'row' : 'row-reverse'}
+`
+
+export const MessageInfoLastAccessTime = styled.span`
+  font-size: 13px;
+  color: #abb7cd;
+`
+interface MessageInfoTextProps {
+  color: 'hot' | 'normal' | undefined 
+}
+export const MessageInfoText = styled.div<MessageInfoTextProps>`
+  font-size: 14px;  
+  width: 330px;
+  color: ${props => props && props.color === 'hot' ? '#262626' : '#abb7cd'};
+  font-weight: ${props => props && props.color === 'hot' ? 'bold' : 'normal'};
+`
+export const MessageMissedCount = styled.div`
+  font-size: 14px;
+  background-color: #599c0b;
+  color: #ffffff;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;  
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1ch;
+}
+`
+export const StatusIconWrapper = styled(IconWrapper)`
+  width: 16px;
+  height: 16px;  
+  margin: 0;
+  svg {
+    width: 16px;
+    height: 16px;  
+  }
+}
+`
+export const StatusWrapper = styled.div`
+  height: 100%;
 `
