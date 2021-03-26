@@ -1,5 +1,5 @@
 import React from "react";
-import { MessageItemProps } from "../../types/types";
+import { MessageDirection, MessageItemProps } from "../../types/types";
 import {
   MessageContent,
   MessageContentBody,
@@ -15,8 +15,14 @@ const MessageItem: React.FC<MessageItemProps> = ({
   messeageContent,
 }: MessageItemProps) => {
   return (
-    <MessageItemWrapper>
-      <MessageContent flex-direction="row-reverse">
+    <MessageItemWrapper
+      justify-content={
+        direction == MessageDirection.INCOMMING_MESSAGE
+          ? "flex-end"
+          : "flex-start"
+      }
+    >
+      <MessageContent>
         <MessageContentBody>{messeageContent}</MessageContentBody>
         <MessageContentFooter></MessageContentFooter>
       </MessageContent>

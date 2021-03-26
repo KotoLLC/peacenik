@@ -358,6 +358,8 @@ export const DirectMessageBoxWapper = styled.div`
 `
 export const DMContentWrapper = styled.div`
   flex: 1 0 auto;
+  overflow-y: auto;
+  max-height: 735px;
 `
 
 export const DMInHeaderWrapper = styled.div`
@@ -387,10 +389,16 @@ export const DMInFooterWrapper = styled.div`
 
 export const MessageItemWrapper = styled.div`
   display: flex;
-  flex-direction: "row";
+  flex-direction: row;
+  justify-content: ${p=>p['justify-content']};
+  margin: 15px;  
 `
 export const MessageContent = styled.div`
   max-width: 635px;
+  padding: 16px 13px;
+  border-radius: 13px;
+  background-color: #599c0b;
+  color: #fff;
   
 `
 export const MessageContentBody = styled.div`
