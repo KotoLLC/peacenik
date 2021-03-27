@@ -59,6 +59,15 @@ const DirectMessageList = () => {
         msgType={MessageDirection.OUTGOING_MESSAGE}
         messageStatus={MessagePublishStatus.NOT_SENT_STATUS}
       />
+      <DirectMessageListItem
+        roomId="123"
+        userId="123"
+        fullName="Austin Larson"
+        accessTime="123"
+        lastMsg="The rules of travel have altered so much in the last few years, with strict reulation regarding."
+        msgType={MessageDirection.OUTGOING_MESSAGE}
+        messageStatus={MessagePublishStatus.NOT_SENT_STATUS}
+      />
     </>
   );
 };

@@ -10,7 +10,7 @@ import { MessageDirection, MessageInfoTextStatus } from '../types/types'
 export const MessagesWrapper = styled.div`
   position: relative;
   width: 1140px;
-  min-height: calc(100vh - 150px);
+  height: 820px;
   background: #FFFFFF;
   margin: 0 auto 31px auto;
   display: flex;
@@ -248,6 +248,7 @@ export const MessageInfoBlock = styled(Link)`
   height: 70px;
   justify-content: space-between;
   padding-right: 20px;
+  margin-left: 15px;
 `
 
 export const MessageInfoDisplayName = styled.div`
@@ -271,7 +272,9 @@ export const MessageInfoDisplayName = styled.div`
   }
 `
 export const MessagesListContent = styled.div`
-  
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 680px;
 `
 
 export const MessageInfoHeader = styled.div`
@@ -359,7 +362,7 @@ export const DirectMessageBoxWapper = styled.div`
 export const DMContentWrapper = styled.div`
   flex: 1 0 auto;
   overflow-y: auto;
-  max-height: 735px;
+  max-height: 660px;
 `
 
 export const DMInHeaderWrapper = styled.div`
@@ -390,33 +393,33 @@ export const DMInFooterWrapper = styled.div`
 export const MessageItemWrapper = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: ${p=>(p['justify-content']==MessageDirection.INCOMMING_MESSAGE)?'flex-end':'flex-start'};
+  justify-content: ${p=>(p['justify-content']==MessageDirection.OUTGOING_MESSAGE)?'flex-end':'flex-start'};
   margin: 15px;  
 `
-export const MessageContent = styled.div`
+export const MessageTextContent = styled.div`
   display: flex;
   max-width: 610px;
   padding: 10px 13px;
   border-radius: 13px;
-  background-color: ${p=>p.color==MessageDirection.INCOMMING_MESSAGE?'#599c0b':'#fff'};
-  color: ${p=>p.color==MessageDirection.INCOMMING_MESSAGE?'#fff':'#000'};
+  background-color: ${p=>p.color==MessageDirection.OUTGOING_MESSAGE?'#599c0b':'#fff'};
+  color: ${p=>p.color==MessageDirection.OUTGOING_MESSAGE?'#fff':'#000'};
   flex-wrap: wrap;
   justify-content: flex-end;
   align-item: center;
 `
-export const MessageContentBody = styled.div`
+export const MessageTextContentBody = styled.div`
   display: flex;
   margin-right: 10px;
 `
 export const MessageTransmissionTime = styled.span`
-  color: ${p=>p.color==MessageDirection.INCOMMING_MESSAGE?'#eeeeee':'#a9acb5'};
+  color: ${p=>p.color==MessageDirection.OUTGOING_MESSAGE?'#eeeeee':'#a9acb5'};
   `
 export const MessageDeliverStatus = styled.div`
   margin-left: 12px;
   width: 15px;
   height: 15px;
 `
-export const MessageContentFooter = styled.div`
+export const MessageTextContentFooter = styled.div`
   display: flex;
   align-items: center;
   font-size: 12px;
@@ -433,4 +436,31 @@ export const MessageStatusIconWrapper = styled(IconWrapper)`
     height: 16px;  
   }
 }
+`
+
+export const MessageImageContent = styled.div`
+  max-width: 350px;
+  padding: 5px;
+  border-radius: 7px;
+  background-color: ${p=>p.color==MessageDirection.OUTGOING_MESSAGE?'#599c0b':'#fff'};
+  color: ${p=>p.color==MessageDirection.OUTGOING_MESSAGE?'#fff':'#000'};  
+  position: relative;
+`
+
+export const MessageImageContentBody = styled.img`
+  display: flex;
+  margin-right: 10px;
+  width: 100%;
+  border-radius: 5px;
+`
+export const MessageImageContentFooter = styled.div`
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  position: absolute;
+  right: 20px;
+  bottom: 20px;  
+  background-color: ${p=>p.color==MessageDirection.OUTGOING_MESSAGE?'#599c0bE0':'#ffffffE0'};
+  padding: 0 4px;
+  border-radius: 2px;
 `

@@ -26,6 +26,14 @@ const items: MessageItemProps[] = [
     messeageContent: "https://www.w3schools.com/html/pic_trulli.jpg",
   },
   {
+    msgId: "5123000-4123412341-12341234134-12341234",
+    direction: MessageDirection.OUTGOING_MESSAGE,
+    actionTime: new Date("2021-3-26"),
+    status: MessagePublishStatus.ACCEPTED_STATUS,
+    contentType: MessageContentType.IMAGE_TYPE,
+    messeageContent: "https://www.w3schools.com/html/pic_trulli.jpg",
+  },
+  {
     msgId: "1452323-4123412341-12341234134-12341234",
     direction: MessageDirection.INCOMMING_MESSAGE,
     actionTime: new Date("2021-3-26"),
@@ -53,7 +61,7 @@ const items: MessageItemProps[] = [
       "I'm looking for a truly expert in Python Flask. Please do not send any offer if you don't have 200+ hours of experience with Flask! ",
   },
   {
-    msgId: "1293903-4123412341-12341234134-12341234",
+    msgId: "51293903-4123412341-12341234134-12341234",
     direction: MessageDirection.INCOMMING_MESSAGE,
     actionTime: new Date("2021-3-26"),
     status: MessagePublishStatus.ACCEPTED_STATUS,
