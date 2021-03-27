@@ -6,7 +6,6 @@ import { IconButton } from "@material-ui/core";
 
 import {
   ContactAvatarStyled,
-  DirectMessageWrapper,
   ContactUserInfo,
   UserInfoBlock,
   UserInfoName,

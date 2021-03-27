@@ -60,6 +60,14 @@ const items: MessageItemProps[] = [
     contentType: MessageContentType.TEXT_TYPE,
     messeageContent: "I'm looking for a truly",
   },
+  {
+    msgId: "1293903-4123412341-12341234134-12341234",
+    direction: MessageDirection.OUTGOING_MESSAGE,
+    actionTime: new Date("2021-3-26"),
+    status: MessagePublishStatus.ACCEPTED_STATUS,
+    contentType: MessageContentType.TEXT_TYPE,
+    messeageContent: "I'm looking for a truly",
+  },
 ];
 
 const DirectMessageContent = () => {

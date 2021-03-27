@@ -394,24 +394,43 @@ export const MessageItemWrapper = styled.div`
   margin: 15px;  
 `
 export const MessageContent = styled.div`
+  display: flex;
   max-width: 610px;
   padding: 10px 13px;
   border-radius: 13px;
   background-color: ${p=>p.color==MessageDirection.INCOMMING_MESSAGE?'#599c0b':'#fff'};
   color: ${p=>p.color==MessageDirection.INCOMMING_MESSAGE?'#fff':'#000'};
-  
-  
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-item: center;
 `
 export const MessageContentBody = styled.div`
+  display: flex;
+  margin-right: 10px;
 `
-export const MessageTransmissionTime = styled.div`
-`
+export const MessageTransmissionTime = styled.span`
+  color: ${p=>p.color==MessageDirection.INCOMMING_MESSAGE?'#eeeeee':'#a9acb5'};
+  `
 export const MessageDeliverStatus = styled.div`
-  width: 16px;
-  height: 16px;
+  margin-left: 12px;
+  width: 15px;
+  height: 15px;
 `
 export const MessageContentFooter = styled.div`
-  
+  display: flex;
+  align-items: center;
+  font-size: 12px;
 `
 
-
+export const MessageStatusIconWrapper = styled(IconWrapper)`
+  width: 16px;
+  height: 16px;  
+  margin: 0;
+  background: transparent;
+  box-shadow: none;
+  svg {
+    width: 16px;
+    height: 16px;  
+  }
+}
+`

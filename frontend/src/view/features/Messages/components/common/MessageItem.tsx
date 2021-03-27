@@ -15,7 +15,9 @@ import {
   MessageContentFooter,
   MessageDeliverStatus,
   MessageItemWrapper,
+  MessageStatusIconWrapper,
   MessageTransmissionTime,
+  StatusIconWrapper,
 } from "../styles";
 
 const MessageItem: React.FC<MessageItemProps> = ({
@@ -30,14 +32,17 @@ const MessageItem: React.FC<MessageItemProps> = ({
       <MessageContent color={direction}>
         <MessageContentBody>{messeageContent}</MessageContentBody>
         <MessageContentFooter>
-          <MessageTransmissionTime>10:09 pm</MessageTransmissionTime>
-          <MessageDeliverStatus>
-            {status === MessagePublishStatus.ACCEPTED_STATUS && (
-              <IconWrapper>
-                <DoneAllIcon />
-              </IconWrapper>
+          <MessageTransmissionTime color={direction}>
+            10:09 pm
+          </MessageTransmissionTime>
+          {direction === MessageDirection.INCOMMING_MESSAGE &&
+            status === MessagePublishStatus.ACCEPTED_STATUS && (
+              <MessageDeliverStatus>
+                <MessageStatusIconWrapper>
+                  <DoneAllIcon />
+                </MessageStatusIconWrapper>
+              </MessageDeliverStatus>
             )}
-          </MessageDeliverStatus>
         </MessageContentFooter>
       </MessageContent>
     </MessageItemWrapper>
