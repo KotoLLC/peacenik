@@ -2,14 +2,15 @@ import { Url } from "url";
 
 // status for the outgoing message
 export enum MessagePublishStatus {
+  // outgoing status
   PENDING_STATUS = "PENDING",
   ACCEPTED_STATUS = "ACCEPTED",
   READ_STATUS = "READ",
   NOT_SENT_STATUS = "NOT_SENT",
+  UNKNOWN_STATUS = "UNKNOWN",
+  // incomming status
   RECIEVED_STATUS = "RECIEVED",
   CATCHED_STATUS = "CATCHED",
-  UNKNOWN_STATUS = "UNKNOWN",
-
 }
 
 export enum MessageType {
@@ -21,8 +22,8 @@ export enum MessageType {
 }
 
 export enum MessageDirection {
-  INCOMMING_MESSAGE = 1,
-  OUTGOING_MESSAGE = 2,
+  INCOMMING_MESSAGE = "incomming",
+  OUTGOING_MESSAGE = "outgoing",
 }
 
 export enum MessageInfoTextStatus {

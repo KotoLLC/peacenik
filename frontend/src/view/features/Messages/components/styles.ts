@@ -4,7 +4,7 @@ import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
 import Avatar from '@material-ui/core/Avatar'
 import { IconWrapper } from '@view/shared/styles'
-import { MessageInfoTextStatus } from '../types/types'
+import { MessageDirection, MessageInfoTextStatus } from '../types/types'
 
 
 export const MessagesWrapper = styled.div`
@@ -390,20 +390,28 @@ export const DMInFooterWrapper = styled.div`
 export const MessageItemWrapper = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: ${p=>p['justify-content']};
+  justify-content: ${p=>(p['justify-content']==MessageDirection.INCOMMING_MESSAGE)?'flex-end':'flex-start'};
   margin: 15px;  
 `
 export const MessageContent = styled.div`
-  max-width: 635px;
-  padding: 16px 13px;
+  max-width: 610px;
+  padding: 10px 13px;
   border-radius: 13px;
-  background-color: #599c0b;
-  color: #fff;
+  background-color: ${p=>p.color==MessageDirection.INCOMMING_MESSAGE?'#599c0b':'#fff'};
+  color: ${p=>p.color==MessageDirection.INCOMMING_MESSAGE?'#fff':'#000'};
+  
   
 `
 export const MessageContentBody = styled.div`
 `
-export const MessageContentFooter = styled.div`
-  max-width: '635px';
+export const MessageTransmissionTime = styled.div`
 `
+export const MessageDeliverStatus = styled.div`
+  width: 16px;
+  height: 16px;
+`
+export const MessageContentFooter = styled.div`
+  
+`
+
 
