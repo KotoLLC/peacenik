@@ -96,7 +96,7 @@ export const Routes = () => {
           </ForwardIconWrapper>
           <PageLayout>
             <Switch>
-              <Route path="/docs" component={DocsPages} />
+              {/* <Route path="/docs" component={DocsPages} /> */}
               <Route path="/no-hubs" component={NoHubsPage} />
               <PrivateRoute path="/dashboard" component={DashboardPage} />
               <PrivateRoute path="/settings" component={SettingsPages} />

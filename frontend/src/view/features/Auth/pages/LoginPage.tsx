@@ -20,6 +20,7 @@ import {
   TextFieldStyled,
   Separator,
   LinkBlock,
+  CheckBoxNote,
   CheckboxFieldWrapper,
   FormLink,
 } from './../components/styles'
@@ -43,6 +44,7 @@ const LoginPage = (props) => {
   const [noValideField, setNoValideField] = useState<FieldsType>('')
   const [isRequest, setRequest] = useState<boolean>(false)
   const { loginErrorMessage, isLogged, onLogin, location, history } = props
+  const [isLicenseChecked, onLicenseCheck] = useState<boolean>(false)
 
   const onValidate = (): boolean => {
     if (!validate.isUserNameValid(username)) {
@@ -155,9 +157,26 @@ const LoginPage = (props) => {
             label="Remember me"
           />
         </CheckboxFieldWrapper>
+
+        <CheckboxFieldWrapper>
+          <CheckboxLabel
+            control={
+              <Checkbox
+                checked={isLicenseChecked}
+                onChange={(event) => onLicenseCheck(event.target.checked)}
+                name="rememberMe"
+                color="primary"
+              />
+            }
+            label=""
+          />
+          <CheckBoxNote>
+            I agree to Peacenik's <a href='https://about.peacenik.app/end-user-license-agreement'>End User License Agreement</a> and <a href='https://about.peacenik.app/code-of-conduct'>Code of Conduct</a></CheckBoxNote> 
+        </CheckboxFieldWrapper>
         <SubmitButton
           type="submit"
           onClick={onFormSubmit}
+          disabled={isLicenseChecked ? false : true}
           className="green"
         >{isRequest ? <CircularProgress size={20} color={'inherit'} /> : 'Login'}</SubmitButton>
         {errorMessage && <FormHelperText error>{errorMessage}</FormHelperText>}

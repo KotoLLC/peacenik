@@ -4,6 +4,8 @@ import { API } from '@services/api'
 import { hubsForMessagesBack2Front } from '@services/dataTransforms/hubsForMessagesTransform'
 import { Types as NotificationsTypes } from '@store/notifications/actions'
 import { CommonTypes } from 'src/types'
+import { store } from '@store/store'
+import { FormatColorResetOutlined } from '@material-ui/icons'
 
 export function* watchGetNotifications() {
   const response = yield API.feed.getMessages()
@@ -29,7 +31,13 @@ export function* watchGetNotificationsFromHub(action: { type: string, payload: C
 
     if (response.status === 200) {
       const notifications = response.data?.notifications || []
-  
+
+      let currentHub = store.getState().messages.currentHub.host
+      
+      if ( currentHub === action.payload.host) {
+        yield put(Actions.common.setConnectionError(false))
+      }
+
       if (notifications.length) {
         let resultData = []
         if (notifications.length) {
@@ -54,7 +62,11 @@ export function* watchGetNotificationsFromHub(action: { type: string, payload: C
 
   } catch (error) {
     if (!error.response) {
-      yield put(Actions.common.setConnectionError(true))
+      let currentHub = store.getState().messages.currentHub.host
+      
+      if ( currentHub === action.payload.host) {
+        yield put(Actions.common.setConnectionError(true))
+      }
     }
   }
 }

@@ -1,5 +1,6 @@
 // @ts-ignore
 const userHubUrl: string = window.apiEndpoint
+// const userHubUrl: string = "https://central.peacenik.app/"
 
 export function getAvatarUrl(id: string) {
   return `${userHubUrl}/image/avatar/${id}`

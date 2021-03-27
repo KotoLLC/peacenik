@@ -75,6 +75,18 @@ export const TextFieldNote = styled.div`
 	margin: -4px 0 14px;
 `
 
+export const CheckBoxNote = styled.div`
+	font-family: 'SFUITextMedium';
+	font-size: 12px;
+	line-height: 18px;
+	color: #A1AEC8;
+
+	a {
+		text-decoration: underline;
+		color: #A1AEC8;
+	}
+`
+
 export const Separator = styled.div`
 	width: 100%;
 	padding: 24px 0; 

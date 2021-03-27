@@ -13,7 +13,7 @@ const initialState: State = {
   errorMessage: '',
   successMessage: '',
   isAboutUsViewed: (peacenikIsAboutUsViewed) ? JSON.parse(peacenikIsAboutUsViewed) : false,
-  isConnectionError: false,
+  isConnectionError: true,
 }
 
 const reducer = (state = initialState, action) => {

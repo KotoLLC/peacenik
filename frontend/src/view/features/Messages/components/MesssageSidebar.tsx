@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useRouteMatch, Switch, Route } from "react-router-dom";
+import { useRouteMatch, Switch, Route, Redirect } from "react-router-dom";
 import styled from "styled-components";
 
 import { ButtonContained } from "@view/shared/styles";
@@ -49,8 +49,8 @@ const MesssageSidebar: React.FC = () => {
         <MessagesListTab />
         <MessagesListContent>
           <Switch>
-            <Route exact path={`${baseUrl}`} component={DirectMessageList} />
             <Route path={`${baseUrl}/d`} component={DirectMessageList} />
+            <Redirect to={`${baseUrl}/d`} />
           </Switch>
         </MessagesListContent>
       </SidebarContent>

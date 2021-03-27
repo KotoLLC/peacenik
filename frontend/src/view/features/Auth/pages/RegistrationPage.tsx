@@ -19,6 +19,7 @@ import {
   SubmitButton,
   TextFieldStyled,
   TextFieldNote,
+  CheckBoxNote,
   Separator,
   LinkBlock,
   CheckboxFieldWrapper,
@@ -191,7 +192,8 @@ const RegistrationPage = (props) => {
             }
             label=""
           />
-          <LabelLink to={'/docs/code-of-conduct'}>I agree to peacenik's End User License Agreement (EULA)</LabelLink>
+          <CheckBoxNote>
+            I agree to Peacenik's <a href='https://about.peacenik.app/end-user-license-agreement'>End User License Agreement</a> and <a href='https://about.peacenik.app/code-of-conduct'>Code of Conduct</a></CheckBoxNote> 
         </CheckboxFieldWrapper>
         <SubmitButton
           type="submit"

@@ -74,23 +74,10 @@ jobs:
           sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/production/backend/user-hub.yaml
           sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/production/frontend/frontend.yaml
           sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/production/backend/message-hub.yaml
-
       - name: Deploy Frontend and User-hub to DigitalOcean Kubernetes (staging)
         run: |
           kubectl apply --recursive -f $GITHUB_WORKSPACE/.k8s/staging/  --force
-
       - name: Deploy Frontend and User-hub to DigitalOcean Kubernetes (production)
         if: ${{ github.event.inputs.push-to-prod == 'true' }}
         run: |
           kubectl apply --recursive -f $GITHUB_WORKSPACE/.k8s/production/  --force
-
-      - name: Staging Push
-        uses: rjstone/discord-webhook-notify@v1
-        if: success()
-        with:
-          severity: info
-          color: '#ff00aa'
-          avatarUrl: https://user-images.githubusercontent.com/118036/104819208-50108f80-582c-11eb-830d-ced2ea30ce0f.png
-          description: Build ${{ github.run_number }} pushed to ghcr.io
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-          details: Kuberentes push (prod == ${{ github.event.inputs.push-to-prod }})
