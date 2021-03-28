@@ -1,22 +1,17 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useRouteMatch, Switch, Route, Redirect } from "react-router-dom";
 import styled from "styled-components";
 
 import { ButtonContained } from "@view/shared/styles";
 import DirectMessageList from "./direct/DirectMessageList";
 import {
-  UserAvatarStyled,
-  AvatarWrapperLink,
-  SidebarHeader,
   SidebarWrapper,
-  UserNameLink,
-  MessageInfo,
   SidebarContent,
-  ListTabs,
-  ListTab,
   MessagesListContent,
+  SidebarFooter,
 } from "./styles";
-import { MessagesListTab } from "./MessagesListTab";
+
+import { DirectMessageDialog } from "./direct/DirectMessageDialog";
 
 export const ButtonContainedStyled = styled(ButtonContained)`
   min-width: 160px;
@@ -27,26 +22,16 @@ export const ButtonContainedStyled = styled(ButtonContained)`
 `;
 const MesssageSidebar: React.FC = () => {
   const baseUrl = useRouteMatch().path;
-  const user_id = "123";
-  const user_name = "123";
-  const getAvatarUrl = (a) => a;
-  const getUserNameByUserId = (a) => a;
+
+  const [isComposeDlgOpen, setIsComposeDlgOpen] = useState<boolean>(false);
+  const handleSelectChatUser = useCallback((id: string) => {
+    console.log(`id ${id}`);
+    setIsComposeDlgOpen(false);
+  }, []);
 
   return (
     <SidebarWrapper>
-      <SidebarHeader>
-        <MessageInfo>
-          <AvatarWrapperLink to={`/profile/user?id=${user_id}`}>
-            <UserAvatarStyled src={getAvatarUrl(user_id)} alt={user_name} />
-          </AvatarWrapperLink>
-          <UserNameLink to={`/profile/user?id=${user_id}`}>
-            {getUserNameByUserId(user_id)}
-          </UserNameLink>
-        </MessageInfo>
-        <ButtonContainedStyled>Compose</ButtonContainedStyled>
-      </SidebarHeader>
       <SidebarContent>
-        <MessagesListTab />
         <MessagesListContent>
           <Switch>
             <Route path={`${baseUrl}/d`} component={DirectMessageList} />
@@ -54,6 +39,17 @@ const MesssageSidebar: React.FC = () => {
           </Switch>
         </MessagesListContent>
       </SidebarContent>
+      <SidebarFooter>
+        <ButtonContainedStyled onClick={() => setIsComposeDlgOpen(true)}>
+          Compose
+        </ButtonContainedStyled>
+      </SidebarFooter>
+      <DirectMessageDialog
+        isOpenModal={isComposeDlgOpen}
+        setOpenDialog={setIsComposeDlgOpen}
+        className="compose_modal"
+        onChatOpen={handleSelectChatUser}
+      />
     </SidebarWrapper>
   );
 };

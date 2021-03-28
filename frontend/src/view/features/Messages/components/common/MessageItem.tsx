@@ -31,7 +31,6 @@ const MessageItem: React.FC<MessageItemProps> = ({
   contentType,
   messeageContent,
 }: MessageItemProps) => {
-  console.log(contentType);
   return (
     <MessageItemWrapper justify-content={direction}>
       {/* message  */}

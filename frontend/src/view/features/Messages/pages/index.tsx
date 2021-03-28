@@ -10,11 +10,7 @@ import {
 
 import Actions from "@store/actions";
 import { FriendsPageTabs } from "@view/features/Friends/components/FriendsPageTabs";
-import {
-  ContentWrapper,
-  SideBarWrapper,
-  MessagesWrapper,
-} from "../components/styles";
+import { ContentWrapper, MessagesWrapper } from "../components/styles";
 import MesssageSidebar from "../components/MesssageSidebar";
 import DirectMessageBox from "../components/direct/DirectMessageBox";
 import GroupMessageBox from "../components/group/GroupMessageBox";
@@ -28,9 +24,7 @@ const MessagesPage: React.FC<Props> = (props) => {
     <>
       <FriendsPageTabs />
       <MessagesWrapper>
-        <SideBarWrapper>
-          <MesssageSidebar />
-        </SideBarWrapper>
+        <MesssageSidebar />
         <ContentWrapper>
           <Switch>
             <Route path={`${baseUrl}/d/:id`} component={DirectMessageBox} />

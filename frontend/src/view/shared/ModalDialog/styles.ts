@@ -35,6 +35,15 @@ export const ModalViewport = styled.div`
       padding: 16px 0px 0px;
     }
   }
+  &.compose_modal {
+    padding: 20px 0 10px 0;    
+    .huxzai {
+      padding-bottom: 20px;
+      margin-bottom: 0px;
+      box-shadow: 2px 2px 2px #ccc;
+    }
+
+  }
 `
 
 export const ModalCloseBtn = styled.div`

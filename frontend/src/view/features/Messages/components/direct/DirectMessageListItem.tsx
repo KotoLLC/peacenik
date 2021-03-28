@@ -86,7 +86,7 @@ const DirectMessageListItem: React.FC<Props> = ({
             <MessageInfoDisplayName>{fullName}</MessageInfoDisplayName>
             <MessageInfoLastAccessTime>{accessTime}</MessageInfoLastAccessTime>
           </MessageInfoHeader>
-          <MessageInfoContent
+          {/* <MessageInfoContent
             flex-direction={
               msgType === MessageDirection.INCOMMING_MESSAGE ? "row" : "reverse"
             }
@@ -117,7 +117,7 @@ const DirectMessageListItem: React.FC<Props> = ({
                 </StatusIconWrapper>
               </StatusWrapper>
             )}
-          </MessageInfoContent>
+          </MessageInfoContent> */}
         </MessageInfoBlock>
       </MessageCardContent>
     </MessageCard>

@@ -14,6 +14,7 @@ export const MessagesWrapper = styled.div`
   background: #FFFFFF;
   margin: 0 auto 31px auto;
   display: flex;
+  box-shadow: 2px 2px 2px #888888;
 
   @media (max-width: 770px) {
     width: calc(100% - 30px);
@@ -21,14 +22,7 @@ export const MessagesWrapper = styled.div`
     min-height: calc(100vh - 100px);
   }
 `
-export const SideBarWrapper = styled.div`
-  width: 460px;
-  z-index: 1;
-  top: 0;
-  left: 0;
-  overflow-x: hidden;
-  padding: 0;
-  `
+
 export const ContentWrapper = styled.div`
   flex: 1 0 auto;
   background: #e8edf3;
@@ -142,7 +136,21 @@ export const MessageInfo = styled.div`
   width: 250px;
 `;
 
-export const SidebarWrapper = styled.div``;
+export const SidebarWrapper = styled.div`
+  width: 460px;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  overflow-x: hidden;
+  padding: 0;
+  height: 100%;  
+  position: relative;
+  height: 820px;
+  .huxzai {
+    margin-bottom: 20px;
+  }
+  
+`;
 export const SidebarHeader = styled.div`
   display: flex;
   padding: 20px;
@@ -152,6 +160,13 @@ export const SidebarHeader = styled.div`
   box-shadow: 1px 1px 3px 1px #d4d4d4;
 `;
 export const SidebarContent = styled.div`
+  height: 100%;
+`;
+export const SidebarFooter = styled.div`
+    position: absolute;
+    bottom: 30px;
+    transform: translateX(-50%);
+    left: 50%;
 `;
 
 export const ListTabs = styled(Tabs)`
@@ -211,7 +226,7 @@ export const MessageCardContent = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 0;
+  padding: 10px 0;
   
   border-bottom: 1px solid rgba(200,207,212,0.6);
   
@@ -245,7 +260,6 @@ export const MessageInfoBlock = styled(Link)`
   display: flex;
   flex-direction: column;
   min-width: 380px;
-  height: 70px;
   justify-content: space-between;
   padding-right: 20px;
   margin-left: 15px;
@@ -274,7 +288,6 @@ export const MessageInfoDisplayName = styled.div`
 export const MessagesListContent = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: 680px;
 `
 
 export const MessageInfoHeader = styled.div`
@@ -463,4 +476,38 @@ export const MessageImageContentFooter = styled.div`
   background-color: ${p=>p.color==MessageDirection.OUTGOING_MESSAGE?'#599c0bE0':'#ffffffE0'};
   padding: 0 4px;
   border-radius: 2px;
+`
+
+export const ComposeCard = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 20px 0px;
+  border-bottom: 1px solid rgba(200,207,212,0.6);
+  margin-left: 30px;
+  &:hover {
+    background-color: #599C0B20;    
+    margin-left: 0px;
+    padding-left: 30px;
+    border-bottom: 1px solid #00000000;
+  }
+
+  @media (max-width: 770px) {
+    position: relative;
+    flex-wrap: wrap;
+    padding: 20px 5px;
+    width: calc(100% - 10px);
+    margin-left: auto;
+    border: none;
+
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background: rgba(200,207,212,0.6);
+      width: calc(100% - 10px);
+      height: 1px;
+    }
+  }
 `

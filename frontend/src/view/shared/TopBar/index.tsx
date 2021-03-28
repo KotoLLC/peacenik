@@ -38,11 +38,6 @@ export const TopBar = React.memo(() => {
               <NotificationsModal />
             </MenuItem>
             <MenuItem>
-              <MenuLink to="/messages">
-                <ChatBubbleIcon />
-              </MenuLink>
-            </MenuItem>
-            <MenuItem>
               <MenuLink to="/friends">
                 <PeopleAltIcon />
               </MenuLink>
