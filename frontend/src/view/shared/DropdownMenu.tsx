@@ -61,7 +61,7 @@ const CustomDropdownMenu: React.FC<Props> = (props) => {
           <ListItemIconStyled>
             <PersonIcon fontSize="small" />
           </ListItemIconStyled>
-          <ListItemText primary="View Profile" />
+          <ListItemText primary="Edit Profile" />
         </MenuItemStyled>
         <MenuItemStyled className="logout" onClick={onLogoutClick}>
           <ListItemIconStyled>

@@ -36,6 +36,7 @@ interface Props extends RouteComponentProps {
   userName: string
   users: ApiTypes.User[]
   friends: ApiTypes.Friends.Friend[] | null
+  isUser: Boolean
 
   onGetFriends: () => void
   onAddFriend: (data: ApiTypes.Friends.Request) => void
@@ -45,6 +46,7 @@ interface Props extends RouteComponentProps {
 const UserProfilePage: React.FC<Props> = React.memo((props) => {
   const {
     onGetUser,
+    isUser,
     users,
     friends,
     onGetFriends,
@@ -153,6 +155,7 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
         inviteStatus={currentUser?.user?.invite_status}
         groupCount={currentUser?.group_count}
         friendsLenght={currentUser?.friends?.length || 0}
+        isUser={isUser? isUser : false}
         className="desktop-only"
       />
       <Container>
@@ -167,19 +170,21 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
               groupCount={currentUser?.group_count}
               inviteStatus={currentUser?.user?.invite_status}
               friendsLenght={currentUser?.friends?.length || 0}
+              isUser={isUser? isUser : false}
               className="mobile-only"
             />
           </LeftSideBar>
           <CentralBar>
             <PageBarTitle>
-              {`${capitalizeFirstLetter(currentUser?.user?.name || '')}\`s 
-              friends (${currentUser?.friends?.length || 0})`}
+              {isUser ? `My friends (${currentUser?.friends?.length || 0})` : `${capitalizeFirstLetter(currentUser?.user?.name || '')}\`s friends (${currentUser?.friends?.length || 0})`}
             </PageBarTitle>
             {mapFriendsList()}
           </CentralBar>
-          <RightSideBar>
-            <PageBarTitle>Common friends ({commonFriends.length || 0})</PageBarTitle>
+          <RightSideBar className="empty">
+          {!isUser && <><PageBarTitle>Common friends ({commonFriends.length || 0})</PageBarTitle>
             {mapCommonFriendsList()}
+            </>
+          }
           </RightSideBar>
         </PageColumnBarsWrapper>
       </Container>
