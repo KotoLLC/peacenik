@@ -108,6 +108,10 @@ export const Notification: React.FC<Props> = (props) => {
       return `/feed/info${urlVars}`
     }
 
+    if (type.indexOf('like') !== -1) {
+      return `/feed/info${urlVars}`
+    }
+
     if (type.indexOf('invite') !== -1) {
       if (type.indexOf('group-invite') !== -1) {
         return '/groups'

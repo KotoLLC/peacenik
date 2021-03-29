@@ -28,7 +28,10 @@ const FeedComment = (props) => {
     userId,
     notifyClicked
   } = props
-  const [isOpen, setOpen] = useState(notifyClicked)
+  const [isOpen, setOpen] = useState(false)
+  React.useEffect(() => {
+    setOpen(notifyClicked)
+  }, [notifyClicked])
 
   const checkIsCommentedByMe = (): boolean => {
     return comments.some(item => item?.user_id === userId)
