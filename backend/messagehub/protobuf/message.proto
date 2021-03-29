@@ -6,177 +6,204 @@ option go_package = "../rpc";
 import "model.proto";
 
 service MessageService {
-    rpc Messages (MessageMessagesRequest) returns (MessageMessagesResponse);
-    rpc Message (MessageMessageRequest) returns (MessageMessageResponse);
-    rpc Post (MessagePostRequest) returns (MessagePostResponse);
-    rpc Edit (MessageEditRequest) returns (MessageEditResponse);
-    rpc Delete (MessageDeleteRequest) returns (Empty);
-    rpc PostComment (MessagePostCommentRequest) returns (MessagePostCommentResponse);
-    rpc EditComment (MessageEditCommentRequest) returns (MessageEditCommentResponse);
-    rpc DeleteComment (MessageDeleteCommentRequest) returns (Empty);
-    rpc LikeMessage (MessageLikeMessageRequest) returns (MessageLikeMessageResponse);
-    rpc LikeComment (MessageLikeCommentRequest) returns (MessageLikeCommentResponse);
-    rpc MessageLikes (MessageMessageLikesRequest) returns (MessageMessageLikesResponse);
-    rpc CommentLikes (MessageCommentLikesRequest) returns (MessageCommentLikesResponse);
-    rpc SetMessageVisibility (MessageSetMessageVisibilityRequest) returns (Empty);
-    rpc SetCommentVisibility (MessageSetCommentVisibilityRequest) returns (Empty);
-    rpc ReportMessage (MessageReportMessageRequest) returns (MessageReportMessageResponse);
-    rpc MessageReport (MessageMessageReportRequest) returns (MessageMessageReportResponse);
-    rpc MessageReports (Empty) returns (MessageMessageReportsResponse);
-    rpc DeleteReportedMessage (MessageDeleteReportedMessageRequest) returns (Empty);
-    rpc BlockReportedUser (MessageBlockReportedUserRequest) returns (Empty);
-    rpc ResolveMessageReport (MessageResolveMessageReportRequest) returns (Empty);
+  rpc Messages (MessageMessagesRequest) returns (MessageMessagesResponse);
+  rpc Message (MessageMessageRequest) returns (MessageMessageResponse);
+  rpc Post (MessagePostRequest) returns (MessagePostResponse);
+  rpc Edit (MessageEditRequest) returns (MessageEditResponse);
+  rpc Delete (MessageDeleteRequest) returns (Empty);
+  rpc PostComment (MessagePostCommentRequest) returns (MessagePostCommentResponse);
+  rpc EditComment (MessageEditCommentRequest) returns (MessageEditCommentResponse);
+  rpc DeleteComment (MessageDeleteCommentRequest) returns (Empty);
+  rpc LikeMessage (MessageLikeMessageRequest) returns (MessageLikeMessageResponse);
+  rpc LikeComment (MessageLikeCommentRequest) returns (MessageLikeCommentResponse);
+  rpc MessageLikes (MessageMessageLikesRequest) returns (MessageMessageLikesResponse);
+  rpc CommentLikes (MessageCommentLikesRequest) returns (MessageCommentLikesResponse);
+  rpc SetMessageVisibility (MessageSetMessageVisibilityRequest) returns (Empty);
+  rpc SetCommentVisibility (MessageSetCommentVisibilityRequest) returns (Empty);
+  rpc ReportMessage (MessageReportMessageRequest) returns (MessageReportMessageResponse);
+  rpc MessageReport (MessageMessageReportRequest) returns (MessageMessageReportResponse);
+  rpc MessageReports (Empty) returns (MessageMessageReportsResponse);
+  rpc DeleteReportedMessage (MessageDeleteReportedMessageRequest) returns (Empty);
+  rpc BlockReportedUser (MessageBlockReportedUserRequest) returns (Empty);
+  rpc ResolveMessageReport (MessageResolveMessageReportRequest) returns (Empty);
+  rpc MarkRead(MessageMarkReadRequest) returns (Empty);
+  rpc Counters(MessageCountersRequest) returns (MessageCountersResponse);
 }
 
 message MessageMessagesRequest {
-    string token = 1;
-    string from = 2;
-    int32 count = 3;
-    string group_id = 4;
-    string friend_id = 5;
+  string token = 1;
+  string from = 2;
+  int32 count = 3;
+  string group_id = 4;
+  string friend_id = 5;
 }
 
 message MessageMessagesResponse {
-    repeated Message messages = 1;
+  repeated Message messages = 1;
 }
 
 message MessageMessageRequest {
-    string token = 1;
-    string message_id = 2;
+  string token = 1;
+  string message_id = 2;
 }
 
 message MessageMessageResponse {
-    Message message = 1;
+  Message message = 1;
 }
 
 message MessagePostRequest {
-    string token = 1;
-    string text = 2;
-    string attachment_id = 3;
+  string token = 1;
+  string text = 2;
+  string attachment_id = 3;
 }
 
 message MessagePostResponse {
-    Message message = 1;
+  Message message = 1;
 }
 
 message MessageEditRequest {
-    string message_id = 1;
-    bool text_changed = 2;
-    string text = 3;
-    bool attachment_changed = 4;
-    string attachment_id = 5;
+  string message_id = 1;
+  bool text_changed = 2;
+  string text = 3;
+  bool attachment_changed = 4;
+  string attachment_id = 5;
 }
 
 message MessageEditResponse {
-    Message message = 1;
+  Message message = 1;
 }
 
 message MessageDeleteRequest {
-    string message_id = 1;
+  string message_id = 1;
 }
 
 message MessagePostCommentRequest {
-    string token = 1;
-    string message_id = 2;
-    string text = 3;
-    string attachment_id = 4;
+  string token = 1;
+  string message_id = 2;
+  string text = 3;
+  string attachment_id = 4;
 }
 
 message MessagePostCommentResponse {
-    Message comment = 1;
+  Message comment = 1;
 }
 
 message MessageEditCommentRequest {
-    string comment_id = 1;
-    bool text_changed = 2;
-    string text = 3;
-    bool attachment_changed = 4;
-    string attachment_id = 5;
+  string comment_id = 1;
+  bool text_changed = 2;
+  string text = 3;
+  bool attachment_changed = 4;
+  string attachment_id = 5;
 }
 
 message MessageEditCommentResponse {
-    Message comment = 1;
+  Message comment = 1;
 }
 
 message MessageDeleteCommentRequest {
-    string comment_id = 1;
+  string comment_id = 1;
 }
 
 message MessageLikeMessageRequest {
-    string message_id = 1;
-    bool unlike = 2;
+  string message_id = 1;
+  bool unlike = 2;
 }
 
 message MessageLikeMessageResponse {
-    int32 likes = 1;
+  int32 likes = 1;
 }
 
 message MessageLikeCommentRequest {
-    string comment_id = 1;
-    bool unlike = 2;
+  string comment_id = 1;
+  bool unlike = 2;
 }
 
 message MessageLikeCommentResponse {
-    int32 likes = 1;
+  int32 likes = 1;
 }
 
 message MessageMessageLikesRequest {
-    string message_id = 1;
+  string message_id = 1;
 }
 
 message MessageMessageLikesResponse {
-    repeated MessageLike likes = 1;
+  repeated MessageLike likes = 1;
 }
 
 message MessageCommentLikesRequest {
-    string comment_id = 1;
+  string comment_id = 1;
 }
 
 message MessageCommentLikesResponse {
-    repeated MessageLike likes = 1;
+  repeated MessageLike likes = 1;
 }
 
 message MessageSetMessageVisibilityRequest {
-    string message_id = 1;
-    bool visibility = 2;
+  string message_id = 1;
+  bool visibility = 2;
 }
 
 message MessageSetCommentVisibilityRequest {
-    string comment_id = 1;
-    bool visibility = 2;
+  string comment_id = 1;
+  bool visibility = 2;
 }
 
 message MessageReportMessageRequest {
-    string message_id = 1;
-    string report = 2;
+  string message_id = 1;
+  string report = 2;
 }
 
 message MessageReportMessageResponse {
-    string report_id = 1;
+  string report_id = 1;
 }
 
 message MessageMessageReportRequest {
-    string report_id = 1;
+  string report_id = 1;
 }
 
 message MessageMessageReportResponse {
-    string reported_by = 1;
-    string report = 2;
-    string author_id = 3;
+  string reported_by = 1;
+  string report = 2;
+  string author_id = 3;
 }
 
 message MessageMessageReportsResponse {
-    repeated MessageReport reports = 1;
+  repeated MessageReport reports = 1;
 }
 
 message MessageDeleteReportedMessageRequest {
-    string report_id = 1;
+  string report_id = 1;
 }
 
 message MessageBlockReportedUserRequest {
-    string report_id = 1;
+  string report_id = 1;
 }
 
 message MessageResolveMessageReportRequest {
-    string report_id = 1;
+  string report_id = 1;
+}
+
+message MessageMarkReadRequest {
+  repeated string message_ids = 1;
+}
+
+message MessageCountersRequest {
+  string token = 1;
+}
+
+message MessageCounters {
+  int32 total_count = 2;
+  int32 unread_count = 3;
+  int32 total_comment_count = 4;
+  int32 unread_comment_count = 5;
+}
+
+message MessageCountersResponse {
+  int32 total_count = 1;
+  int32 unread_count = 2;
+  int32 total_comment_count = 3;
+  int32 unread_comment_count = 4;
+
+  map<string, MessageCounters> group_counters = 5;
+  map<string, MessageCounters> direct_counters = 6;
 }

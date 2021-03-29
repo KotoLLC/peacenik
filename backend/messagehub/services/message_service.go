@@ -25,14 +25,14 @@ const (
 	fileTypeBufSize = 8192
 )
 
-type messageService struct {
-	*BaseService
-}
-
 func NewMessage(base *BaseService) rpc.MessageService {
 	return &messageService{
 		BaseService: base,
 	}
+}
+
+type messageService struct {
+	*BaseService
 }
 
 func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*rpc.MessagePostResponse, error) {
@@ -999,4 +999,78 @@ func (s *messageService) ResolveMessageReport(ctx context.Context, r *rpc.Messag
 		return nil, twirp.NotFoundError("not found")
 	}
 	return &rpc.Empty{}, nil
+}
+
+func (s *messageService) MarkRead(ctx context.Context, r *rpc.MessageMarkReadRequest) (*rpc.Empty, error) {
+	user := s.getUser(ctx)
+	s.repos.Message.MarkRead(user.ID, r.MessageIds)
+	return &rpc.Empty{}, nil
+}
+
+func (s *messageService) Counters(ctx context.Context, r *rpc.MessageCountersRequest) (*rpc.MessageCountersResponse, error) {
+	user := s.getUser(ctx)
+
+	_, claims, err := s.tokenParser.Parse(r.Token, "get-messages")
+	if err != nil {
+		if merry.Is(err, token.ErrInvalidToken) {
+			return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
+		}
+		return nil, err
+	}
+
+	if user.ID != claims["id"].(string) ||
+		strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
+		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
+	}
+
+	var userIDs []string
+	if rawUserIDs, ok := claims["users"]; ok {
+		rawUserIDs := rawUserIDs.([]interface{})
+		userIDs = make([]string, len(rawUserIDs))
+		for i, rawUserID := range rawUserIDs {
+			userIDs[i] = rawUserID.(string)
+		}
+	}
+
+	var groupIDs []string
+	if rawGroupIDs, ok := claims["groups"]; ok {
+		rawGroupIDs := rawGroupIDs.([]interface{})
+		groupIDs = make([]string, len(rawGroupIDs))
+		for i, rawGroupID := range rawGroupIDs {
+			groupIDs[i] = rawGroupID.(string)
+		}
+	}
+
+	counts := s.repos.Message.Counts(user.ID, userIDs)
+
+	groupCounts := s.repos.Message.GroupCounts(user.ID, groupIDs)
+	rpcGroupCounts := make(map[string]*rpc.MessageCounters, len(groupCounts))
+	for groupID, counts := range groupCounts {
+		rpcGroupCounts[groupID] = &rpc.MessageCounters{
+			TotalCount:         int32(counts.TotalCount),
+			UnreadCount:        int32(counts.UnreadCount),
+			TotalCommentCount:  int32(counts.TotalCommentCount),
+			UnreadCommentCount: int32(counts.UnreadCommentCount),
+		}
+	}
+
+	directCounts := s.repos.Message.DirectCounts(user.ID)
+	rpcDirectCounts := make(map[string]*rpc.MessageCounters, len(directCounts))
+	for userID, counts := range directCounts {
+		rpcDirectCounts[userID] = &rpc.MessageCounters{
+			TotalCount:         int32(counts.TotalCount),
+			UnreadCount:        int32(counts.UnreadCount),
+			TotalCommentCount:  int32(counts.TotalCommentCount),
+			UnreadCommentCount: int32(counts.UnreadCommentCount),
+		}
+	}
+
+	return &rpc.MessageCountersResponse{
+		TotalCount:         int32(counts.TotalCount),
+		UnreadCount:        int32(counts.UnreadCount),
+		TotalCommentCount:  int32(counts.TotalCommentCount),
+		UnreadCommentCount: int32(counts.UnreadCommentCount),
+		GroupCounters:      rpcGroupCounts,
+		DirectCounters:     rpcDirectCounts,
+	}, err
 }
