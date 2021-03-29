@@ -182,7 +182,7 @@ const Comment: React.SFC<Props> = (props) => {
       <NoAuthorButtonsMenu {...{ message: comment, id, sourceHost, }} />
   }
 
-  const renderRaedView = () => {
+  const renderReadView = () => {
     return (
       <>
         <CommentTextWrapper>
@@ -248,7 +248,7 @@ const Comment: React.SFC<Props> = (props) => {
           <AccessTimeIconStyled />
         </TimeBlock>
       </FeedHeader>
-      {isEditer ? renderEditView() : renderRaedView()}
+      {isEditer ? renderEditView() : renderReadView()}
     </CommentWrapper>
   )
 }

@@ -145,7 +145,7 @@ class NotificationsModal extends React.PureComponent<Props, State> {
 
       this.props.onGetNotifications()
       setTimeout(() => {
-        resolve()
+        resolve(null)
       }, 700)
 
     })

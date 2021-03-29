@@ -21,7 +21,7 @@ import SendIcon from '@material-ui/icons/Send'
 import CameraAltOutlinedIcon from '@material-ui/icons/CameraAltOutlined'
 import loadImage from 'blueimp-load-image'
 import ClearIcon from '@material-ui/icons/Clear'
-import CommentsDialog from './../components/CommentsDialog'
+import FeedComment from './FeedComment'
 import { getUserNameByUserId } from '@services/userNames'
 import {
   FeedWrapper,
@@ -51,6 +51,7 @@ import {
 
 interface Props extends ApiTypes.Feed.Message {
   isAuthor: boolean
+  notifyClicked: boolean
   uploadLink: ApiTypes.UploadLink | null
   currentHub: CommonTypes.HubTypes.CurrentHub
   currentMessageLikes: ApiTypes.Feed.LikesInfoData | null
@@ -88,6 +89,7 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
     user_id,
     callback,
     friends,
+    notifyClicked
   } = props
 
   const [isEditer, setEditor] = useState<boolean>(false)
@@ -134,7 +136,7 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
             }
           </IconButton>
         </ReactionNavItem>
-        <CommentsDialog
+        <FeedComment
           user_name={userName}
           {...{
             user_id, 
@@ -148,6 +150,7 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
             id,
             friends,
             messageToken,
+            notifyClicked,
           }}
         />
       </ReactionNawWrapper>
@@ -175,7 +178,7 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
     return null
   }
 
-  const renderRaedView = () => (
+  const renderReadView = () => (
     <>
       <FeedText className="markdown-body">
         <ReactMarkdown escapeHtml={true} renderers={{ link: LinkRenderer }}>{message}</ReactMarkdown>
@@ -412,7 +415,7 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
         </TimeBlock>
       </FeedHeader>
 
-      { isEditer ? renderEditView() : renderRaedView()}
+      { isEditer ? renderEditView() : renderReadView()}
 
     </FeedWrapper>
   )
