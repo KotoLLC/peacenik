@@ -152,7 +152,7 @@ const CommentDialog = (props) => {
 
   return (
     <ModalDialog
-      title="Add your comment"
+      title=""
       isModalOpen={isOpen}
       className="comments"
       setOpenModal={() => setOpen(!isOpen)}>
