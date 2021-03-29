@@ -5,6 +5,7 @@ import selectors from '@selectors/index'
 import { ApiTypes, StoreTypes } from 'src/types'
 import { CoverBarDropdown } from './CoverBarDropdown'
 import RemoveFriendDialog from './RemoveFriendDialog'
+import { history } from '@view/routes'
 import {
   CoverBarWrapper,
   CoverBarContainer,
@@ -14,6 +15,7 @@ import {
   CoverBarCounters,
   CoverBarButtonsWrapper,
   CircularProgressWhite,
+  ButtonContained,
 } from '@view/shared/styles'
 import { ButtonOutlinedStyled, ButtonContainedStyled } from './styles'
 
@@ -25,6 +27,7 @@ interface Props {
   inviteStatus?: ApiTypes.Friends.InvitationStatus
   groupCount?: number
   errorMessage: string
+  isUser: Boolean
 
   onAddFriend: (data: ApiTypes.Friends.Request) => void
 }
@@ -39,6 +42,7 @@ const UserCoverBar: React.FC<Props> = React.memo((props) => {
     inviteStatus,
     errorMessage,
     groupCount,
+    isUser
   } = props
   const [isRequest, setRequest] = useState<boolean>(false)
   const [isUnfriendDialogOpen, openUnfriendDialog] = useState<boolean>(false)
@@ -106,13 +110,16 @@ const UserCoverBar: React.FC<Props> = React.memo((props) => {
             <CoverBarCounter>{friendsLenght}</CoverBarCounter>
           </CoverBarCounterWrapper>
         </CoverBarCounters>
-        <CoverBarButtonsWrapper className="profile">
+        {isUser && <ButtonContained onClick={() => {history.push('/settings')}}>
+            Edit Profile
+          </ButtonContained>}
+        {!isUser && <CoverBarButtonsWrapper className="profile">
           {renderCurrentButton()}
           <ButtonOutlinedStyled disabled className="large">
             Send message
           </ButtonOutlinedStyled>
           <CoverBarDropdown userId={id!}/>
-        </CoverBarButtonsWrapper>
+        </CoverBarButtonsWrapper> }
       </CoverBarContainer>
       <RemoveFriendDialog 
         userId={id!}

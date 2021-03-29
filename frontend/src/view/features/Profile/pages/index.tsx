@@ -20,7 +20,8 @@ const ProfilePage: React.FC<Props> = (props) => {
   return (
     <Switch>
       <Route path="/profile/user">
-        {(myUserId === currentUserId) ? <Redirect to="/settings" /> : <UserProfilePage />}
+        <UserProfilePage isUser={(myUserId === currentUserId)}/>
+        {/* {(myUserId === currentUserId) ? <Redirect to="/settings" /> : <UserProfilePage />} */}
       </Route>
     </Switch>
   )
