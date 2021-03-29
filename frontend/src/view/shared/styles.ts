@@ -304,7 +304,7 @@ export const MenuItemStyled = styled(MenuItem)`
 `
 export const MenuStyled = styled(Menu)`
   top: 40px !important;
-  border-radius: 6px;
+  border-radius: 0px;
 `
 
 export const ButtonContained = styled(Button)`
@@ -1408,3 +1408,6 @@ export const TextUnderlined = styled.span`
   }
 `
 
+export const DirectMessageDropDownMenuWrapper = styled.div`
+  position: relative;
+`

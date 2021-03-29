@@ -5,6 +5,8 @@ import Tabs from '@material-ui/core/Tabs'
 import Avatar from '@material-ui/core/Avatar'
 import { IconWrapper } from '@view/shared/styles'
 import { MessageDirection, MessageInfoTextStatus } from '../types/types'
+import MenuItem from '@material-ui/core/MenuItem'
+import { Checkbox } from '@material-ui/core'
 
 
 export const MessagesWrapper = styled.div`
@@ -28,17 +30,22 @@ export const ContentWrapper = styled.div`
   background: #e8edf3;
 `
 
-export const SendOutlineIconWrapper = styled.div`
-  width: 200px;
-  height: 200px;
-  padding: 45px;
-  background: #fff;
-  border-radius: 35px;
-  margin-bottom: 70px;
-  svg {
-    fill: #e9ecee;
+export const InfoBlockIconWrapper = styled.div`
+  height: 22px;  
+  width: 22px;  
+  margin-right: 25px;
+  &.mute {
+    svg {
+      font-size: 1.5rem;
+    }
   }
 `;
+
+export const InfoContentSettingTitle = styled.div`
+  display:flex;
+  align-items: center;
+`;
+
 export const SendOutlineWrapper = styled.div`
   height: 100%;
   display: flex;
@@ -127,6 +134,17 @@ export const UserNameLink = styled(Link)`
     max-width: 130px;
   }
 `
+export const InfoUserNameLink = styled(UserNameLink)`
+  margin: 0px;
+  font-size: 22px;
+`
+export const InfoUserLastAccess = styled.div`
+  font-size: 22px;
+  color: #a1aec8;
+  padding: 5px;
+`
+
+
 
 export const MessageInfo = styled.div`
   display: flex;
@@ -355,6 +373,9 @@ export const ContactUserInfo = styled.div`
 `
 export const UserInfoBlock = styled.div`
   margin-left: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 `
 
 export const UserInfoName = styled.div`
@@ -377,17 +398,25 @@ export const DMContentWrapper = styled.div`
   overflow-y: auto;
   max-height: 660px;
 `
-
+export const DMContentInfoWrapper = styled.div`
+  flex: 1 0 auto;
+  overflow-y: auto;
+  max-height: 760px;
+`
 export const DMInHeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   background-color: #ffffff;
   margin-left: 2px;
-  padding: 20px;
+  padding: 15px 20px;
+  box-shadow: 2px 2px 2px #cccccc;
+  display: flex;
+  align-items: center;
 `
 export const DMHeaderWrapper = styled.div`
   flex-shrink: 0;
   height: 86px;  
+  margin-left: 1px;
 `
 export const DMFooterWapper = styled.div`
   flex-shrink: 0;
@@ -510,4 +539,107 @@ export const ComposeCard = styled.div`
       height: 1px;
     }
   }
+`
+export const AttachmentButton = styled.label`  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;  
+`
+export const MenuItemStyled = styled(MenuItem)`
+  min-width: 180px;
+  padding: 15px 20px;
+  z-index: 100;
+  & span {
+    font-weight: 600;    
+  }
+`
+export const TitleSection = styled.span`
+  font-weight: bold;
+`;
+export const InfoContentCommon = styled.div`
+  border-top: 1px #d4dae0 solid;
+  font-family: 'SFUITextMedium';
+`
+export const InfoContentHeader = styled.div`
+  width: 100%;
+  height: 350px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+`;
+export const InfoContentBlock = styled(InfoContentCommon)`
+  padding: 15px 0; 
+`
+export const InfoContentSettingBlock = styled(InfoContentCommon)`
+  padding: 15px 0; 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`
+export const InfoContentSubtitle = styled.div`
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 15px;
+`
+export const InfoContentGallery = styled.div`
+  display:flex;
+  max-width: 650px;
+  overflow-y: auto;
+`
+export const InfoContentPhoto = styled.div`
+  width: 120px;
+  min-width: 120px;
+  height: 120px;
+  border-radius: 7px;
+  margin-right: 5px;
+  background-image: url(${p=>p['background-image']});
+  background-size: cover;
+  background-position: center;
+`
+export const InfoContentSinglePhoto = styled.div`
+  display:flex;
+`
+export const InfoContentAvatarWrapper = styled.div`
+  height: 250px;
+  width: 250px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #bdbdbd;
+  flex-shrink: 0;
+  margin: 10px;
+
+  &.small {
+    width: 40px;
+    height: 40px;
+
+    .MuiAvatar-fallback,
+    .MuiAvatar-root {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  @media (max-width: 770px) {
+    width: 36px;
+    height: 36px;
+
+    &.small {
+      width: 30px;
+      height: 30px;
+    }
+  }
+  .MuiAvatar-fallback,
+  .MuiAvatar-root {
+    width: 100%;
+    height: 100%;
+  }
+`;
+
+export const InfoContentWrapper = styled.div`
+  padding: 17px;
+`
+export const InfoContentCheckbox = styled(Checkbox)`
+  padding: 0px;
 `

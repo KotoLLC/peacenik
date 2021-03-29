@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   createStyles,
   IconButton,
@@ -11,8 +11,13 @@ import {
 import SendIcon from "@material-ui/icons/Send";
 import PhotoCameraOutlinedIcon from "@material-ui/icons/PhotoCameraOutlined";
 
-import { DMInFooterWrapper } from "../styles";
+import { AttachmentButton, DMInFooterWrapper } from "../styles";
 import { Visibility } from "@material-ui/icons";
+import { UploadInput } from "@view/shared/styles";
+import { ChangeEvent } from "react";
+import { useDispatch } from "react-redux";
+import { ApiTypes } from "src/types";
+import Actions from "@store/actions";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -37,6 +42,55 @@ const useStyles = makeStyles((theme: Theme) =>
 const DirectMessageFooter = () => {
   const [msgValue, setMsgValue] = useState("");
   const msgInputStyles = useStyles();
+  const [isFileUploaded, setIsFileUploaded] = useState<boolean>(false);
+
+  const dispatch = useDispatch();
+  // onGetMessageUploadLink: (data: ApiTypes.Feed.UploadLinkRequest) => dispatch(Actions.feed.getFeedMessageUploadLinkRequest(data))
+  const handleImageFileUpload = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const onGetUploadLink = (value: ApiTypes.Profile.UploadLinkRequest) =>
+        dispatch(Actions.profile.getUploadLinkRequest(value));
+
+      setIsFileUploaded(false);
+
+      const file = event.target.files;
+
+      if (file && file[0]) {
+        onGetUploadLink({
+          content_type: file[0].type,
+          file_name: file[0].name,
+        });
+
+        // const self = this;
+
+        /* tslint:disable */
+        // loadImage(
+        //   file[0],
+        //   function (img, data) {
+        //     if (data.imageHead && data.exif) {
+        //       // Reset Exif Orientation data:
+        //       loadImage.writeExifData(data.imageHead, data, "Orientation", 1);
+        //       img.toBlob(function (blob) {
+        //         loadImage.replaceHead(blob, data.imageHead, function (newBlob) {
+        //           self.setState({
+        //             file: newBlob,
+        //           });
+        //         });
+        //       }, "image/jpeg");
+        //     } else {
+        //       self.setState({
+        //         file: file[0],
+        //       });
+        //     }
+        //   },
+        //   { meta: true, orientation: true, canvas: true }
+        // );
+        /* tslint:enable */
+      }
+    },
+    [dispatch]
+  );
+
   return (
     <DMInFooterWrapper>
       <OutlinedInput
@@ -52,7 +106,15 @@ const DirectMessageFooter = () => {
         endAdornment={
           <InputAdornment position="end">
             <IconButton aria-label="toggle password visibility">
-              <PhotoCameraOutlinedIcon />
+              <AttachmentButton>
+                <PhotoCameraOutlinedIcon />
+                <UploadInput
+                  type="file"
+                  name="attached_image"
+                  onChange={handleImageFileUpload}
+                  accept="image/x-png,image/gif,image/jpeg"
+                />
+              </AttachmentButton>
             </IconButton>
           </InputAdornment>
         }

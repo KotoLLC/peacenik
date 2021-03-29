@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from "react";
-import { Link, useRouteMatch } from "react-router-dom";
+import React, { useCallback, useState } from 'react';
+import { Link, useRouteMatch } from 'react-router-dom';
 
 import {
   ContactAvatarStyled,
@@ -14,17 +14,17 @@ import {
   MessageMissedCount,
   StatusIconWrapper,
   StatusWrapper,
-} from "@view/features/Messages/components/styles";
+} from '@view/features/Messages/components/styles';
 
-import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
-import DonutLargeIcon from "@material-ui/icons/DonutLarge";
-import DoneIcon from "@material-ui/icons/Done";
-import DoneAllIcon from "@material-ui/icons/DoneAll";
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import DonutLargeIcon from '@material-ui/icons/DonutLarge';
+import DoneIcon from '@material-ui/icons/Done';
+import DoneAllIcon from '@material-ui/icons/DoneAll';
 import {
   MessageDirection,
   MessageInfoTextStatus,
   MessagePublishStatus,
-} from "@view/features/Messages/types/types";
+} from '@view/features/Messages/types/types';
 
 interface Props {
   roomId: string;
@@ -48,12 +48,12 @@ const DirectMessageListItem: React.FC<Props> = ({
 }) => {
   const baseURL = useRouteMatch().path;
 
-  const [lastAcsTime, setLastAscTime] = useState<string>("12 mins ago");
+  const [lastAcsTime, setLastAscTime] = useState<string>('12 mins ago');
   const getAvatarUrl = (id) => {
     return id;
   };
   const getLastMessageTime = () => {
-    return "12 min ago";
+    return '12 min ago';
   };
 
   const accessTime = getLastMessageTime();
@@ -66,7 +66,7 @@ const DirectMessageListItem: React.FC<Props> = ({
         case MessagePublishStatus.ACCEPTED_STATUS:
           return <DoneIcon />;
         case MessagePublishStatus.READ_STATUS:
-          return <DoneAllIcon style={{ color: "#599C0B" }} />;
+          return <DoneAllIcon style={{ color: '#599C0B' }} />;
         case MessagePublishStatus.NOT_SENT_STATUS:
         case MessagePublishStatus.UNKNOWN_STATUS:
       }
@@ -86,38 +86,6 @@ const DirectMessageListItem: React.FC<Props> = ({
             <MessageInfoDisplayName>{fullName}</MessageInfoDisplayName>
             <MessageInfoLastAccessTime>{accessTime}</MessageInfoLastAccessTime>
           </MessageInfoHeader>
-          {/* <MessageInfoContent
-            flex-direction={
-              msgType === MessageDirection.INCOMMING_MESSAGE ? "row" : "reverse"
-            }
-          >
-            <MessageInfoText
-              color={
-                msgType === MessageDirection.INCOMMING_MESSAGE &&
-                missedCount &&
-                missedCount > 0
-                  ? MessageInfoTextStatus.HIGHLIGHT
-                  : MessageInfoTextStatus.NORMAL
-              }
-            >
-              {lastMsg}
-            </MessageInfoText>
-            {msgType === MessageDirection.INCOMMING_MESSAGE &&
-              (missedCount && missedCount > 0 ? (
-                <MessageMissedCount>
-                  <span>{missedCount}</span>
-                </MessageMissedCount>
-              ) : (
-                <></>
-              ))}
-            {msgType === MessageDirection.OUTGOING_MESSAGE && (
-              <StatusWrapper>
-                <StatusIconWrapper>
-                  {renderOutgoingSwitch(messageStatus)}
-                </StatusIconWrapper>
-              </StatusWrapper>
-            )}
-          </MessageInfoContent> */}
         </MessageInfoBlock>
       </MessageCardContent>
     </MessageCard>

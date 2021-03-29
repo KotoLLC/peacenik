@@ -1,8 +1,5 @@
-import React from "react";
-import { useRouteMatch } from "react-router";
-
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { IconButton } from "@material-ui/core";
+import React from 'react';
+import { useRouteMatch } from 'react-router';
 
 import {
   ContactAvatarStyled,
@@ -11,13 +8,15 @@ import {
   UserInfoName,
   UserInfoStatus,
   DMInHeaderWrapper,
-} from "../styles";
-import useGetUserInfoById from "@services/hooks/useGetUserInfoById";
+} from '../styles';
+
+import useGetUserInfoById from '@services/hooks/useGetUserInfoById';
+import DirectMessageDropDownMenu from './DirectMessageDropDownMenu';
 
 const DirectMessageHeader = () => {
   const getUserInfo = useGetUserInfoById();
 
-  const userid = useRouteMatch().params["id"] || undefined;
+  const userid = useRouteMatch().params['id'] || undefined;
   const userInfo = getUserInfo(userid);
 
   return (
@@ -29,9 +28,7 @@ const DirectMessageHeader = () => {
           <UserInfoStatus>{userInfo.status}</UserInfoStatus>
         </UserInfoBlock>
       </ContactUserInfo>
-      <IconButton aria-label="delete">
-        <ExpandMoreIcon />
-      </IconButton>
+      <DirectMessageDropDownMenu />
     </DMInHeaderWrapper>
   );
 };

@@ -17,3 +17,4 @@ export function getGroupCoverUrl(id: string) {
 export function getProfileCoverUrl(id: string) {
   return `${userHubUrl}/image/user/background/${id}`
 }
+

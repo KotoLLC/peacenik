@@ -317,6 +317,10 @@ export declare namespace ApiTypes {
     }
   }
 
+  export namespace ChatMessages {
+    
+  }
+
   export namespace Notifications {
 
     export type MessageTypes = 'message/post' | 'message/tag' | 'message/like'

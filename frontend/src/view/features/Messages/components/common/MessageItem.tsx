@@ -1,15 +1,15 @@
-import { IconWrapper } from "@view/shared/styles";
-import React from "react";
-import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
-import DonutLargeIcon from "@material-ui/icons/DonutLarge";
-import DoneIcon from "@material-ui/icons/Done";
-import DoneAllIcon from "@material-ui/icons/DoneAll";
+import { IconWrapper } from '@view/shared/styles';
+import React from 'react';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import DonutLargeIcon from '@material-ui/icons/DonutLarge';
+import DoneIcon from '@material-ui/icons/Done';
+import DoneAllIcon from '@material-ui/icons/DoneAll';
 import {
   MessageContentType,
   MessageDirection,
   MessageItemProps,
   MessagePublishStatus,
-} from "../../types/types";
+} from '../../types/types';
 import {
   MessageTextContent,
   MessageTextContentBody,
@@ -22,7 +22,7 @@ import {
   MessageImageContent,
   MessageImageContentBody,
   MessageImageContentFooter,
-} from "../styles";
+} from '../styles';
 
 const MessageItem: React.FC<MessageItemProps> = ({
   direction,
@@ -41,14 +41,6 @@ const MessageItem: React.FC<MessageItemProps> = ({
             <MessageTransmissionTime color={direction}>
               10:09 pm
             </MessageTransmissionTime>
-            {direction === MessageDirection.OUTGOING_MESSAGE &&
-              status === MessagePublishStatus.ACCEPTED_STATUS && (
-                <MessageDeliverStatus>
-                  <MessageStatusIconWrapper>
-                    <DoneAllIcon />
-                  </MessageStatusIconWrapper>
-                </MessageDeliverStatus>
-              )}
           </MessageTextContentFooter>
         </MessageTextContent>
       )}
@@ -56,20 +48,12 @@ const MessageItem: React.FC<MessageItemProps> = ({
         <MessageImageContent color={direction}>
           <MessageImageContentBody
             src={messeageContent.toString()}
-            alt="IMAGE"
+            alt='IMAGE'
           />
           <MessageImageContentFooter color={direction}>
             <MessageTransmissionTime color={direction}>
               10:09 pm
             </MessageTransmissionTime>
-            {direction === MessageDirection.OUTGOING_MESSAGE &&
-              status === MessagePublishStatus.ACCEPTED_STATUS && (
-                <MessageDeliverStatus>
-                  <MessageStatusIconWrapper>
-                    <DoneAllIcon />
-                  </MessageStatusIconWrapper>
-                </MessageDeliverStatus>
-              )}
           </MessageImageContentFooter>
         </MessageImageContent>
       )}

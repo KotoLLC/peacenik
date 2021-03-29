@@ -12,7 +12,7 @@ export const Dropdown = styled.div`
   top: 43px;
   background: #FFFFFF;
   box-shadow: 0px 1px 8px #D4D4D4;
-  border-radius: 6px;
+  border-radius: 0px;
 
   &:after {
     position: absolute;
@@ -20,7 +20,7 @@ export const Dropdown = styled.div`
     top: -5px;
     right: 30px;
     transform: rotate(45deg);
-    z-index: 2400;
+    z-index: 10;
     width: 10px;
     height: 10px;
     background: #FFFFFF;
@@ -31,11 +31,25 @@ export const Dropdown = styled.div`
     content: '';
     top: 0px;
     right: 15px;
-    z-index: 2450;
+    z-index: 99;
     width: 40px;
     height: 15px;
     background: #fff;
   }
+  li:nth-child(n+2) {
+    &:before {
+      display: inline-block;
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 160px;
+      height: 1px;
+      background: #979797;
+      opacity: 0.6;
+      content: '';
+    }
+  }
+  
 `
 
 export const CustomMenuItem = styled.li`
