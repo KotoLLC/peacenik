@@ -33,7 +33,6 @@ import {
 } from './../components/styles'
 
 interface Props extends RouteComponentProps {
-  userName: string
   users: ApiTypes.User[]
   friends: ApiTypes.Friends.Friend[] | null
   isUser: Boolean
@@ -78,7 +77,11 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
     return currentFriend
   }
 
-  const currentUser = setCurrentUserData()
+  let profileUser: any = null
+  if ( users.length > 0) {
+    profileUser = users[0]
+  }
+  const currentUser = setCurrentUserData() 
 
   let commonFriends: ApiTypes.Friends.Friend[] = []
 
@@ -150,9 +153,9 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
         <PageCover resource={getProfileCoverUrl(userId as string)}/>
       </PageCoverWrapper>
       <UserCoverBar
-        id={currentUser?.user?.id}
-        userName={currentUser?.user?.name}
-        inviteStatus={currentUser?.user?.invite_status}
+        id={profileUser?.id}
+        userName={profileUser?.name}
+        inviteStatus={profileUser?.invite_status}
         groupCount={currentUser?.group_count}
         friendsLenght={currentUser?.friends?.length || 0}
         isUser={isUser? isUser : false}
@@ -162,13 +165,13 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
         <PageColumnBarsWrapper>
           <LeftSideBar>
             <ProfileAvatar src={getAvatarUrl(userId as string)} />
-            <ProfileName>{currentUser?.user?.full_name}</ProfileName>
-            <ProfileNote>@{currentUser?.user?.name}</ProfileNote>
+            <ProfileName>{profileUser?.full_name}</ProfileName>
+            <ProfileNote>@{profileUser?.name}</ProfileNote>
             <UserCoverBar
-              id={currentUser?.user?.id}
-              userName={currentUser?.user?.name}
+              id={profileUser?.id}
+              userName={profileUser?.name}
               groupCount={currentUser?.group_count}
-              inviteStatus={currentUser?.user?.invite_status}
+              inviteStatus={profileUser?.invite_status}
               friendsLenght={currentUser?.friends?.length || 0}
               isUser={isUser? isUser : false}
               className="mobile-only"
@@ -176,7 +179,7 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
           </LeftSideBar>
           <CentralBar>
             <PageBarTitle>
-              {isUser ? `My friends (${currentUser?.friends?.length || 0})` : `${capitalizeFirstLetter(currentUser?.user?.name || '')}\`s friends (${currentUser?.friends?.length || 0})`}
+              {isUser ? `My friends (${currentUser?.friends?.length || 0})` : `${capitalizeFirstLetter(profileUser?.name || '')}\`s friends (${currentUser?.friends?.length || 0})`}
             </PageBarTitle>
             {mapFriendsList()}
           </CentralBar>
@@ -192,9 +195,8 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
   )
 })
 
-type StateProps = Pick<Props, 'userName' | 'users' | 'friends'>
+type StateProps = Pick<Props, 'users' | 'friends'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  userName: selectors.profile.userName(state),
   users: selectors.profile.users(state),
   friends: selectors.friends.friends(state),
 })

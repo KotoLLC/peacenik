@@ -144,10 +144,10 @@ class FeedPage extends React.Component<Props, State> {
         notifyClicked={this.state.message_id === item.id ? true : false}
         isAuthor={(userId === item.user_id) ? true : false} />
     })
-    // if (!isItemExist)
-    // {
-    //   this.lastMessageRef?.current?.scrollIntoView({ behavior: 'smooth'})
-    // }
+    if (!isItemExist && this.state.message_id)
+    {
+      this.lastMessageRef?.current?.scrollIntoView({ behavior: 'smooth'})
+    }
     return renderData
   }
 
