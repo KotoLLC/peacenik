@@ -39,6 +39,7 @@ interface Props extends RouteComponentProps {
 interface State {
   authToken: string
   messageLenght: number
+  message_id:string | null
 }
 
 class FeedPage extends React.Component<Props, State> {
@@ -46,6 +47,7 @@ class FeedPage extends React.Component<Props, State> {
   state = {
     authToken: '',
     messageLenght: 0,
+    message_id: null
   }
 
   timerId
@@ -129,6 +131,7 @@ class FeedPage extends React.Component<Props, State> {
           <div ref={this.lastMessageRef} key={item.id}>
             <FeedPost
               {...item}
+              notifyClicked={this.state.message_id === item.id ? true : false}
               isAuthor={(userId === item.user_id) ? true : false} />
           </div>
         )
@@ -137,6 +140,7 @@ class FeedPage extends React.Component<Props, State> {
       return <FeedPost
         {...item}
         key={item.id}
+        notifyClicked={this.state.message_id === item.id ? true : false}
         isAuthor={(userId === item.user_id) ? true : false} />
     })
   }
@@ -150,7 +154,7 @@ class FeedPage extends React.Component<Props, State> {
 
       this.props.onGetMessages()
       setTimeout(() => {
-        resolve()
+        resolve(null)
       }, 700)
 
     })
@@ -178,13 +182,22 @@ class FeedPage extends React.Component<Props, State> {
     }
   }
  
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
     const { isMessagesRequested, feedsTokens, isAboutUsViewed, currentHub } = this.props
     if (isAboutUsViewed) return false
 
     if (isMessagesRequested === false && !feedsTokens.length && !currentHub?.token) {
       this.props.history.push('/no-hubs')
     }
+
+    let messageId = new URLSearchParams(this.props.location.search).get("message_id")
+    if ( messageId && (prevState.message_id !== messageId)) {
+      this.setState({
+        message_id: messageId
+      })
+      console.log("Look at here:", this.state.message_id)
+    }
+
   }
 
   render() {

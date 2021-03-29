@@ -101,11 +101,11 @@ export const Notification: React.FC<Props> = (props) => {
     }
 
     if (type.indexOf('message') !== -1) {
-      return `/notifications/info${urlVars}`
+      return `/feed/info${urlVars}`
     }
 
     if (type.indexOf('comment') !== -1) {
-      return `/notifications/info${urlVars}`
+      return `/feed/info${urlVars}`
     }
 
     if (type.indexOf('invite') !== -1) {
