@@ -195,7 +195,6 @@ class FeedPage extends React.Component<Props, State> {
       this.setState({
         message_id: messageId
       })
-      console.log("Look at here:", this.state.message_id)
     }
 
   }
