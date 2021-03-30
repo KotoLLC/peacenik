@@ -54,7 +54,7 @@ const DropdownMenu2: React.FC<Props> = (props) => {
             <ListItemIconStyled>
               <PersonIcon fontSize="small" />
             </ListItemIconStyled>
-            <ListItemText primary="Edit profile" />
+            <ListItemText primary="View profile" />
           </CustomMenuItem>
           <CustomMenuItem className="logout" onClick={onLogoutClick}>
             <ListItemIconStyled>

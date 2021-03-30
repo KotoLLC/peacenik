@@ -150,7 +150,7 @@ class MessageFeed extends React.Component<Props, State> {
 
       this.props.onGetMessages()
       setTimeout(() => {
-        resolve(null)
+        resolve()
       }, 700)
 
     })

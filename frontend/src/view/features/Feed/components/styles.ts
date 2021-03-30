@@ -69,7 +69,7 @@ export const CommentWrapper = styled.div`
 
   &:after {
     content: '';
-    width: 100%;
+    width: calc(100% - 75px);
     height: 1px;
     background: #D8D8D8;
     bottom: 0;
