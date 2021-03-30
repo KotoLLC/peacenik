@@ -899,6 +899,26 @@ export const UsersListItemFullName = styled(Link)`
   }
 `
 
+export const ProfileFriendItemName = styled.div`
+  display: block;
+  text-decoration: none;
+  font-family: 'SFUITextMedium';
+  color: #000;
+  text-overflow: ellipsis;
+  overflow: hidden; 
+  white-space: nowrap;
+
+  &.sidebar {
+    font-size: 14px;
+    margin-bottom: 5px;
+    display: block;
+  }
+
+  @media (max-width: 770px){
+    width: calc(100% - 65px);
+  }
+`
+
 export const UsersListItemName = styled(Link)`
   font-size: 12px;
   color: #ABB7CD;
@@ -907,6 +927,12 @@ export const UsersListItemName = styled(Link)`
   @media (max-width: 1025px){}
   
   @media (max-width: 770px){}
+`
+
+export const ProfileFriendItemFullName = styled.div`
+  font-size: 12px;
+  color: #ABB7CD;
+  font-family: 'SFUITextRegular';
 `
 
 export const UsersListItemButtons = styled.div`

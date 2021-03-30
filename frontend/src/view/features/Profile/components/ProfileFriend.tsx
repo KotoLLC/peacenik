@@ -11,6 +11,8 @@ import {
   UsersListItemFullName,
   UsersListItemName,
   UsersListItemNamesWrapper,
+  ProfileFriendItemName,
+  ProfileFriendItemFullName,
   ButtonContained,
   UsersListItemButtons,
   CircularProgressWhite,
@@ -37,6 +39,8 @@ const ProfileFriend: React.FC<Props> = React.memo((props) => {
   } = props
   const [isRequest, setRequest] = useState<boolean>(false)
 
+  let bLinkable: Boolean = (friends?.some(item => item.user.id === id)) || (inviteStatus === 'accepted') || (inviteStatus === 'pending')
+
   const checkCurrentButton = () => {
 
     if (friends?.some(item => item.user.id === id)) {
@@ -49,19 +53,9 @@ const ProfileFriend: React.FC<Props> = React.memo((props) => {
       <ButtonContained className="grey" disabled>Request sent</ButtonContained>
     )
 
-    if (inviteStatus === 'rejected') {
-      return (
-        <ButtonContained onClick={onButtonClick}>
-          {isRequest ? <CircularProgressWhite size={20} /> : 'Add friend'}
-        </ButtonContained>
-      )
-    } else {
-      return (
-        <ButtonContained onClick={onButtonClick}>
-          {isRequest ? <CircularProgressWhite size={20} /> : 'Add friend'}
-        </ButtonContained>
-      )
-    }
+    return <ButtonContained onClick={onButtonClick}>
+        {isRequest ? <CircularProgressWhite size={20} /> : 'Add friend'}
+      </ButtonContained>
   }
 
   useEffect(() => {
@@ -75,12 +69,19 @@ const ProfileFriend: React.FC<Props> = React.memo((props) => {
 
   return (
     <UsersListItemWrapper>
-      <Link to={`/profile/user?id=${id}`}>
+      {bLinkable && <Link to={`/profile/user?id=${id}`}>
         <UsersListItemAvatar src={getAvatarUrl(id)} />
-      </Link>
+      </Link>}
+      {!bLinkable && <UsersListItemAvatar src={getAvatarUrl(id)} />}
       <UsersListItemNamesWrapper>
-        {fullName && <UsersListItemFullName to={`/profile/user?id=${id}`}>{fullName}</UsersListItemFullName>}
-        <UsersListItemName to={`/profile/user?id=${id}`}>@{name}</UsersListItemName>
+        {bLinkable && <>
+          {fullName && <UsersListItemFullName to={`/profile/user?id=${id}`}>{fullName}</UsersListItemFullName>}
+          <UsersListItemName to={`/profile/user?id=${id}`}>@{name}</UsersListItemName>
+        </>}
+        {!bLinkable && <>
+          <ProfileFriendItemName>{fullName}</ProfileFriendItemName>
+          <ProfileFriendItemFullName>@{name}</ProfileFriendItemFullName>
+        </>}
       </UsersListItemNamesWrapper>
       <UsersListItemButtons>
         {checkCurrentButton()}
