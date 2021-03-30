@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
+	"fmt"
 	"image/jpeg"
 	"log"
 	"path/filepath"
@@ -44,14 +45,17 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 	_, claims, err := s.tokenParser.Parse(r.Token, "post-message")
 	if err != nil {
 		if merry.Is(err, token.ErrInvalidToken) {
-			return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
+			return nil, twirp.NewError(twirp.InvalidArgument, "invalid token (parse)")
 		}
 		return nil, err
 	}
 
-	if user.ID != claims["id"].(string) ||
-		strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
-		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
+	if user.ID != claims["id"].(string) {
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (users %s %s)", user.ID, claims["id"].(string)))
+	}
+
+	if strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (hubs %s %s)", s.externalAddress, claims["hub"].(string)))
 	}
 
 	var notifiedUsers []string
