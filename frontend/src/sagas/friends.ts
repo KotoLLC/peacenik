@@ -27,9 +27,11 @@ export function* watchGetFriends() {
 export function* watchGetFriendsOfFriends() {
 
   try {
+    // console.log("send")
     const response = yield API.friends.getFriendsOfFriends()
 
     if (response.status === 200) {
+      // console.log("success", response.data.friends)
       yield put(Actions.friends.getFriendsOfFriendsSucces(response.data.friends || []))
     } else if (response.error.response.status === 401) {
       localStorage.clear()

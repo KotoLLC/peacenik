@@ -38,7 +38,7 @@ interface Props extends RouteComponentProps {
   isUser: Boolean
 
   onGetFriends: () => void
-  onAddFriend: (data: ApiTypes.Friends.Request) => void
+  onGetFriendsOfFriendsRequest: () => void
   onGetUser: (value: string) => void
 }
 
@@ -49,6 +49,7 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
     users,
     friends,
     onGetFriends,
+    onGetFriendsOfFriendsRequest,
     location,
   } = props
 
@@ -60,6 +61,7 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
     if (users[0]?.id !== userId) {
       onGetUser(userId as string)
       onGetFriends()
+      onGetFriendsOfFriendsRequest()
     }
   }, [
     users,
@@ -85,14 +87,28 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
 
   let commonFriends: ApiTypes.Friends.Friend[] = []
 
-  currentUser?.friends?.forEach(item => {
-    if (friends?.some(myFriend => myFriend.user.id === item.user.id)) {
-      commonFriends.push(item as never)
-    }
-  })
+  if ( !isUser ){
+    currentUser?.friends?.forEach(item => {
+      if (friends?.some(myFriend => myFriend.user.id === item.user.id)) {
+        commonFriends.push(item as never)
+      }
+    })
+  }
 
   const mapFriendsList = () => {
-    if (currentUser?.friends?.length) {
+    if ( isUser) {
+      return friends?.map(item => {
+        const { user, invite_status } = item
+
+        return <ProfileFriend
+          key={uuidv4()}
+          fullName={user.full_name}
+          name={user.name}
+          id={user.id}
+          inviteStatus={invite_status}
+        />
+      })
+    } else if (currentUser?.friends?.length) {
       return currentUser.friends.map(item => {
         const { user, invite_status } = item
 
@@ -201,11 +217,11 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   friends: selectors.friends.friends(state),
 })
 
-type DispatchProps = Pick<Props, 'onGetUser' | 'onAddFriend' | 'onGetFriends'>
+type DispatchProps = Pick<Props, 'onGetUser' | 'onGetFriends' | 'onGetFriendsOfFriendsRequest'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetFriends: () => dispatch(Actions.friends.getFriendsRequest()),
+  onGetFriendsOfFriendsRequest: () => dispatch(Actions.friends.getFriendsOfFriendsRequest()),
   onGetUser: (value: string) => dispatch(Actions.profile.getUsersRequest([value])),
-  onAddFriend: (data: ApiTypes.Friends.Request) => dispatch(Actions.friends.addFriendRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(UserProfilePage))
