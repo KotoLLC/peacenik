@@ -27,7 +27,6 @@ import {
 } from '@view/features/Messages/types/types';
 
 interface Props {
-  roomId: string;
   userId: string;
   accessTime: string;
   fullName: string;
@@ -40,7 +39,6 @@ interface Props {
 const DirectMessageListItem: React.FC<Props> = ({
   fullName,
   userId,
-  roomId,
   lastMsg,
   msgType,
   missedCount,

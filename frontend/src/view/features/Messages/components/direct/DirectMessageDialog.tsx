@@ -3,15 +3,15 @@ import React, {
   useCallback,
   useEffect,
   useState,
-} from "react";
-import _ from "lodash";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+} from 'react';
+import _ from 'lodash';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
-import { ApiTypes, StoreTypes } from "src/types";
-import { ModalDialog } from "@view/shared/ModalDialog";
+import { ApiTypes, StoreTypes } from 'src/types';
+import { ModalDialog } from '@view/shared/ModalDialog';
 
-import { getAvatarUrl } from "@services/avatarUrl";
+import { getAvatarUrl } from '@services/avatarUrl';
 import {
   AvatarStyled,
   ButtonGroup,
@@ -20,9 +20,9 @@ import {
   UserInfoDisplayEmail,
   UserInfoDisplayName,
   UserInfoText,
-} from "@view/features/Friends/components/styles";
-import Actions from "@store/actions";
-import { ComposeCard } from "../styles";
+} from '@view/features/Friends/components/styles';
+import Actions from '@store/actions';
+import { ComposeCard } from '../styles';
 
 interface DirectMessageDialogProps {
   isOpenModal: boolean;
@@ -49,7 +49,7 @@ export const DirectMessageDialog: React.FC<DirectMessageDialogProps> = ({
 
   return (
     <ModalDialog
-      title="Compose"
+      title='Compose'
       isModalOpen={isOpenModal}
       className={className}
       setOpenModal={() => setOpenDialog(!isOpenModal)}

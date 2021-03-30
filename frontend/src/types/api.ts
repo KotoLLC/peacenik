@@ -267,6 +267,7 @@ export declare namespace ApiTypes {
       attachment_thumbnail?: string
       likes?: number
       liked_by_me?: boolean
+      friend_id?: string
     }
 
     export interface Comment {
