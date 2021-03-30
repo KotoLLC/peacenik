@@ -34,7 +34,6 @@ import {
 
 interface Props extends RouteComponentProps {
   users: ApiTypes.User[]
-  state: any
   friends: ApiTypes.Friends.Friend[] | null
   isUser: Boolean
 
@@ -52,7 +51,6 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
     onGetFriends,
     onGetFriendsOfFriendsRequest,
     location,
-    state
   } = props
 
   const url = location.search
@@ -61,7 +59,6 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
 
   useEffect(() => {
     if (users[0]?.id !== userId) {
-      console.log("PASSED!")
       onGetUser(userId as string)
       onGetFriends()
       onGetFriendsOfFriendsRequest()
@@ -81,8 +78,6 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
 
     return currentFriend
   }
-
-  console.log("STATE: ", state)
 
   let profileUser: any = null
   if ( users.length > 0) {
@@ -216,9 +211,8 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
   )
 })
 
-type StateProps = Pick<Props, 'state' | 'users' | 'friends'>
+type StateProps = Pick<Props, 'users' | 'friends'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  state: state,
   users: selectors.profile.users(state),
   friends: selectors.friends.friends(state),
 })
