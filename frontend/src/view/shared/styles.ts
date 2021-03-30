@@ -323,6 +323,7 @@ export const ButtonContained = styled(Button)`
   outline: none;
   cursor: pointer;
   text-transform: none;
+  margin-right: 20px;
 
   &.large {
     min-width: 160px;
@@ -604,7 +605,9 @@ export const RightSideBar = styled.aside`
   margin-left: 30px;
   background: #fff;
   border-radius: 0 0 4px 4px;
-
+  &.empty{
+    padding: 0;
+  }
   @media (max-width: 960px){
     margin-left: 15px;
   }
@@ -1158,6 +1161,7 @@ export const EditsAvatarWrapper = styled.div`
   align-items: flex-end;
   margin-top: -72px;
   width: 100%;
+  justify-content: space-between;
 
   @media (max-width: 770px) {
     margin-top: -45px;

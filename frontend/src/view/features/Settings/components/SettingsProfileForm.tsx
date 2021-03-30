@@ -12,6 +12,7 @@ import Checkbox from '@material-ui/core/Checkbox'
 import { getAvatarUrl, getProfileCoverUrl } from '@services/avatarUrl'
 import { validate } from '@services/validation'
 import loadImage from 'blueimp-load-image'
+import { history } from '@view/routes'
 import {
   EditCoverWrapper,
   EditCoverIconWrapper,
@@ -24,6 +25,7 @@ import {
   EditButtonsWrapper,
   ErrorMessage,
   CheckboxLabel,
+  ButtonContained,
 } from '@view/shared/styles'
 import {
   SettingsFormWrapper,
@@ -414,6 +416,9 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
             />
             {this.renderAvatar()}
           </label>
+          <ButtonContained onClick={() => {history.push('/profile/user?id=' + userId)}}>
+            View Profile
+          </ButtonContained>
         </EditsAvatarWrapper>
         <SettingsFormWrapper onSubmit={this.onFormSubmit}>
           <SettingsFieldWrapper>
