@@ -121,7 +121,7 @@ export const NotifyText = styled.div`
     max-width: calc(100% - 120px);
   }
 `
-export const NotifyName = styled.p`
+export const NotifyName = styled.span`
   color: #000;
   font-size: 14px;
   font-family: "SFUITextBold";

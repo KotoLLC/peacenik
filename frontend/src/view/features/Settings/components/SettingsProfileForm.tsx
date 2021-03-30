@@ -1,17 +1,18 @@
-import React, { ChangeEvent, FormEvent } from "react";
-import { connect } from "react-redux";
-import selectors from "@selectors/index";
-import Actions from "@store/actions";
-import { StoreTypes, ApiTypes } from "src/types";
-import CoverIcon from "@assets/images/groups-cover-icon.svg";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import PersonIcon from "@material-ui/icons/Person";
-import FaceIcon from "@material-ui/icons/Face";
-import MailIcon from "@material-ui/icons/Mail";
-import Checkbox from "@material-ui/core/Checkbox";
-import { getAvatarUrl, getProfileCoverUrl } from "@services/avatarUrl";
-import { validate } from "@services/validation";
-import loadImage from "blueimp-load-image";
+import React, { ChangeEvent, FormEvent } from 'react'
+import { connect } from 'react-redux'
+import selectors from '@selectors/index'
+import Actions from '@store/actions'
+import { StoreTypes, ApiTypes } from 'src/types'
+import CoverIcon from '@assets/images/groups-cover-icon.svg'
+import CircularProgress from '@material-ui/core/CircularProgress'
+import PersonIcon from '@material-ui/icons/Person'
+import FaceIcon from '@material-ui/icons/Face'
+import MailIcon from '@material-ui/icons/Mail'
+import Checkbox from '@material-ui/core/Checkbox'
+import { getAvatarUrl, getProfileCoverUrl } from '@services/avatarUrl'
+import { validate } from '@services/validation'
+import loadImage from 'blueimp-load-image'
+import { history } from '@view/routes'
 import {
   EditCoverWrapper,
   EditCoverIconWrapper,
@@ -24,7 +25,12 @@ import {
   EditButtonsWrapper,
   ErrorMessage,
   CheckboxLabel,
+<<<<<<< HEAD
 } from "@view/shared/styles";
+=======
+  ButtonContained,
+} from '@view/shared/styles'
+>>>>>>> 61df53b3b8b727074c908d70df150c86db8dd1d7
 import {
   SettingsFormWrapper,
   SettingsFieldWrapper,
@@ -423,6 +429,9 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
             />
             {this.renderAvatar()}
           </label>
+          <ButtonContained onClick={() => {history.push('/profile/user?id=' + userId)}}>
+            View Profile
+          </ButtonContained>
         </EditsAvatarWrapper>
         <SettingsFormWrapper onSubmit={this.onFormSubmit}>
           <SettingsFieldWrapper>

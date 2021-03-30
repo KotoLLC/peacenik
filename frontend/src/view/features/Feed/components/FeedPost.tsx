@@ -1,31 +1,28 @@
-import React, { useState, useEffect, ChangeEvent, useRef } from "react";
-import ReactMarkdown from "react-markdown";
-import moment from "moment";
-import { connect } from "react-redux";
-import Actions from "@store/actions";
-import selectors from "@selectors/index";
-import { Player } from "video-react";
-import { ApiTypes, StoreTypes, CommonTypes } from "src/types";
-import { getAvatarUrl } from "@services/avatarUrl";
-import { TimeBlock, AccessTimeIconStyled } from "@view/shared/styles";
-import commentIconContained from "@assets/images/comment-icon-contained.svg";
-import likeIconContained from "@assets/images/like-icon-contained.svg";
-import { MentionsInput, Mention } from "react-mentions";
-import {
-  friendsToMentionFriends,
-  MentionFriend,
-} from "@services/dataTransforms/friendsToMentionFriends";
-import { LinkRenderer } from "@view/shared/LinkRenderer";
-import { YoutubeFrame } from "./YoutubeFrame";
-import { AuthorButtonsMenu } from "./AuthorButtonsMenu";
-import { NoAuthorButtonsMenu } from "./NoAuthorButtonsMenu";
-import IconButton from "@material-ui/core/IconButton";
-import SendIcon from "@material-ui/icons/Send";
-import CameraAltOutlinedIcon from "@material-ui/icons/CameraAltOutlined";
-import loadImage from "blueimp-load-image";
-import ClearIcon from "@material-ui/icons/Clear";
-import CommentsDialog from "./../components/CommentsDialog";
-import { getUserNameByUserId } from "@services/userNames";
+import React, { useState, useEffect, ChangeEvent, useRef } from 'react'
+import ReactMarkdown from 'react-markdown'
+import moment from 'moment'
+import { connect } from 'react-redux'
+import Actions from '@store/actions'
+import selectors from '@selectors/index'
+import { Player } from 'video-react'
+import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
+import { getAvatarUrl } from '@services/avatarUrl'
+import { TimeBlock, AccessTimeIconStyled } from '@view/shared/styles'
+import commentIconContained from '@assets/images/comment-icon-contained.svg'
+import likeIconContained from '@assets/images/like-icon-contained.svg'
+import { MentionsInput, Mention } from 'react-mentions'
+import { friendsToMentionFriends, MentionFriend } from '@services/dataTransforms/friendsToMentionFriends'
+import { LinkRenderer } from '@view/shared/LinkRenderer'
+import { YoutubeFrame } from './YoutubeFrame'
+import { AuthorButtonsMenu } from './AuthorButtonsMenu'
+import { NoAuthorButtonsMenu } from './NoAuthorButtonsMenu'
+import IconButton from '@material-ui/core/IconButton'
+import SendIcon from '@material-ui/icons/Send'
+import CameraAltOutlinedIcon from '@material-ui/icons/CameraAltOutlined'
+import loadImage from 'blueimp-load-image'
+import ClearIcon from '@material-ui/icons/Clear'
+import FeedComment from './FeedComment'
+import { getUserNameByUserId } from '@services/userNames'
 import {
   FeedWrapper,
   FeedHeader,
@@ -53,6 +50,7 @@ import {
 } from "./styles";
 
 interface Props extends ApiTypes.Feed.Message {
+<<<<<<< HEAD
   isAuthor: boolean;
   uploadLink: ApiTypes.UploadLink | null;
   currentHub: CommonTypes.HubTypes.CurrentHub;
@@ -68,6 +66,24 @@ interface Props extends ApiTypes.Feed.Message {
   onLikeMessage: (data: ApiTypes.Feed.Like) => void;
   getLikesForMessage: (data: ApiTypes.Feed.Like) => void;
   callback?: () => void;
+=======
+  isAuthor: boolean
+  notifyClicked: boolean
+  uploadLink: ApiTypes.UploadLink | null
+  currentHub: CommonTypes.HubTypes.CurrentHub
+  currentMessageLikes: ApiTypes.Feed.LikesInfoData | null
+  isCommentsOpenByDeafult?: boolean
+  friends: ApiTypes.Friends.Friend[] | null
+
+  onMessageEdit: (data: ApiTypes.Feed.EditMessage) => void
+  onCommentPost: (data: ApiTypes.Feed.PostComment) => void
+  onGetMessageUploadLink: (data: ApiTypes.Feed.UploadLinkRequest) => void
+  onSetAttachment: (data: ApiTypes.Feed.Attachment) => void
+  onResetMessageUploadLink: () => void
+  onLikeMessage: (data: ApiTypes.Feed.Like) => void
+  getLikesForMessage: (data: ApiTypes.Feed.Like) => void
+  callback?: () => void
+>>>>>>> 61df53b3b8b727074c908d70df150c86db8dd1d7
 }
 
 const FeedPost: React.FC<Props> = React.memo((props) => {
@@ -91,7 +107,12 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
     user_id,
     callback,
     friends,
+<<<<<<< HEAD
   } = props;
+=======
+    notifyClicked
+  } = props
+>>>>>>> 61df53b3b8b727074c908d70df150c86db8dd1d7
 
   const [isEditer, setEditor] = useState<boolean>(false);
   const [message, onMessageChange] = useState<string>(text);
@@ -162,7 +183,7 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
             )}
           </IconButton>
         </ReactionNavItem>
-        <CommentsDialog
+        <FeedComment
           user_name={userName}
           {...{
             user_id,
@@ -176,6 +197,7 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
             id,
             friends,
             messageToken,
+            notifyClicked,
           }}
         />
       </ReactionNawWrapper>
@@ -202,7 +224,7 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
     return null;
   };
 
-  const renderRaedView = () => (
+  const renderReadView = () => (
     <>
       <FeedText className="markdown-body">
         <ReactMarkdown escapeHtml={true} renderers={{ link: LinkRenderer }}>
@@ -439,7 +461,12 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
         </TimeBlock>
       </FeedHeader>
 
+<<<<<<< HEAD
       {isEditer ? renderEditView() : renderRaedView()}
+=======
+      { isEditer ? renderEditView() : renderReadView()}
+
+>>>>>>> 61df53b3b8b727074c908d70df150c86db8dd1d7
     </FeedWrapper>
   );
 });

@@ -323,6 +323,7 @@ export const ButtonContained = styled(Button)`
   outline: none;
   cursor: pointer;
   text-transform: none;
+  margin-right: 20px;
 
   &.large {
     min-width: 160px;
@@ -604,7 +605,9 @@ export const RightSideBar = styled.aside`
   margin-left: 30px;
   background: #fff;
   border-radius: 0 0 4px 4px;
-
+  &.empty{
+    padding: 0;
+  }
   @media (max-width: 960px){
     margin-left: 15px;
   }
@@ -896,6 +899,26 @@ export const UsersListItemFullName = styled(Link)`
   }
 `
 
+export const ProfileFriendItemName = styled.div`
+  display: block;
+  text-decoration: none;
+  font-family: 'SFUITextMedium';
+  color: #000;
+  text-overflow: ellipsis;
+  overflow: hidden; 
+  white-space: nowrap;
+
+  &.sidebar {
+    font-size: 14px;
+    margin-bottom: 5px;
+    display: block;
+  }
+
+  @media (max-width: 770px){
+    width: calc(100% - 65px);
+  }
+`
+
 export const UsersListItemName = styled(Link)`
   font-size: 12px;
   color: #ABB7CD;
@@ -904,6 +927,12 @@ export const UsersListItemName = styled(Link)`
   @media (max-width: 1025px){}
   
   @media (max-width: 770px){}
+`
+
+export const ProfileFriendItemFullName = styled.div`
+  font-size: 12px;
+  color: #ABB7CD;
+  font-family: 'SFUITextRegular';
 `
 
 export const UsersListItemButtons = styled.div`
@@ -1158,6 +1187,7 @@ export const EditsAvatarWrapper = styled.div`
   align-items: flex-end;
   margin-top: -72px;
   width: 100%;
+  justify-content: space-between;
 
   @media (max-width: 770px) {
     margin-top: -45px;

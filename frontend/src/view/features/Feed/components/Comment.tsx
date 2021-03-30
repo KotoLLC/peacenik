@@ -221,7 +221,7 @@ const Comment: React.SFC<Props> = (props) => {
     );
   };
 
-  const renderRaedView = () => {
+  const renderReadView = () => {
     return (
       <>
         <CommentTextWrapper>
@@ -297,7 +297,7 @@ const Comment: React.SFC<Props> = (props) => {
           <AccessTimeIconStyled />
         </TimeBlock>
       </FeedHeader>
-      {isEditer ? renderEditView() : renderRaedView()}
+      {isEditer ? renderEditView() : renderReadView()}
     </CommentWrapper>
   );
 };

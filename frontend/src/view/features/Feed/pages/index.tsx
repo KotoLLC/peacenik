@@ -39,6 +39,7 @@ interface Props extends RouteComponentProps {
 interface State {
   authToken: string
   messageLenght: number
+  message_id:string | null
 }
 
 class FeedPage extends React.Component<Props, State> {
@@ -46,6 +47,7 @@ class FeedPage extends React.Component<Props, State> {
   state = {
     authToken: '',
     messageLenght: 0,
+    message_id: null
   }
 
   timerId
@@ -121,14 +123,16 @@ class FeedPage extends React.Component<Props, State> {
   mapMessages = (messages: ApiTypes.Feed.Message[]) => {
     const { userId } = this.props
     const sortedData = sortByDate(messages)
-
-    return sortedData.map((item, index) => {
-
+    let isItemExist = false
+    const renderData = sortedData.map((item, index) => {
+      if (this.state.message_id === item.id )
+        isItemExist = true;
       if (index === sortedData.length - 1) {
         return (
           <div ref={this.lastMessageRef} key={item.id}>
             <FeedPost
               {...item}
+              notifyClicked={this.state.message_id === item.id ? true : false}
               isAuthor={(userId === item.user_id) ? true : false} />
           </div>
         )
@@ -137,8 +141,14 @@ class FeedPage extends React.Component<Props, State> {
       return <FeedPost
         {...item}
         key={item.id}
+        notifyClicked={this.state.message_id === item.id ? true : false}
         isAuthor={(userId === item.user_id) ? true : false} />
     })
+    if (!isItemExist && this.state.message_id)
+    {
+      this.lastMessageRef?.current?.scrollIntoView({ behavior: 'smooth'})
+    }
+    return renderData
   }
 
   onScrollUp = () => {
@@ -150,7 +160,7 @@ class FeedPage extends React.Component<Props, State> {
 
       this.props.onGetMessages()
       setTimeout(() => {
-        resolve()
+        resolve(null)
       }, 700)
 
     })
@@ -178,18 +188,32 @@ class FeedPage extends React.Component<Props, State> {
     }
   }
  
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
     const { isMessagesRequested, feedsTokens, isAboutUsViewed, currentHub } = this.props
     if (isAboutUsViewed) return false
 
     if (isMessagesRequested === false && !feedsTokens.length && !currentHub?.token) {
       this.props.history.push('/no-hubs')
     }
+
+    let messageId = new URLSearchParams(this.props.location.search).get("message_id")
+    if ( messageId && (prevState.message_id !== messageId)) {
+      this.props.history.replace({
+        search: "",
+      })
+      this.setState({
+        message_id: messageId
+      })
+    } else if ( messageId) {
+      this.setState({
+        message_id: null
+      })
+    }
+
   }
 
   render() {
     const { isMoreMessagesRequested } = this.props
-
     return (
       <PullToRefresh
         onRefresh={this.onRefresh}

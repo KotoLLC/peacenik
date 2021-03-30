@@ -46,7 +46,7 @@ func (s *MessageServiceTestSuite) SetupSuite() {
 }
 
 func (s *MessageServiceTestSuite) SetupTest() {
-	_, err := s.te.DB.Exec(`truncate table messages, message_likes, message_reports, message_visibility;`)
+	_, err := s.te.DB.Exec(`truncate table messages, message_likes, message_reports, message_visibility, message_reads;`)
 	s.Require().Nil(err)
 	_, err = s.te.DB.Exec(`truncate table users cascade;`)
 	s.Require().Nil(err)

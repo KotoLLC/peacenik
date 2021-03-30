@@ -52,6 +52,13 @@ type MessageReport struct {
 	AttachmentThumbnailID string       `json:"attachment_thumbnail_id" db:"attachment_thumbnail_id"`
 }
 
+type Counts struct {
+	TotalCount         int `db:"total_count"`
+	UnreadCount        int `db:"unread_count"`
+	TotalCommentCount  int `db:"total_comment_count"`
+	UnreadCommentCount int `db:"unread_comment_count"`
+}
+
 type MessageRepo interface {
 	Messages(currentUserID string, userIDs []string, from time.Time, count int) []Message
 	GroupMessages(currentUserID, groupID string, from time.Time, count int) []Message
@@ -74,16 +81,20 @@ type MessageRepo interface {
 	BlockReportedUser(reportID string) bool
 	ResolveMessageReport(reportID string) bool
 	DeleteOldGuestMessages(until time.Time)
-}
-
-type messageRepo struct {
-	db *sqlx.DB
+	MarkRead(userID string, messageIDs []string)
+	Counts(currentUserID string, userIDs []string) Counts
+	GroupCounts(currentUserID string, groupIDs []string) map[string]Counts
+	DirectCounts(currentUserID string) map[string]Counts
 }
 
 func NewMessages(db *sqlx.DB) MessageRepo {
 	return &messageRepo{
 		db: db,
 	}
+}
+
+type messageRepo struct {
+	db *sqlx.DB
 }
 
 func (r *messageRepo) Messages(currentUserID string, userIDs []string, from time.Time, count int) []Message {
@@ -702,6 +713,17 @@ func (r *messageRepo) DeleteOldGuestMessages(until time.Time) {
 			with m as (select id from messages where parent_id is null and is_guest = true and created_at < $1),
 				 c as (select id from messages where parent_id in (select id from m)),
 				 mc as (select id from m union select id from c)
+			delete from message_reads
+			where message_id in (select id from mc);`,
+			until)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+
+		_, err = tx.Exec(`
+			with m as (select id from messages where parent_id is null and is_guest = true and created_at < $1),
+				 c as (select id from messages where parent_id in (select id from m)),
+				 mc as (select id from m union select id from c)
 			insert into blob_pending_deletes(blob_id, deleted_at)
 			select attachment_id, $2::timestamptz
 			from messages
@@ -731,4 +753,148 @@ func (r *messageRepo) DeleteOldGuestMessages(until time.Time) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func (r *messageRepo) MarkRead(userID string, messageIDs []string) {
+	if len(messageIDs) == 0 {
+		return
+	}
+
+	query, args, err := sqlx.In(`
+		insert into message_reads(user_id, message_id, read_at)
+		select ?, id, ?
+		from messages
+		where user_id <> ? and id in (?)
+		on conflict do nothing;`,
+		userID, common.CurrentTimestamp(), userID, messageIDs,
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	query = r.db.Rebind(query)
+
+	_, err = r.db.Exec(query, args...)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (r *messageRepo) Counts(currentUserID string, userIDs []string) Counts {
+	if len(userIDs) == 0 {
+		return Counts{}
+	}
+
+	query, args, err := sqlx.In(`
+		select
+			   coalesce(sum(case when m.parent_id is null then 1 end), 0) total_count, 
+			   coalesce(sum(case when m.parent_id is null and not exists(select * from message_reads where user_id = ? and message_id = m.id) then 1 end), 0) unread_count, 
+			   coalesce(sum(case when m.parent_id is not null then 1 end), 0) total_comment_count, 
+			   coalesce(sum(case when m.parent_id is not null and not exists(select * from message_reads where user_id = ? and message_id = m.id) then 1 end), 0) unread_comment_count 
+		from messages m
+		where m.user_id <> ? and m.user_id in (?)
+			and m.group_id is null
+			and m.friend_id is null
+			and m.deleted_at is null
+			and not exists(select * from message_visibility mv where mv.user_id = ? and mv.message_id = m.id and mv.visibility = false);`,
+		currentUserID, currentUserID, currentUserID, userIDs, currentUserID)
+	if err != nil {
+		panic(err)
+	}
+	query = r.db.Rebind(query)
+
+	var counts Counts
+	err = r.db.Get(&counts, query, args...)
+	if err != nil {
+		panic(err)
+	}
+	return counts
+}
+
+func (r *messageRepo) GroupCounts(currentUserID string, groupIDs []string) map[string]Counts {
+	if len(groupIDs) == 0 {
+		return nil
+	}
+
+	query, args, err := sqlx.In(`
+		select
+			   m.group_id,
+			   coalesce(sum(case when m.parent_id is null then 1 end), 0) total_count, 
+			   coalesce(sum(case when m.parent_id is null and not exists(select * from message_reads where user_id = ? and message_id = m.id) then 1 end), 0) unread_count, 
+			   coalesce(sum(case when m.parent_id is not null then 1 end), 0) total_comment_count, 
+			   coalesce(sum(case when m.parent_id is not null and not exists(select * from message_reads where user_id = ? and message_id = m.id) then 1 end), 0) unread_comment_count 
+		from messages m
+		where m.user_id <> ?
+			and m.group_id in (?)
+			and m.deleted_at is null
+			and not exists(select * from message_visibility mv where mv.user_id = ? and mv.message_id = m.id and mv.visibility = false)
+		group by m.group_id;`,
+		currentUserID, currentUserID, currentUserID, groupIDs, currentUserID)
+	if err != nil {
+		panic(err)
+	}
+	query = r.db.Rebind(query)
+
+	var counts []struct {
+		GroupID            string `db:"group_id"`
+		TotalCount         int    `db:"total_count"`
+		UnreadCount        int    `db:"unread_count"`
+		TotalCommentCount  int    `db:"total_comment_count"`
+		UnreadCommentCount int    `db:"unread_comment_count"`
+	}
+	err = r.db.Select(&counts, query, args...)
+	if err != nil {
+		panic(err)
+	}
+
+	result := make(map[string]Counts)
+	for _, count := range counts {
+		result[count.GroupID] = Counts{
+			TotalCount:         count.TotalCount,
+			UnreadCount:        count.UnreadCount,
+			TotalCommentCount:  count.TotalCommentCount,
+			UnreadCommentCount: count.UnreadCommentCount,
+		}
+	}
+
+	return result
+}
+
+func (r *messageRepo) DirectCounts(currentUserID string) map[string]Counts {
+	query := `
+		select
+			   m.user_id,
+			   coalesce(sum(case when m.parent_id is null then 1 end), 0) total_count, 
+			   coalesce(sum(case when m.parent_id is null and not exists(select * from message_reads where user_id = $1 and message_id = m.id) then 1 end), 0) unread_count, 
+			   coalesce(sum(case when m.parent_id is not null then 1 end), 0) total_comment_count, 
+			   coalesce(sum(case when m.parent_id is not null and not exists(select * from message_reads where user_id = $1 and message_id = m.id) then 1 end), 0) unread_comment_count 
+		from messages m
+		where m.user_id <> $1
+			and m.friend_id = $1
+			and m.deleted_at is null
+			and not exists(select * from message_visibility mv where mv.user_id = $1 and mv.message_id = m.id and mv.visibility = false)
+		group by m.user_id;`
+	var counts []struct {
+		UserID             string `db:"user_id"`
+		TotalCount         int    `db:"total_count"`
+		UnreadCount        int    `db:"unread_count"`
+		TotalCommentCount  int    `db:"total_comment_count"`
+		UnreadCommentCount int    `db:"unread_comment_count"`
+	}
+	err := r.db.Select(&counts, query, currentUserID)
+	if err != nil {
+		panic(err)
+	}
+
+	result := make(map[string]Counts)
+	for _, count := range counts {
+		result[count.UserID] = Counts{
+			TotalCount:         count.TotalCount,
+			UnreadCount:        count.UnreadCount,
+			TotalCommentCount:  count.TotalCommentCount,
+			UnreadCommentCount: count.UnreadCommentCount,
+		}
+	}
+
+	return result
 }

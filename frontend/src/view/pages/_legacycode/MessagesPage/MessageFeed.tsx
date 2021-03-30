@@ -1,22 +1,22 @@
-import React from "react";
-import Editor from "./Editor";
-import Message from "./Message";
-import { connect } from "react-redux";
-import Actions from "@store/actions";
-import selectors from "@selectors/index";
-import { StoreTypes, ApiTypes, CommonTypes } from "src/types";
-import { RouteComponentProps } from "react-router-dom";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { sortByDate } from "@services/sortByDate";
-import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
-import PullToRefresh from "react-simple-pull-to-refresh";
+import React from 'react';
+import Editor from './Editor';
+import Message from './Message';
+import { connect } from 'react-redux';
+import Actions from '@store/actions';
+import selectors from '@selectors/index';
+import { StoreTypes, ApiTypes, CommonTypes } from 'src/types';
+import { RouteComponentProps } from 'react-router-dom';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { sortByDate } from '@services/sortByDate';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import PullToRefresh from 'react-simple-pull-to-refresh';
 
 import {
   ContainerStyled,
   EmptyMessageFeed,
   UpButton,
   PreloaderWrapper,
-} from "./styles";
+} from './styles';
 
 interface Props extends RouteComponentProps {
   feedsTokens: CommonTypes.HubTypes.CurrentHub[];
@@ -43,7 +43,7 @@ interface State {
 
 class MessageFeed extends React.Component<Props, State> {
   state = {
-    authToken: "",
+    authToken: '',
     messageLenght: 0,
   };
 
@@ -71,7 +71,7 @@ class MessageFeed extends React.Component<Props, State> {
       }, 10000);
     }
 
-    window.addEventListener("scroll", this.onScrollList);
+    window.addEventListener('scroll', this.onScrollList);
   }
 
   onScrollList = () => {
@@ -122,7 +122,7 @@ class MessageFeed extends React.Component<Props, State> {
 
   componentWillUnmount() {
     clearInterval(this.timerId);
-    window.removeEventListener("scroll", this.onScrollList);
+    window.removeEventListener('scroll', this.onScrollList);
   }
 
   mapMessages = (messages: ApiTypes.Feed.Message[]) => {
@@ -153,8 +153,8 @@ class MessageFeed extends React.Component<Props, State> {
 
   onScrollUp = () => {
     this.editorRef?.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
+      behavior: 'smooth',
+      block: 'end',
     });
   };
 
@@ -162,7 +162,7 @@ class MessageFeed extends React.Component<Props, State> {
     return new Promise((resolve, reject) => {
       this.props.onGetMessages();
       setTimeout(() => {
-        resolve();
+        resolve(null);
       }, 700);
     });
   };
@@ -204,7 +204,7 @@ class MessageFeed extends React.Component<Props, State> {
       !feedsTokens.length &&
       !currentHub?.token
     ) {
-      this.props.history.push("/no-hubs");
+      this.props.history.push('/no-hubs');
     }
   }
 
@@ -216,14 +216,14 @@ class MessageFeed extends React.Component<Props, State> {
         onRefresh={this.onRefresh}
         refreshingContent={<CircularProgress />}
       >
-        <ContainerStyled maxWidth="md">
+        <ContainerStyled maxWidth='md'>
           {this.checkCurrentHub()}
           {isMoreMessagesRequested && (
-            <PreloaderWrapper className="bottom">
+            <PreloaderWrapper className='bottom'>
               <CircularProgress />
             </PreloaderWrapper>
           )}
-          <UpButton color="inherit" onClick={this.onScrollUp}>
+          <UpButton color='inherit' onClick={this.onScrollUp}>
             <ArrowUpwardIcon />
           </UpButton>
         </ContainerStyled>
@@ -234,16 +234,16 @@ class MessageFeed extends React.Component<Props, State> {
 
 type StateProps = Pick<
   Props,
-  | "feedsTokens"
-  | "currentHub"
-  | "messages"
-  | "userId"
-  | "authToken"
-  | "isMoreMessagesRequested"
-  | "isMessagesRequested"
-  | "isAboutUsViewed"
-  | "isCurrentHubReqyested"
-  | "friends"
+  | 'feedsTokens'
+  | 'currentHub'
+  | 'messages'
+  | 'userId'
+  | 'authToken'
+  | 'isMoreMessagesRequested'
+  | 'isMessagesRequested'
+  | 'isAboutUsViewed'
+  | 'isCurrentHubReqyested'
+  | 'friends'
 >;
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   feedsTokens: selectors.feed.feedsTokens(state),
@@ -260,7 +260,7 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
 
 type DispatchProps = Pick<
   Props,
-  "onGetMessages" | "onGetCurrentHub" | "onGetMoreMessages" | "onGetFriends"
+  'onGetMessages' | 'onGetCurrentHub' | 'onGetMoreMessages' | 'onGetFriends'
 >;
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetMessages: () => dispatch(Actions.feed.getFeedTokensRequest()),
