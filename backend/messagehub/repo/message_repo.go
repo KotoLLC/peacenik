@@ -713,6 +713,17 @@ func (r *messageRepo) DeleteOldGuestMessages(until time.Time) {
 			with m as (select id from messages where parent_id is null and is_guest = true and created_at < $1),
 				 c as (select id from messages where parent_id in (select id from m)),
 				 mc as (select id from m union select id from c)
+			delete from message_reads
+			where message_id in (select id from mc);`,
+			until)
+		if err != nil {
+			return merry.Wrap(err)
+		}
+
+		_, err = tx.Exec(`
+			with m as (select id from messages where parent_id is null and is_guest = true and created_at < $1),
+				 c as (select id from messages where parent_id in (select id from m)),
+				 mc as (select id from m union select id from c)
 			insert into blob_pending_deletes(blob_id, deleted_at)
 			select attachment_id, $2::timestamptz
 			from messages
