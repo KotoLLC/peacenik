@@ -1,18 +1,18 @@
-import React, { ChangeEvent, FormEvent } from 'react'
-import { connect } from 'react-redux'
-import selectors from '@selectors/index'
-import Actions from '@store/actions'
-import { StoreTypes, ApiTypes } from 'src/types'
-import CoverIcon from '@assets/images/groups-cover-icon.svg'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import PersonIcon from '@material-ui/icons/Person'
-import FaceIcon from '@material-ui/icons/Face'
-import MailIcon from '@material-ui/icons/Mail'
-import Checkbox from '@material-ui/core/Checkbox'
-import { getAvatarUrl, getProfileCoverUrl } from '@services/avatarUrl'
-import { validate } from '@services/validation'
-import loadImage from 'blueimp-load-image'
-import { history } from '@view/routes'
+import React, { ChangeEvent, FormEvent } from 'react';
+import { connect } from 'react-redux';
+import selectors from '@selectors/index';
+import Actions from '@store/actions';
+import { StoreTypes, ApiTypes } from 'src/types';
+import CoverIcon from '@assets/images/groups-cover-icon.svg';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import PersonIcon from '@material-ui/icons/Person';
+import FaceIcon from '@material-ui/icons/Face';
+import MailIcon from '@material-ui/icons/Mail';
+import Checkbox from '@material-ui/core/Checkbox';
+import { getAvatarUrl, getProfileCoverUrl } from '@services/avatarUrl';
+import { validate } from '@services/validation';
+import loadImage from 'blueimp-load-image';
+import { history } from '@view/routes';
 import {
   EditCoverWrapper,
   EditCoverIconWrapper,
@@ -25,12 +25,8 @@ import {
   EditButtonsWrapper,
   ErrorMessage,
   CheckboxLabel,
-<<<<<<< HEAD
-} from "@view/shared/styles";
-=======
   ButtonContained,
-} from '@view/shared/styles'
->>>>>>> 61df53b3b8b727074c908d70df150c86db8dd1d7
+} from '@view/shared/styles';
 import {
   SettingsFormWrapper,
   SettingsFieldWrapper,
@@ -38,7 +34,7 @@ import {
   TextFieldStyled,
   CheckboxFieldWrapper,
   ButtonContainedStyled,
-} from "./styles";
+} from './styles';
 
 interface Props {
   userName: string;
@@ -58,7 +54,7 @@ interface Props {
   onSetProfileCover: (data: ApiTypes.Attachment) => void;
 }
 
-type FieldsType = "email" | "";
+type FieldsType = 'email' | '';
 
 interface State {
   email: string | null;
@@ -79,14 +75,14 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
   state = {
     email: null,
     isRequestSend: false,
-    errorMessage: "",
+    errorMessage: '',
     isAvatarFileUploaded: false,
     isCoverFileUploaded: false,
     avatarFile: null,
     coverFile: null,
-    fullName: this.props?.userFullName || "",
+    fullName: this.props?.userFullName || '',
     hideIdentity: this.props?.userHideIdentity,
-    noValideField: "" as FieldsType,
+    noValideField: '' as FieldsType,
     isCurrentPasswordVisible: false,
     isNewPasswordVisible: false,
   };
@@ -115,15 +111,15 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
     if (!email) {
       this.setState({
         errorMessage: "The email can't be empty",
-        noValideField: "email",
+        noValideField: 'email',
       });
       return false;
     }
 
     if (email && !validate.isEmailValid(email!)) {
       this.setState({
-        errorMessage: "Incorrect email",
-        noValideField: "email",
+        errorMessage: 'Incorrect email',
+        noValideField: 'email',
       });
       return false;
     }
@@ -198,8 +194,8 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
 
     this.setState({
       isRequestSend: true,
-      errorMessage: "",
-      noValideField: "",
+      errorMessage: '',
+      noValideField: '',
     });
   };
 
@@ -226,14 +222,14 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
         function (img, data) {
           if (data.imageHead && data.exif) {
             // Reset Exif Orientation data:
-            loadImage.writeExifData(data.imageHead, data, "Orientation", 1);
+            loadImage.writeExifData(data.imageHead, data, 'Orientation', 1);
             img.toBlob(function (blob) {
               loadImage.replaceHead(blob, data.imageHead, function (newBlob) {
                 self.setState({
                   avatarFile: newBlob,
                 });
               });
-            }, "image/jpeg");
+            }, 'image/jpeg');
           } else {
             self.setState({
               avatarFile: file[0],
@@ -269,14 +265,14 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
         function (img, data) {
           if (data.imageHead && data.exif) {
             // Reset Exif Orientation data:
-            loadImage.writeExifData(data.imageHead, data, "Orientation", 1);
+            loadImage.writeExifData(data.imageHead, data, 'Orientation', 1);
             img.toBlob(function (blob) {
               loadImage.replaceHead(blob, data.imageHead, function (newBlob) {
                 self.setState({
                   coverFile: newBlob,
                 });
               });
-            }, "image/jpeg");
+            }, 'image/jpeg');
           } else {
             self.setState({
               coverFile: file[0],
@@ -310,7 +306,7 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
         data.append(key, form_data[key]);
       }
 
-      data.append("file", prevState?.avatarFile, prevState?.avatarFile.name);
+      data.append('file', prevState?.avatarFile, prevState?.avatarFile.name);
 
       newProps.onSetAvatar({
         link: newProps?.avatarUploadLink.link,
@@ -330,7 +326,7 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
         data.append(key, form_data[key]);
       }
 
-      data.append("file", prevState?.coverFile, prevState?.coverFile.name);
+      data.append('file', prevState?.coverFile, prevState?.coverFile.name);
 
       newProps.onSetProfileCover({
         link: newProps?.coverUploadLink.link,
@@ -404,32 +400,36 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
         >
           <EditCoverLabel>
             <EditCoverIconWrapper>
-              <img src={CoverIcon} alt="icon" />
+              <img src={CoverIcon} alt='icon' />
             </EditCoverIconWrapper>
             <EditCoverAddButtonWrapper>
               <EditCoverAddButton>Add cover picture</EditCoverAddButton>
             </EditCoverAddButtonWrapper>
             <UploadInput
-              type="file"
-              id="coverFile"
-              name="coverFile"
+              type='file'
+              id='coverFile'
+              name='coverFile'
               onChange={this.onCoverUpload}
-              accept="image/x-png,image/gif,image/jpeg"
+              accept='image/x-png,image/gif,image/jpeg'
             />
           </EditCoverLabel>
         </EditCoverWrapper>
         <EditsAvatarWrapper>
-          <label htmlFor="avataFile">
+          <label htmlFor='avataFile'>
             <UploadInput
-              type="file"
-              id="avataFile"
-              name="avatarFile"
+              type='file'
+              id='avataFile'
+              name='avatarFile'
               onChange={this.onAvatarUpload}
-              accept="image/x-png,image/gif,image/jpeg"
+              accept='image/x-png,image/gif,image/jpeg'
             />
             {this.renderAvatar()}
           </label>
-          <ButtonContained onClick={() => {history.push('/profile/user?id=' + userId)}}>
+          <ButtonContained
+            onClick={() => {
+              history.push('/profile/user?id=' + userId);
+            }}
+          >
             View Profile
           </ButtonContained>
         </EditsAvatarWrapper>
@@ -437,9 +437,9 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
           <SettingsFieldWrapper>
             <SettingsFieldPlaceholder>Full name</SettingsFieldPlaceholder>
             <TextFieldStyled
-              variant="outlined"
-              id="fullName"
-              value={fullName || ""}
+              variant='outlined'
+              id='fullName'
+              value={fullName || ''}
               onChange={this.onFullNameChange}
               InputProps={{
                 startAdornment: <PersonIcon />,
@@ -449,7 +449,7 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
           <SettingsFieldWrapper>
             <SettingsFieldPlaceholder>Username</SettingsFieldPlaceholder>
             <TextFieldStyled
-              variant="outlined"
+              variant='outlined'
               value={`@${userName}`}
               disabled
               InputProps={{
@@ -460,11 +460,11 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
           <SettingsFieldWrapper>
             <SettingsFieldPlaceholder>Email</SettingsFieldPlaceholder>
             <TextFieldStyled
-              variant="outlined"
-              id="email"
-              type={"text"}
-              value={email || ""}
-              error={noValideField === "email" ? true : false}
+              variant='outlined'
+              id='email'
+              type={'text'}
+              value={email || ''}
+              error={noValideField === 'email' ? true : false}
               onChange={this.onEmailChange}
               InputProps={{
                 startAdornment: <MailIcon />,
@@ -479,11 +479,11 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
                   onChange={(event) =>
                     this.onHideIdentityChange(event.target.checked)
                   }
-                  name="rememberMe"
-                  color="primary"
+                  name='rememberMe'
+                  color='primary'
                 />
               }
-              label="Hide my profile. Only your friends can see real name and profile page"
+              label='Hide my profile. Only your friends can see real name and profile page'
             />
           </CheckboxFieldWrapper>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
@@ -493,9 +493,9 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
               onClick={this.onFormSubmit}
             >
               {isRequestSend ? (
-                <CircularProgress size={20} color={"inherit"} />
+                <CircularProgress size={20} color={'inherit'} />
               ) : (
-                "Save changes"
+                'Save changes'
               )}
             </ButtonContainedStyled>
           </EditButtonsWrapper>
@@ -507,14 +507,14 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
 
 type StateProps = Pick<
   Props,
-  | "userName"
-  | "userFullName"
-  | "userEmail"
-  | "userHideIdentity"
-  | "avatarUploadLink"
-  | "userId"
-  | "profileErrorMessage"
-  | "coverUploadLink"
+  | 'userName'
+  | 'userFullName'
+  | 'userEmail'
+  | 'userHideIdentity'
+  | 'avatarUploadLink'
+  | 'userId'
+  | 'profileErrorMessage'
+  | 'coverUploadLink'
 >;
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   userName: selectors.profile.userName(state),
@@ -529,12 +529,12 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
 
 type DispatchProps = Pick<
   Props,
-  | "onGetUploadLink"
-  | "onSetAvatar"
-  | "onEditProfile"
-  | "onGetProfile"
-  | "onGetProfileCoverUploadLink"
-  | "onSetProfileCover"
+  | 'onGetUploadLink'
+  | 'onSetAvatar'
+  | 'onEditProfile'
+  | 'onGetProfile'
+  | 'onGetProfileCoverUploadLink'
+  | 'onSetProfileCover'
 >;
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetUploadLink: (value: ApiTypes.Profile.UploadLinkRequest) =>
