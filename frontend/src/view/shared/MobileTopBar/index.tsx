@@ -49,7 +49,7 @@ const MobileTopBar: React.FC<Props> = React.memo((props) => {
                   to="/feed"
                   onClick={() => openHamburgerMenu(false)}>
                   <HomeIcon className="icon" />
-                Messages
+                Feed
               </HamburgerMenuLink>
               </HamburgerMenuItem>
               <HamburgerMenuItem>
