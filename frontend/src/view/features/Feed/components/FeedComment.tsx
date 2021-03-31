@@ -6,7 +6,6 @@ import selectors from '@selectors/index'
 import {
   ReactionNavItem,
 } from './styles'
-import CommentDialog from './CommentDialog'
 
 interface Props extends ApiTypes.Feed.Comment {
   userId: string
@@ -26,20 +25,32 @@ const FeedComment = (props) => {
     messageToken,
     id,
     userId,
-    notifyClicked
+    showCommentPopup
   } = props
-  const [isOpen, setOpen] = useState(false)
-  React.useEffect(() => {
-    setOpen(notifyClicked)
-  }, [notifyClicked])
 
   const checkIsCommentedByMe = (): boolean => {
     return comments.some(item => item?.user_id === userId)
   }
 
+  const commentClick = (): void => {
+    showCommentPopup({
+      created_at: created_at,
+      message: message,
+      isAttacmentDeleted: isAttacmentDeleted,
+      attachment_type: attachment_type,
+      attachment: attachment,
+      comments: comments,
+      sourceHost: sourceHost,
+      messageToken: messageToken,
+      id: id,
+      user_id: user_id,
+      friends: friends
+    })
+  }
+
   return (
     <>
-      <ReactionNavItem onClick={() => setOpen(true)} >
+      <ReactionNavItem onClick={commentClick } >
         <IconButton>
           {
             checkIsCommentedByMe() ?
@@ -52,7 +63,6 @@ const FeedComment = (props) => {
           }
         </IconButton>
       </ReactionNavItem>
-      <CommentDialog isOpen={isOpen} setOpen={setOpen} created_at={created_at} message={message} isAttacmentDeleted={isAttacmentDeleted} attachment_type={attachment_type} attachment={attachment} comments={comments} sourceHost={sourceHost} messageToken={messageToken} id={id} user_id={user_id} friends={friends}/>
     </>
   )
 }

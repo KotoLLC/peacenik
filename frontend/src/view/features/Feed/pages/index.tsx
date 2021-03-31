@@ -10,6 +10,9 @@ import { sortByDate } from '@services/sortByDate'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import PullToRefresh from 'react-simple-pull-to-refresh'
 import FeedPost from './../components/FeedPost'
+import CommentDialog from '../components/CommentDialog'
+import { API } from '@services/api'
+import queryString from 'query-string'
 
 import {
   ContainerStyled,
@@ -39,7 +42,22 @@ interface Props extends RouteComponentProps {
 interface State {
   authToken: string
   messageLenght: number
-  message_id:string | null
+  isPopupOpen: Boolean
+  popupData : PopupData
+}
+
+interface PopupData {
+  created_at: any
+  message: any
+  isAttacmentDeleted: any
+  attachment_type: any
+  attachment: any
+  comments: any
+  sourceHost: any
+  messageToken: any
+  id: any
+  user_id: any
+  friends: any
 }
 
 class FeedPage extends React.Component<Props, State> {
@@ -47,7 +65,20 @@ class FeedPage extends React.Component<Props, State> {
   state = {
     authToken: '',
     messageLenght: 0,
-    message_id: null
+    isPopupOpen: false,
+    popupData: {
+      created_at: "",
+      message: "",
+      isAttacmentDeleted: false,
+      attachment_type: "",
+      attachment: "",
+      comments: [],
+      sourceHost: "",
+      messageToken: "",
+      id: "",
+      user_id: "",
+      friends: [],
+    }
   }
 
   timerId
@@ -123,16 +154,13 @@ class FeedPage extends React.Component<Props, State> {
   mapMessages = (messages: ApiTypes.Feed.Message[]) => {
     const { userId } = this.props
     const sortedData = sortByDate(messages)
-    let isItemExist = false
     const renderData = sortedData.map((item, index) => {
-      if (this.state.message_id === item.id )
-        isItemExist = true;
       if (index === sortedData.length - 1) {
         return (
           <div ref={this.lastMessageRef} key={item.id}>
             <FeedPost
               {...item}
-              notifyClicked={this.state.message_id === item.id ? true : false}
+              showCommentPopup = {this.showCommentPopup}
               isAuthor={(userId === item.user_id) ? true : false} />
           </div>
         )
@@ -141,14 +169,33 @@ class FeedPage extends React.Component<Props, State> {
       return <FeedPost
         {...item}
         key={item.id}
-        notifyClicked={this.state.message_id === item.id ? true : false}
+        showCommentPopup = {this.showCommentPopup}
         isAuthor={(userId === item.user_id) ? true : false} />
     })
-    if (!isItemExist && this.state.message_id)
-    {
-      this.lastMessageRef?.current?.scrollIntoView({ behavior: 'smooth'})
-    }
+    
     return renderData
+  }
+
+  showCommentPopup = (displayData: any) => {
+    this.state.popupData.created_at = displayData.created_at
+    this.state.popupData.message = displayData.message
+    this.state.popupData.isAttacmentDeleted = displayData.isAttacmentDeleted
+    this.state.popupData.attachment_type = displayData.attachment_type
+    this.state.popupData.attachment = displayData.attachment
+    this.state.popupData.comments = displayData.comments
+    this.state.popupData.sourceHost = displayData.sourceHost
+    this.state.popupData.messageToken = displayData.messageToken
+    this.state.popupData.id = displayData.id
+    this.state.popupData.user_id = displayData.user_id
+    this.state.popupData.friends = displayData.friends
+
+    this.setPopupOpen(true)
+  }
+
+  setPopupOpen = (bOpen: Boolean) => {
+    this.setState({
+      isPopupOpen: bOpen
+    })
   }
 
   onScrollUp = () => {
@@ -183,6 +230,7 @@ class FeedPage extends React.Component<Props, State> {
         <>
           <div ref={this.editorRef}><Editor /></div>
           {this.mapMessages(messages)}
+          <CommentDialog isOpen={this.state.isPopupOpen} setOpen={this.setPopupOpen} popupData={this.state.popupData}/>
         </>
       )
     }
@@ -190,23 +238,43 @@ class FeedPage extends React.Component<Props, State> {
  
   componentDidUpdate(prevProps, prevState) {
     const { isMessagesRequested, feedsTokens, isAboutUsViewed, currentHub } = this.props
+    const parsed = queryString.parse(this.props.history.location.search)
+
     if (isAboutUsViewed) return false
 
     if (isMessagesRequested === false && !feedsTokens.length && !currentHub?.token) {
       this.props.history.push('/no-hubs')
     }
 
-    let messageId = new URLSearchParams(this.props.location.search).get("message_id")
-    if ( messageId && (prevState.message_id !== messageId)) {
+    let messageId = parsed?.message_id as string
+
+    if ( messageId ) {
       this.props.history.replace({
         search: "",
       })
-      this.setState({
-        message_id: messageId
-      })
-    } else if ( messageId) {
-      this.setState({
-        message_id: null
+
+      API.feed.getMessageById({
+        host: parsed?.sourceHost as string,
+        body: {
+          token: parsed?.messageToken as string,
+          message_id: parsed?.message_id as string,
+        }
+      }).then( (response: any) => {
+        this.showCommentPopup({
+          created_at: response.data.message.created_at,
+          message: response.data.message.text,
+          isAttacmentDeleted: false,
+          attachment_type: response.data.message.attachment_type,
+          attachment: response.data.message.attachment,
+          comments: response.data.message.comments,
+          sourceHost: parsed?.sourceHost,
+          messageToken: "",
+          id: response.data.message.id,
+          user_id: response.data.message.user_id,
+          friends: []
+        })
+      }).catch(error => {
+        console.log("GET MESSAGE ERROR: ", error)
       })
     }
 

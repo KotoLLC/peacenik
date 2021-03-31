@@ -51,12 +51,13 @@ import {
 
 interface Props extends ApiTypes.Feed.Message {
   isAuthor: boolean
-  notifyClicked: boolean
   uploadLink: ApiTypes.UploadLink | null
   currentHub: CommonTypes.HubTypes.CurrentHub
   currentMessageLikes: ApiTypes.Feed.LikesInfoData | null
   isCommentsOpenByDeafult?: boolean
   friends: ApiTypes.Friends.Friend[] | null
+
+  showCommentPopup: any
 
   onMessageEdit: (data: ApiTypes.Feed.EditMessage) => void
   onCommentPost: (data: ApiTypes.Feed.PostComment) => void
@@ -89,7 +90,7 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
     user_id,
     callback,
     friends,
-    notifyClicked
+    showCommentPopup
   } = props
 
   const [isEditer, setEditor] = useState<boolean>(false)
@@ -138,6 +139,7 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
         </ReactionNavItem>
         <FeedComment
           user_name={userName}
+          showCommentPopup = {showCommentPopup}
           {...{
             user_id, 
             created_at, 
@@ -150,7 +152,6 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
             id,
             friends,
             messageToken,
-            notifyClicked,
           }}
         />
       </ReactionNawWrapper>
