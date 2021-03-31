@@ -268,7 +268,7 @@ class FeedPage extends React.Component<Props, State> {
           attachment: response.data.message.attachment,
           comments: response.data.message.comments,
           sourceHost: parsed?.sourceHost,
-          messageToken: "",
+          messageToken: parsed?.messageToken,
           id: response.data.message.id,
           user_id: response.data.message.user_id,
           friends: []
