@@ -1,10 +1,14 @@
 on: 
   workflow_dispatch:
     inputs:
-      push-to-prod:
-        description: 'Push to production?'     
-        default: 'false'
-        required: false
+      destination:
+        description: 's (staging) p (prod) b (both)'     
+        default: 's'
+        required: true
+      branch:
+        description: 'branch'     
+        default: 'master'
+        required: true
 jobs:
   build-and-publish:
     name: Build and Publish images
@@ -12,12 +16,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2.3.2
         name: Check out code
+        with:
+          ref: '${{ github.event.inputs.branch}}'
 
       - uses: mr-smithers-excellent/docker-build-push@v5
         name: Build and Publish Frontend
         with:
           image: koto/frontend
-          tags: ${{ github.run_number }},latest
+          tags: ${{ github.run_number }}
           registry: ghcr.io
           githubOrg: kotollc
           username: ${{ github.actor }}
@@ -30,7 +36,7 @@ jobs:
         name: Build and Publish Userhub
         with:
           image: koto/userhub
-          tags: ${{ github.run_number }},latest 
+          tags: ${{ github.run_number }}
           registry: ghcr.io
           githubOrg: kotollc
           username: ${{ github.actor }}
@@ -42,7 +48,7 @@ jobs:
         name: Build and Publish Messagehub
         with:
           image: koto/messagehub
-          tags: ${{ github.run_number }},latest
+          tags: ${{ github.run_number }}
           registry: ghcr.io
           githubOrg: kotollc
           username: ${{ github.actor }}
@@ -56,9 +62,12 @@ jobs:
     needs: build-and-publish
     env:
       DO_CLUSTER_ID: "b68876cd-8a1d-4073-bb00-0ac36beacc0c"
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: '${{ github.event.inputs.branch}}'
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
         with:
@@ -74,10 +83,18 @@ jobs:
           sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/production/backend/user-hub.yaml
           sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/production/frontend/frontend.yaml
           sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/production/backend/message-hub.yaml
+          
       - name: Deploy Frontend and User-hub to DigitalOcean Kubernetes (staging)
+        if: ${{ github.event.inputs.destination == 's' }} || ${{ github.event.inputs.destination == 'b' }}
         run: |
           kubectl apply --recursive -f $GITHUB_WORKSPACE/.k8s/staging/  --force
       - name: Deploy Frontend and User-hub to DigitalOcean Kubernetes (production)
-        if: ${{ github.event.inputs.push-to-prod == 'true' }}
+        if: ${{ github.event.inputs.destination == 'p' }} || ${{ github.event.inputs.destination == 'b' }}
         run: |
           kubectl apply --recursive -f $GITHUB_WORKSPACE/.k8s/production/  --force
+      - name: Slack notify
+        uses: adamkdean/simple-slack-notify
+        with:
+          channel: '#engineering'
+          text: 'Branch ${{ github.event.inputs.branch }} pushed to ${{ github.event.inputs.destination }} (s=staging, p=prod, b=both)'
+          color: 'good'
