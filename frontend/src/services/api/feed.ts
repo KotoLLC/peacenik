@@ -7,6 +7,32 @@ export default {
       return response
     }).catch(error => ({ error }))
   },
+
+  getGroupMessages: async (data: ApiTypes.Feed.MessagesByGroupId) => {
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
+    const config = {
+      withCredentials: false,
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      }
+    }
+    return await axiosInstance.post(`${data.host}/rpc.MessageService/Messages`, data.body, config).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
+  
+  getGroupMessageToken: async (data: ApiTypes.Feed.MessagesByGroupId) => {
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
+    const config = {
+      withCredentials: false,
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      }
+    }
+    return await axiosInstance.post(`/rpc.TokenService/PostMessage`, {group_id: data.body.group_id} ).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
   
   getCurrentHub: async () => {
     return await axiosInstance.post('/rpc.TokenService/PostMessage', {}).then(response => {

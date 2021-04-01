@@ -20,8 +20,8 @@ import {
   PageCoverIconWrapper,
   ProfileAvatar,
   LeftSideBar,
-  RightSideBar,
-  CentralBar,
+  ProfileRightSideBar,
+  ProfileCentralBar,
   PageColumnBarsWrapper,
   PageBarTitle,
   ProfileName,
@@ -193,18 +193,18 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
               className="mobile-only"
             />
           </LeftSideBar>
-          <CentralBar>
+          <ProfileCentralBar>
             <PageBarTitle>
               {isUser ? `My friends (${currentUser?.friends?.length || 0})` : `${capitalizeFirstLetter(profileUser?.name || '')}\`s friends (${currentUser?.friends?.length || 0})`}
             </PageBarTitle>
             {mapFriendsList()}
-          </CentralBar>
-          <RightSideBar className="empty">
+          </ProfileCentralBar>
+          <ProfileRightSideBar className="empty">
           {!isUser && <><PageBarTitle>Common friends ({commonFriends.length || 0})</PageBarTitle>
             {mapCommonFriendsList()}
             </>
           }
-          </RightSideBar>
+          </ProfileRightSideBar>
         </PageColumnBarsWrapper>
       </Container>
     </>

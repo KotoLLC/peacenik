@@ -130,9 +130,62 @@ export function* watchGetMoreMessagesFromHub(action: { type: string, payload: Ap
   } else {
     yield put(Actions.feed.getMoreFeedFromHubFailed())
     if (response.error.response.status === 400) {
-      // yield put(Actions.authorization.getAuthTokenRequest())
+      yield put(Actions.authorization.getAuthTokenRequest())
       // yield put(Actions.feed.getFeedTokensRequest())
     }
+  }
+}
+
+export function* watchGetGroupMessagesToken(action: {type: string, payload: ApiTypes.Feed.MessagesByGroupId} ) {
+  try {
+    const response = yield API.feed.getGroupMessageToken(action.payload)
+
+    if (response.status === 200) {
+      console.log("RECEIVED TOKEN: ", response.data.tokens)
+      let token: string[] = Object.entries<string>(response.data.tokens).map(([key, value]) => {
+        return value
+      })
+
+      yield put(Actions.feed.setGroupFeedToken(token[0]))
+
+    } else if (response.status === 400) {
+      console.log("RESPONSE ERROR:", response)
+      yield put(Actions.authorization.getAuthTokenRequest())
+    }
+
+  } catch (error) {
+    console.log("GetGroupMessagesToken ERROR: ", error)
+  }
+}
+
+export function* watchGetGroupMessages(action: { type: string, payload: ApiTypes.Feed.MessagesByGroupId }) {
+  try {
+
+    const response = yield API.feed.getGroupMessages(action.payload)
+
+    if (response.status === 200) {
+      let resultData = []
+      if (response.data?.messages?.length) {
+        resultData = response.data?.messages.map(item => {
+          item.sourceHost = action.payload.host
+          item.messageToken = action.payload.body.token
+          return item
+        })
+      }
+
+      yield put(Actions.feed.getGroupFeedFromHubSuccess({
+        hub: action.payload.host,
+        messages: resultData,
+        group_id: action.payload.body.group_id
+      }))
+    } else if (response.status === 400) {
+      console.log("RESPONSE ERROR:", response)
+      yield put(Actions.authorization.getAuthTokenRequest())
+      yield put(Actions.feed.getGroupFeedRequest(action.payload))
+    }
+
+  } catch (error) {
+    console.log("GetGroupMessages ERROR: ", error)
   }
 }
 

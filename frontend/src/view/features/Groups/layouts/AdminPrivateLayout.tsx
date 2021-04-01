@@ -42,6 +42,7 @@ const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
     onGetFriends,
     friends,
    } = props
+   console.log("ADMIN PRIVATE LAYOUT")
 
   useEffect(() => {
     if (groupInvites === null && !isRequested) {

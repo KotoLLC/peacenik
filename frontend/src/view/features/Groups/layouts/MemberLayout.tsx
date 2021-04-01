@@ -29,6 +29,7 @@ interface Props {
 
 const MemberLayout: React.FC<Props> = React.memo((props) => {
   const { groupDetails } = props
+  console.log("MEMBER LAYOUT")
 
   if (!groupDetails) return null
 

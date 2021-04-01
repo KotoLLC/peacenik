@@ -9,6 +9,7 @@ import { getAvatarUrl } from '@services/avatarUrl'
 import Avatar from '@material-ui/core/Avatar'
 import loadImage from 'blueimp-load-image'
 import SendIcon from '@material-ui/icons/Send'
+import queryString from 'query-string'
 import { urlify } from '@services/urlify'
 import { MentionsInput, Mention } from 'react-mentions'
 import { friendsToMentionFriends, MentionFriend } from '@services/dataTransforms/friendsToMentionFriends'
@@ -31,10 +32,12 @@ import {
 interface Props {
   authToken: string
   currentHub: CommonTypes.HubTypes.CurrentHub
+  ownedHub: string[]
   isFeedMessagePostedSuccess: boolean
   uploadLink: ApiTypes.UploadLink | null
   userId: string
   friends: ApiTypes.Friends.Friend[] | null
+  groupMessageToken: string
 
   onMessagePost: (data: ApiTypes.Feed.PostMessage) => void
   onPostMessageSucces: (value: boolean) => void
@@ -48,28 +51,40 @@ export const Editor: React.FC<Props> = (props) => {
   const [isHubsEmptyMessageShowed, showHubsEmptyMessage] = useState<boolean>(false)
   const [file, setFile] = useState<File | null>(null)
   const [mentionFriends, setMentionFriends] = useState<MentionFriend[]>([])
-  const { isFeedMessagePostedSuccess, onPostMessageSucces, uploadLink, friends } = props
+  const { 
+    isFeedMessagePostedSuccess, 
+    onPostMessageSucces, 
+    uploadLink, 
+    friends, 
+    ownedHub,
+    groupMessageToken,
+  } = props
 
+  const pathName = window.location.pathname
+  const isGroupMsgPage = (pathName.indexOf("group") !== -1) ? true : false
+  const parsed = queryString.parse(window.location.search)
+  let group_id : string = parsed?.id as string
+  
   const onMessageSend = () => {
 
-    if (!props.currentHub.host) {
+    if (!props.currentHub.host && !isGroupMsgPage ) {
       showHubsEmptyMessage(true)
       return false
     }
-
+    
     if (value || file) {
       const data = {
-        host: props.currentHub.host,
+        host: isGroupMsgPage? ownedHub[0] : props.currentHub.host,
         body: {
-          token: props.currentHub.token,
+          token: isGroupMsgPage? groupMessageToken: props.currentHub.token,
           text: urlify(value),
           attachment_id: uploadLink?.blob_id,
+          group_id: group_id
         }
       }
       setFile(null)
       props.onMessagePost(data)
     }
-
   }
 
   const onComandEnterDown = (event) => {
@@ -242,18 +257,22 @@ export const Editor: React.FC<Props> = (props) => {
 type StateProps = Pick<Props,
   | 'authToken'
   | 'currentHub'
+  | 'ownedHub'
   | 'isFeedMessagePostedSuccess'
   | 'uploadLink'
   | 'userId'
   | 'friends'
+  | 'groupMessageToken'
 >
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   authToken: state.authorization.authToken,
   currentHub: selectors.feed.currentHub(state),
+  ownedHub: selectors.profile.ownedHubs(state),
   isFeedMessagePostedSuccess: selectors.feed.isFeedMessagePostedSuccess(state),
   uploadLink: state.messages.uploadLink,
   userId: selectors.profile.userId(state),
   friends: selectors.friends.friends(state),
+  groupMessageToken: selectors.feed.groupMessageToken(state),
 })
 
 type DispatchProps = Pick<Props,
