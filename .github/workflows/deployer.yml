@@ -93,7 +93,7 @@ jobs:
         run: |
           kubectl apply --recursive -f $GITHUB_WORKSPACE/.k8s/production/  --force
       - name: Slack notify
-        uses: adamkdean/simple-slack-notify
+        uses: edge/simple-slack-notify@master
         with:
           channel: '#engineering'
           text: 'Branch ${{ github.event.inputs.branch }} pushed to ${{ github.event.inputs.destination }} (s=staging, p=prod, b=both)'
