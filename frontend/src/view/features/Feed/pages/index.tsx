@@ -9,7 +9,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import { sortByDate } from '@services/sortByDate'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import PullToRefresh from 'react-simple-pull-to-refresh'
-import FeedPost from './../components/FeedPost'
+import FeedPost from '../components/FeedPost'
 import CommentDialog from '../components/CommentDialog'
 import { API } from '@services/api'
 import queryString from 'query-string'
@@ -24,7 +24,7 @@ import {
 interface Props extends RouteComponentProps {
   feedsTokens: CommonTypes.HubTypes.CurrentHub[]
   currentHub: CommonTypes.HubTypes.CurrentHub
-  isCurrentHubReqyested: boolean
+  isCurrentHubRequested: boolean
   messages: ApiTypes.Feed.Message[]
   userId: string
   authToken: string
@@ -42,22 +42,8 @@ interface Props extends RouteComponentProps {
 interface State {
   authToken: string
   messageLenght: number
-  isPopupOpen: Boolean
-  popupData : PopupData
-}
-
-interface PopupData {
-  created_at: any
-  message: any
-  isAttacmentDeleted: any
-  attachment_type: any
-  attachment: any
-  comments: any
-  sourceHost: any
-  messageToken: any
-  id: any
-  user_id: any
-  friends: any
+  isPopupOpen: boolean
+  popupData : CommonTypes.PopupData
 }
 
 class FeedPage extends React.Component<Props, State> {
@@ -68,7 +54,7 @@ class FeedPage extends React.Component<Props, State> {
     isPopupOpen: false,
     popupData: {
       created_at: "",
-      message: "",
+      message: null,
       isAttacmentDeleted: false,
       attachment_type: "",
       attachment: "",
@@ -77,7 +63,7 @@ class FeedPage extends React.Component<Props, State> {
       messageToken: "",
       id: "",
       user_id: "",
-      friends: [],
+      friends: null,
     }
   }
 
@@ -176,23 +162,26 @@ class FeedPage extends React.Component<Props, State> {
     return renderData
   }
 
-  showCommentPopup = (displayData: any) => {
-    this.state.popupData.created_at = displayData.created_at
-    this.state.popupData.message = displayData.message
-    this.state.popupData.isAttacmentDeleted = displayData.isAttacmentDeleted
-    this.state.popupData.attachment_type = displayData.attachment_type
-    this.state.popupData.attachment = displayData.attachment
-    this.state.popupData.comments = displayData.comments
-    this.state.popupData.sourceHost = displayData.sourceHost
-    this.state.popupData.messageToken = displayData.messageToken
-    this.state.popupData.id = displayData.id
-    this.state.popupData.user_id = displayData.user_id
-    this.state.popupData.friends = displayData.friends
-
+  showCommentPopup = (displayData: CommonTypes.PopupData) => {
+    this.setState({
+      popupData:{
+        created_at: displayData.created_at,
+        message: displayData.message,
+        isAttacmentDeleted: displayData.isAttacmentDeleted,
+        attachment_type: displayData.attachment_type,
+        attachment: displayData.attachment,
+        comments: displayData.comments,
+        sourceHost: displayData.sourceHost,
+        messageToken: displayData.messageToken,
+        id: displayData.id,
+        user_id: displayData.user_id,
+        friends: displayData.friends,
+      }
+    })
     this.setPopupOpen(true)
   }
 
-  setPopupOpen = (bOpen: Boolean) => {
+  setPopupOpen = (bOpen: boolean) => {
     this.setState({
       isPopupOpen: bOpen
     })
@@ -214,9 +203,9 @@ class FeedPage extends React.Component<Props, State> {
   }
 
   checkCurrentHub = () => {
-    const { messages, isCurrentHubReqyested } = this.props
+    const { messages, isCurrentHubRequested } = this.props
 
-    if (isCurrentHubReqyested) {
+    if (isCurrentHubRequested) {
       return (
         <EmptyMessageFeed>
           <PreloaderWrapper>
@@ -225,7 +214,7 @@ class FeedPage extends React.Component<Props, State> {
         </EmptyMessageFeed>
       )
     } else {
-
+      
       return (
         <>
           <div ref={this.editorRef}><Editor /></div>
@@ -308,7 +297,7 @@ type StateProps = Pick<Props,
   | 'isMoreMessagesRequested'
   | 'isMessagesRequested'
   | 'isAboutUsViewed'
-  | 'isCurrentHubReqyested'
+  | 'isCurrentHubRequested'
   | 'friends'
 >
 const mapStateToProps = (state: StoreTypes): StateProps => ({
@@ -320,7 +309,7 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   isMoreMessagesRequested: selectors.feed.isMoreMessagesRequested(state),
   isMessagesRequested: selectors.feed.isMessagesRequested(state),
   isAboutUsViewed: selectors.common.isAboutUsViewed(state),
-  isCurrentHubReqyested: selectors.feed.isCurrentHubRequested(state),
+  isCurrentHubRequested: selectors.feed.isCurrentHubRequested(state),
   friends: selectors.friends.friends(state),
 })
 

@@ -1,3 +1,5 @@
+import { ApiTypes } from 'src/types'
+
 export declare namespace CommonTypes {
 
   export namespace HubTypes {
@@ -33,4 +35,17 @@ export declare namespace CommonTypes {
     userId: string
   }
 
+  export interface PopupData {
+    created_at: string
+    message: ApiTypes.Feed.Message | null
+    isAttacmentDeleted: boolean
+    attachment_type: string
+    attachment: string
+    comments: string[]
+    sourceHost: string | string[] | null | undefined
+    messageToken: string | string[] | null | undefined
+    id: string
+    user_id: string
+    friends: ApiTypes.Friends.Friend[] | null
+  }
 }

@@ -250,6 +250,14 @@ export declare namespace ApiTypes {
       }
     }
 
+    export interface MessagesByGroupId {
+      host: string,
+      body: {
+        token: string
+        group_id: string
+      }
+    }
+
     export interface Message {
       sourceHost: string
       messageToken: string

@@ -9,6 +9,8 @@ const isMoreMessagesRequested = createSelector(state, data => data.isMoreMessage
 const isMessagesRequested = createSelector(state, data => data.isMessagesRequested)
 const isFeedMessagePostedSuccess = createSelector(state, data => data.isFeedMessagePostedSuccess)
 const messages = deepEqualSelector(state, data => data.messages)
+const groupMessages = deepEqualSelector(state, data => data.groupMessages)
+const groupMessageToken = deepEqualSelector(state, data => data.groupMessageToken)
 const hubsWithMessages = deepEqualSelector(state, data => data.hubsWithMessages)
 const currentMessageLikes = deepEqualSelector(state, data => data.currentMessageLikes)
 const currentCommentLikes = deepEqualSelector(state, data => data.currentCommentLikes)
@@ -20,6 +22,8 @@ export default {
   isCurrentHubRequested,
   isFeedMessagePostedSuccess,
   messages,
+  groupMessages,
+  groupMessageToken,
   currentMessageLikes,
   currentCommentLikes,
   hubsWithMessages,

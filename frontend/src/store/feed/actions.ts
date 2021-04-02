@@ -5,6 +5,12 @@ export enum Types {
   GET_FEED_TOKENS_REQUEST = 'GET_FEED_TOKENS_REQUEST',
   GET_FEED_TOKENS_SUCCESS = 'GET_FEED_TOKENS_SUCCESS',
 
+  GET_GROUP_FEED_REQUEST = 'GET_GROUP_FEED_REQUEST',
+  GET_GROUP_FEED_SUCCESS = 'GET_GROUP_FEED_SUCCESS',
+
+  GET_GROUP_FEED_TOKEN_REQUEST = 'GET_GROUP_FEED_TOKEN_REQUEST',
+  SET_GROUP_FEED_TOKEN = 'SET_GROUP_FEED_TOKEN',
+
   GET_MORE_FEED_REQUEST = 'GET_MORE_FEED_REQUEST',
   GET_MORE_FEED_SUCCESS = 'GET_MORE_FEED_SUCCESS',
   GET_MORE_FEED_FAILED = 'GET_MORE_FEED_FAILED',
@@ -80,6 +86,21 @@ const getFeedTokensRequest = () => ({
   type: Types.GET_FEED_TOKENS_REQUEST,
 })
 
+const getGroupFeedRequest = (payload: ApiTypes.Feed.MessagesByGroupId) => ({
+  type: Types.GET_GROUP_FEED_REQUEST,
+  payload
+})
+
+const getGroupFeedTokenRequest = (payload: ApiTypes.Feed.MessagesByGroupId) => ({
+  type: Types.GET_GROUP_FEED_TOKEN_REQUEST,
+  payload
+})
+
+const setGroupFeedToken = (payload: string) => ({
+  type: Types.SET_GROUP_FEED_TOKEN,
+  payload
+})
+
 const getFeedTokensSuccess = (payload: CommonTypes.HubTypes.CurrentHub[]) => ({
   type: Types.GET_FEED_TOKENS_SUCCESS,
   payload
@@ -101,6 +122,15 @@ const getCurrentHubFailed = () => ({
 const getFeedFromHubRequest = (payload: ApiTypes.Feed.MessagesFromHub) => ({
   type: Types.GET_FEED_TOKENS_FROM_HUB_REQUEST,
   payload,
+})
+
+const getGroupFeedFromHubSuccess = (payload: {
+  hub: string
+  messages: ApiTypes.Feed.Message[]
+  group_id: string
+}) => ({
+  type: Types.GET_GROUP_FEED_SUCCESS,
+  payload
 })
 
 const getFeedFromHubSuccess = (payload: {
@@ -317,6 +347,10 @@ const cleanAllFeeds = () => ({
 
 export default {
   getFeedTokensRequest,
+  getGroupFeedRequest,
+  getGroupFeedTokenRequest,
+  getGroupFeedFromHubSuccess,
+  setGroupFeedToken,
   getFeedTokensSuccess,
   getCurrentHubRequest,
   getCurrentHubSuccess,
