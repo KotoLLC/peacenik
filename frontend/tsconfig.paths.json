@@ -8,6 +8,7 @@
       "@services/*": ["./src/services/*"],
       "@selectors/*": ["./src/selectors/*"],
       "@assets/*": ["./src/assets/*"],
+      "@hooks/*": ["./src/hooks/*"],
     }
   }
 }

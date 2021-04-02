@@ -1,15 +1,13 @@
 version: "3.7"
-
 services:
   s3:
     image: minio/minio
     ports:
       - "9000:9000"
-    command: ["server","/data"]
+    command: ["server", "/data"]
     environment:
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
-
   user-hub:
     build:
       context: ./backend
@@ -23,7 +21,7 @@ services:
       KOTO_LISTEN_ADDRESS: :12001
       KOTO_EXTERNAL_ADDRESS: http://localhost:12001/
       KOTO_PRIVATE_KEY: /user-hub.rsa
-      KOTO_ADMINS: "matt"
+      KOTO_ADMINS: "matt, reinis, andy"
       KOTO_DB_HOST: db-user-hub
       KOTO_DB_SSL_MODE: disable
       KOTO_DB_USER: postgres
@@ -39,11 +37,9 @@ services:
       KOTO_SMTP_PASSWORD: 4534534terer
       KOTO_SMTP_FROM: admin@koto.org
       KOTO_TEST_MODE: "true"
-
     restart: on-failure
     depends_on:
       - db-user-hub
-
   message-hub-1:
     build:
       context: ./backend
@@ -56,7 +52,7 @@ services:
     environment:
       KOTO_LISTEN_ADDRESS: :12002
       KOTO_EXTERNAL_ADDRESS: http://localhost:12002/
-      KOTO_USER_HUB_ADDRESS: http://central:12001/
+      KOTO_USER_HUB_ADDRESS: http://localhost:12001/
       KOTO_DB_HOST: db-message-hub
       KOTO_DB_SSL_MODE: disable
       KOTO_DB_USER: postgres
@@ -78,7 +74,6 @@ services:
   #   working_dir: /app
   #   ports:
   #     - 3000:3000
-
   db-user-hub:
     image: postgres:12.5
     ports:
@@ -86,11 +81,10 @@ services:
     environment:
       POSTGRES_DB: koto-user-hub
       POSTGRES_PASSWORD: docker
-
   db-message-hub:
     image: postgres:12.5
     ports:
       - "5433:5432"
     environment:
-      POSTGRES_DB: koto-message-hub-1
+      POSTGRES_DB: koto-message-hub
       POSTGRES_PASSWORD: docker

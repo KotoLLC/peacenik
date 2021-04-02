@@ -126,7 +126,7 @@ export const ButtonContainedStyled = styled(ButtonContained)`
   min-width: 200px;
 
   @media (max-width: 770px){
-    min-width: 150px;
+    min-width: 180px;
   }
 ` 
 

@@ -13,42 +13,42 @@ spec:
       labels:
         app: message-hub
     spec:
-      terminationGracePeriodSeconds: 5
+      terminationGracePeriodSeconds: 60
       hostAliases:
-      - ip: "172.17.0.3"
-        hostnames:
-        - "central.orbits.local"
+        - ip: "172.17.0.3"
+          hostnames:
+            - "central.orbits.local"
       containers:
-      - name: message-hub
-        image: message-hub:latest
-        imagePullPolicy: Never
-        ports:
-        - containerPort: 12002
-        env:
-          - name: KOTO_ADDRESS
-            value: ":12002"
-          - name: KOTO_EXTERNAL_ADDRESS
-            value: http://node1.orbits.local
-          - name: KOTO_USER_HUB_ADDRESS
-            value: http://central.orbits.local
-          - name: KOTO_DB_HOST
-            value: db-message-hub-service.backend
-          - name: KOTO_DB_SSL_MODE
-            value: disable
-          - name: KOTO_DB_USER
-            value: postgres
-          - name: KOTO_DB_PASSWORD
-            value: docker
-          - name: KOTO_DB_NAME
-            value: koto-message-hub-1
-          - name: KOTO_S3_ENDPOINT
-            value: https://fra1.digitaloceanspaces.com
-          - name: KOTO_S3_KEY
-            value: minioadmin
-          - name: KOTO_S3_SECRET
-            value: minioadmin
-          - name: KOTO_S3_BUCKET
-            value: koto-message-hub-1
+        - name: message-hub
+          image: message-hub:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 12002
+          env:
+            - name: KOTO_ADDRESS
+              value: ":12002"
+            - name: KOTO_EXTERNAL_ADDRESS
+              value: http://node1.orbits.local
+            - name: KOTO_USER_HUB_ADDRESS
+              value: http://central.orbits.local
+            - name: KOTO_DB_HOST
+              value: db-message-hub-service.backend
+            - name: KOTO_DB_SSL_MODE
+              value: disable
+            - name: KOTO_DB_USER
+              value: postgres
+            - name: KOTO_DB_PASSWORD
+              value: docker
+            - name: KOTO_DB_NAME
+              value: koto-message-hub-1
+            - name: KOTO_S3_ENDPOINT
+              value: https://fra1.digitaloceanspaces.com
+            - name: KOTO_S3_KEY
+              value: minioadmin
+            - name: KOTO_S3_SECRET
+              value: minioadmin
+            - name: KOTO_S3_BUCKET
+              value: koto-message-hub-1
 ---
 apiVersion: v1
 kind: Service
@@ -60,5 +60,5 @@ spec:
   selector:
     app: message-hub
   ports:
-  - name: http
-    port: 12002
+    - name: http
+      port: 12002

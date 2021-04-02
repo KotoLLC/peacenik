@@ -13,7 +13,7 @@ spec:
       labels:
         app: user-hub
     spec:
-      terminationGracePeriodSeconds: 5
+      terminationGracePeriodSeconds: 60
       initContainers:
       - name: kubectl
         image: ghcr.io/kotollc/koto/kubectl:0.0.2
@@ -38,7 +38,7 @@ spec:
         - name: koto-writeable
           emptyDir: {}
       hostAliases:
-      - ip: "192.168.64.10"
+      - ip: "192.168.54.99"
         hostnames:
         - "node1.orbits.local"
       containers:

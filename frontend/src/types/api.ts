@@ -275,6 +275,7 @@ export declare namespace ApiTypes {
       attachment_thumbnail?: string
       likes?: number
       liked_by_me?: boolean
+      friend_id?: string
     }
 
     export interface Comment {
@@ -323,6 +324,10 @@ export declare namespace ApiTypes {
       id: string
       likes: LikeInfo[]
     }
+  }
+
+  export namespace ChatMessages {
+    
   }
 
   export namespace Notifications {
