@@ -17,7 +17,9 @@ export const MessagesWrapper = styled.div`
   margin: 0 auto 31px auto;
   display: flex;
   box-shadow: 2px 2px 2px #888888;
-
+  @media screen and (max-width: 1160px) {
+    width: 100%;
+  }
   @media (max-width: 770px) {
     width: calc(100% - 30px);
     padding: 15px 0 0 0;
@@ -28,6 +30,15 @@ export const MessagesWrapper = styled.div`
 export const ContentWrapper = styled.div`
   flex: 1 0 auto;
   background: #e8edf3;
+  @media screen and (max-width: 1140px) {
+    width: calc( 100vw - 507px );
+  }
+  @media screen and (max-width: 900px) {
+    width: calc( 100vw - 297px);
+  }
+  @media screen and (max-width: 770px) {
+    width: calc( 100vw - 147px );
+  }
 `
 
 export const InfoBlockIconWrapper = styled.div`
@@ -167,6 +178,12 @@ export const SidebarWrapper = styled.div`
   .huxzai {
     margin-bottom: 20px;
   }
+  @media screen and (max-width: 900px) {
+    min-width: 250px;
+  }
+  @media screen and (max-width: 770px) {
+    min-width: 100px;
+  }
   
 `;
 export const SidebarHeader = styled.div`
@@ -245,25 +262,24 @@ export const MessageCardContent = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 10px 0;
-  
   border-bottom: 1px solid rgba(200,207,212,0.6);
-  
   
   @media (max-width: 770px) {
     position: relative;
     flex-wrap: wrap;
-    padding: 20px 5px;
-    width: calc(100% - 10px);
-    margin-left: auto;
+    padding: 20px;
+    width: 100%;
     border: none;
-  
+    & a {
+      margin: auto;
+    }
     &::before {
       content: '';
       position: absolute;
       bottom: 0;
       right: 0;
       background: rgba(200,207,212,0.6);
-      width: calc(100% - 10px);
+      width: 100%;
       height: 1px;
     }
   }
@@ -273,19 +289,23 @@ export const MessageCard = styled.div`
   &:hover {
     background-color: #599C0B20;    
   }
+  @media screen and (max-width: 770px) {
+    padding-left: 0;
+  }
 `
 export const MessageInfoBlock = styled(Link)`
   display: flex;
   flex-direction: column;
-  min-width: 380px;
   justify-content: space-between;
   padding-right: 20px;
   margin-left: 15px;
+  flex-grow: 1;
+  @media screen and (max-width: 770px) {
+    display: none;
+  }
 `
 
 export const MessageInfoDisplayName = styled.div`
-  width: 100%;
-  max-width: 250px;
   display: block;
   font-family: 'SFUITextMedium';
   font-size: 18px;
@@ -397,6 +417,9 @@ export const DMContentWrapper = styled.div`
   flex: 1 0 auto;
   overflow-y: auto;
   max-height: 660px;
+  @media screen and (max-width: 770px) {
+    max-height: 650px;
+  }
 `
 export const DMContentInfoWrapper = styled.div`
   flex: 1 0 auto;
@@ -526,7 +549,6 @@ export const ComposeCard = styled.div`
     flex-wrap: wrap;
     padding: 20px 5px;
     width: calc(100% - 10px);
-    margin-left: auto;
     border: none;
 
     &::before {

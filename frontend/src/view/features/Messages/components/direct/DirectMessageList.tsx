@@ -6,6 +6,7 @@ import _ from 'lodash';
 import DirectMessageListItem from './DirectMessageListItem';
 import { MessageDirection, MessagePublishStatus } from '../../types/types';
 import { ApiTypes, StoreTypes } from 'src/types';
+import jwt_decode from 'jwt-decode';
 
 const DirectMessageList = () => {
   const dispatch = useDispatch();
@@ -24,6 +25,8 @@ const DirectMessageList = () => {
   const currentUserId = useSelector<StoreTypes, string>(
     (state) => state.profile.user.id
   );
+  // console.log(friends);
+  // console.log(messages);
 
   const lastAccessTime = {};
 
@@ -32,6 +35,9 @@ const DirectMessageList = () => {
     userId: string
   ): void => {
     for (let m of messages) {
+      // console.log(jwt_decode(m));
+      console.log(m.messageToken);
+      console.log(jwt_decode(m.messageToken));
       if (m.user_id === userId && m.friend_id) {
         lastAccessTime[m.friend_id] = {
           user_id: m.friend_id,

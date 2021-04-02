@@ -15,9 +15,11 @@ import { DirectMessageDialog } from "./direct/DirectMessageDialog";
 
 export const ButtonContainedStyled = styled(ButtonContained)`
   min-width: 160px;
+  margin-right: 0;
 
   @media (max-width: 770px) {
-    min-width: 150px;
+    min-width: auto;
+    width: 80px;
   }
 `;
 const MesssageSidebar: React.FC = () => {

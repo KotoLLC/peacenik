@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { useRouteMatch, useHistory } from "react-router-dom";
+import React, { useState } from 'react';
+import { useRouteMatch, useHistory } from 'react-router-dom';
 
 import {
   ListTab,
   ListTabs,
   ListTabsWrapper,
-} from "@view/features/Messages/components/styles";
+} from '@view/features/Messages/components/styles';
 
 export const MessagesListTab = () => {
   const [currentTab, onTabChange] = useState<number | boolean>(0);
@@ -19,11 +19,11 @@ export const MessagesListTab = () => {
         centered
       >
         <ListTab
-          label="Direct Messages"
+          label='Direct Messages'
           onClick={() => history.push(`${baseUrl}/d`)}
         ></ListTab>
         <ListTab
-          label="Group Messages"
+          label='Group Messages'
           onClick={() => history.push(`${baseUrl}/g`)}
         ></ListTab>
       </ListTabs>
