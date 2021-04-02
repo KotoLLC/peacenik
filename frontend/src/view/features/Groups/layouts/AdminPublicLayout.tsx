@@ -87,18 +87,6 @@ const AdminPublicLayout: React.FC<Props> = React.memo((props) => {
     onGetGroupMessagesToken
   } = props
 
-  if (!groupDetails) return null
-
-  const { group, members, status, invites } = groupDetails
-  const parsed = queryString.parse(location.search)
-  console.log("ADMIN PUBLIC LAYOUT", props)
-  let timerId: any = null
-  
-  let msgToken: string = ""
-  feedsTokens.map( (item: CommonTypes.HubTypes.CurrentHub ) => {
-    if(item.host === ownedHub[0])
-      msgToken = item.token
-  })
 
   useEffect( () => {
     onGetGroupMessagesToken({
@@ -135,6 +123,21 @@ const AdminPublicLayout: React.FC<Props> = React.memo((props) => {
       setRequested(false)
     }
   }, [groupInvites, isRequested, messages])
+
+
+  if (!groupDetails) return null
+
+  const { group, members, status, invites } = groupDetails
+
+  const parsed = queryString.parse(location.search)
+  console.log("ADMIN PUBLIC LAYOUT", props)
+  let timerId: any = null
+  
+  let msgToken: string = ""
+  feedsTokens.map( (item: CommonTypes.HubTypes.CurrentHub ) => {
+    if(item.host === ownedHub[0])
+      msgToken = item.token
+  })
 
   const fixInvitesGroupId = () => {
     if (!groupDetails?.invites?.length) return []
@@ -317,7 +320,11 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   invitesToConfirm: selectors.groups.invitesToConfirm(state),
 })
 
-type DispatchProps = Pick<Props, 'onGetInvitesToConfirmRequest' | 'onGetGroupMessages' | 'onGetGroupMessagesToken'>
+type DispatchProps = Pick<Props, 
+  'onGetInvitesToConfirmRequest' 
+  | 'onGetGroupMessages' 
+  | 'onGetGroupMessagesToken'
+>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetGroupMessagesToken: (data: ApiTypes.Feed.MessagesByGroupId) => dispatch(Actions.feed.getGroupFeedTokenRequest(data)),
   onGetGroupMessages: (data: ApiTypes.Feed.MessagesByGroupId) => dispatch(Actions.feed.getGroupFeedRequest(data)),

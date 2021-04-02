@@ -180,7 +180,7 @@ export function* watchGetGroupMessages(action: { type: string, payload: ApiTypes
       }))
     } else if (response.status === 400) {
       console.log("RESPONSE ERROR:", response)
-      yield put(Actions.authorization.getAuthTokenRequest())
+      yield put(Actions.feed.getCurrentHubRequest())
       yield put(Actions.feed.getGroupFeedRequest(action.payload))
     }
 
