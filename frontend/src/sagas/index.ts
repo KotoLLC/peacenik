@@ -50,6 +50,8 @@ import {
 } from './profile'
 import {
     watchGetMessages,
+    watchGetGroupMessages,
+    watchGetGroupMessagesToken,
     watchGetCurrentHub,
     watchPostMessage,
     watchGetMessagesFromHub,
@@ -145,6 +147,8 @@ export function* rootSaga() {
         takeEvery(ProfileTypes.SET_PROFILE_COVER_REQUEST, watchSetProfileCover),
 
         takeEvery(MessagesTypes.GET_FEED_TOKENS_REQUEST, watchGetMessages),
+        takeEvery(MessagesTypes.GET_GROUP_FEED_REQUEST, watchGetGroupMessages),
+        takeEvery(MessagesTypes.GET_GROUP_FEED_TOKEN_REQUEST, watchGetGroupMessagesToken),
         takeEvery(MessagesTypes.GET_CURRENT_HUB_REQUEST, watchGetCurrentHub),
         takeEvery(MessagesTypes.POST_FEED_MESSAGE_REQUEST, watchPostMessage),
         takeEvery(MessagesTypes.GET_FEED_TOKENS_FROM_HUB_REQUEST, watchGetMessagesFromHub),

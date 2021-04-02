@@ -43,8 +43,14 @@ interface Props extends ApiTypes.Feed.Comment {
 
 const CommentDialog = (props) => {
   const {
-    user_id,
+    userId,
     userName,
+    isOpen,
+    setOpen,
+    popupData
+  } = props
+
+  const {
     created_at,
     message,
     isAttacmentDeleted,
@@ -53,12 +59,11 @@ const CommentDialog = (props) => {
     comments,
     sourceHost,
     messageToken,
-    friends,
     id,
-    isOpen,
-    userId,
-    setOpen
-  } = props
+    user_id,
+    friends
+  } = popupData
+
   const [comment, onCommentChange] = useState<string>('')
   const [mentionFriends, setMentionFriends] = useState<MentionFriend[]>([])
  

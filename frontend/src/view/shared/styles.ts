@@ -597,8 +597,32 @@ export const LeftSideBar = styled.aside`
     }
   }
 `
+export const GroupCard = styled.div`
+  background: #fff;
+  padding-top: 20px;
+  margin-bottom: 20px;
+`
 
 export const RightSideBar = styled.aside`
+  position: relative;
+  width: 260px;
+  margin-left: 30px;
+  border-radius: 0 0 4px 4px;
+  &.empty{
+    padding: 0;
+  }
+  @media (max-width: 960px){
+    margin-left: 15px;
+  }
+
+  @media (max-width: 770px){
+    width: 100%;
+    margin-left: 0;
+    padding: 15px 0;
+  }
+`  
+
+export const ProfileRightSideBar = styled.aside`
   position: relative;
   padding: 20px 0 20px;
   width: 260px;
@@ -620,6 +644,25 @@ export const RightSideBar = styled.aside`
 `
 
 export const CentralBar = styled.section`
+  flex-grow: 1;
+  max-width: calc(100% - 580px);
+  padding: 20px 0 20px;
+  position: relative;
+  border-radius: 0 0 4px 4px;
+
+  @media (max-width: 1024px){
+    max-width: calc(100% - 290px);
+  }
+
+  @media (max-width: 770px){
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 20px;
+    padding: 15px 0;
+  }
+`
+
+export const ProfileCentralBar = styled.section`
   background: #fff;
   flex-grow: 1;
   max-width: calc(100% - 580px);
@@ -814,6 +857,35 @@ export const CoverBarButtonsWrapper = styled.div`
   
   @media (max-width: 770px){
     margin-left: 0px;
+  }
+`
+
+export const MembersListItemWrapper = styled.li`
+  list-style: none;
+  min-height: 87px;
+  background: #fff;
+  border-bottom: 1px solid rgba(200, 207, 212, 0.6);
+  display: flex;
+  align-items: center;
+  padding: 15px 15px 20px;
+  flex-wrap: wrap;
+  
+  a:nth-child(2) {
+    width: calc(100% - 72px);
+  }
+
+  button {
+    margin-left: 0px;
+    margin-top: 20px;
+  }
+
+  &:last-child {
+    border: none;
+  }
+
+  &.sidebar {
+    display: block;
+    padding: 15px 15px 20px;
   }
 `
 

@@ -4,7 +4,7 @@ import { ApiTypes } from 'src/types'
 import { getAvatarUrl } from '@services/avatarUrl'
 import DeleteMemberDialog from './DeleteMemberDialog'
 import {
-  UsersListItemWrapper,
+  MembersListItemWrapper,
   UsersListItemAvatar,
   UsersListItemFullName,
 } from '@view/shared/styles' 
@@ -24,12 +24,12 @@ export const Member: React.FC<Props> = (props) => {
   } = props
 
   return (
-    <UsersListItemWrapper>
+    <MembersListItemWrapper>
       <Link to={`/profile/user?id=${id}`}>
         <UsersListItemAvatar src={getAvatarUrl(id)} />
       </Link>
       <UsersListItemFullName to={`/profile/user?id=${id}`}>{full_name || name}</UsersListItemFullName>
       {isAdminLayout && <DeleteMemberDialog groupId={groupId} memberId={id} />}
-    </UsersListItemWrapper>
+    </MembersListItemWrapper>
   )
 }
