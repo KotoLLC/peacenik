@@ -96,7 +96,7 @@ const getGroupFeedTokenRequest = (payload: ApiTypes.Feed.MessagesByGroupId) => (
   payload
 })
 
-const setGroupFeedToken = (payload: string) => ({
+const setGroupFeedToken = (payload: Object) => ({
   type: Types.SET_GROUP_FEED_TOKEN,
   payload
 })

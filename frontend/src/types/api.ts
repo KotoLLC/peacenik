@@ -173,7 +173,8 @@ export declare namespace ApiTypes {
         token: string,
         text: string,
         attachment_id?: string,
-        attachment_changed?: boolean
+        attachment_changed?: boolean,
+        group_id?: string
       }
     }
 

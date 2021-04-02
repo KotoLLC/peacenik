@@ -141,9 +141,12 @@ export function* watchGetGroupMessagesToken(action: {type: string, payload: ApiT
     const response = yield API.feed.getGroupMessageToken(action.payload)
 
     if (response.status === 200) {
-      console.log("RECEIVED TOKEN: ", response.data.tokens)
-      let token: string[] = Object.entries<string>(response.data.tokens).map(([key, value]) => {
-        return value
+      // console.log("RECEIVED GROUP MSG TOKEN: ", response.data.tokens)
+      let token: Object[] = Object.entries<Object>(response.data.tokens).map(([key, value]) => {
+        return {
+          host: key,
+          token : value
+        }
       })
 
       yield put(Actions.feed.setGroupFeedToken(token[0]))
@@ -228,8 +231,20 @@ export function* watchPostMessage(action: { type: string, payload: ApiTypes.Feed
 
   if (response.status === 200) {
     yield put(Actions.feed.postFeedMessageSucces(true))
-    yield put(Actions.feed.getFeedTokensRequest())
     yield put(Actions.feed.getFeedMessageUploadLinkSucces(null))
+    
+    if ( !action.payload.body.group_id) {
+      yield put(Actions.feed.getFeedTokensRequest())
+    } else {
+      console.log("I'm here!")
+      yield put(Actions.feed.getGroupFeedRequest({
+        host: action.payload.host,
+        body: {
+          token: action.payload.body.token,
+          group_id: action.payload.body.group_id? action.payload.body.group_id : ""
+        }
+      }))
+    }
   } 
 }
 
