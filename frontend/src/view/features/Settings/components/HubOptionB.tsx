@@ -136,7 +136,7 @@ class HubOptionB extends React.PureComponent<Props, State> {
             1. Run the installation on Ubunty (18.04+)
           </HubFieldLabel>
           <HubFieldInput
-            value="$ bash -c «$(wget-O-http://github.com/script.sh)»"
+            value="wget -c https://fra1.digitaloceanspaces.com/peacenik/message-hub-installer.tar.gz -O - | tar -xz && ./message-hub-installer"
             ref={this.inputRef}
             onChange={() => {/**/ }}
           />
