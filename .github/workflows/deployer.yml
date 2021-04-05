@@ -23,7 +23,7 @@ jobs:
         name: Build and Publish Frontend
         with:
           image: koto/frontend
-          tags: ${{ github.run_number }}
+          tags: ${{ github.run_number }}, latest
           registry: ghcr.io
           githubOrg: kotollc
           username: ${{ github.actor }}
@@ -36,7 +36,7 @@ jobs:
         name: Build and Publish Userhub
         with:
           image: koto/userhub
-          tags: ${{ github.run_number }}
+          tags: ${{ github.run_number }}, latest
           registry: ghcr.io
           githubOrg: kotollc
           username: ${{ github.actor }}
@@ -48,7 +48,7 @@ jobs:
         name: Build and Publish Messagehub
         with:
           image: koto/messagehub
-          tags: ${{ github.run_number }}
+          tags: ${{ github.run_number }}, latest
           registry: ghcr.io
           githubOrg: kotollc
           username: ${{ github.actor }}
