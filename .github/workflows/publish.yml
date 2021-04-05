@@ -4,6 +4,8 @@ jobs:
   build-and-publish:
     name: Build and Publish images
     runs-on: ubuntu-latest
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
       - uses: actions/checkout@v2.3.2
         name: Check out code
