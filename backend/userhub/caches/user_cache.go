@@ -13,7 +13,7 @@ type User struct {
 	Email             string `db:"email"`
 	AvatarOriginalID  string `db:"avatar_original_id"`
 	AvatarThumbnailID string `db:"avatar_thumbnail_id"`
-	BackroundID       string `db:"background_id"`
+	BackgroundID      string `db:"background_id"`
 	HideIdentity      bool   `db:"hide_identity"`
 	DisplayName       string
 }
@@ -72,7 +72,7 @@ func (c *userCache) User(userID, meID string) User {
 		user.Email = ""
 		user.AvatarOriginalID = ""
 		user.AvatarThumbnailID = ""
-		user.BackroundID = ""
+		user.BackgroundID = ""
 	}
 
 	return user

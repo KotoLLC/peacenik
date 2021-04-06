@@ -86,13 +86,13 @@ func (ir *imageRouter) UserBackground(w http.ResponseWriter, r *http.Request) {
 	me := r.Context().Value(services.ContextUserKey).(repo.User)
 	userInfo := ir.userCache.User(userID, me.ID)
 
-	if userInfo.BackroundID == "" || (me.ID != userID && !ir.repos.Friend.AreFriends(me.ID, userID)) {
+	if userInfo.BackgroundID == "" || (me.ID != userID && !ir.repos.Friend.AreFriends(me.ID, userID)) {
 		w.Header().Set("Content-Type", "image/gif")
 		w.Header().Set("Cache-Control", "max-age=60")
 		_, _ = w.Write(transparentPixel)
 		return
 	}
-	link, err := ir.s3Storage.CreateLink(r.Context(), userInfo.BackroundID, time.Hour*24)
+	link, err := ir.s3Storage.CreateLink(r.Context(), userInfo.BackgroundID, time.Hour*24)
 	if err != nil {
 		log.Println("can't create s3 link: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
