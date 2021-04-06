@@ -46,8 +46,8 @@ interface Props {
   feedsTokens: CommonTypes.HubTypes.CurrentHub[]
   groupDetails?: ApiTypes.Groups.GroupDetails | null
   
-  onGetGroupMessages: (data: ApiTypes.Feed.MessagesByGroupId) => void
-  onGetGroupMessagesToken: (data: ApiTypes.Feed.MessagesByGroupId) => void
+  onGetGroupMessages: (data: ApiTypes.Groups.MessagesById) => void
+  onGetGroupMessagesToken: (data: ApiTypes.Groups.MessagesById) => void
 }
 
 const MemberLayout: React.FC<Props> = React.memo((props) => {
@@ -261,9 +261,9 @@ type StateProps = Pick<Props,
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   state: state,
   groupDetails: selectors.groups.groupDetails(state),
-  messages: selectors.feed.groupMessages(state),
+  messages: selectors.groups.groupMessages(state),
   userId: selectors.profile.userId(state),
-  groupMessageToken: selectors.feed.groupMessageToken(state),
+  groupMessageToken: selectors.groups.groupMessageToken(state),
   feedsTokens: selectors.feed.feedsTokens(state)
 })
 
@@ -272,8 +272,8 @@ type DispatchProps = Pick<Props,
   | 'onGetGroupMessagesToken'
 >
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onGetGroupMessagesToken: (data: ApiTypes.Feed.MessagesByGroupId) => dispatch(Actions.feed.getGroupFeedTokenRequest(data)),
-  onGetGroupMessages: (data: ApiTypes.Feed.MessagesByGroupId) => dispatch(Actions.feed.getGroupFeedRequest(data)),
+  onGetGroupMessagesToken: (data: ApiTypes.Groups.MessagesById) => dispatch(Actions.groups.getGroupFeedTokenRequest(data)),
+  onGetGroupMessages: (data: ApiTypes.Groups.MessagesById) => dispatch(Actions.groups.getGroupFeedRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(MemberLayout)

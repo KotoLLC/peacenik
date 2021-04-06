@@ -268,7 +268,7 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   uploadLink: state.messages.uploadLink,
   userId: selectors.profile.userId(state),
   friends: selectors.friends.friends(state),
-  groupMessageToken: selectors.feed.groupMessageToken(state),
+  groupMessageToken: selectors.groups.groupMessageToken(state),
 })
 
 type DispatchProps = Pick<Props,

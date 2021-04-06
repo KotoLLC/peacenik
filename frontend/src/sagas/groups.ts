@@ -69,6 +69,61 @@ export function* watchDeleteGroup(action: { type: string, payload: string }) {
   }
 }
 
+export function* watchGetGroupMessagesToken(action: {type: string, payload: ApiTypes.Groups.MessagesById} ) {
+  try {
+    const response = yield API.groups.getGroupMessageToken(action.payload)
+
+    if (response.status === 200) {
+      // console.log("RECEIVED GROUP MSG TOKEN: ", response.data.tokens)
+      let token: Object[] = Object.entries<Object>(response.data.tokens).map(([key, value]) => {
+        return {
+          host: key,
+          token : value
+        }
+      })
+
+      yield put(Actions.groups.setGroupFeedToken(token[0]))
+
+    } else if (response.status === 400) {
+      console.log("RESPONSE ERROR:", response)
+      yield put(Actions.authorization.getAuthTokenRequest())
+    }
+
+  } catch (error) {
+    console.log("GetGroupMessagesToken ERROR: ", error)
+  }
+}
+
+export function* watchGetGroupMessages(action: { type: string, payload: ApiTypes.Groups.MessagesById }) {
+  try {
+
+    const response = yield API.groups.getGroupMessages(action.payload)
+
+    if (response.status === 200) {
+      let resultData = []
+      if (response.data?.messages?.length) {
+        resultData = response.data?.messages.map(item => {
+          item.sourceHost = action.payload.host
+          item.messageToken = action.payload.body.token
+          return item
+        })
+      }
+
+      yield put(Actions.groups.getGroupFeedFromHubSuccess({
+        hub: action.payload.host,
+        messages: resultData,
+        group_id: action.payload.body.group_id
+      }))
+    } else if (response.status === 400) {
+      console.log("RESPONSE ERROR:", response)
+      yield put(Actions.groups.getGroupFeedRequest(action.payload))
+    }
+
+  } catch (error) {
+    console.log("GetGroupMessages ERROR: ", error)
+  }
+}
+
 export function* watchRequestJoinGroup(action: { type: string, payload: ApiTypes.Groups.RequestJoin }) {
   const response = yield API.groups.requestJoinGroup(action.payload)
 

@@ -2,6 +2,34 @@ import { axiosInstance } from './index'
 import { ApiTypes } from 'src/types'
 
 export default {
+  getGroupMessages: async (data: ApiTypes.Groups.MessagesById) => {
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
+    const config = {
+      withCredentials: false,
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      }
+    }
+
+    console.log("GET GROUP MESSAGES: ", data.body)
+    return await axiosInstance.post(`${data.host}/rpc.MessageService/Messages`, data.body, config).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
+  
+  getGroupMessageToken: async (data: ApiTypes.Groups.MessagesById) => {
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
+    const config = {
+      withCredentials: false,
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      }
+    }
+    return await axiosInstance.post(`/rpc.TokenService/PostMessage`, {group_id: data.body.group_id} ).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
+
   addGroup: async (data: ApiTypes.Groups.AddGroup) => {
     return await axiosInstance.post('/rpc.GroupService/AddGroup', data).then(response => {
       return response

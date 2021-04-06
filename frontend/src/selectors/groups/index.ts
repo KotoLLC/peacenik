@@ -15,6 +15,8 @@ const invitesToConfirm = deepEqualSelector(self, data => data.invitesToConfirm)
 const currentGroupId = deepEqualSelector(self, data => data.currentGroupId)
 const coverUploadLink = deepEqualSelector(self, data => data.coverUploadLink)
 const avatarUploadLink = deepEqualSelector(self, data => data.avatarUploadLink)
+const groupMessages = deepEqualSelector(self, data => data.groupMessages)
+const groupMessageToken = deepEqualSelector(self, data => data.groupMessageToken)
 
 export default {
   isGroupAddedSuccessfully,
@@ -30,4 +32,6 @@ export default {
   currentGroupId,
   coverUploadLink,
   avatarUploadLink,
+  groupMessages,
+  groupMessageToken,
 }

@@ -51,8 +51,8 @@ interface Props {
   onGetFriends: () => void
   onGetInvitesToConfirmRequest: () => void
 
-  onGetGroupMessages: (data: ApiTypes.Feed.MessagesByGroupId) => void
-  onGetGroupMessagesToken: (data: ApiTypes.Feed.MessagesByGroupId) => void
+  onGetGroupMessages: (data: ApiTypes.Groups.MessagesById) => void
+  onGetGroupMessagesToken: (data: ApiTypes.Groups.MessagesById) => void
 }
 
 const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
@@ -322,8 +322,8 @@ type StateProps = Pick<Props,
   >
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   state: state,
-  messages: selectors.feed.groupMessages(state),
-  groupMessageToken: selectors.feed.groupMessageToken(state),
+  messages: selectors.groups.groupMessages(state),
+  groupMessageToken: selectors.groups.groupMessageToken(state),
   feedsTokens: selectors.feed.feedsTokens(state),
   userId: selectors.profile.userId(state),
 
@@ -338,8 +338,8 @@ type DispatchProps = Pick<Props,
   | 'onGetGroupMessages'
   >
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onGetGroupMessagesToken: (data: ApiTypes.Feed.MessagesByGroupId) => dispatch(Actions.feed.getGroupFeedTokenRequest(data)),
-  onGetGroupMessages: (data: ApiTypes.Feed.MessagesByGroupId) => dispatch(Actions.feed.getGroupFeedRequest(data)),
+  onGetGroupMessagesToken: (data: ApiTypes.Groups.MessagesById) => dispatch(Actions.groups.getGroupFeedTokenRequest(data)),
+  onGetGroupMessages: (data: ApiTypes.Groups.MessagesById) => dispatch(Actions.groups.getGroupFeedRequest(data)),
   onGetInvitesToConfirmRequest: () => dispatch(Actions.groups.getInvitesToConfirmRequest()),
   onGetFriends: () => dispatch(Actions.friends.getFriendsRequest()),
 })
