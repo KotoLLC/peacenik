@@ -38,21 +38,12 @@ func (r *friendRepo) FriendsWithSubFriends(user User) map[User][]User {
 	result := make(map[User][]User)
 
 	var items []struct {
-		UserID         string `db:"user_id"`
-		UserName       string `db:"user_name"`
-		UserFullName   string `db:"user_full_name"`
-		UserAvatarID   string `db:"user_avatar_id"`
-		FriendID       string `db:"friend_id"`
-		FriendName     string `db:"friend_name"`
-		FriendFullName string `db:"friend_full_name"`
-		FriendAvatarID string `db:"friend_avatar_id"`
+		UserID   string `db:"user_id"`
+		FriendID string `db:"friend_id"`
 	}
 	err := r.db.Select(&items, `
-		select f.user_id as user_id, uu.name user_name, uu.full_name user_full_name, uu.avatar_thumbnail_id user_avatar_id,
-			f.friend_id as friend_id, uf.name friend_name, uf.full_name friend_full_name, uf.avatar_thumbnail_id friend_avatar_id
+		select f.user_id as user_id, f.friend_id as friend_id
 		from friends f
-        	inner join users uu on uu.id = f.user_id
-        	inner join users uf on uf.id = f.friend_id
 		where f.user_id in (select friend_id from friends where user_id = $1)
 			and not exists(
 		  	    select *
@@ -81,21 +72,12 @@ func (r *friendRepo) FriendsOfFriends(user User) map[User][]User {
 	result := make(map[User][]User)
 
 	var items []struct {
-		UserID         string `db:"user_id"`
-		UserName       string `db:"user_name"`
-		UserFullName   string `db:"user_full_name"`
-		UserAvatarID   string `db:"user_avatar_id"`
-		FriendID       string `db:"friend_id"`
-		FriendName     string `db:"friend_name"`
-		FriendFullName string `db:"friend_full_name"`
-		FriendAvatarID string `db:"friend_avatar_id"`
+		UserID   string `db:"user_id"`
+		FriendID string `db:"friend_id"`
 	}
 	err := r.db.Select(&items, `
-		select f.friend_id as user_id, uf.name user_name, uf.full_name user_full_name, uf.avatar_thumbnail_id user_avatar_id,
-		       f.user_id as friend_id, uu.name friend_name, uu.full_name friend_full_name, uu.avatar_thumbnail_id friend_avatar_id 
+		select f.friend_id as user_id, f.user_id as friend_id 
 		from friends f
-			inner join users uu on uu.id = f.user_id
-			inner join users uf on uf.id = f.friend_id
 		where f.user_id in (select friend_id from friends where user_id = $1)
 			and f.friend_id not in (select friend_id from friends where user_id = $1)
 		  	and not exists(
