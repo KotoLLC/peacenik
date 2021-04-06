@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect'
 import { selector, deepEqualSelector } from '../common'
 
-const state = createSelector(selector, data => data.messages)
+const state = createSelector(selector, data => data.feed)
 const feedsTokens = deepEqualSelector(state, data => data.feedsTokens)
 const currentHub = createSelector(state, data => data.currentHub)
 const isCurrentHubRequested = createSelector(state, data => data.isCurrentHubRequested)

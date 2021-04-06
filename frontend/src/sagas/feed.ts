@@ -4,7 +4,7 @@ import { API } from '@services/api'
 import { ApiTypes } from 'src/types'
 import { currentHubBack2Front } from '@services/dataTransforms/currentHubTransform'
 import { hubsForMessagesBack2Front } from '@services/dataTransforms/hubsForMessagesTransform'
-import { Types as MessagesTypes } from '@store/feed/actions'
+import { Types as FeedMessagesTypes } from '@store/feed/actions'
 import selectors from '@selectors/index'
 
 export function* watchGetMessages() {
@@ -41,7 +41,7 @@ export function* watchGetMessages() {
           }
   
           return call(watchGetMessagesFromHub, {
-            type: MessagesTypes.GET_FEED_TOKENS_FROM_HUB_REQUEST,
+            type: FeedMessagesTypes.GET_FEED_TOKENS_FROM_HUB_REQUEST,
             payload: {
               host: item.host,
               body: {
@@ -73,7 +73,7 @@ export function* watchGetMoreMessages() {
     yield put(Actions.feed.getMoreFeedSucces(feedsTokens))
 
     yield all(feedsTokens.map(item => call(watchGetMoreMessagesFromHub, {
-      type: MessagesTypes.GET_MORE_FEED_FROM_HUB_REQUEST,
+      type: FeedMessagesTypes.GET_MORE_FEED_FROM_HUB_REQUEST,
       payload: {
         host: item.host,
         body: {
