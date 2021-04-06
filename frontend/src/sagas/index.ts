@@ -108,6 +108,7 @@ import {
     watchAddUserToGroup,
     watchGetGroupMessages,
     watchGetGroupMessagesToken,
+    watchGetGroupMsgToken
 } from './groups'
 
 export function* rootSaga() {
@@ -202,5 +203,6 @@ export function* rootSaga() {
         takeEvery(GroupsTypes.ADD_USER_TO_GROUP_REQUEST, watchAddUserToGroup),
         takeEvery(GroupsTypes.GET_GROUP_FEED_REQUEST, watchGetGroupMessages),
         takeEvery(GroupsTypes.GET_GROUP_FEED_TOKEN_REQUEST, watchGetGroupMessagesToken),
+        takeEvery(GroupsTypes.GET_GROUP_MSG_TOKEN, watchGetGroupMsgToken)
     ])
 }

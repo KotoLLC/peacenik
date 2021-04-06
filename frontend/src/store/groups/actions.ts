@@ -60,6 +60,8 @@ export enum Types {
   GET_GROUP_FEED_REQUEST = 'GET_GROUP_FEED_REQUEST',
   GET_GROUP_FEED_SUCCESS = 'GET_GROUP_FEED_SUCCESS',
 
+  GET_GROUP_MSG_TOKEN = 'GET_GROUP_MSG_TOKEN',
+
   GET_GROUP_FEED_TOKEN_REQUEST = 'GET_GROUP_FEED_TOKEN_REQUEST',
   SET_GROUP_FEED_TOKEN = 'SET_GROUP_FEED_TOKEN',
 }
@@ -239,6 +241,10 @@ const addUserToGroupRequest = (payload: ApiTypes.Groups.AddUserToGroup) => ({
   payload,
 })
 
+const getMsgTokenRequest = () => ({
+  type:Types.GET_GROUP_MSG_TOKEN
+})
+
 const getGroupFeedRequest = (payload: ApiTypes.Groups.MessagesById) => ({
   type: Types.GET_GROUP_FEED_REQUEST,
   payload
@@ -301,6 +307,7 @@ export default {
   setAvatarSuccess,
   addUserToGroupRequest,
   getGroupFeedRequest,
+  getMsgTokenRequest,
   getGroupFeedTokenRequest,
   setGroupFeedToken,
   getGroupFeedFromHubSuccess,

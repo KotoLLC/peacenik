@@ -132,8 +132,6 @@ const reducer = (state = initialState, action) => {
     }
     case Types.GET_GROUP_FEED_SUCCESS: {
       const { messages } = action.payload
-      console.log("GET_GROUP_FEED_SUCCESS messages: ", messages)
-
       return {
         ...state,
         groupMessages: uniqBy([...messages, ...state.groupMessages], 'id')

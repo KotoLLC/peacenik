@@ -5,6 +5,7 @@ import { ApiTypes } from 'src/types'
 import { myGroupsFromBackToFront } from '@services/dataTransforms/myGroupsFromBackToFront'
 import selectors from '@selectors/index'
 import { history } from '@view/routes'
+import { hubsForMessagesBack2Front } from '@services/dataTransforms/hubsForMessagesTransform'
 
 export function* watchAddGroup(action: { type: string, payload: ApiTypes.Groups.AddGroup }) {
   const response = yield API.groups.addGroup(action.payload)
@@ -69,9 +70,22 @@ export function* watchDeleteGroup(action: { type: string, payload: string }) {
   }
 }
 
+export function* watchGetGroupMsgToken() {
+  const response = yield API.groups.getMessagesToken()
+  
+  if (response.status === 200) {
+    const feedsTokens = hubsForMessagesBack2Front(response.data?.tokens)
+
+    const peacenikfeedsTokens = {
+      tokens: feedsTokens
+    }
+    localStorage.setItem('peacenikfeedsTokens', JSON.stringify(peacenikfeedsTokens))
+  }
+}
+
 export function* watchGetGroupMessagesToken(action: {type: string, payload: ApiTypes.Groups.MessagesById} ) {
   try {
-    const response = yield API.groups.getGroupMessageToken(action.payload)
+    const response = yield API.groups.getGroupPostMessageToken(action.payload)
 
     if (response.status === 200) {
       // console.log("RECEIVED GROUP MSG TOKEN: ", response.data.tokens)
@@ -115,6 +129,7 @@ export function* watchGetGroupMessages(action: { type: string, payload: ApiTypes
         group_id: action.payload.body.group_id
       }))
     } else if (response.status === 400) {
+      yield put(Actions.groups.getMsgTokenRequest())
       console.log("RESPONSE ERROR:", response)
       yield put(Actions.groups.getGroupFeedRequest(action.payload))
     }

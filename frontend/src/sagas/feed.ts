@@ -180,7 +180,6 @@ export function* watchPostMessage(action: { type: string, payload: ApiTypes.Feed
     if ( !action.payload.body.group_id) {
       yield put(Actions.feed.getFeedTokensRequest())
     } else {
-      console.log("I'm here!")
       const state = yield select()
       const groupMsgToken = selectors.groups.groupMessageToken(state)
       const feedsTokens = selectors.feed.feedsTokens(state)
