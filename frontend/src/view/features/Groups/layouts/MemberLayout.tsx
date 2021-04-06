@@ -42,13 +42,12 @@ interface Props {
   messages: ApiTypes.Feed.Message[]
   userId: string
   location: any
-  ownedHub: string[]
-  groupMessageToken: string
+  groupMessageToken: CommonTypes.GroupTypes.GroupMsgToken
   feedsTokens: CommonTypes.HubTypes.CurrentHub[]
   groupDetails?: ApiTypes.Groups.GroupDetails | null
   
-  onGetGroupMessages: (data: ApiTypes.Feed.MessagesByGroupId) => void
-  onGetGroupMessagesToken: (data: ApiTypes.Feed.MessagesByGroupId) => void
+  onGetGroupMessages: (data: ApiTypes.Groups.MessagesById) => void
+  onGetGroupMessagesToken: (data: ApiTypes.Groups.MessagesById) => void
 }
 
 const MemberLayout: React.FC<Props> = React.memo((props) => {
@@ -72,7 +71,6 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
     messages, 
     location, 
     userId,
-    ownedHub,
     groupMessageToken,
     feedsTokens,
     state,
@@ -81,46 +79,49 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
     onGetGroupMessagesToken
    } = props
 
-   console.log("MEMBER LAYOUT: ", props)
+  //  console.log("MEMBER LAYOUT: ", props)
   const parsed = queryString.parse(location.search)
   let timerId: any = null
   let msgToken: string = ""
   feedsTokens.map( (item: CommonTypes.HubTypes.CurrentHub ) => {
-    if(item.host === ownedHub[0])
+    if(item.host === groupMessageToken.host)
       msgToken = item.token
   })
   
-  useEffect( () => {
-    onGetGroupMessagesToken({
-      host: ownedHub[0] as string,
+  const getGroupMsg = () => {
+    onGetGroupMessages({
+      host: groupMessageToken.host as string,
       body: {
         token: msgToken as string,
         group_id: parsed?.id as string,
       }
     })
-    
-    console.log("OWNED HUB: ", ownedHub[0])
+  }
+  
+  useEffect( () => {
+    onGetGroupMessagesToken({
+      host: groupMessageToken.host as string,
+      body: {
+        token: msgToken as string,
+        group_id: parsed?.id as string,
+      }
+    })
+
+    getGroupMsg()
+    // console.log("OWNED HUB: ", groupMessageToken.host)
     timerId = setInterval(() => {
-      onGetGroupMessages({
-        host: ownedHub[0] as string,
-        body: {
-          token: msgToken as string,
-          group_id: parsed?.id as string,
-        }
-      })
+      getGroupMsg()
     }, 10000)
 
     return () => {
       clearInterval(timerId)
     }
-  }, [ownedHub])
+  }, [groupMessageToken])
 
   if (!groupDetails) return null
 
   const { group, members, status } = groupDetails
   
-  // console.log("React: ", React.useEffect)
-
   const showCommentPopup = (displayData: CommonTypes.PopupData) => {
     setPopupData({
       created_at: displayData.created_at,
@@ -176,13 +177,7 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
 
   const onRefresh = (): Promise<any> => {
     return new Promise((resolve, reject) => {
-      onGetGroupMessages({
-        host: ownedHub[0] as string,
-        body: {
-          token: msgToken as string,
-          group_id: parsed?.id as string,
-        }
-      })
+      getGroupMsg()
 
       setTimeout(() => {
         resolve(null)
@@ -260,17 +255,15 @@ type StateProps = Pick<Props,
   | 'groupDetails' 
   | 'messages' 
   | 'userId' 
-  | 'ownedHub' 
   | 'groupMessageToken' 
   | 'feedsTokens'
 >
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   state: state,
   groupDetails: selectors.groups.groupDetails(state),
-  messages: selectors.feed.groupMessages(state),
+  messages: selectors.groups.groupMessages(state),
   userId: selectors.profile.userId(state),
-  ownedHub: selectors.profile.ownedHubs(state),
-  groupMessageToken: selectors.feed.groupMessageToken(state),
+  groupMessageToken: selectors.groups.groupMessageToken(state),
   feedsTokens: selectors.feed.feedsTokens(state)
 })
 
@@ -279,8 +272,8 @@ type DispatchProps = Pick<Props,
   | 'onGetGroupMessagesToken'
 >
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onGetGroupMessagesToken: (data: ApiTypes.Feed.MessagesByGroupId) => dispatch(Actions.feed.getGroupFeedTokenRequest(data)),
-  onGetGroupMessages: (data: ApiTypes.Feed.MessagesByGroupId) => dispatch(Actions.feed.getGroupFeedRequest(data)),
+  onGetGroupMessagesToken: (data: ApiTypes.Groups.MessagesById) => dispatch(Actions.groups.getGroupFeedTokenRequest(data)),
+  onGetGroupMessages: (data: ApiTypes.Groups.MessagesById) => dispatch(Actions.groups.getGroupFeedRequest(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(MemberLayout)

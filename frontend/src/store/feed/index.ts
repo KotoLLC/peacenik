@@ -1,6 +1,7 @@
 import { Types } from './actions'
 import { CommonTypes, ApiTypes } from 'src/types'
 import uniqBy from 'lodash.uniqby'
+
 export interface State {
   feedsTokens: CommonTypes.HubTypes.CurrentHub[]
   currentHub: CommonTypes.HubTypes.CurrentHub
@@ -17,8 +18,6 @@ export interface State {
   currentMessageLikes: ApiTypes.Feed.LikesInfoData | null
   currentCommentLikes: ApiTypes.Feed.LikesInfoData | null
   messageById: ApiTypes.Feed.Message | null | undefined
-  groupMessages: any
-  groupMessageToken: string
 }
 
 const peacenikfeedsTokens = localStorage.getItem('peacenikfeedsTokens') 
@@ -43,8 +42,6 @@ const initialState: State = {
   currentMessageLikes: null,
   currentCommentLikes: null,
   messageById: null,
-  groupMessages: [],
-  groupMessageToken: ""
 }
 
 const reducer = (state = initialState, action) => {
@@ -118,21 +115,6 @@ const reducer = (state = initialState, action) => {
           feedsTokens: action.payload,
           isMessagesRequested: false,
         }
-      }
-    }
-    case Types.GET_GROUP_FEED_SUCCESS: {
-      const { messages } = action.payload
-      console.log("GET_GROUP_FEED_SUCCESS passed", messages)
-
-      return {
-        ...state,
-        groupMessages: uniqBy([...messages, ...state.groupMessages], 'id')
-      }
-    }
-    case Types.SET_GROUP_FEED_TOKEN:{
-      return {
-        ...state,
-        groupMessageToken: action.payload
       }
     }
     case Types.GET_FEED_TOKENS_FROM_HUB_SUCCESS: {

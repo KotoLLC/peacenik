@@ -44,16 +44,15 @@ interface Props {
   friends: ApiTypes.Friends.Friend[] | null
   messages: ApiTypes.Feed.Message[]
   location: any
-  ownedHub: string[]
-  groupMessageToken: string
+  groupMessageToken: CommonTypes.GroupTypes.GroupMsgToken
   feedsTokens: CommonTypes.HubTypes.CurrentHub[]
   userId: string
 
   onGetFriends: () => void
   onGetInvitesToConfirmRequest: () => void
 
-  onGetGroupMessages: (data: ApiTypes.Feed.MessagesByGroupId) => void
-  onGetGroupMessagesToken: (data: ApiTypes.Feed.MessagesByGroupId) => void
+  onGetGroupMessages: (data: ApiTypes.Groups.MessagesById) => void
+  onGetGroupMessagesToken: (data: ApiTypes.Groups.MessagesById) => void
 }
 
 const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
@@ -79,7 +78,6 @@ const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
     friends,
     messages, 
     location, 
-    ownedHub,
     groupMessageToken,
     feedsTokens,
     state,
@@ -91,27 +89,30 @@ const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
     onGetFriends,
    } = props
 
-  console.log("ADMIN PRIVATE LAYOUT")
   const parsed = queryString.parse(location.search)
 
-  
-  useEffect( () => {
-    onGetGroupMessagesToken({
-      host: ownedHub[0] as string,
+  const getGroupMsg = () => {
+    onGetGroupMessages({
+      host: groupMessageToken.host as string,
       body: {
         token: msgToken as string,
         group_id: parsed?.id as string,
       }
     })
+  }
+  
+  useEffect( () => {
+    onGetGroupMessagesToken({
+      host: groupMessageToken.host as string,
+      body: {
+        token: msgToken as string,
+        group_id: parsed?.id as string,
+      }
+    })
+    getGroupMsg()
     
     timerId = setInterval(() => {
-      onGetGroupMessages({
-        host: ownedHub[0] as string,
-        body: {
-          token: msgToken as string,
-          group_id: parsed?.id as string,
-        }
-      })
+      getGroupMsg()
     }, 10000)
 
     return () => {
@@ -142,7 +143,7 @@ const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
 
   let msgToken: string = ""
   feedsTokens.map( (item: CommonTypes.HubTypes.CurrentHub ) => {
-    if(item.host === ownedHub[0])
+    if(item.host === groupMessageToken.host)
       msgToken = item.token
   })
 
@@ -202,13 +203,7 @@ const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
 
   const onRefresh = (): Promise<any> => {
     return new Promise((resolve, reject) => {
-      onGetGroupMessages({
-        host: ownedHub[0] as string,
-        body: {
-          token: msgToken as string,
-          group_id: parsed?.id as string,
-        }
-      })
+      getGroupMsg()
 
       setTimeout(() => {
         resolve(null)
@@ -322,15 +317,13 @@ type StateProps = Pick<Props,
   | 'friends'
   | 'userId' 
   | 'messages'
-  | 'ownedHub'  
-  | 'groupMessageToken' 
+  | 'groupMessageToken'  
   | 'feedsTokens'
   >
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   state: state,
-  messages: selectors.feed.groupMessages(state),
-  ownedHub: selectors.profile.ownedHubs(state),
-  groupMessageToken: selectors.feed.groupMessageToken(state),
+  messages: selectors.groups.groupMessages(state),
+  groupMessageToken: selectors.groups.groupMessageToken(state),
   feedsTokens: selectors.feed.feedsTokens(state),
   userId: selectors.profile.userId(state),
 
@@ -345,8 +338,8 @@ type DispatchProps = Pick<Props,
   | 'onGetGroupMessages'
   >
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onGetGroupMessagesToken: (data: ApiTypes.Feed.MessagesByGroupId) => dispatch(Actions.feed.getGroupFeedTokenRequest(data)),
-  onGetGroupMessages: (data: ApiTypes.Feed.MessagesByGroupId) => dispatch(Actions.feed.getGroupFeedRequest(data)),
+  onGetGroupMessagesToken: (data: ApiTypes.Groups.MessagesById) => dispatch(Actions.groups.getGroupFeedTokenRequest(data)),
+  onGetGroupMessages: (data: ApiTypes.Groups.MessagesById) => dispatch(Actions.groups.getGroupFeedRequest(data)),
   onGetInvitesToConfirmRequest: () => dispatch(Actions.groups.getInvitesToConfirmRequest()),
   onGetFriends: () => dispatch(Actions.friends.getFriendsRequest()),
 })

@@ -25,8 +25,6 @@ const DirectMessageList = () => {
   const currentUserId = useSelector<StoreTypes, string>(
     (state) => state.profile.user.id
   );
-  // console.log(friends);
-  // console.log(messages);
 
   const lastAccessTime = {};
 
@@ -35,9 +33,6 @@ const DirectMessageList = () => {
     userId: string
   ): void => {
     for (let m of messages) {
-      // console.log(jwt_decode(m));
-      console.log(m.messageToken);
-      console.log(jwt_decode(m.messageToken));
       if (m.user_id === userId && m.friend_id) {
         lastAccessTime[m.friend_id] = {
           user_id: m.friend_id,
@@ -48,7 +43,6 @@ const DirectMessageList = () => {
 
   if (messages) {
     calcLastAccessTimes(messages, currentUserId);
-    console.log(lastAccessTime);
   }
 
   //   {

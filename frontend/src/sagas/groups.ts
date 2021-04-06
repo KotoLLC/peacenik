@@ -5,6 +5,7 @@ import { ApiTypes } from 'src/types'
 import { myGroupsFromBackToFront } from '@services/dataTransforms/myGroupsFromBackToFront'
 import selectors from '@selectors/index'
 import { history } from '@view/routes'
+import { hubsForMessagesBack2Front } from '@services/dataTransforms/hubsForMessagesTransform'
 
 export function* watchAddGroup(action: { type: string, payload: ApiTypes.Groups.AddGroup }) {
   const response = yield API.groups.addGroup(action.payload)
@@ -66,6 +67,75 @@ export function* watchDeleteGroup(action: { type: string, payload: string }) {
     yield put(Actions.groups.deleteGroupSuccess(true))
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
+export function* watchGetGroupMsgToken() {
+  const response = yield API.groups.getMessagesToken()
+  
+  if (response.status === 200) {
+    const feedsTokens = hubsForMessagesBack2Front(response.data?.tokens)
+
+    const peacenikfeedsTokens = {
+      tokens: feedsTokens
+    }
+    localStorage.setItem('peacenikfeedsTokens', JSON.stringify(peacenikfeedsTokens))
+  }
+}
+
+export function* watchGetGroupMessagesToken(action: {type: string, payload: ApiTypes.Groups.MessagesById} ) {
+  try {
+    const response = yield API.groups.getGroupPostMessageToken(action.payload)
+
+    if (response.status === 200) {
+      // console.log("RECEIVED GROUP MSG TOKEN: ", response.data.tokens)
+      let token: Object[] = Object.entries<Object>(response.data.tokens).map(([key, value]) => {
+        return {
+          host: key,
+          token : value
+        }
+      })
+
+      yield put(Actions.groups.setGroupFeedToken(token[0]))
+
+    } else if (response.status === 400) {
+      console.log("RESPONSE ERROR:", response)
+      yield put(Actions.authorization.getAuthTokenRequest())
+    }
+
+  } catch (error) {
+    console.log("GetGroupMessagesToken ERROR: ", error)
+  }
+}
+
+export function* watchGetGroupMessages(action: { type: string, payload: ApiTypes.Groups.MessagesById }) {
+  try {
+
+    const response = yield API.groups.getGroupMessages(action.payload)
+
+    if (response.status === 200) {
+      let resultData = []
+      if (response.data?.messages?.length) {
+        resultData = response.data?.messages.map(item => {
+          item.sourceHost = action.payload.host
+          item.messageToken = action.payload.body.token
+          return item
+        })
+      }
+
+      yield put(Actions.groups.getGroupFeedFromHubSuccess({
+        hub: action.payload.host,
+        messages: resultData,
+        group_id: action.payload.body.group_id
+      }))
+    } else if (response.status === 400) {
+      yield put(Actions.groups.getMsgTokenRequest())
+      console.log("RESPONSE ERROR:", response)
+      yield put(Actions.groups.getGroupFeedRequest(action.payload))
+    }
+
+  } catch (error) {
+    console.log("GetGroupMessages ERROR: ", error)
   }
 }
 

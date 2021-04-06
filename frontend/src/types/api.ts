@@ -65,6 +65,7 @@ export declare namespace ApiTypes {
     token: string
   }
 
+
   export namespace Profile {
 
     export interface Avatar {
@@ -173,7 +174,8 @@ export declare namespace ApiTypes {
         token: string,
         text: string,
         attachment_id?: string,
-        attachment_changed?: boolean
+        attachment_changed?: boolean,
+        group_id?: string
       }
     }
 
@@ -247,14 +249,6 @@ export declare namespace ApiTypes {
       body: {
         token: string
         message_id: string
-      }
-    }
-
-    export interface MessagesByGroupId {
-      host: string,
-      body: {
-        token: string
-        group_id: string
       }
     }
 
@@ -401,6 +395,14 @@ export declare namespace ApiTypes {
   export namespace Groups {
 
     export type MemberStatus = 'member' | 'pending' | 'rejected' | ''
+
+    export interface MessagesById {
+      host: string,
+      body: {
+        token: string
+        group_id: string
+      }
+    }
 
     export interface AddGroup {
       name: string
