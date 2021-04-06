@@ -340,9 +340,11 @@ func (r *messageHubRepo) GroupHub(groupAdminID string) string {
 		select h.address
 		from user_message_hubs umh
 			inner join message_hubs h on h.id = umh.hub_id
-		where umh.user_id = $1 and umh.blocked_at is null and h.approved_at is not null
-			and (h.admin_id = $1 or h.allow_friend_groups = true)
-		order by umh.updated_at desc
+		where umh.user_id = $1 and umh.blocked_at is null
+		    and h.approved_at is not null
+			and (h.admin_id = $1
+				or (h.allow_friend_groups = true and exists(select * from friends f where f.user_id = $1 and f.friend_id = h.admin_id)))
+		order by case when h.admin_id = $1 then 0 else 1 end, umh.updated_at desc
 		limit 1;`,
 		groupAdminID)
 	if err != nil {
