@@ -40,7 +40,6 @@ export function * watchGetDirectMessages() {
                 body: {
                   token: item.token,
                 },
-                friends: friends
               },
             })
           }

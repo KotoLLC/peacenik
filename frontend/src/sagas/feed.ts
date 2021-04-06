@@ -178,21 +178,21 @@ export function* watchGetMessagesFromHub(action: { type: string, payload: ApiTyp
           host: action.payload.host,
           body: {              
             ...action.payload.body,
-            friend_id:friend_id,
+            friend_id: friend_id,
             count: "1"
           }
         })
         console.log(`fetchDataByUserId ${friend_id}`, res);
         return res
       }
-      const friends = action.payload.friends;
-      if(friends) {
-        const usesMessage = yield all(friends.map(friend_id=>fetchDataByUserId(friend_id)))
-        yield put(Actions.messages.getUserLastMessageFromHubSuccess({
-          hub: action.payload.host,
-          usesMessage: usesMessage
-        }))        
-      }
+      // const friends = action.payload.friends;
+      // if(friends) {
+      //   const usesMessage = yield all(friends.map(friend_id=>fetchDataByUserId(friend_id)))
+      //   yield put(Actions.messages.getUserLastMessageFromHubSuccess({
+      //     hub: action.payload.host,
+      //     usesMessage: usesMessage
+      //   }))        
+      // }
     }
   }
 
