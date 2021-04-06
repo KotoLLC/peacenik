@@ -4,7 +4,8 @@ import { API } from '@services/api'
 import { ApiTypes } from 'src/types'
 import { currentHubBack2Front } from '@services/dataTransforms/currentHubTransform'
 import { hubsForMessagesBack2Front } from '@services/dataTransforms/hubsForMessagesTransform'
-import { Types as MessagesTypes } from '@store/feed/actions'
+import { Types as FeedMessagesTypes } from '@store/feed/actions'
+import { Types as DirectMessagesTypes } from '@store/messages/actions'
 import selectors from '@selectors/index'
 
 export function* watchGetMessages() {
@@ -41,7 +42,7 @@ export function* watchGetMessages() {
           }
   
           return call(watchGetMessagesFromHub, {
-            type: MessagesTypes.GET_FEED_TOKENS_FROM_HUB_REQUEST,
+            type: FeedMessagesTypes.GET_FEED_TOKENS_FROM_HUB_REQUEST,
             payload: {
               host: item.host,
               body: {
@@ -73,7 +74,7 @@ export function* watchGetMoreMessages() {
     yield put(Actions.feed.getMoreFeedSucces(feedsTokens))
 
     yield all(feedsTokens.map(item => call(watchGetMoreMessagesFromHub, {
-      type: MessagesTypes.GET_MORE_FEED_FROM_HUB_REQUEST,
+      type: FeedMessagesTypes.GET_MORE_FEED_FROM_HUB_REQUEST,
       payload: {
         host: item.host,
         body: {
@@ -138,37 +139,67 @@ export function* watchGetMoreMessagesFromHub(action: { type: string, payload: Ap
 }
 
 export function* watchGetMessagesFromHub(action: { type: string, payload: ApiTypes.Feed.MessagesFromHub }) {
-  
-  try {
-    const response = yield API.feed.getMessagesFromHub(action.payload)
-
-    if (response.status === 200) {
-      let resultData = []
-      if (response.data?.messages?.length) {
-        resultData = response.data?.messages.map(item => {
-          item.sourceHost = action.payload.host
-          item.messageToken = action.payload.body.token
-          return item
-        })
-      }
-  
-      yield put(Actions.feed.getFeedFromHubSuccess({
-        hub: action.payload.host,
-        messages: resultData
-      }))
-    } else {
-      if (response.error.response.status === 400) {
-        console.log("watchGetMessagesFromHub getMessagesFromHub failed")
-        // yield put(Actions.authorization.getAuthTokenRequest())
-        // yield put(Actions.feed.getFeedTokensRequest())
+  switch(action.type) {
+    case FeedMessagesTypes.GET_FEED_TOKENS_FROM_HUB_REQUEST:{
+      try {
+        const response = yield API.feed.getMessagesFromHub(action.payload)
+    
+        if (response.status === 200) {
+          let resultData = []
+          if (response.data?.messages?.length) {
+            resultData = response.data?.messages.map(item => {
+              item.sourceHost = action.payload.host
+              item.messageToken = action.payload.body.token
+              return item
+            })
+          }
+      
+          yield put(Actions.feed.getFeedFromHubSuccess({
+            hub: action.payload.host,
+            messages: resultData
+          }))
+        } else {
+          if (response.error.response.status === 400) {
+            console.log("watchGetMessagesFromHub getMessagesFromHub failed")
+            // yield put(Actions.authorization.getAuthTokenRequest())
+            // yield put(Actions.feed.getFeedTokensRequest())
+          }
+        }
+        
+      } catch (error) {
+        if (!error.response) {
+          yield put(Actions.common.setConnectionError(true))
+        }
       }
     }
-    
-  } catch (error) {
-    if (!error.response) {
-      yield put(Actions.common.setConnectionError(true))
+    case DirectMessagesTypes.GET_MESSAGE_TOKENS_FROM_HUB_REQUEST:{
+      
+      const fetchDataByUserId = async(friend_id) => {
+        const res =  await API.messages.getMessagesFromHub({
+          host: action.payload.host,
+          body: {              
+            ...action.payload.body,
+            friend_id:friend_id,
+            count: "1"
+          }
+        })
+        console.log(`fetchDataByUserId ${friend_id}`, res);
+        return res
+      }
+      
+      const friends = action.payload.friends;
+      if(friends) {
+        
+        const usesMessage = yield all(friends.map(friend_id=>fetchDataByUserId(friend_id)))
+        yield put(Actions.messages.getUserLastMessageFromHubSuccess({
+          hub: action.payload.host,
+          usesMessage: usesMessage
+        }))        
+      }
     }
   }
+
+  
 
 }
 

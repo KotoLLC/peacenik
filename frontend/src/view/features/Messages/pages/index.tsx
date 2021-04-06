@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   Switch,
   Route,
@@ -16,11 +16,22 @@ import DirectMessageBox from '../components/direct/DirectMessageBox';
 import GroupMessageBox from '../components/group/GroupMessageBox';
 import MesssageNoSelectBox from '../components/MessageNoSelectBox';
 import DirectMessageInfoBox from '../components/direct/DirectMessageInfoBox';
+import { StoreTypes } from 'src/types';
 
 interface Props extends RouteComponentProps {}
 
 const MessagesPage: React.FC<Props> = (props) => {
   const baseUrl = useRouteMatch().path;
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(Actions.messages.getMessageTokensRequest());
+  }, [dispatch]);
+
+  const usersWithMessages = useSelector(
+    (state: StoreTypes) => state.messages.usersWithMessages
+  );
+
   return (
     <>
       <FriendsPageTabs />
