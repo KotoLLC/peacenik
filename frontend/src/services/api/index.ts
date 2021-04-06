@@ -5,6 +5,7 @@ import friends from './friends'
 import hubs from './hubs'
 import profile from './profile'
 import feed from './feed'
+import messages from './messages'
 import notifications from './notifications'
 import dashboard from './dashboard'
 import groups from './groups'
@@ -29,6 +30,7 @@ export const API = {
   hubs,
   profile,
   feed,
+  messages,
   notifications,
   dashboard,
   groups,

@@ -239,6 +239,7 @@ export declare namespace ApiTypes {
         token: string
         count?: string
         from?: string
+	friend_id?: string
       }
     }
 
@@ -324,6 +325,13 @@ export declare namespace ApiTypes {
       id: string
       likes: LikeInfo[]
     }
+  }
+  export namespace Messages {
+    export interface UserMessage {
+      user_id: string
+      messages: Feed.Message[]
+      lastMessageDate?: string | null
+    }  
   }
 
   export namespace ChatMessages {

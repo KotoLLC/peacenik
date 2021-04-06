@@ -5,6 +5,7 @@ import { ApiTypes } from 'src/types'
 import { currentHubBack2Front } from '@services/dataTransforms/currentHubTransform'
 import { hubsForMessagesBack2Front } from '@services/dataTransforms/hubsForMessagesTransform'
 import { Types as FeedMessagesTypes } from '@store/feed/actions'
+import { Types as DirectMessagesTypes } from '@store/messages/actions'
 import selectors from '@selectors/index'
 
 export function* watchGetMessages() {
@@ -136,61 +137,10 @@ export function* watchGetMoreMessagesFromHub(action: { type: string, payload: Ap
   }
 }
 
-export function* watchGetGroupMessagesToken(action: {type: string, payload: ApiTypes.Feed.MessagesByGroupId} ) {
-  try {
-    const response = yield API.feed.getGroupMessageToken(action.payload)
-
-    if (response.status === 200) {
-      console.log("RECEIVED TOKEN: ", response.data.tokens)
-      let token: string[] = Object.entries<string>(response.data.tokens).map(([key, value]) => {
-        return value
-      })
-
-      yield put(Actions.feed.setGroupFeedToken(token[0]))
-
-    } else if (response.status === 400) {
-      console.log("RESPONSE ERROR:", response)
-      yield put(Actions.authorization.getAuthTokenRequest())
-    }
-
-  } catch (error) {
-    console.log("GetGroupMessagesToken ERROR: ", error)
-  }
-}
-
-export function* watchGetGroupMessages(action: { type: string, payload: ApiTypes.Feed.MessagesByGroupId }) {
-  try {
-
-    const response = yield API.feed.getGroupMessages(action.payload)
-
-    if (response.status === 200) {
-      let resultData = []
-      if (response.data?.messages?.length) {
-        resultData = response.data?.messages.map(item => {
-          item.sourceHost = action.payload.host
-          item.messageToken = action.payload.body.token
-          return item
-        })
-      }
-
-      yield put(Actions.feed.getGroupFeedFromHubSuccess({
-        hub: action.payload.host,
-        messages: resultData,
-        group_id: action.payload.body.group_id
-      }))
-    } else if (response.status === 400) {
-      console.log("RESPONSE ERROR:", response)
-      yield put(Actions.feed.getCurrentHubRequest())
-      yield put(Actions.feed.getGroupFeedRequest(action.payload))
-    }
-
-  } catch (error) {
-    console.log("GetGroupMessages ERROR: ", error)
-  }
-}
 
 export function* watchGetMessagesFromHub(action: { type: string, payload: ApiTypes.Feed.MessagesFromHub }) {
-  
+  switch(action.type) {
+    case FeedMessagesTypes.GET_FEED_TOKENS_FROM_HUB_REQUEST:{
   try {
     const response = yield API.feed.getMessagesFromHub(action.payload)
 
@@ -210,6 +160,7 @@ export function* watchGetMessagesFromHub(action: { type: string, payload: ApiTyp
       }))
     } else {
       if (response.error.response.status === 400) {
+            console.log("watchGetMessagesFromHub getMessagesFromHub failed")
         // yield put(Actions.authorization.getAuthTokenRequest())
         // yield put(Actions.feed.getFeedTokensRequest())
       }
@@ -218,6 +169,30 @@ export function* watchGetMessagesFromHub(action: { type: string, payload: ApiTyp
   } catch (error) {
     if (!error.response) {
       yield put(Actions.common.setConnectionError(true))
+        }
+      }
+    }
+    case DirectMessagesTypes.GET_MESSAGE_TOKENS_FROM_HUB_REQUEST:{
+      const fetchDataByUserId = async(friend_id) => {
+        const res =  await API.messages.getMessagesFromHub({
+          host: action.payload.host,
+          body: {              
+            ...action.payload.body,
+            friend_id:friend_id,
+            count: "1"
+          }
+        })
+        console.log(`fetchDataByUserId ${friend_id}`, res);
+        return res
+      }
+      const friends = action.payload.friends;
+      if(friends) {
+        const usesMessage = yield all(friends.map(friend_id=>fetchDataByUserId(friend_id)))
+        yield put(Actions.messages.getUserLastMessageFromHubSuccess({
+          hub: action.payload.host,
+          usesMessage: usesMessage
+        }))        
+      }
     }
   }
 
@@ -414,5 +389,57 @@ export function* watchReportMessageCentral(action: { type: string, payload: ApiT
 
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+export function* watchGetGroupMessagesToken(action: {type: string, payload: ApiTypes.Feed.MessagesByGroupId} ) {
+  try {
+    const response = yield API.feed.getGroupMessageToken(action.payload)
+
+    if (response.status === 200) {
+      console.log("RECEIVED TOKEN: ", response.data.tokens)
+      let token: string[] = Object.entries<string>(response.data.tokens).map(([key, value]) => {
+        return value
+      })
+
+      yield put(Actions.feed.setGroupFeedToken(token[0]))
+
+    } else if (response.status === 400) {
+      console.log("RESPONSE ERROR:", response)
+      yield put(Actions.authorization.getAuthTokenRequest())
+    }
+
+  } catch (error) {
+    console.log("GetGroupMessagesToken ERROR: ", error)
+  }
+}
+
+export function* watchGetGroupMessages(action: { type: string, payload: ApiTypes.Feed.MessagesByGroupId }) {
+  try {
+
+    const response = yield API.feed.getGroupMessages(action.payload)
+
+    if (response.status === 200) {
+      let resultData = []
+      if (response.data?.messages?.length) {
+        resultData = response.data?.messages.map(item => {
+          item.sourceHost = action.payload.host
+          item.messageToken = action.payload.body.token
+          return item
+        })
+      }
+
+      yield put(Actions.feed.getGroupFeedFromHubSuccess({
+        hub: action.payload.host,
+        messages: resultData,
+        group_id: action.payload.body.group_id
+      }))
+    } else if (response.status === 400) {
+      console.log("RESPONSE ERROR:", response)
+      yield put(Actions.feed.getCurrentHubRequest())
+      yield put(Actions.feed.getGroupFeedRequest(action.payload))
+    }
+
+  } catch (error) {
+    console.log("GetGroupMessages ERROR: ", error)
   }
 }

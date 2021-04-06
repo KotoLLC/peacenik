@@ -5,6 +5,7 @@ import { Types as FriendTypes } from '@store/friends/actions'
 import { Types as HubTypes } from '@store/hubs/actions'
 import { Types as ProfileTypes } from '@store/profile/actions'
 import { Types as FeedMessagesTypes } from '@store/feed/actions'
+import { Types as DirectMessagesTypes } from '@store/messages/actions'
 import { Types as NotificationsTypes } from '@store/notifications/actions'
 import { Types as DashboardTypes } from '@store/dashboard/actions'
 import { Types as GroupsTypes } from '@store/groups/actions'
@@ -74,6 +75,10 @@ import {
     watchReportMessageHub,
     watchReportMessageCentral,
 } from './feed'
+import {  
+    watchGetDirectMessages,    
+    // watchGetDirectMessagesFromHub
+} from './messsages'
 import {
     watchGetNotifications,
     watchCleanNotificationsInUserHub,
@@ -171,6 +176,7 @@ export function* rootSaga() {
         takeEvery(FeedMessagesTypes.REPORT_FEED_MESSAGES_HUB_REQUEST, watchReportMessageHub),
         takeEvery(FeedMessagesTypes.REPORT_FEED_MESSAGES_CENTRAL_REQUEST, watchReportMessageCentral),
         
+        takeEvery(DirectMessagesTypes.GET_MESSAGE_TOKENS_REQUEST, watchGetDirectMessages),                
         takeEvery(NotificationsTypes.GET_NOTIFICATIONS_REQUEST, watchGetNotifications),
         takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_USER_HUB_REQUEST, watchCleanNotificationsInUserHub),
         takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_HUB_REQUEST, watchCleanNotificationsInHub),

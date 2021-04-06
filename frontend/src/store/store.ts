@@ -8,7 +8,7 @@ import friends from './friends'
 import common from './common'
 import hubs from './hubs'
 import profile from './profile'
-import feed from './feed'
+import messages from './feed'
 import notifications from './notifications'
 import dashboard from './dashboard'
 import groups from './groups'
@@ -20,7 +20,7 @@ const appReducer = combineReducers({
     common,
     hubs,
     profile,
-    feed,
+    messages,
     notifications,
     dashboard,
     groups,

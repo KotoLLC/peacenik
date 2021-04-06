@@ -5,6 +5,7 @@ import { State as CommonState } from '@store/common'
 import { State as MessageHubsState } from '@store/hubs'
 import { State as ProfileState } from '@store/profile'
 import { State as FeedState } from '@store/feed'
+import { State as MessagesState } from '@store/messages'
 import { State as NotificationsState } from '@store/notifications'
 import { State as DashboardState } from '@store/dashboard'
 import { State as GroupsState } from '@store/groups'
@@ -17,6 +18,7 @@ export interface StoreTypes {
   hubs: MessageHubsState
   profile: ProfileState
   feed: FeedState
+  messages: MessagesState
   notifications: NotificationsState
   dashboard: DashboardState
   groups: GroupsState

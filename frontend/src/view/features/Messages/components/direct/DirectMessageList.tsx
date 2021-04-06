@@ -19,37 +19,32 @@ const DirectMessageList = () => {
   const friends = useSelector<StoreTypes, ApiTypes.Friends.Friend[] | null>(
     (state) => state.friends.friends
   );
-  // const messages = useSelector((state) => state);
-  const state = useSelector((state) => state);
-  console.log('state', state);
+  const messages = useSelector<StoreTypes, ApiTypes.Feed.Message[] | null>(
+    (state) => state.messages.messages
+  );
   const currentUserId = useSelector<StoreTypes, string>(
     (state) => state.profile.user.id
   );
-  // console.log(friends);
-  // console.log(messages);
 
-  // const lastAccessTime = {};
+  const lastAccessTime = {};
 
-  // const calcLastAccessTimes = (
-  //   messages: ApiTypes.Feed.Message[],
-  //   userId: string
-  // ): void => {
-  //   for (let m of messages) {
-  //     // console.log(jwt_decode(m));
-  //     console.log(m.messageToken);
-  //     console.log(jwt_decode(m.messageToken));
-  //     if (m.user_id === userId && m.friend_id) {
-  //       lastAccessTime[m.friend_id] = {
-  //         user_id: m.friend_id,
-  //       };
-  //     }
-  //   }
-  // };
+  const calcLastAccessTimes = (
+    messages: ApiTypes.Feed.Message[],
+    userId: string
+  ): void => {
+    for (let m of messages) {
+      if (m.user_id === userId && m.friend_id) {
+        lastAccessTime[m.friend_id] = {
+          user_id: m.friend_id,
+        };
+      }
+    }
+  };
 
-  // if (messages) {
-  //   calcLastAccessTimes(messages, currentUserId);
-  //   console.log(lastAccessTime);
-  // }
+  if (messages) {
+    calcLastAccessTimes(messages, currentUserId);
+    console.log(lastAccessTime);
+  }
 
   //   {
   //     "user": {
