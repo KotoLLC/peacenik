@@ -1,33 +1,33 @@
-import React, { useState, useEffect, ChangeEvent, useRef } from "react";
-import ReactMarkdown from "react-markdown";
-import moment from "moment";
-import { connect } from "react-redux";
-import Actions from "@store/actions";
-import Comment from "./Comment";
-import selectors from "@selectors/index";
-import IconButton from "@material-ui/core/IconButton";
-import Tooltip from "@material-ui/core/Tooltip";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
-import { Player } from "video-react";
-import { ApiTypes, StoreTypes, CommonTypes } from "src/types";
-import Badge from "@material-ui/core/Badge";
-import SendIcon from "@material-ui/icons/Send";
-import LayersClearIcon from "@material-ui/icons/LayersClear";
-import { getAvatarUrl } from "@services/avatarUrl";
-import Avatar from "@material-ui/core/Avatar";
-import loadImage from "blueimp-load-image";
-import { AuthorButtonsMenu } from "./AuthorButtonsMenu";
-import { NoAuthorButtonsMenu } from "./NoAuthorButtonsMenu";
-import PhotoIcon from "@material-ui/icons/Photo";
-import { urlify } from "@services/urlify";
-import { YoutubeFrame } from "./YoutubeFrame";
-import { MentionsInput, Mention } from "react-mentions";
+import React, { useState, useEffect, ChangeEvent, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
+import moment from 'moment';
+import { connect } from 'react-redux';
+import Actions from '@store/actions';
+import Comment from './Comment';
+import selectors from '@selectors/index';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
+import { Player } from 'video-react';
+import { ApiTypes, StoreTypes, CommonTypes } from 'src/types';
+import Badge from '@material-ui/core/Badge';
+import SendIcon from '@material-ui/icons/Send';
+import LayersClearIcon from '@material-ui/icons/LayersClear';
+import { getAvatarUrl } from '@services/avatarUrl';
+import Avatar from '@material-ui/core/Avatar';
+import loadImage from 'blueimp-load-image';
+import { AuthorButtonsMenu } from './AuthorButtonsMenu';
+import { NoAuthorButtonsMenu } from './NoAuthorButtonsMenu';
+import PhotoIcon from '@material-ui/icons/Photo';
+import { urlify } from '@services/urlify';
+import { YoutubeFrame } from './YoutubeFrame';
+import { MentionsInput, Mention } from 'react-mentions';
 import {
   friendsToMentionFriends,
   MentionFriend,
-} from "@services/dataTransforms/friendsToMentionFriends";
-import { LinkRenderer } from "@view/shared/LinkRenderer";
+} from '@services/dataTransforms/friendsToMentionFriends';
+import { LinkRenderer } from '@view/shared/LinkRenderer';
 import {
   PaperStyled,
   MessageHeader,
@@ -54,7 +54,7 @@ import {
   EditMessageWrapper,
   EditorInMessageWrapper,
   IconButtonWrapper,
-} from "./styles";
+} from './styles';
 
 interface Props extends ApiTypes.Feed.Message {
   isAuthor: boolean;
@@ -103,7 +103,7 @@ const Message: React.SFC<Props> = (props) => {
 
   const [isEditer, setEditor] = useState<boolean>(false);
   const [message, onMessageChange] = useState<string>(text);
-  const [comment, onCommentChange] = useState<string>("");
+  const [comment, onCommentChange] = useState<string>('');
   const [isCommentsOpen, openComments] = useState<boolean>(
     isCommentsOpenByDeafult || false
   );
@@ -118,11 +118,11 @@ const Message: React.SFC<Props> = (props) => {
 
   const onMessageSave = () => {
     let attachment_changed = file?.size ? true : false;
-    let attachment_id = file?.size ? uploadLink?.blob_id : "";
+    let attachment_id = file?.size ? uploadLink?.blob_id : '';
 
     if (isAttacmentDeleted) {
       attachment_changed = true;
-      attachment_id = "";
+      attachment_id = '';
     }
 
     props.onMessageEdit({
@@ -166,8 +166,8 @@ const Message: React.SFC<Props> = (props) => {
   };
 
   const rendreLikeButton = () => {
-    let likesInfo = "No likes yet";
-    let usersLikes = "";
+    let likesInfo = 'No likes yet';
+    let usersLikes = '';
 
     if (currentMessageLikes?.id === id) {
       currentMessageLikes.likes.length &&
@@ -175,7 +175,7 @@ const Message: React.SFC<Props> = (props) => {
           if (counter < 15) {
             const likedByUserName = item.user_full_name || item.user_name;
             const comma =
-              currentMessageLikes.likes.length - 1 === counter ? "" : ", ";
+              currentMessageLikes.likes.length - 1 === counter ? '' : ', ';
             usersLikes += `${likedByUserName}${comma}`;
           }
 
@@ -205,7 +205,7 @@ const Message: React.SFC<Props> = (props) => {
         onOpen={() => getLikesInfo()}
       >
         <IconButton>
-          <Badge badgeContent={likes} color="primary">
+          <Badge badgeContent={likes} color='primary'>
             {liked_by_me ? <FavoriteIcon /> : <FavoriteBorderIcon />}
           </Badge>
         </IconButton>
@@ -215,7 +215,7 @@ const Message: React.SFC<Props> = (props) => {
 
   const onCommentSave = () => {
     openComments(true);
-    onCommentChange("");
+    onCommentChange('');
 
     props.onCommentPost({
       host: sourceHost,
@@ -244,7 +244,7 @@ const Message: React.SFC<Props> = (props) => {
       return null;
     }
 
-    if (file?.size && file?.type.indexOf("image") !== -1) {
+    if (file?.size && file?.type.indexOf('image') !== -1) {
       return (
         <AttachmentWrapper>
           <ImagePreview src={URL.createObjectURL(file)} />
@@ -252,7 +252,7 @@ const Message: React.SFC<Props> = (props) => {
       );
     }
 
-    if (file?.name && file?.type.indexOf("video") !== -1) {
+    if (file?.name && file?.type.indexOf('video') !== -1) {
       return (
         <AttachmentWrapper>
           <Player>
@@ -262,7 +262,7 @@ const Message: React.SFC<Props> = (props) => {
       );
     }
 
-    if (attachment_type && attachment_type.indexOf("image") !== -1) {
+    if (attachment_type && attachment_type.indexOf('image') !== -1) {
       return (
         <AttachmentWrapper>
           <ImagePreview src={attachment} />
@@ -270,7 +270,7 @@ const Message: React.SFC<Props> = (props) => {
       );
     }
 
-    if (attachment_type && attachment_type.indexOf("video") !== -1) {
+    if (attachment_type && attachment_type.indexOf('video') !== -1) {
       return (
         <AttachmentWrapper>
           <Player>
@@ -319,9 +319,9 @@ const Message: React.SFC<Props> = (props) => {
           }}
         >
           {liked_by_me ? (
-            <FavoriteIcon color="inherit" />
+            <FavoriteIcon color='inherit' />
           ) : (
-            <FavoriteBorderIcon color="inherit" />
+            <FavoriteBorderIcon color='inherit' />
           )}
           <ReactionNavText>Like</ReactionNavText>
         </ReactionNavItem>
@@ -335,8 +335,8 @@ const Message: React.SFC<Props> = (props) => {
   const onCommentClick = () => {
     openComments(true);
     commentEditorRef?.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
+      behavior: 'smooth',
+      block: 'end',
     });
     commentEditorRef?.current?.focus();
   };
@@ -360,12 +360,12 @@ const Message: React.SFC<Props> = (props) => {
         function (img, data) {
           if (data.imageHead && data.exif) {
             // Reset Exif Orientation data:
-            loadImage.writeExifData(data.imageHead, data, "Orientation", 1);
+            loadImage.writeExifData(data.imageHead, data, 'Orientation', 1);
             img.toBlob(function (blob) {
               loadImage.replaceHead(blob, data.imageHead, function (newBlob) {
                 setFile(newBlob);
               });
-            }, "image/jpeg");
+            }, 'image/jpeg');
           } else {
             setFile(uploadedFile[0]);
           }
@@ -390,7 +390,7 @@ const Message: React.SFC<Props> = (props) => {
         data.append(key, form_data[key]);
       }
 
-      data.append("file", file, file?.name);
+      data.append('file', file, file?.name);
 
       props.onSetAttachment({
         link: props?.uploadLink.link,
@@ -414,7 +414,7 @@ const Message: React.SFC<Props> = (props) => {
 
     return (
       <CommentsLink onClick={() => openComments(!isCommentsOpen)}>
-        {isCommentsOpen ? "Hide" : "View"} {comments.length} comments
+        {isCommentsOpen ? 'Hide' : 'View'} {comments.length} comments
       </CommentsLink>
     );
   };
@@ -446,33 +446,33 @@ const Message: React.SFC<Props> = (props) => {
           <EditorInMessageWrapper>
             <EditMessageField>
               <MentionsInput
-                className="mentions"
+                className='mentions'
                 value={message}
                 onChange={(evant) => onMessageChange(evant.target.value)}
                 onKeyDown={onComandEnterDownInMessage}
               >
                 <Mention
-                  trigger="@"
+                  trigger='@'
                   data={mentionFriends}
-                  className={"mentions__mention"}
-                  markup="[@__display__](/profile/user?id=__id__)"
+                  className={'mentions__mention'}
+                  markup='[@__display__](/profile/user?id=__id__)'
                 />
               </MentionsInput>
               <IconButton onClick={onMessageSave}>
-                <SendIcon fontSize="small" />
+                <SendIcon fontSize='small' />
               </IconButton>
             </EditMessageField>
             <EditorButtonsWrapper>
               <Tooltip title={`Attach image or video`}>
                 <IconButtonWrapper>
-                  <IconButton component="label">
-                    <PhotoIcon fontSize="small" color="primary" />
+                  <IconButton component='label'>
+                    <PhotoIcon fontSize='small' color='primary' />
                     <UploadInput
-                      type="file"
-                      id="file"
-                      name="file"
+                      type='file'
+                      id='file'
+                      name='file'
                       onChange={onFileUpload}
-                      accept="video/*,image/*"
+                      accept='video/*,image/*'
                     />
                   </IconButton>
                 </IconButtonWrapper>
@@ -480,8 +480,8 @@ const Message: React.SFC<Props> = (props) => {
               {(file || attachment_type) && (
                 <Tooltip title={`Delete attachment`}>
                   <IconButtonWrapper>
-                    <IconButton component="label" onClick={onFileDelete}>
-                      <LayersClearIcon fontSize="small" color="primary" />
+                    <IconButton component='label' onClick={onFileDelete}>
+                      <LayersClearIcon fontSize='small' color='primary' />
                     </IconButton>
                   </IconButtonWrapper>
                 </Tooltip>
@@ -489,7 +489,7 @@ const Message: React.SFC<Props> = (props) => {
             </EditorButtonsWrapper>
           </EditorInMessageWrapper>
         ) : (
-          <MessageContent className="markdown-body">
+          <MessageContent className='markdown-body'>
             <ReactMarkdown escapeHtml={true} renderers={{ link: LinkRenderer }}>
               {message}
             </ReactMarkdown>
@@ -504,20 +504,20 @@ const Message: React.SFC<Props> = (props) => {
         <EditMessageWrapper>
           <EditMessageField>
             <MentionsInput
-              className="mentions"
+              className='mentions'
               value={comment}
               onChange={(evant) => onCommentChange(evant.target.value)}
               onKeyDown={onComandEnterDownInComment}
             >
               <Mention
-                trigger="@"
+                trigger='@'
                 data={mentionFriends}
-                className={"mentions__mention"}
-                markup="[@__display__](/profile/user?id=__id__)"
+                className={'mentions__mention'}
+                markup='[@__display__](/profile/user?id=__id__)'
               />
             </MentionsInput>
             <IconButton onClick={onCommentSave}>
-              <SendIcon fontSize="small" />
+              <SendIcon fontSize='small' />
             </IconButton>
           </EditMessageField>
         </EditMessageWrapper>
@@ -528,10 +528,10 @@ const Message: React.SFC<Props> = (props) => {
 
 type StateProps = Pick<
   Props,
-  "uploadLink" | "currentHub" | "currentMessageLikes" | "friends"
+  'uploadLink' | 'currentHub' | 'currentMessageLikes' | 'friends'
 >;
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  uploadLink: state.messages.uploadLink,
+  uploadLink: state.feed.uploadLink,
   currentHub: selectors.feed.currentHub(state),
   currentMessageLikes: selectors.feed.currentMessageLikes(state),
   friends: selectors.friends.friends(state),
@@ -539,13 +539,13 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
 
 type DispatchProps = Pick<
   Props,
-  | "onMessageEdit"
-  | "onCommentPost"
-  | "onGetMessageUploadLink"
-  | "onSetAttachment"
-  | "onResetMessageUploadLink"
-  | "onLikeMessage"
-  | "getLikesForMessage"
+  | 'onMessageEdit'
+  | 'onCommentPost'
+  | 'onGetMessageUploadLink'
+  | 'onSetAttachment'
+  | 'onResetMessageUploadLink'
+  | 'onLikeMessage'
+  | 'getLikesForMessage'
 >;
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onMessageEdit: (data: ApiTypes.Feed.EditMessage) =>

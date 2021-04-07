@@ -4,7 +4,8 @@ import { Types as AuthorizationTypes } from '@store/authorization/actions'
 import { Types as FriendTypes } from '@store/friends/actions'
 import { Types as HubTypes } from '@store/hubs/actions'
 import { Types as ProfileTypes } from '@store/profile/actions'
-import { Types as MessagesTypes } from '@store/feed/actions'
+import { Types as FeedMessagesTypes } from '@store/feed/actions'
+import { Types as DirectMessagesTypes } from '@store/messages/actions'
 import { Types as NotificationsTypes } from '@store/notifications/actions'
 import { Types as DashboardTypes } from '@store/dashboard/actions'
 import { Types as GroupsTypes } from '@store/groups/actions'
@@ -72,6 +73,10 @@ import {
     watchReportMessageHub,
     watchReportMessageCentral,
 } from './feed'
+import {  
+    watchGetDirectMessages as watchGetLastDirectMessages,    
+    // watchGetDirectMessagesFromHub
+} from './messsages'
 import {
     watchGetNotifications,
     watchCleanNotificationsInUserHub,
@@ -147,29 +152,30 @@ export function* rootSaga() {
         takeEvery(ProfileTypes.GET_PROFILE_COVER_UPLOAD_LINK_REQUEST, watchGetProfileCoverUploadLink),
         takeEvery(ProfileTypes.SET_PROFILE_COVER_REQUEST, watchSetProfileCover),
 
-        takeEvery(MessagesTypes.GET_FEED_TOKENS_REQUEST, watchGetMessages),
-        takeEvery(MessagesTypes.GET_CURRENT_HUB_REQUEST, watchGetCurrentHub),
-        takeEvery(MessagesTypes.POST_FEED_MESSAGE_REQUEST, watchPostMessage),
-        takeEvery(MessagesTypes.GET_FEED_TOKENS_FROM_HUB_REQUEST, watchGetMessagesFromHub),
-        takeEvery(MessagesTypes.DELETE_FEED_MESSAGES_REQUEST, watchDeleteMessage),
-        takeEvery(MessagesTypes.EDIT_FEED_MESSAGES_REQUEST, watchEditMessage),
-        takeEvery(MessagesTypes.POST_FEED_COMMENT_REQUEST, watchPostComment),
-        takeEvery(MessagesTypes.EDIT_FEED_COMMENT_REQUEST, watchEditComment),
-        takeEvery(MessagesTypes.DELETE_FEED_COMMENT_REQUEST, watchDeleteComment),
-        takeEvery(MessagesTypes.GET_FEED_TOKENS_MESSAGES_UPLOAD_LINK_REQUEST, watchGetMessageUploadLink),
-        takeEvery(MessagesTypes.SET_FEED_MESSAGES_ATTACHMENT_REQUEST, watchSetAttachment),
-        takeEvery(MessagesTypes.LIKE_FEED_MESSAGES_REQUEST, watchLikeMessage),
-        takeEvery(MessagesTypes.LIKE_FEED_COMMENT_REQUEST, watchLikeComment),
-        takeEvery(MessagesTypes.GET_LIKES_FOR_FEED_MESSAGES_REQUEST, watchGetLikesForMessage),
-        takeEvery(MessagesTypes.GET_LIKES_FOR_FEED_COMMENT_REQUEST, watchGetLikesForComment),
-        takeEvery(MessagesTypes.GET_MORE_FEED_REQUEST, watchGetMoreMessages),
-        takeEvery(MessagesTypes.GET_MORE_FEED_FROM_HUB_REQUEST, watchGetMoreMessagesFromHub),
-        takeEvery(MessagesTypes.GET_FEED_TOKENS_MESSAGES_BY_ID_FROM_HUB_REQUEST, watchGetMessagesByIdFromHub),
-        takeEvery(MessagesTypes.HIDE_FEED_MESSAGES_REQUEST, watchHideMessage),
-        takeEvery(MessagesTypes.HIDE_FEED_COMMENT_REQUEST, watchHideComment),
-        takeEvery(MessagesTypes.REPORT_FEED_MESSAGES_HUB_REQUEST, watchReportMessageHub),
-        takeEvery(MessagesTypes.REPORT_FEED_MESSAGES_CENTRAL_REQUEST, watchReportMessageCentral),
+        takeEvery(FeedMessagesTypes.GET_FEED_TOKENS_REQUEST, watchGetMessages),
+        takeEvery(FeedMessagesTypes.GET_CURRENT_HUB_REQUEST, watchGetCurrentHub),
+        takeEvery(FeedMessagesTypes.POST_FEED_MESSAGE_REQUEST, watchPostMessage),
+        takeEvery(FeedMessagesTypes.GET_FEED_TOKENS_FROM_HUB_REQUEST, watchGetMessagesFromHub),
+        takeEvery(FeedMessagesTypes.DELETE_FEED_MESSAGES_REQUEST, watchDeleteMessage),
+        takeEvery(FeedMessagesTypes.EDIT_FEED_MESSAGES_REQUEST, watchEditMessage),
+        takeEvery(FeedMessagesTypes.POST_FEED_COMMENT_REQUEST, watchPostComment),
+        takeEvery(FeedMessagesTypes.EDIT_FEED_COMMENT_REQUEST, watchEditComment),
+        takeEvery(FeedMessagesTypes.DELETE_FEED_COMMENT_REQUEST, watchDeleteComment),
+        takeEvery(FeedMessagesTypes.GET_FEED_TOKENS_MESSAGES_UPLOAD_LINK_REQUEST, watchGetMessageUploadLink),
+        takeEvery(FeedMessagesTypes.SET_FEED_MESSAGES_ATTACHMENT_REQUEST, watchSetAttachment),
+        takeEvery(FeedMessagesTypes.LIKE_FEED_MESSAGES_REQUEST, watchLikeMessage),
+        takeEvery(FeedMessagesTypes.LIKE_FEED_COMMENT_REQUEST, watchLikeComment),
+        takeEvery(FeedMessagesTypes.GET_LIKES_FOR_FEED_MESSAGES_REQUEST, watchGetLikesForMessage),
+        takeEvery(FeedMessagesTypes.GET_LIKES_FOR_FEED_COMMENT_REQUEST, watchGetLikesForComment),
+        takeEvery(FeedMessagesTypes.GET_MORE_FEED_REQUEST, watchGetMoreMessages),
+        takeEvery(FeedMessagesTypes.GET_MORE_FEED_FROM_HUB_REQUEST, watchGetMoreMessagesFromHub),
+        takeEvery(FeedMessagesTypes.GET_FEED_TOKENS_MESSAGES_BY_ID_FROM_HUB_REQUEST, watchGetMessagesByIdFromHub),
+        takeEvery(FeedMessagesTypes.HIDE_FEED_MESSAGES_REQUEST, watchHideMessage),
+        takeEvery(FeedMessagesTypes.HIDE_FEED_COMMENT_REQUEST, watchHideComment),
+        takeEvery(FeedMessagesTypes.REPORT_FEED_MESSAGES_HUB_REQUEST, watchReportMessageHub),
+        takeEvery(FeedMessagesTypes.REPORT_FEED_MESSAGES_CENTRAL_REQUEST, watchReportMessageCentral),
         
+        takeEvery(DirectMessagesTypes.GET_LAST_MESSAGE_TOKENS_REQUEST, watchGetLastDirectMessages),                
         takeEvery(NotificationsTypes.GET_NOTIFICATIONS_REQUEST, watchGetNotifications),
         takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_USER_HUB_REQUEST, watchCleanNotificationsInUserHub),
         takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_HUB_REQUEST, watchCleanNotificationsInHub),

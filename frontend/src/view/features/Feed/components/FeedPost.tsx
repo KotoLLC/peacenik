@@ -60,8 +60,8 @@ interface Props extends ApiTypes.Feed.Message {
   isCommentsOpenByDeafult?: boolean;
   friends: ApiTypes.Friends.Friend[] | null;
 
-  showCommentPopup: any
-        
+  showCommentPopup: any;
+
   onMessageEdit: (data: ApiTypes.Feed.EditMessage) => void;
   onCommentPost: (data: ApiTypes.Feed.PostComment) => void;
   onGetMessageUploadLink: (data: ApiTypes.Feed.UploadLinkRequest) => void;
@@ -93,8 +93,8 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
     user_id,
     callback,
     friends,
-    showCommentPopup
-  } = props
+    showCommentPopup,
+  } = props;
 
   const [isEditer, setEditor] = useState<boolean>(false);
   const [message, onMessageChange] = useState<string>(text);
@@ -167,7 +167,7 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
         </ReactionNavItem>
         <FeedComment
           user_name={userName}
-          showCommentPopup = {showCommentPopup}
+          showCommentPopup={showCommentPopup}
           {...{
             user_id,
             created_at,
@@ -453,7 +453,7 @@ type StateProps = Pick<
   'uploadLink' | 'currentHub' | 'currentMessageLikes' | 'friends'
 >;
 const mapStateToProps = (state: StoreTypes): StateProps => ({
-  uploadLink: state.messages.uploadLink,
+  uploadLink: state.feed.uploadLink,
   currentHub: selectors.feed.currentHub(state),
   currentMessageLikes: selectors.feed.currentMessageLikes(state),
   friends: selectors.friends.friends(state),

@@ -32,7 +32,7 @@ export function* watchGetNotificationsFromHub(action: { type: string, payload: C
     if (response.status === 200) {
       const notifications = response.data?.notifications || []
 
-      let currentHub = store.getState().messages.currentHub.host
+      let currentHub = store.getState().feed.currentHub.host
       
       if ( currentHub === action.payload.host) {
         yield put(Actions.common.setConnectionError(false))
@@ -62,7 +62,7 @@ export function* watchGetNotificationsFromHub(action: { type: string, payload: C
 
   } catch (error) {
     if (!error.response) {
-      let currentHub = store.getState().messages.currentHub.host
+      let currentHub = store.getState().feed.currentHub.host
       
       if ( currentHub === action.payload.host) {
         yield put(Actions.common.setConnectionError(true))
