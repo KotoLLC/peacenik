@@ -2,7 +2,7 @@
 import { ApiTypes, CommonTypes } from 'src/types'
 
 export enum Types {
-  GET_MESSAGE_TOKENS_REQUEST = 'GET_MESSAGE_TOKENS_REQUEST',
+  GET_LAST_MESSAGE_TOKENS_REQUEST = 'GET_MESSAGE_TOKENS_REQUEST',
   GET_MESSAGE_TOKENS_SUCCESS = 'GET_MESSAGE_TOKENS_SUCCESS',
 
   GET_MORE_MESSAGE_REQUEST = 'GET_MORE_MESSAGE_REQUEST',
@@ -76,7 +76,7 @@ export enum Types {
 }
 
 const getMessageTokensRequest = () => ({
-  type: Types.GET_MESSAGE_TOKENS_REQUEST,
+  type: Types.GET_LAST_MESSAGE_TOKENS_REQUEST,
 })
 
 const getMessageTokensSuccess = (payload: CommonTypes.HubTypes.CurrentHub[]) => ({
@@ -90,7 +90,7 @@ const getMessageTokensSuccess = (payload: CommonTypes.HubTypes.CurrentHub[]) => 
 
 const getUserLastMessageFromHubSuccess = (payload: {
   hub: string
-  usesMessage: ApiTypes.Messages.UserMessage[]
+  usersLastMessage: ApiTypes.Messages.UserMessage[]
 }) => ({
   type: Types.GET_USER_LAST_MESSAGES_FROM_HUB_SUCCESS,
   payload

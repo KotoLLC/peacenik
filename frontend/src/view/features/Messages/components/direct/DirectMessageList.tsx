@@ -13,37 +13,19 @@ const DirectMessageList = () => {
 
   useEffect(() => {
     dispatch(Actions.friends.getFriendsRequest());
-    dispatch(Actions.feed.getFeedTokensRequest());
+    dispatch(Actions.messages.getMessageTokensRequest());
   }, [dispatch]);
 
   const friends = useSelector<StoreTypes, ApiTypes.Friends.Friend[] | null>(
     (state) => state.friends.friends
   );
-  const messages = useSelector<StoreTypes, ApiTypes.Feed.Message[] | null>(
-    (state) => state.messages.messages
-  );
+  const lastMessages = useSelector<
+    StoreTypes,
+    ApiTypes.Messages.UserMessage[] | null
+  >((state) => state.messages.usersLastMessage);
   const currentUserId = useSelector<StoreTypes, string>(
     (state) => state.profile.user.id
   );
-
-  const lastAccessTime = {};
-
-  const calcLastAccessTimes = (
-    messages: ApiTypes.Feed.Message[],
-    userId: string
-  ): void => {
-    for (let m of messages) {
-      if (m.user_id === userId && m.friend_id) {
-        lastAccessTime[m.friend_id] = {
-          user_id: m.friend_id,
-        };
-      }
-    }
-  };
-
-  if (messages) {
-    calcLastAccessTimes(messages, currentUserId);
-  }
 
   //   {
   //     "user": {
@@ -57,20 +39,25 @@ const DirectMessageList = () => {
   //     "friends": [],
   //     "group_count": 0
   // }
+  console.log('lastMessages', lastMessages);
 
   return (
     <>
-      {friends &&
-        _.isArray(friends) &&
-        friends.map((f) => (
+      {lastMessages &&
+        _.isArray(lastMessages) &&
+        lastMessages.map((f) => (
           <DirectMessageListItem
-            key={f.user.id}
-            userId={f.user.id}
-            fullName={f.user.full_name}
-            accessTime='123'
+            key={f.user_id}
+            userId={f.user_id}
+            fullName={f.full_name || ''}
+            accessTime={f.lastMessageDate || ''}
             lastMsg='The rules of travel have altered so much in the last few years, with strict reulation regarding.'
             missedCount={2}
-            msgType={MessageDirection.INCOMMING_MESSAGE}
+            msgType={
+              currentUserId === f.user_id
+                ? MessageDirection.OUTGOING_MESSAGE
+                : MessageDirection.INCOMMING_MESSAGE
+            }
           />
         ))}
     </>

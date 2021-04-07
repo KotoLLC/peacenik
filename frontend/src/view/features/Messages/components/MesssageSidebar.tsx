@@ -1,17 +1,17 @@
-import React, { useCallback, useState } from "react";
-import { useRouteMatch, Switch, Route, Redirect } from "react-router-dom";
-import styled from "styled-components";
+import React, { useCallback, useState } from 'react';
+import { useRouteMatch, Switch, Route, Redirect } from 'react-router-dom';
+import styled from 'styled-components';
 
-import { ButtonContained } from "@view/shared/styles";
-import DirectMessageList from "./direct/DirectMessageList";
+import { ButtonContained } from '@view/shared/styles';
+import DirectMessageList from './direct/DirectMessageList';
 import {
   SidebarWrapper,
   SidebarContent,
   MessagesListContent,
   SidebarFooter,
-} from "./styles";
+} from './styles';
 
-import { DirectMessageDialog } from "./direct/DirectMessageDialog";
+import { DirectMessageDialog } from './direct/DirectMessageDialog';
 
 export const ButtonContainedStyled = styled(ButtonContained)`
   min-width: 160px;
@@ -24,7 +24,6 @@ export const ButtonContainedStyled = styled(ButtonContained)`
 `;
 const MesssageSidebar: React.FC = () => {
   const baseUrl = useRouteMatch().path;
-
   const [isComposeDlgOpen, setIsComposeDlgOpen] = useState<boolean>(false);
   const handleSelectChatUser = useCallback((id: string) => {
     setIsComposeDlgOpen(false);
@@ -48,7 +47,7 @@ const MesssageSidebar: React.FC = () => {
       <DirectMessageDialog
         isOpenModal={isComposeDlgOpen}
         setOpenDialog={setIsComposeDlgOpen}
-        className="compose_modal"
+        className='compose_modal'
         onChatOpen={handleSelectChatUser}
       />
     </SidebarWrapper>

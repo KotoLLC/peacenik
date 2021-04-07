@@ -25,7 +25,12 @@ export function * watchGetDirectMessages() {
   
       const friendsRes = yield API.friends.getFriends()
       if(friendsRes.status === 200) {
-        const friends = friendsRes.data.friends.map(item=>item.user.id)
+        console.log(friendsRes.data.friends);
+        const friends = friendsRes.data.friends.map(item=>({
+          id:item.user.id,
+          username: item.user.name,
+          full_name: item.user.full_name,
+        }))
         console.log('friends', friends);
   
         if (!feedsTokens.length) {
@@ -38,7 +43,7 @@ export function * watchGetDirectMessages() {
                 type: DirectMessagesTypes.GET_MESSAGE_TOKENS_FROM_HUB_REQUEST,
                 payload: {
                   host: item.host,
-                  friend_ids:friends,
+                  friends:friends,
                   token: item.token,                  
                 },
               })
@@ -65,51 +70,18 @@ export function * watchGetDirectMessages() {
 
 
 export function* watchGetUserLastMessagesFromHub(action: { type: string, payload: ApiTypes.Messages.UserMessagesFromHub }) {
-  // switch(action.type) {
-  //   case FeedMessagesTypes.GET_FEED_TOKENS_FROM_HUB_REQUEST:{
   try {
     const resultData = yield API.messages.getUserLastMessagesFromHub(action.payload)
+    // sort the last date
+    resultData.sort((a,b)=>a.created_at > b.created_at? -1: 1)
     console.log(resultData)
-    
     yield put(Actions.messages.getUserLastMessageFromHubSuccess({
       hub: action.payload.host,
-      usesMessage: resultData
+      usersLastMessage: resultData
     }))
-    // } else {
-    //   if (response.error.response.status === 400) {
-    //         console.log("watchGetMessagesFromHub getMessagesFromHub failed")
-    //     // yield put(Actions.authorization.getAuthTokenRequest())
-    //     // yield put(Actions.feed.getFeedTokensRequest())
-    //   }
-    // }
-    
   } catch (error) {
     if (!error.response) {
       yield put(Actions.common.setConnectionError(true))
     }
   }
-    // case DirectMessagesTypes.GET_MESSAGE_TOKENS_FROM_HUB_REQUEST:{
-      // const fetchDataByUserId = async(friend_id) => {
-      //   const res =  await API.messages.getMessagesFromHub({
-      //     host: action.payload.host,
-      //     body: {              
-      //       ...action.payload.body,
-      //       friend_id: friend_id,
-      //       count: "1"
-      //     }
-      //   })
-      //   console.log(`fetchDataByUserId ${friend_id}`, res);
-      //   return res
-      // }
-      // const friends = action.payload.friends;
-      // if(friends) {
-      //   const usesMessage = yield all(friends.map(friend_id=>fetchDataByUserId(friend_id)))
-      //   yield put(Actions.messages.getUserLastMessageFromHubSuccess({
-      //     hub: action.payload.host,
-      //     usesMessage: usesMessage
-      //   }))        
-      // }
-    // }
-  // }
-
 }

@@ -324,18 +324,20 @@ export declare namespace ApiTypes {
     export interface UserMessagesFromHub {
       host: string,
       token: string
-      friend_ids: string []
+      friends: {
+        id: string,
+        username: string,
+        full_name: string
+      }[]
     }
     export interface UserMessage {
       user_id: string
       messages: Feed.Message[]
       lastMessageDate?: string | null
+      username?: string
+      full_name?: string
     }  
-    export interface UserLastMessage {
-      user_id: string
-      messages: Feed.Message
-      lastMessageDate?: string | null
-    }  
+    
   }
 
   export namespace ChatMessages {

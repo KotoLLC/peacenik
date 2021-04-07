@@ -74,7 +74,7 @@ import {
     watchReportMessageCentral,
 } from './feed'
 import {  
-    watchGetDirectMessages,    
+    watchGetDirectMessages as watchGetLastDirectMessages,    
     // watchGetDirectMessagesFromHub
 } from './messsages'
 import {
@@ -175,7 +175,7 @@ export function* rootSaga() {
         takeEvery(FeedMessagesTypes.REPORT_FEED_MESSAGES_HUB_REQUEST, watchReportMessageHub),
         takeEvery(FeedMessagesTypes.REPORT_FEED_MESSAGES_CENTRAL_REQUEST, watchReportMessageCentral),
         
-        takeEvery(DirectMessagesTypes.GET_MESSAGE_TOKENS_REQUEST, watchGetDirectMessages),                
+        takeEvery(DirectMessagesTypes.GET_LAST_MESSAGE_TOKENS_REQUEST, watchGetLastDirectMessages),                
         takeEvery(NotificationsTypes.GET_NOTIFICATIONS_REQUEST, watchGetNotifications),
         takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_USER_HUB_REQUEST, watchCleanNotificationsInUserHub),
         takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_HUB_REQUEST, watchCleanNotificationsInHub),

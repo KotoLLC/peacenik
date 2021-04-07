@@ -11,12 +11,14 @@ export default {
         Authorization: `Bearer ${authToken}`,
       }
     }
-    return await Promise.all(data.friend_ids.map(friend_id=>axiosInstance.post(`${data.host}/rpc.MessageService/Messages`, {
-      friend_id,
+    return await Promise.all(data.friends.map(friend=>axiosInstance.post(`${data.host}/rpc.MessageService/Messages`, {
+      friend_id:friend.id,
       token: data.token
     }, config))).then(response => {
-      return response.filter(item=>item?.data?.messages.length).map((item, i)=>({
-        user_id: data.friend_ids[i],
+      return response.filter(item=>item?.data?.messages.length && item?.data?.messages[0].created_at ).map((item, i)=>({
+        user_id: data.friends[i].id,
+        full_name: data.friends[i].full_name,
+        username: data.friends[i].username,
         messages: item.data.messages,
         lastMessageDate: item.data.messages[0].created_at
       }))

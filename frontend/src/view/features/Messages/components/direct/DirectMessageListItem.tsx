@@ -25,6 +25,7 @@ import {
   MessageInfoTextStatus,
   MessagePublishStatus,
 } from '@view/features/Messages/types/types';
+import { dateTorelateString } from '@services/dateTorelateString';
 
 interface Props {
   userId: string;
@@ -43,18 +44,16 @@ const DirectMessageListItem: React.FC<Props> = ({
   msgType,
   missedCount,
   messageStatus,
+  accessTime,
 }) => {
   const baseURL = useRouteMatch().path;
 
-  const [lastAcsTime, setLastAscTime] = useState<string>('12 mins ago');
   const getAvatarUrl = (id) => {
     return id;
   };
   const getLastMessageTime = () => {
-    return '12 min ago';
+    return dateTorelateString(accessTime);
   };
-
-  const accessTime = getLastMessageTime();
 
   const renderOutgoingSwitch = useCallback(
     (status: MessagePublishStatus | undefined) => {
@@ -82,7 +81,9 @@ const DirectMessageListItem: React.FC<Props> = ({
         <MessageInfoBlock to={`${baseURL}/${userId}`}>
           <MessageInfoHeader>
             <MessageInfoDisplayName>{fullName}</MessageInfoDisplayName>
-            <MessageInfoLastAccessTime>{accessTime}</MessageInfoLastAccessTime>
+            <MessageInfoLastAccessTime>
+              {getLastMessageTime()}
+            </MessageInfoLastAccessTime>
           </MessageInfoHeader>
         </MessageInfoBlock>
       </MessageCardContent>
