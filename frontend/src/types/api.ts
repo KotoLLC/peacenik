@@ -239,7 +239,7 @@ export declare namespace ApiTypes {
         token: string
         count?: string
         from?: string
-	friend_id?: string
+	      friend_id?: string
       }
     }
 

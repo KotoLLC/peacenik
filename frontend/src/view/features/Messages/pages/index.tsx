@@ -26,9 +26,14 @@ const MessagesPage: React.FC<Props> = (props) => {
   useEffect(() => {
     dispatch(Actions.messages.getMessageTokensRequest());
   }, [dispatch]);
+
   const usersWithMessages = useSelector(
     (state: StoreTypes) => state.messages.usersWithMessages
   );
+
+  const messages = useSelector((state: StoreTypes) => state.messages);
+  console.log(messages);
+
   return (
     <>
       <FriendsPageTabs />
