@@ -3,7 +3,27 @@ import { ApiTypes } from 'src/types'
 
 export default {  
   
-  
+  getUserLastMessagesFromHub: async (data: ApiTypes.Messages.UserMessagesFromHub) => {
+    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
+    const config = {
+      withCredentials: false,
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      }
+    }
+    return await Promise.all(data.friend_ids.map(friend_id=>axiosInstance.post(`${data.host}/rpc.MessageService/Messages`, {
+      friend_id,
+      token: data.token
+    }, config))).then(response => {
+      return response.filter(item=>item?.data?.messages.length).map((item, i)=>({
+        user_id: data.friend_ids[i],
+        messages: item.data.messages,
+        lastMessageDate: item.data.messages[0].created_at
+      }))
+    }).catch(error => {
+      throw error;
+    })
+  },
  
   postMessage: async (data: ApiTypes.Feed.PostMessage) => {
     const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
@@ -44,18 +64,7 @@ export default {
     }).catch(error => ({ error }))
   },
   
-  getMessagesFromHub: async (data: ApiTypes.Feed.MessagesFromHub) => {
-    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
-    const config = {
-      withCredentials: false,
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      }
-    }
-    return await axiosInstance.post(`${data.host}/rpc.MessageService/Messages`, data.body, config).then(response => {
-      return response
-    }).catch(error => ({ error }))
-  },
+  
 
   getMessageById: async (data: ApiTypes.Feed.MessagesById) => {
     const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)

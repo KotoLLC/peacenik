@@ -35,12 +35,11 @@ import {
 interface Props {
   authToken: string;
   currentHub: CommonTypes.HubTypes.CurrentHub;
-  ownedHub: string[];
   isFeedMessagePostedSuccess: boolean;
   uploadLink: ApiTypes.UploadLink | null;
   userId: string;
   friends: ApiTypes.Friends.Friend[] | null;
-  groupMessageToken: string;
+  groupMessageToken: CommonTypes.GroupTypes.GroupMsgToken;
 
   onMessagePost: (data: ApiTypes.Feed.PostMessage) => void;
   onPostMessageSucces: (value: boolean) => void;
@@ -61,7 +60,6 @@ export const Editor: React.FC<Props> = (props) => {
     onPostMessageSucces,
     uploadLink,
     friends,
-    ownedHub,
     groupMessageToken,
   } = props;
 
@@ -78,12 +76,14 @@ export const Editor: React.FC<Props> = (props) => {
 
     if (value || file) {
       const data = {
-        host: isGroupMsgPage ? ownedHub[0] : props.currentHub.host,
+        host: isGroupMsgPage ? groupMessageToken.host : props.currentHub.host,
         body: {
-          token: isGroupMsgPage ? groupMessageToken : props.currentHub.token,
+          token: isGroupMsgPage
+            ? groupMessageToken.token
+            : props.currentHub.token,
           text: urlify(value),
           attachment_id: uploadLink?.blob_id,
-          group_id: group_id,
+          group_id: isGroupMsgPage ? group_id : undefined,
         },
       };
       setFile(null);
@@ -255,7 +255,6 @@ type StateProps = Pick<
   Props,
   | 'authToken'
   | 'currentHub'
-  | 'ownedHub'
   | 'isFeedMessagePostedSuccess'
   | 'uploadLink'
   | 'userId'
@@ -265,12 +264,11 @@ type StateProps = Pick<
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   authToken: state.authorization.authToken,
   currentHub: selectors.feed.currentHub(state),
-  ownedHub: selectors.profile.ownedHubs(state),
   isFeedMessagePostedSuccess: selectors.feed.isFeedMessagePostedSuccess(state),
   uploadLink: state.feed.uploadLink,
   userId: selectors.profile.userId(state),
   friends: selectors.friends.friends(state),
-  groupMessageToken: selectors.feed.groupMessageToken(state),
+  groupMessageToken: selectors.groups.groupMessageToken(state),
 });
 
 type DispatchProps = Pick<

@@ -29,6 +29,13 @@ export declare namespace CommonTypes {
     }
   }
 
+  export namespace GroupTypes{
+    export interface GroupMsgToken {
+      host: string
+      token: string
+    }
+  }
+  
   export interface UserNameData {
     userName: string
     userFullName: string

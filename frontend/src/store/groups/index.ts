@@ -1,5 +1,6 @@
 import { Types } from './actions'
-import { ApiTypes } from 'src/types'
+import { CommonTypes, ApiTypes } from 'src/types'
+import uniqBy from 'lodash.uniqby'
 
 export interface State  {
   isGroupAddedSuccessfully: boolean
@@ -15,6 +16,8 @@ export interface State  {
   invitesToConfirm: ApiTypes.Groups.InviteToConfirm[]
   coverUploadLink: ApiTypes.UploadLink | null
   avatarUploadLink: ApiTypes.UploadLink | null
+  groupMessages: any
+  groupMessageToken: CommonTypes.GroupTypes.GroupMsgToken
 }
 
 const initialState: State = {
@@ -31,6 +34,11 @@ const initialState: State = {
   invitesToConfirm: [],
   coverUploadLink: null,
   avatarUploadLink: null,
+  groupMessages: [],
+  groupMessageToken: {
+    host: "",
+    token: ""
+  }
 }
 
 const reducer = (state = initialState, action) => {
@@ -122,7 +130,19 @@ const reducer = (state = initialState, action) => {
         ...state, ...{ avatarUploadLink: action.payload }
       }
     }
-
+    case Types.GET_GROUP_FEED_SUCCESS: {
+      const { messages } = action.payload
+      return {
+        ...state,
+        groupMessages: uniqBy([...messages, ...state.groupMessages], 'id')
+      }
+    }
+    case Types.SET_GROUP_FEED_TOKEN:{
+      return {
+        ...state,
+        groupMessageToken: action.payload
+      }
+    }
     default: return state
   }
 }

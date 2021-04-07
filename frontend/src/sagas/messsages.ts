@@ -33,21 +33,16 @@ export function * watchGetDirectMessages() {
         }
     
         if (feedsTokens.length) {
-          yield all(feedsTokens.map(item => { 
-            return all(friends.map((friend)=>{              
-              return call(watchGetMessagesFromHub, {
+          yield all(feedsTokens.map(item => {             
+              return call(watchGetUserLastMessagesFromHub, {
                 type: DirectMessagesTypes.GET_MESSAGE_TOKENS_FROM_HUB_REQUEST,
                 payload: {
                   host: item.host,
-                  body: {
-                    token: item.token,
-                    friend_id,
-                    count: 1
-                  },
+                  friend_ids:friends,
+                  token: item.token,                  
                 },
               })
             }))
-          }))      
         }   
        
       } else if(friendsRes.status === 401) {
@@ -65,5 +60,56 @@ export function * watchGetDirectMessages() {
       yield put(Actions.common.setConnectionError(true))
     }
   }
+
 }
 
+
+export function* watchGetUserLastMessagesFromHub(action: { type: string, payload: ApiTypes.Messages.UserMessagesFromHub }) {
+  // switch(action.type) {
+  //   case FeedMessagesTypes.GET_FEED_TOKENS_FROM_HUB_REQUEST:{
+  try {
+    const resultData = yield API.messages.getUserLastMessagesFromHub(action.payload)
+    console.log(resultData)
+    
+    yield put(Actions.messages.getUserLastMessageFromHubSuccess({
+      hub: action.payload.host,
+      usesMessage: resultData
+    }))
+    // } else {
+    //   if (response.error.response.status === 400) {
+    //         console.log("watchGetMessagesFromHub getMessagesFromHub failed")
+    //     // yield put(Actions.authorization.getAuthTokenRequest())
+    //     // yield put(Actions.feed.getFeedTokensRequest())
+    //   }
+    // }
+    
+  } catch (error) {
+    if (!error.response) {
+      yield put(Actions.common.setConnectionError(true))
+    }
+  }
+    // case DirectMessagesTypes.GET_MESSAGE_TOKENS_FROM_HUB_REQUEST:{
+      // const fetchDataByUserId = async(friend_id) => {
+      //   const res =  await API.messages.getMessagesFromHub({
+      //     host: action.payload.host,
+      //     body: {              
+      //       ...action.payload.body,
+      //       friend_id: friend_id,
+      //       count: "1"
+      //     }
+      //   })
+      //   console.log(`fetchDataByUserId ${friend_id}`, res);
+      //   return res
+      // }
+      // const friends = action.payload.friends;
+      // if(friends) {
+      //   const usesMessage = yield all(friends.map(friend_id=>fetchDataByUserId(friend_id)))
+      //   yield put(Actions.messages.getUserLastMessageFromHubSuccess({
+      //     hub: action.payload.host,
+      //     usesMessage: usesMessage
+      //   }))        
+      // }
+    // }
+  // }
+
+}

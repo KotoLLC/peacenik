@@ -27,7 +27,6 @@ const MesssageSidebar: React.FC = () => {
 
   const [isComposeDlgOpen, setIsComposeDlgOpen] = useState<boolean>(false);
   const handleSelectChatUser = useCallback((id: string) => {
-    console.log(`id ${id}`);
     setIsComposeDlgOpen(false);
   }, []);
 

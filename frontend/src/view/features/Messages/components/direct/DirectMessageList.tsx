@@ -43,7 +43,6 @@ const DirectMessageList = () => {
 
   if (messages) {
     calcLastAccessTimes(messages, currentUserId);
-    console.log(lastAccessTime);
   }
 
   //   {

@@ -59,7 +59,6 @@ class MessageFeed extends React.Component<Props, State> {
       authToken,
       onGetFriends,
     } = this.props;
-    console.log(this.props);
 
     if (authToken) {
       onGetMessages();

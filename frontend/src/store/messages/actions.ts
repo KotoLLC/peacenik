@@ -16,7 +16,6 @@ export enum Types {
   GET_MESSAGE_TOKENS_FROM_HUB_REQUEST = 'GET_MESSAGE_TOKENS_FROM_HUB_REQUEST',
   GET_USER_LAST_MESSAGES_FROM_HUB_SUCCESS = 'GET_USER_LAST_MESSAGES_FROM_HUB_SUCCESS',
   GET_MESSAGE_TOKENS_FROM_HUB_FAILED = 'GET_MESSAGE_TOKENS_FROM_HUB_FAILED',
-  
 //   GET_MORE_MESSAGE_FROM_HUB_REQUEST = 'GET_MORE_MESSAGE_FROM_HUB_REQUEST',
 //   GET_MORE_MESSAGE_FROM_HUB_SUCCESS = 'GET_MORE_MESSAGE_FROM_HUB_SUCCESS',
 //   GET_MORE_MESSAGE_FROM_HUB_FAILED = 'GET_MORE_MESSAGE_FROM_HUB_FAILED',
@@ -87,10 +86,7 @@ const getMessageTokensSuccess = (payload: CommonTypes.HubTypes.CurrentHub[]) => 
 
 
 
-const getMessageFromHubRequest = (payload: ApiTypes.Feed.MessagesFromHub) => ({
-  type: Types.GET_MESSAGE_TOKENS_FROM_HUB_REQUEST,
-  payload,
-})
+
 
 const getUserLastMessageFromHubSuccess = (payload: {
   hub: string
@@ -308,8 +304,7 @@ export default {
   getMessageTokensRequest,
   getMessageTokensSuccess, 
 //   postMessageMessageRequest,
-//   postMessageMessageSucces,
-  getMessageFromHubRequest,
+//   postMessageMessageSucces,  
   getUserLastMessageFromHubSuccess,
   getMessageFromHubFailed,
 //   deleteMessageMessageRequest,

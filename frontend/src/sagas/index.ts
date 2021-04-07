@@ -51,8 +51,6 @@ import {
 } from './profile'
 import {
     watchGetMessages,
-    watchGetGroupMessages,
-    watchGetGroupMessagesToken,
     watchGetCurrentHub,
     watchPostMessage,
     watchGetMessagesFromHub,
@@ -113,6 +111,9 @@ import {
     watchGetGroupAvatarUploadLink,
     watchSetGroupAvatar,
     watchAddUserToGroup,
+    watchGetGroupMessages,
+    watchGetGroupMessagesToken,
+    watchGetGroupMsgToken
 } from './groups'
 
 export function* rootSaga() {
@@ -152,8 +153,6 @@ export function* rootSaga() {
         takeEvery(ProfileTypes.SET_PROFILE_COVER_REQUEST, watchSetProfileCover),
 
         takeEvery(FeedMessagesTypes.GET_FEED_TOKENS_REQUEST, watchGetMessages),
-        takeEvery(FeedMessagesTypes.GET_GROUP_FEED_REQUEST, watchGetGroupMessages),
-        takeEvery(FeedMessagesTypes.GET_GROUP_FEED_TOKEN_REQUEST, watchGetGroupMessagesToken),
         takeEvery(FeedMessagesTypes.GET_CURRENT_HUB_REQUEST, watchGetCurrentHub),
         takeEvery(FeedMessagesTypes.POST_FEED_MESSAGE_REQUEST, watchPostMessage),
         takeEvery(FeedMessagesTypes.GET_FEED_TOKENS_FROM_HUB_REQUEST, watchGetMessagesFromHub),
@@ -208,5 +207,8 @@ export function* rootSaga() {
         takeEvery(GroupsTypes.GET_AVATAR_UPLOAD_LINK_REQUEST, watchGetGroupAvatarUploadLink),
         takeEvery(GroupsTypes.SET_AVATAR_REQUEST, watchSetGroupAvatar),
         takeEvery(GroupsTypes.ADD_USER_TO_GROUP_REQUEST, watchAddUserToGroup),
+        takeEvery(GroupsTypes.GET_GROUP_FEED_REQUEST, watchGetGroupMessages),
+        takeEvery(GroupsTypes.GET_GROUP_FEED_TOKEN_REQUEST, watchGetGroupMessagesToken),
+        takeEvery(GroupsTypes.GET_GROUP_MSG_TOKEN, watchGetGroupMsgToken)
     ])
 }
