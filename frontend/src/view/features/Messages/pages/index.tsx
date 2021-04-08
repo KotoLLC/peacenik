@@ -31,9 +31,6 @@ const MessagesPage: React.FC<Props> = (props) => {
     (state: StoreTypes) => state.messages.usersWithMessages
   );
 
-  const messages = useSelector((state: StoreTypes) => state.messages);
-  console.log(messages);
-
   return (
     <>
       <FriendsPageTabs />

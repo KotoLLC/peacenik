@@ -18,7 +18,7 @@ export interface StoreTypes {
   hubs: MessageHubsState
   profile: ProfileState
   feed: FeedState
-  messages: MessagesState
+  // messages: MessagesState
   notifications: NotificationsState
   dashboard: DashboardState
   groups: GroupsState

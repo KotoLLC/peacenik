@@ -1,0 +1,1 @@
+cd ../backend && go build -o user-hub-service ./userhub/cmd/ && ./user-hub-service -config user-hub-config.yml

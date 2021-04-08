@@ -9,7 +9,6 @@ export interface State {
   isSendMessageSuccess: boolean
   friend_id: string | null // friend IP
   messages: ApiTypes.Feed.Message[] //current user messages
-  usersLastMessage: ApiTypes.Messages.UserMessage[] //current user messages
   hubsWithMessages: Map<string, {
     messages: ApiTypes.Feed.Message[],
     lastMessageDate: string | null
@@ -37,7 +36,6 @@ const initialState: State = {
   isCurrentHubRequested: false,
   isSendMessageSuccess: false,
   messages: [],
-  usersLastMessage: [],
   isMoreMessagesRequested: false,
   isMessagesRequested: null,
   friend_id: null, 
@@ -97,13 +95,28 @@ const reducer = (state = initialState, action) => {
   //     }
   //   }
     case Types.GET_USER_LAST_MESSAGES_FROM_HUB_SUCCESS: {
-      const { usersLastMessage , hub } = action.payload
+      const { userMessages, hub } = action.payload
 
-      return {
-        ...state, 
-        usersLastMessage: usersLastMessage       
+      const updateUserMassagesToHubsWithMessages = () => {
+        const currentHub = state.hubsWithMessages.get(hub)        
+        // if (currentHub) {
+        //   // return uniqBy([...userMessages,...currentHub.userMessages ], 'user_id');          
+        // } 
+        return userMessages
       }
-      
+      // lastMessageDate: messages.length ? messages[messages.length - 1]?.updated_at : null
+      // return {
+      //   ...state, ...{ 
+      //     isMoreMessagesRequested: false,
+      //     userMessages: uniqBy([...userMessages, ...state.userMessages], 'user_id'),
+      //     hubsWithMessages: state.hubsWithMessages.set(hub, {
+      //       userMessages: updateUserMassagesToHubsWithMessages(),            
+      //     })
+      //   }
+      // }
+      return {
+        ...state
+      }
     }
   //   case Types.GET_MESSAGE_TOKENS_FROM_HUB_FAILED: {
   //     return {

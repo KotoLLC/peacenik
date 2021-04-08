@@ -8,63 +8,63 @@ services:
     environment:
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
-  user-hub:
-    build:
-      context: ./backend
-      dockerfile: ./userhub/Dockerfile
-    stdin_open: true
-    tty: true
-    working_dir: /service
-    ports:
-      - 12001:12001
-    environment:
-      KOTO_LISTEN_ADDRESS: :12001
-      KOTO_EXTERNAL_ADDRESS: http://localhost:12001/
-      KOTO_PRIVATE_KEY: /user-hub.rsa
-      KOTO_ADMINS: "matt, reinis, andy"
-      KOTO_DB_HOST: db-user-hub
-      KOTO_DB_SSL_MODE: disable
-      KOTO_DB_USER: postgres
-      KOTO_DB_PASSWORD: docker
-      KOTO_DB_NAME: koto-user-hub
-      KOTO_S3_ENDPOINT: s3:9000
-      KOTO_S3_KEY: minioadmin
-      KOTO_S3_SECRET: minioadmin
-      KOTO_S3_BUCKET: koto-user-hub
-      KOTO_SMTP_HOST: smtp.mailtrap.io
-      KOTO_SMTP_PORT: 587
-      KOTO_SMTP_USER: 23423423423423
-      KOTO_SMTP_PASSWORD: 4534534terer
-      KOTO_SMTP_FROM: admin@koto.org
-      KOTO_TEST_MODE: "true"
-    restart: on-failure
-    depends_on:
-      - db-user-hub
-  message-hub-1:
-    build:
-      context: ./backend
-      dockerfile: ./messagehub/Dockerfile
-    stdin_open: true
-    tty: true
-    working_dir: /service
-    ports:
-      - 12002:12002
-    environment:
-      KOTO_LISTEN_ADDRESS: :12002
-      KOTO_EXTERNAL_ADDRESS: http://localhost:12002/
-      KOTO_USER_HUB_ADDRESS: http://localhost:12001/
-      KOTO_DB_HOST: db-message-hub
-      KOTO_DB_SSL_MODE: disable
-      KOTO_DB_USER: postgres
-      KOTO_DB_PASSWORD: docker
-      KOTO_DB_NAME: koto-message-hub
-      KOTO_S3_ENDPOINT: s3:9000
-      KOTO_S3_KEY: minioadmin
-      KOTO_S3_SECRET: minioadmin
-      KOTO_S3_BUCKET: koto-mesage-hub-1
-    restart: on-failure
-    depends_on:
-      - db-message-hub
+    # user-hub:
+    #   build:
+    #     context: ./backend
+    #     dockerfile: ./userhub/Dockerfile
+    #   stdin_open: true
+    #   tty: true
+    #   working_dir: /service
+    #   ports:
+    #     - 12001:12001
+    #   environment:
+    #     KOTO_LISTEN_ADDRESS: :12001
+    #     KOTO_EXTERNAL_ADDRESS: http://localhost:12001/
+    #     KOTO_PRIVATE_KEY: /user-hub.rsa
+    #     KOTO_ADMINS: "matt, reinis, andy"
+    #     KOTO_DB_HOST: db-user-hub
+    #     KOTO_DB_SSL_MODE: disable
+    #     KOTO_DB_USER: postgres
+    #     KOTO_DB_PASSWORD: docker
+    #     KOTO_DB_NAME: koto-user-hub
+    #     KOTO_S3_ENDPOINT: s3:9000
+    #     KOTO_S3_KEY: minioadmin
+    #     KOTO_S3_SECRET: minioadmin
+    #     KOTO_S3_BUCKET: koto-user-hub
+    #     KOTO_SMTP_HOST: smtp.mailtrap.io
+    #     KOTO_SMTP_PORT: 587
+    #     KOTO_SMTP_USER: 23423423423423
+    #     KOTO_SMTP_PASSWORD: 4534534terer
+    #     KOTO_SMTP_FROM: admin@koto.org
+    #     KOTO_TEST_MODE: "true"
+    #   restart: on-failure
+    #   depends_on:
+    #     - db-user-hub
+    # message-hub-1:
+    # build:
+    #   context: ./backend
+    #   dockerfile: ./messagehub/Dockerfile
+    # stdin_open: true
+    # tty: true
+    # working_dir: /service
+    # ports:
+    #   - 12002:12002
+    # environment:
+    #   KOTO_LISTEN_ADDRESS: :12002
+    #   KOTO_EXTERNAL_ADDRESS: http://localhost:12002/
+    #   KOTO_USER_HUB_ADDRESS: http://localhost:12001/
+    #   KOTO_DB_HOST: db-message-hub
+    #   KOTO_DB_SSL_MODE: disable
+    #   KOTO_DB_USER: postgres
+    #   KOTO_DB_PASSWORD: docker
+    #   KOTO_DB_NAME: koto-message-hub
+    #   KOTO_S3_ENDPOINT: s3:9000
+    #   KOTO_S3_KEY: minioadmin
+    #   KOTO_S3_SECRET: minioadmin
+    #   KOTO_S3_BUCKET: koto-mesage-hub-1
+    # restart: on-failure
+    # depends_on:
+    #   - db-message-hub
   # frontend:
   #   build:
   #     context: ./frontend
