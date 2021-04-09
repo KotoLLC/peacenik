@@ -76,6 +76,7 @@ type GroupRepo interface {
 	JoinStatus(userID, groupID string) string
 	UserGroups(userID string) []Group
 	UserGroupCount(userID string) int
+	DeleteUserData(tx *sqlx.Tx, userID string)
 }
 
 func NewGroups(db *sqlx.DB) GroupRepo {
@@ -704,4 +705,52 @@ func (r *groupRepo) UserGroupCount(userID string) int {
 		panic(err)
 	}
 	return count
+}
+
+func (r *groupRepo) DeleteUserData(tx *sqlx.Tx, userID string) {
+	_, err := tx.Exec(`
+		delete from group_invites
+		where inviter_id = $1 or invited_id = $1;`,
+		userID)
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = tx.Exec(`
+		delete from group_users
+		where user_id = $1;`,
+		userID)
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = tx.Exec(`
+		insert into blob_pending_deletes(blob_id, deleted_at)
+		select avatar_original_id, $1::timestamptz
+		from groups
+		where admin_id = $2 and avatar_original_id <> ''
+			and not exists(select * from group_users where group_id = groups.id)
+		union
+		select avatar_thumbnail_id, $1::timestamptz
+		from groups
+		where admin_id = $2 and avatar_thumbnail_id <> ''
+			and not exists(select * from group_users where group_id = groups.id)
+		union
+		select background_id, $1::timestamptz
+		from groups
+		where admin_id = $2 and background_id <> ''
+			and not exists(select * from group_users where group_id = groups.id);`,
+		common.CurrentTimestamp(), userID)
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = tx.Exec(`
+		delete from groups
+		where admin_id = $1
+			and not exists(select * from group_users where group_id = groups.id);`,
+		userID)
+	if err != nil {
+		panic(err)
+	}
 }

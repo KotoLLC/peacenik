@@ -8,14 +8,14 @@ import (
 	"github.com/mreider/koto/backend/messagehub/rpc"
 )
 
-type userService struct {
-	*BaseService
-}
-
 func NewUser(base *BaseService) rpc.UserService {
 	return &userService{
 		BaseService: base,
 	}
+}
+
+type userService struct {
+	*BaseService
 }
 
 func (s *userService) BlockUser(ctx context.Context, r *rpc.UserBlockRequest) (*rpc.Empty, error) {
@@ -24,5 +24,11 @@ func (s *userService) BlockUser(ctx context.Context, r *rpc.UserBlockRequest) (*
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 	s.repos.User.BlockUser(r.UserId)
+	return &rpc.Empty{}, nil
+}
+
+func (s *userService) DeleteMe(ctx context.Context, _ *rpc.Empty) (*rpc.Empty, error) {
+	me := s.getUser(ctx)
+	s.repos.DeleteUserData(me.ID)
 	return &rpc.Empty{}, nil
 }

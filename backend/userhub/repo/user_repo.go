@@ -39,6 +39,7 @@ type UserRepo interface {
 	AreBlocked(userID1, userID2 string) bool
 	BlockedUserIDs(userID string) []string
 	UsersKey(userID1, userID2 string) []byte
+	DeleteUser(tx *sqlx.Tx, userID string)
 }
 
 func NewUsers(db *sqlx.DB) UserRepo {
@@ -394,4 +395,40 @@ func (r *userRepo) UsersKey(userID1, userID2 string) []byte {
 		panic(err)
 	}
 	return key
+}
+
+func (r *userRepo) DeleteUser(tx *sqlx.Tx, userID string) {
+	_, err := tx.Exec(`
+		insert into blob_pending_deletes(blob_id, deleted_at)
+		select avatar_original_id, $1::timestamptz
+		from users
+		where id = $2 and avatar_original_id <> ''
+		union
+		select avatar_thumbnail_id, $1::timestamptz
+		from users
+		where id = $2 and avatar_thumbnail_id <> ''
+		union
+		select background_id, $1::timestamptz
+		from users
+		where id = $2 and background_id <> '';`,
+		common.CurrentTimestamp(), userID)
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = tx.Exec(`
+		update users
+		set
+		    name = '(deleted)',
+		    email = '',
+		    password_hash = '',
+		    avatar_original_id = '',
+		    full_name = '',
+		    background_id = '',
+		    hide_identity = true
+		where id = $1;`,
+		userID)
+	if err != nil {
+		panic(err)
+	}
 }

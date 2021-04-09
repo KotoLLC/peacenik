@@ -86,6 +86,7 @@ type MessageRepo interface {
 	Counts(currentUserID string, userIDs []string) Counts
 	GroupCounts(currentUserID string, groupIDs []string) map[string]Counts
 	DirectCounts(currentUserID string) map[string]*Counts
+	DeleteUserData(tx *sqlx.Tx, userID string) error
 }
 
 func NewMessages(db *sqlx.DB) MessageRepo {
@@ -942,4 +943,64 @@ func (r *messageRepo) DirectCounts(currentUserID string) map[string]*Counts {
 		}
 	}
 	return result
+}
+
+func (r *messageRepo) DeleteUserData(tx *sqlx.Tx, userID string) error {
+	_, err := tx.Exec(`
+		delete from message_likes
+		where user_id = $1;`,
+		userID)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+
+	_, err = tx.Exec(`
+		delete from message_visibility
+		where user_id = $1;`,
+		userID)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+
+	_, err = tx.Exec(`
+		delete from message_reports
+		where user_id = $1;`,
+		userID)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+
+	_, err = tx.Exec(`
+		delete from message_reads
+		where user_id = $1;`,
+		userID)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+
+	_, err = tx.Exec(`
+		insert into blob_pending_deletes(blob_id, deleted_at)
+		select attachment_id, $1::timestamptz
+		from messages
+		where user_id = $2 and attachment_id != ''
+		union
+		select attachment_thumbnail_id, $1::timestamptz
+		from messages
+		where user_id = $2 and attachment_thumbnail_id != '';`,
+		common.CurrentTimestamp(), userID)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+
+	_, err = tx.Exec(`
+		update messages
+		set text = '(deleted)',
+		    attachment_type = '',
+		    attachment_id = '',
+		    attachment_thumbnail_id = '',
+		    deleted_at = $1
+		where user_id = $2`,
+		common.CurrentTimestamp(), userID)
+
+	return nil
 }

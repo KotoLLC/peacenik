@@ -17,16 +17,16 @@ const (
 	avatarThumbnailHeight = 100
 )
 
-type userService struct {
-	*BaseService
-	passwordHash PasswordHash
-}
-
 func NewUser(base *BaseService, passwordHash PasswordHash) rpc.UserService {
 	return &userService{
 		BaseService:  base,
 		passwordHash: passwordHash,
 	}
+}
+
+type userService struct {
+	*BaseService
+	passwordHash PasswordHash
 }
 
 func (s *userService) Friends(ctx context.Context, _ *rpc.Empty) (*rpc.UserFriendsResponse, error) {
@@ -315,5 +315,11 @@ func (s *userService) BlockUser(ctx context.Context, r *rpc.UserBlockUserRequest
 
 	s.repos.User.BlockUser(me.ID, r.UserId)
 
+	return &rpc.Empty{}, nil
+}
+
+func (s *userService) DeleteMe(ctx context.Context, _ *rpc.Empty) (*rpc.Empty, error) {
+	me := s.getMe(ctx)
+	s.repos.DeleteUserData(me.ID)
 	return &rpc.Empty{}, nil
 }

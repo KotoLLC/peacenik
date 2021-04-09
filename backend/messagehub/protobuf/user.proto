@@ -7,6 +7,7 @@ import "model.proto";
 
 service UserService {
     rpc BlockUser (UserBlockRequest) returns (Empty);
+    rpc DeleteMe (Empty) returns (Empty);
 }
 
 message UserBlockRequest {

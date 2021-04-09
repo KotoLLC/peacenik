@@ -26,6 +26,7 @@ type NotificationRepo interface {
 	Notifications(userID string) ([]Notification, error)
 	Clean(userID string, lastKnownID string) error
 	MarkRead(userID string, lastKnownID string) error
+	DeleteUserNotifications(tx *sqlx.Tx, userID string) error
 }
 
 type notificationRepo struct {
@@ -110,4 +111,15 @@ func (r *notificationRepo) MarkRead(userID string, lastKnownID string) error {
 		where user_id = $2 and read_at is null and created_at <= (select created_at from notifications where user_id = $2 and id = $3)`,
 		CurrentTimestamp(), userID, lastKnownID)
 	return merry.Wrap(err)
+}
+
+func (r *notificationRepo) DeleteUserNotifications(tx *sqlx.Tx, userID string) error {
+	_, err := tx.Exec(`
+		delete from notifications
+		where user_id = $1;`,
+		userID)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+	return nil
 }

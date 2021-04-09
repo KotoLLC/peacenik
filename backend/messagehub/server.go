@@ -108,7 +108,7 @@ func (s *Server) Run() error {
 
 	userService := services.NewUser(baseService)
 	userServiceHandler := rpc.NewUserServiceServer(userService, rpcOptions...)
-	r.Handle(userServiceHandler.PathPrefix()+"*", userServiceHandler)
+	r.Handle(userServiceHandler.PathPrefix()+"*", s.checkAuth(userServiceHandler))
 
 	destroy := false
 	adminService := services.NewAdmin(baseService, &destroy)

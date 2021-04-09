@@ -49,16 +49,17 @@ type MessageHubRepo interface {
 	UserHubs(userIDs []string) map[string][]string
 	GroupHub(groupAdminID string) string
 	BlockUser(userID, hubID string)
-}
-
-type messageHubRepo struct {
-	db *sqlx.DB
+	DeleteUserData(tx *sqlx.Tx, userID string)
 }
 
 func NewMessageHubs(db *sqlx.DB) MessageHubRepo {
 	return &messageHubRepo{
 		db: db,
 	}
+}
+
+type messageHubRepo struct {
+	db *sqlx.DB
 }
 
 func (r *messageHubRepo) HubExists(address string) bool {
@@ -421,5 +422,23 @@ func (r *messageHubRepo) BlockUser(userID, hubID string) {
 		if err != nil {
 			panic(err)
 		}
+	}
+}
+
+func (r *messageHubRepo) DeleteUserData(tx *sqlx.Tx, userID string) {
+	_, err := tx.Exec(`
+		delete from user_message_hubs
+		where user_id = $1
+		   or hub_id in (select id from message_hubs where admin_id = $1);`,
+		userID)
+	if err != nil {
+		panic(err)
+	}
+	_, err = tx.Exec(`
+		delete from message_hubs
+		where admin_id = $1;`,
+		userID)
+	if err != nil {
+		panic(err)
 	}
 }

@@ -18,16 +18,17 @@ type FCMToken struct {
 type FCMTokenRepo interface {
 	AddToken(userID, token, deviceID, os string)
 	UsersTokens(userIDs []string) []string
-}
-
-type fcmTokenRepo struct {
-	db *sqlx.DB
+	DeleteUserTokens(tx *sqlx.Tx, userID string)
 }
 
 func NewFCMToken(db *sqlx.DB) FCMTokenRepo {
 	return &fcmTokenRepo{
 		db: db,
 	}
+}
+
+type fcmTokenRepo struct {
+	db *sqlx.DB
 }
 
 func (r *fcmTokenRepo) AddToken(userID, token, deviceID, os string) {
@@ -61,4 +62,14 @@ func (r *fcmTokenRepo) UsersTokens(userIDs []string) []string {
 		panic(err)
 	}
 	return tokens
+}
+
+func (r *fcmTokenRepo) DeleteUserTokens(tx *sqlx.Tx, userID string) {
+	_, err := tx.Exec(`
+		delete from fcm_tokens
+		where user_id = $1;`,
+		userID)
+	if err != nil {
+		panic(err)
+	}
 }

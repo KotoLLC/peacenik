@@ -9,16 +9,17 @@ type FriendRepo interface {
 	FriendsWithSubFriends(user User) map[User][]User
 	FriendsOfFriends(user User) map[User][]User
 	AreFriends(userID1, userID2 string) bool
-}
-
-type friendRepo struct {
-	db *sqlx.DB
+	DeleteUserFriends(tx *sqlx.Tx, userID string)
 }
 
 func NewFriends(db *sqlx.DB) FriendRepo {
 	return &friendRepo{
 		db: db,
 	}
+}
+
+type friendRepo struct {
+	db *sqlx.DB
 }
 
 func (r *friendRepo) Friends(user User) []User {
@@ -112,4 +113,14 @@ func (r *friendRepo) AreFriends(userID1, userID2 string) bool {
 		panic(err)
 	}
 	return areFriends
+}
+
+func (r *friendRepo) DeleteUserFriends(tx *sqlx.Tx, userID string) {
+	_, err := tx.Exec(`
+		delete from friends
+		where user_id = $1 or friend_id = $1;`,
+		userID)
+	if err != nil {
+		panic(err)
+	}
 }

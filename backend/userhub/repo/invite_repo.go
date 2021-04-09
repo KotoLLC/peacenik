@@ -28,16 +28,17 @@ type InviteRepo interface {
 	InvitesFromMe(user User) []Invite
 	OpenInvitesForMe(user User) []Invite
 	InviteStatuses(user User) map[string]string
-}
-
-type inviteRepo struct {
-	db *sqlx.DB
+	DeleteUserInvites(tx *sqlx.Tx, userID string)
 }
 
 func NewInvites(db *sqlx.DB) InviteRepo {
 	return &inviteRepo{
 		db: db,
 	}
+}
+
+type inviteRepo struct {
+	db *sqlx.DB
 }
 
 func (r *inviteRepo) AddInvite(inviterID, friendID string) {
@@ -252,4 +253,14 @@ func (r *inviteRepo) InviteStatuses(user User) map[string]string {
 	}
 
 	return result
+}
+
+func (r *inviteRepo) DeleteUserInvites(tx *sqlx.Tx, userID string) {
+	_, err := tx.Exec(`
+		delete from invites
+		where user_id = $1 or friend_id = $1;`,
+		userID)
+	if err != nil {
+		panic(err)
+	}
 }
