@@ -25,25 +25,17 @@ import {
   MessageInfoTextStatus,
   MessagePublishStatus,
 } from '@view/features/Messages/types/types';
-import { dateTorelateString } from '@services/dateTorelateString';
+import { dateToRelateString } from '@services/dateToRelateString';
 
 interface Props {
   userId: string;
   accessTime: string;
   fullName: string;
-  lastMsg: string;
-  msgType: MessageDirection;
-  missedCount?: number;
-  messageStatus?: MessagePublishStatus;
 }
 
 const DirectMessageListItem: React.FC<Props> = ({
   fullName,
   userId,
-  lastMsg,
-  msgType,
-  missedCount,
-  messageStatus,
   accessTime,
 }) => {
   const baseURL = useRouteMatch().path;
@@ -52,7 +44,7 @@ const DirectMessageListItem: React.FC<Props> = ({
     return id;
   };
   const getLastMessageTime = () => {
-    return dateTorelateString(accessTime);
+    return dateToRelateString(accessTime);
   };
 
   const renderOutgoingSwitch = useCallback(

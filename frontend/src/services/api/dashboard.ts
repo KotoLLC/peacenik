@@ -1,61 +1,30 @@
 import { axiosInstance } from './index'
 import { ApiTypes } from 'src/types'
+import { getHeaderConfig } from './commonAPIFunctions'
 
 export default {
   getMessageReports: async (host: string) => {
-    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
-    const config = {
-      withCredentials: false,
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      }
-    }
-
-    return await axiosInstance.post(`${host}/rpc.MessageService/MessageReports`, {}, config).then(response => {
+    return await axiosInstance.post(`${host}/rpc.MessageService/MessageReports`, {}, getHeaderConfig()).then(response => {
       return response
     }).catch(error => ({ error }))
   },
 
   resolveReport: async (data: ApiTypes.Dashboard.ResolveReport) => {
-    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
-    const config = {
-      withCredentials: false,
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      }
-    }
-
-    return await axiosInstance.post(`${data.host}/rpc.MessageService/ResolveMessageReport`, data.body, config).then(response => {
+    return await axiosInstance.post(`${data.host}/rpc.MessageService/ResolveMessageReport`, data.body, getHeaderConfig()).then(response => {
       return response
     }).catch(error => ({ error }))
   },
 
   deleteReportedMessage: async (data: ApiTypes.Dashboard.DeleteReportedMessage) => {
-    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
-    const config = {
-      withCredentials: false,
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      }
-    }
-
-    return await axiosInstance.post(`${data.host}/rpc.MessageService/DeleteReportedMessage`, data.body, config).then(response => {
+    return await axiosInstance.post(`${data.host}/rpc.MessageService/DeleteReportedMessage`, data.body, getHeaderConfig()).then(response => {
       return response
     }).catch(error => ({ error }))
   },
 
   blockReportedUser: async (data: ApiTypes.Dashboard.EjectUser) => {
-    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
-    const config = {
-      withCredentials: false,
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      }
-    }
-
     return await axiosInstance.post(`${data.host}/rpc.MessageService/BlockReportedUser`, { 
       report_id: data.report_id 
-    }, config).then(response => {
+    }, getHeaderConfig()).then(response => {
       return response
     }).catch(error => ({ error }))
   },

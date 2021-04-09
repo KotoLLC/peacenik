@@ -25,13 +25,13 @@ export function * watchGetDirectMessages() {
   
       const friendsRes = yield API.friends.getFriends()
       if(friendsRes.status === 200) {
-        console.log(friendsRes.data.friends);
+        // console.log(friendsRes.data.friends);
         const friends = friendsRes.data.friends.map(item=>({
           id:item.user.id,
           username: item.user.name,
           full_name: item.user.full_name,
         }))
-        console.log('friends', friends);
+        // console.log('friends', friends);
   
         if (!feedsTokens.length) {
           yield put(Actions.feed.getFeedFromHubFailed())
@@ -68,13 +68,19 @@ export function * watchGetDirectMessages() {
 
 }
 
-
 export function* watchGetUserLastMessagesFromHub(action: { type: string, payload: ApiTypes.Messages.UserMessagesFromHub }) {
   try {
     const resultData = yield API.messages.getUserLastMessagesFromHub(action.payload)
     // sort the last date
     resultData.sort((a,b)=>a.created_at > b.created_at? -1: 1)
-    console.log(resultData)
+    // console.log(resultData)
+    // export interface UserMessage {
+    //   user_id: string
+    //   messages: Feed.Message[]
+    //   lastMessageDate?: string | null
+    //   username?: string
+    //   full_name?: string
+    // }  
     yield put(Actions.messages.getUserLastMessageFromHubSuccess({
       hub: action.payload.host,
       usersLastMessage: resultData

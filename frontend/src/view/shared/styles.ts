@@ -16,6 +16,12 @@ import Radio from '@material-ui/core/Radio'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import AccessTimeIcon from '@material-ui/icons/AccessTime'
 
+const primaryColor  = "#599C0B"
+const blackColor    = "#262626"
+const grayColor     = "#A1AEC8"
+const whiteColor    = "#fff"
+const bkGray        = "#DEE5F2"
+
 export const Container = styled.main`
   width: 100%;
   max-width: 1170px;
@@ -31,12 +37,12 @@ export const TooltipStyle = styled(Tooltip)`
 
 export const IconButtonStyled = styled(IconButton)`
   && {
-    color: #fff;
+    color: ${whiteColor};
   }
 `
 
 export const ListItemIconStyled = styled(ListItemIcon)`
-  color: #A1AEC8;
+  color: ${grayColor};
   
   && {
     min-width: 30px;
@@ -45,7 +51,7 @@ export const ListItemIconStyled = styled(ListItemIcon)`
 
 export const MenuButton = styled(Button)`
   && {
-    color: #fff;
+    color: ${whiteColor};
   }
 `
 
@@ -141,7 +147,7 @@ export const PreloaderViewport = styled.div`
   z-index: 2000;
   width: 100%;
   height: 100vh;
-  background: #fff;
+  background: ${whiteColor};
 `
 
 export const AvatarWrapperLink = styled(Link)`
@@ -239,11 +245,11 @@ export const BackIconWrapper = styled.span`
 
 export const MentionLink = styled(Link)`
   font-family: 'SFUITextMedium';
-  color: #599C0B;
+  color: ${primaryColor};
   transition: 0.2s;
 
   &.mention {
-    color: #599C0B;
+    color: ${primaryColor};
   }
 `
 
@@ -251,7 +257,7 @@ export const ConnectionErrorWrapper = styled.div`
   width: 80%;
   height: calc(80vh - 56px);
   max-width: 770px;
-  background: #fff;
+  background: ${whiteColor};
   position: fixed;
   padding: 15px;
   text-align: center;
@@ -282,11 +288,11 @@ export const MenuItemStyled = styled(MenuItem)`
   min-width: 180px;
 
   &.logout {
-    color: #A1AEC8;
+    color: ${grayColor};
     position: relative;
 
     svg {
-      color: #A1AEC8;
+      color: ${grayColor};
     }
 
     &:before {
@@ -311,12 +317,12 @@ export const ButtonContained = styled(Button)`
   min-width: 120px;
   height: 32px;
   line-height: 32px;
-  background: #599C0B;
+  background: ${primaryColor};
   border-radius: 16px;
   padding: 0 20px;
   font-family: 'SFUITextMedium';
   text-align: center;
-  color: #fff;
+  color: ${whiteColor};
   font-size: 14px;
   transition: 0.15s;
   text-decoration: none;
@@ -349,10 +355,10 @@ export const ButtonContained = styled(Button)`
   }
 
   &.grey {
-    background: #A1AEC8;
+    background: ${grayColor};
 
     &:hover {
-      background: #262626;
+      background: ${blackColor};
     }
   }
 
@@ -373,8 +379,8 @@ export const ButtonContained = styled(Button)`
   }
 
   &:disabled {
-    background: #A1AEC8;
-    color: #fff;
+    background: ${grayColor};
+    color: ${whiteColor};
   }
 
   @media (max-width: 770px){
@@ -391,12 +397,12 @@ export const ButtonOutlined = styled(Button)`
   height: 32px;
   line-height: 32px;
   outline: none;
-  background: #fff;
+  background: ${whiteColor};
   border-radius: 16px;
   font-family: 'SFUITextMedium';
   text-align: center;
-  border: 1px solid #599C0B;
-  color: #599C0B;
+  border: 1px solid ${primaryColor};
+  color: ${primaryColor};
   font-size: 14px;
   transition: 0.15s;
   text-decoration: none;
@@ -404,7 +410,7 @@ export const ButtonOutlined = styled(Button)`
   text-transform: none;
 
   &:hover {
-    background: #fff;
+    background: ${whiteColor};
   }
 
   &.large {
@@ -427,19 +433,19 @@ export const ButtonOutlined = styled(Button)`
   }
 
   &.grey {
-    border-color: #A1AEC8;
-    color: #A1AEC8;
+    border-color: ${grayColor};
+    color: ${grayColor};
 
     &:hover {
-      border-color: #262626;
-      color: #262626;
+      border-color: ${blackColor};
+      color: ${blackColor};
     }
   }
 
   &:disabled {
-    background: #fff;
-    border-color: #A1AEC8;
-    color: #A1AEC8;
+    background: ${whiteColor};
+    border-color: ${grayColor};
+    color: ${grayColor};
   }
 
   @media (max-width: 770px){
@@ -451,14 +457,14 @@ export const ButtonOutlined = styled(Button)`
 `
 
 export const CircularProgressWhite = styled(CircularProgress)`
-  color: #fff;
+  color: ${whiteColor};
 `
 
 export const UserName = styled.span``
 
 export const UserNameLink = styled(Link)`
   cursor: pointer;
-  color: #000;
+  color: ${blackColor};
 
   &:hover {
     text-decoration: none;
@@ -470,7 +476,7 @@ export const AvatarStyled = styled(Avatar)`
     width: 60px;
     height: 60px;
     margin-right: 20px;
-    background: #DEE5F2;
+    background: ${bkGray}
     cursor: pointer;
 
     @media (max-width: 770px) {
@@ -499,7 +505,7 @@ export const ContainerTitle = styled.h3`
 `
 
 export const PageCoverWrapper = styled.div`
-  background-color: #A1AEC8;
+  background-color: ${grayColor};
   position: relative;
 `
 
@@ -510,12 +516,12 @@ export const PageCoverIconWrapper = styled.figure`
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 15px;
-  border: 2px solid #fff;
+  border: 2px solid ${whiteColor};
   border-radius: 50%;
 
   svg {
     font-size: 40px;
-    color: #fff;
+    color: ${whiteColor};
   }
 
   @media (max-width: 770px){
@@ -546,7 +552,7 @@ export const PageCover = styled.div`
 export const ProfileAvatar = styled(Avatar)`
   width: 200px;
   height: 200px;
-  background: #DEE5F2;
+  background: ${bkGray}
   margin: -160px auto 30px;
   border: 6px solid #FFFFFF;
   position: relative;
@@ -574,7 +580,7 @@ export const LeftSideBar = styled.aside`
   @media (max-width: 1025px){
     width: calc(100vw + 30px);
     margin: 0 0 20px;
-    background: #fff;
+    background: ${whiteColor};
     position: relative;
 
     &:before,
@@ -582,7 +588,7 @@ export const LeftSideBar = styled.aside`
       content: '';
       width: 15px;
       height: 100%;
-      background: #fff;
+      background: ${whiteColor};
       display: block;
       position: absolute;
       top: 0;
@@ -598,7 +604,7 @@ export const LeftSideBar = styled.aside`
   }
 `
 export const GroupCard = styled.div`
-  background: #fff;
+  background: ${whiteColor};
   padding-top: 20px;
   margin-bottom: 20px;
 `
@@ -627,7 +633,7 @@ export const ProfileRightSideBar = styled.aside`
   padding: 20px 0 20px;
   width: 260px;
   margin-left: 30px;
-  background: #fff;
+  background: ${whiteColor};
   border-radius: 0 0 4px 4px;
   &.empty{
     padding: 0;
@@ -663,7 +669,7 @@ export const CentralBar = styled.section`
 `
 
 export const ProfileCentralBar = styled.section`
-  background: #fff;
+  background: ${whiteColor};
   flex-grow: 1;
   max-width: calc(100% - 580px);
   padding: 20px 0 20px;
@@ -698,7 +704,7 @@ export const PageColumnBarsWrapper = styled.div`
 
 export const PageBarTitle = styled.div`
   padding: 0 20px 5px;
-  color: #000;
+  color: ${blackColor};
 
   @media (max-width: 770px){
     padding: 0 15px;
@@ -727,7 +733,7 @@ export const ProfileName = styled.h2`
 export const ProfileNote = styled.p`
   font-size: 18px;
   margin-bottom: 30px;
-  color:  #788692;
+  color:  ${grayColor};
 
   @media (max-width: 1025px){
     padding-left: 180px;
@@ -804,14 +810,14 @@ export const CoverBarCounterWrapper = styled.div`
       width: 7px;
       height: 7px;
       border-radius: 50%;
-      background: #ABB7CD;
+      background: ${grayColor};
     }
   }
 `
 
 export const CoverBarCounter = styled.span`
   width: 100%;
-  color: #A1AEC8;
+  color: ${grayColor};
   font-size: 20px;
   font-family: 'SFUITextBold';
 
@@ -863,7 +869,7 @@ export const CoverBarButtonsWrapper = styled.div`
 export const MembersListItemWrapper = styled.li`
   list-style: none;
   min-height: 87px;
-  background: #fff;
+  background: ${whiteColor};
   border-bottom: 1px solid rgba(200, 207, 212, 0.6);
   display: flex;
   align-items: center;
@@ -893,7 +899,7 @@ export const UsersListItemWrapper = styled.li`
   list-style: none;
   min-height: 87px;
   padding: 15px 20px;
-  background: #fff;
+  background: ${whiteColor};
   border-bottom: 1px solid rgba(200, 207, 212, 0.6);
   display: flex;
   align-items: center;
@@ -920,7 +926,7 @@ export const UsersListItemWrapper = styled.li`
 export const UsersListItemAvatar = styled(Avatar)`
   width: 56px;
   height: 56px;
-  background: #DEE5F2;
+  background: ${bkGray}
   margin-right: 16px;
 
   &.sidebar {
@@ -955,7 +961,7 @@ export const UsersListItemFullName = styled(Link)`
   display: block;
   text-decoration: none;
   font-family: 'SFUITextMedium';
-  color: #000;
+  color: ${blackColor};
   text-overflow: ellipsis;
   overflow: hidden; 
   white-space: nowrap;
@@ -975,7 +981,7 @@ export const ProfileFriendItemName = styled.div`
   display: block;
   text-decoration: none;
   font-family: 'SFUITextMedium';
-  color: #000;
+  color: ${blackColor};
   text-overflow: ellipsis;
   overflow: hidden; 
   white-space: nowrap;
@@ -993,7 +999,7 @@ export const ProfileFriendItemName = styled.div`
 
 export const UsersListItemName = styled(Link)`
   font-size: 12px;
-  color: #ABB7CD;
+  color: ${grayColor};
   font-family: 'SFUITextRegular';
 
   @media (max-width: 1025px){}
@@ -1003,7 +1009,7 @@ export const UsersListItemName = styled(Link)`
 
 export const ProfileFriendItemFullName = styled.div`
   font-size: 12px;
-  color: #ABB7CD;
+  color: ${grayColor};
   font-family: 'SFUITextRegular';
 `
 
@@ -1045,7 +1051,7 @@ export const SidebarWrapper = styled.ul`
   padding: 0;
   margin: 0;
   width: 262px;
-  background: #fff;  
+  background: ${whiteColor};  
   position: sticky;
   left: 0;
   top: 94px;
@@ -1071,18 +1077,18 @@ export const SidebarItem = styled(NavLink)`
   font-size: 12px;
   font-weight: 700;
   font-family: 'SFUITextBold';
-  color: #88909D;
+  color: ${grayColor};
   transition: 0.15s;
 
   &.active {
-    color: #262626;
+    color: ${blackColor};
 
     &:before {
       display: inline-block;
       width: 4px;
       height: 44px;
       border-radius: 10px;
-      background: #599C0B;
+      background: ${primaryColor};
       position: absolute;
       left: 0;
       top: 5px;
@@ -1091,7 +1097,7 @@ export const SidebarItem = styled(NavLink)`
   }
 
   &:hover {
-    color: #262626;
+    color: ${blackColor};
     
   }
 `
@@ -1106,13 +1112,13 @@ const sidebarButtonStyles = css`
   height: 30px;
   line-height: 30px;
   width: 100%;
-  background: #599C0B;
+  background: ${primaryColor};
   border-radius: 15px;
   font-size: 13px;
   text-align: center;
   text-decoration: none;
   font-family: 'SFUITextMedium';
-  color: #fff;
+  color: ${whiteColor};
   transition: 0.15s;
   cursor: pointer;
 
@@ -1127,11 +1133,11 @@ export const SidebarButtonLink = styled(Link)`
 
 export const SidebarButton = styled.span`
   ${sidebarButtonStyles}
-  background: #A1AEC8;
+  background: ${grayColor};
   cursor: default;
 
   &:hover {
-    background: #A1AEC8;
+    background: ${grayColor};
   }
 
 `
@@ -1144,7 +1150,7 @@ export const EditCoverWrapper = styled.div`
   align-content: center;
   height: 200px;
   width: 100%;
-  background-color: #A1AEC8;
+  background-color: ${grayColor};
   background-image:  ${props => `url(${props.resource})`};
   background-position: center;
   background-size: cover;
@@ -1199,7 +1205,7 @@ export const EditCoverAddButtonWrapper = styled.div`
 export const EditCoverAddButton = styled.span`
   display: inline-block;
   font-family: 'SFUITextMedium';
-  color: #fff;
+  color: ${whiteColor};
   font-size: 16px;
   padding-bottom: 2px;
   line-height: 16px;
@@ -1211,7 +1217,7 @@ export const EditCoverAddButton = styled.span`
     content: '';
     width: 100%;
     height: 1px;
-    background: #fff;
+    background: ${whiteColor};
     position: absolute;
     bottom: 0;
     left: 0;
@@ -1235,7 +1241,7 @@ export const UploadInput = styled.input`
 `
 
 export const EditsAvatar = styled(Avatar)`
-  background: #DEE5F2;
+  background: ${bkGray}
   border: 4px solid #FFFFFF;
   width: 140px;
   height: 140px;
@@ -1291,7 +1297,7 @@ export const EditFieldWrapper = styled.div`
 `
 
 export const EditFieldPlaceholder = styled.span`
-  color: #A1AEC8;
+  color: ${grayColor};
   padding-right: 20px;
   text-align: right;
   width: 130px;
@@ -1316,12 +1322,12 @@ export const EditInputField = styled.input`
   padding: 0 10px;
   outline: none;
   transition: 0.15s;
-  color: #262626;
+  color: ${blackColor};
   font-size: 14px;
   font-family: 'SFUITextMedium';
 
   &:focus {
-    border-color: #A1AEC8;
+    border-color: ${grayColor};
   }
 
   @media (max-width: 770px) {
@@ -1337,13 +1343,13 @@ export const EditTextareaField = styled.textarea`
   padding: 4px 10px;
   outline: none;
   transition: 0.15s;
-  color: #262626;
+  color: ${blackColor};
   font-size: 14px;
   font-family: 'SFUITextMedium';
   resize: none;
 
   &:focus {
-    border-color: #A1AEC8;
+    border-color: ${grayColor};
   }
 
   @media (max-width: 770px) {
@@ -1358,11 +1364,11 @@ export const EditButtonsWrapper = styled.div`
 
 export const EditRadioStyled = styled(Radio)`
   && {
-    color: #599C0B;
+    color: ${primaryColor};
     padding: 0 9px 0 0;
 
     &:checked {
-      color: #599C0B;     
+      color: ${primaryColor};     
     }
   }
 `
@@ -1386,7 +1392,7 @@ export const EditControlLabelStyled = styled(FormControlLabel)`
     left: 0;
     bottom: -14px;
     font-size: 10px;
-    color: #A1AEC8;
+    color: ${grayColor};
   }
   
 `
@@ -1402,17 +1408,17 @@ export const CheckboxLabel = styled(FormControlLabel)`
 		margin: 0 0 0 -14px;
 
 		span:nth-child(1) { 
-			color: #A1AEC8;
+			color: ${grayColor};
 			
 			input:checked + svg {
-				color: #599C0B;
+				color: ${primaryColor};
 			}
 		}
 		
 		span:nth-child(2) {
 			font-family: 'SFUITextRegular';
 			font-size: 12px;
-			color: #A1AEC8;
+			color: ${grayColor};
 		}  
 	}
 
@@ -1422,7 +1428,7 @@ export const CheckboxLabel = styled(FormControlLabel)`
       span:nth-child(2) {
 			font-family: 'SFUITextMedium';
 			font-size: 14px;
-			color: #262626;
+			color: ${blackColor};
 		  } 
     }
     
@@ -1430,7 +1436,7 @@ export const CheckboxLabel = styled(FormControlLabel)`
 `
 
 export const TimeBlock = styled.div`
-  color: #9baac6;
+  color: ${grayColor};
   font-size: 12px;
   display: flex;
   align-items: center;
@@ -1499,9 +1505,9 @@ export const Text = styled.div`
 `
 
 export const TextUnderlined = styled.span`
-  color: #599C0B;
+  color: ${primaryColor};
   text-decoration: none;
-  border-bottom: 1px solid #599C0B;
+  border-bottom: 1px solid ${primaryColor};
   transition: all 0.3s ease-in-out;
   cursor: pointer;
 
@@ -1512,4 +1518,16 @@ export const TextUnderlined = styled.span`
 
 export const DirectMessageDropDownMenuWrapper = styled.div`
   position: relative;
+`
+
+export const StyledLink = styled(Link)`
+  cursor: pointer;
+  color: ${primaryColor};
+  font-weight: bold;
+  transition: 0.2s;
+  font-family: 'SFUITextBold';
+
+  &:hover {
+    color: #A1AEC8
+  }
 `

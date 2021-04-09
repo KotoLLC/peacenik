@@ -1,5 +1,6 @@
 import { axiosInstance } from './index'
 import { ApiTypes } from 'src/types'
+import { getHeaderConfig } from './commonAPIFunctions'
 
 export default {
   getMessagesToken: async () => {
@@ -8,15 +9,7 @@ export default {
     }).catch(error => ({ error }))
   },
   getGroupMessages: async (data: ApiTypes.Groups.MessagesById) => {
-    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
-    const config = {
-      withCredentials: false,
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      }
-    }
-
-    return await axiosInstance.post(`${data.host}/rpc.MessageService/Messages`, data.body, config).then(response => {
+    return await axiosInstance.post(`${data.host}/rpc.MessageService/Messages`, data.body, getHeaderConfig()).then(response => {
       return response
     }).catch(error => ({ error }))
   },

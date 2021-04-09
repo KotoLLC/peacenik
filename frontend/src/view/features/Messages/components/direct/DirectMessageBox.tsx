@@ -12,9 +12,9 @@ import DirectMessageHeader from './DirectMessageHeader';
 export default function DirectMessageBox() {
   return (
     <DirectMessageBoxWapper>
-      <DMHeaderWrapper>
+      {/* <DMHeaderWrapper>
         <DirectMessageHeader />
-      </DMHeaderWrapper>
+      </DMHeaderWrapper> */}
 
       <DMContentWrapper>
         <DirectMessageContent />

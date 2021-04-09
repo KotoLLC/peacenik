@@ -88,7 +88,6 @@ export function* watchGetGroupMessagesToken(action: {type: string, payload: ApiT
     const response = yield API.groups.getGroupPostMessageToken(action.payload)
 
     if (response.status === 200) {
-      // console.log("RECEIVED GROUP MSG TOKEN: ", response.data.tokens)
       let token: Object[] = Object.entries<Object>(response.data.tokens).map(([key, value]) => {
         return {
           host: key,
