@@ -196,6 +196,7 @@ message MessageCounters {
   int32 unread_count = 3;
   int32 total_comment_count = 4;
   int32 unread_comment_count = 5;
+  string last_message_time = 6;
 }
 
 message MessageCountersResponse {

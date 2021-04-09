@@ -53,10 +53,11 @@ type MessageReport struct {
 }
 
 type Counts struct {
-	TotalCount         int `db:"total_count"`
-	UnreadCount        int `db:"unread_count"`
-	TotalCommentCount  int `db:"total_comment_count"`
-	UnreadCommentCount int `db:"unread_comment_count"`
+	TotalCount         int       `db:"total_count"`
+	UnreadCount        int       `db:"unread_count"`
+	TotalCommentCount  int       `db:"total_comment_count"`
+	UnreadCommentCount int       `db:"unread_comment_count"`
+	LastMessageTime    time.Time `db:"last_message_time"`
 }
 
 type MessageRepo interface {
@@ -790,7 +791,8 @@ func (r *messageRepo) Counts(currentUserID string, userIDs []string) Counts {
 			   coalesce(sum(case when m.parent_id is null then 1 end), 0) total_count, 
 			   coalesce(sum(case when m.parent_id is null and not exists(select * from message_reads where user_id = ? and message_id = m.id) then 1 end), 0) unread_count, 
 			   coalesce(sum(case when m.parent_id is not null then 1 end), 0) total_comment_count, 
-			   coalesce(sum(case when m.parent_id is not null and not exists(select * from message_reads where user_id = ? and message_id = m.id) then 1 end), 0) unread_comment_count 
+			   coalesce(sum(case when m.parent_id is not null and not exists(select * from message_reads where user_id = ? and message_id = m.id) then 1 end), 0) unread_comment_count,
+		       max(m.created_at) last_message_time
 		from messages m
 		where m.user_id <> ? and m.user_id in (?)
 			and m.group_id is null
@@ -822,7 +824,8 @@ func (r *messageRepo) GroupCounts(currentUserID string, groupIDs []string) map[s
 			   coalesce(sum(case when m.parent_id is null then 1 end), 0) total_count, 
 			   coalesce(sum(case when m.parent_id is null and not exists(select * from message_reads where user_id = ? and message_id = m.id) then 1 end), 0) unread_count, 
 			   coalesce(sum(case when m.parent_id is not null then 1 end), 0) total_comment_count, 
-			   coalesce(sum(case when m.parent_id is not null and not exists(select * from message_reads where user_id = ? and message_id = m.id) then 1 end), 0) unread_comment_count 
+			   coalesce(sum(case when m.parent_id is not null and not exists(select * from message_reads where user_id = ? and message_id = m.id) then 1 end), 0) unread_comment_count, 
+		       max(m.created_at) last_message_time
 		from messages m
 		where m.user_id <> ?
 			and m.group_id in (?)
@@ -836,11 +839,12 @@ func (r *messageRepo) GroupCounts(currentUserID string, groupIDs []string) map[s
 	query = r.db.Rebind(query)
 
 	var counts []struct {
-		GroupID            string `db:"group_id"`
-		TotalCount         int    `db:"total_count"`
-		UnreadCount        int    `db:"unread_count"`
-		TotalCommentCount  int    `db:"total_comment_count"`
-		UnreadCommentCount int    `db:"unread_comment_count"`
+		GroupID            string    `db:"group_id"`
+		TotalCount         int       `db:"total_count"`
+		UnreadCount        int       `db:"unread_count"`
+		TotalCommentCount  int       `db:"total_comment_count"`
+		UnreadCommentCount int       `db:"unread_comment_count"`
+		LastMessageTime    time.Time `db:"last_message_time"`
 	}
 	err = r.db.Select(&counts, query, args...)
 	if err != nil {
@@ -867,7 +871,8 @@ func (r *messageRepo) DirectCounts(currentUserID string) map[string]Counts {
 			   coalesce(sum(case when m.parent_id is null then 1 end), 0) total_count, 
 			   coalesce(sum(case when m.parent_id is null and not exists(select * from message_reads where user_id = $1 and message_id = m.id) then 1 end), 0) unread_count, 
 			   coalesce(sum(case when m.parent_id is not null then 1 end), 0) total_comment_count, 
-			   coalesce(sum(case when m.parent_id is not null and not exists(select * from message_reads where user_id = $1 and message_id = m.id) then 1 end), 0) unread_comment_count 
+			   coalesce(sum(case when m.parent_id is not null and not exists(select * from message_reads where user_id = $1 and message_id = m.id) then 1 end), 0) unread_comment_count, 
+		       max(m.created_at) last_message_time
 		from messages m
 		where m.user_id <> $1
 			and m.friend_id = $1
@@ -875,11 +880,12 @@ func (r *messageRepo) DirectCounts(currentUserID string) map[string]Counts {
 			and not exists(select * from message_visibility mv where mv.user_id = $1 and mv.message_id = m.id and mv.visibility = false)
 		group by m.user_id;`
 	var counts []struct {
-		UserID             string `db:"user_id"`
-		TotalCount         int    `db:"total_count"`
-		UnreadCount        int    `db:"unread_count"`
-		TotalCommentCount  int    `db:"total_comment_count"`
-		UnreadCommentCount int    `db:"unread_comment_count"`
+		UserID             string    `db:"user_id"`
+		TotalCount         int       `db:"total_count"`
+		UnreadCount        int       `db:"unread_count"`
+		TotalCommentCount  int       `db:"total_comment_count"`
+		UnreadCommentCount int       `db:"unread_comment_count"`
+		LastMessageTime    time.Time `db:"last_message_time"`
 	}
 	err := r.db.Select(&counts, query, currentUserID)
 	if err != nil {

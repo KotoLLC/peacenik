@@ -1055,6 +1055,7 @@ func (s *messageService) Counters(ctx context.Context, r *rpc.MessageCountersReq
 			UnreadCount:        int32(counts.UnreadCount),
 			TotalCommentCount:  int32(counts.TotalCommentCount),
 			UnreadCommentCount: int32(counts.UnreadCommentCount),
+			LastMessageTime:    common.TimeToRPCString(counts.LastMessageTime),
 		}
 	}
 
@@ -1066,6 +1067,7 @@ func (s *messageService) Counters(ctx context.Context, r *rpc.MessageCountersReq
 			UnreadCount:        int32(counts.UnreadCount),
 			TotalCommentCount:  int32(counts.TotalCommentCount),
 			UnreadCommentCount: int32(counts.UnreadCommentCount),
+			LastMessageTime:    common.TimeToRPCString(counts.LastMessageTime),
 		}
 	}
 
