@@ -22,7 +22,8 @@ export interface State {
   isMessagesRequested: boolean | null
   uploadLink: ApiTypes.UploadLink | null
   messageById: ApiTypes.Feed.Message | null | undefined
-  directMsgRoomFriends: string[]
+  directMsgRoomFriends: CommonTypes.MessageRoomFriendData[]
+  directPostToken: CommonTypes.TokenData
 }
 
 const peacenikmessagesTokens = localStorage.getItem('peacenikmessagesTokens') 
@@ -46,18 +47,31 @@ const initialState: State = {
   usersWithMessages: new Map([]),
   uploadLink: null,
   messageById: null,
-  directMsgRoomFriends: []
+  directMsgRoomFriends: [],
+  directPostToken: {
+    host:"",
+    token:""
+  }
 }
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
+    case Types.SET_DIRECT_MSG_POST_TOKEN: {
+      return {
+        ...state,
+        directPostToken: {
+          host: action.payload.host,
+          token: action.payload.token
+        }
+      }
+    }
     case Types.ADD_FRIEND_TO_ROOM: {
       return {
         ...state, 
         directMsgRoomFriends: uniqBy([
           ...state.directMsgRoomFriends,
           action.payload
-        ])
+        ], 'id')
       }
     }
     case Types.GET_MESSAGE_TOKENS_SUCCESS: {

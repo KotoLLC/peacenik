@@ -4,6 +4,12 @@ import { ApiTypes } from 'src/types'
 
 export default {
 
+  getMsgToken: async () => {
+    return await axiosInstance.post('/rpc.TokenService/GetMessages', {}).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
+
   setAttachment: async (host: string, data: FormData) => {
     const config = {
       withCredentials: false,

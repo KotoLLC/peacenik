@@ -1,13 +1,75 @@
 import { all, call, put, select } from 'redux-saga/effects'
 import Actions from '@store/actions'
 import { API } from '@services/api'
-import { ApiTypes } from 'src/types'
+import { ApiTypes, CommonTypes } from 'src/types'
 import { setUserNames } from '@services/userNames'
 import { hubsForMessagesBack2Front } from '@services/dataTransforms/hubsForMessagesTransform'
 import selectors from '@selectors/index'
 import { Types as DirectMessagesTypes } from '@store/messages/actions'
 import { Types as FeedMessagesTypes } from '@store/feed/actions'
 import { watchGetMessagesFromHub } from './feed'
+
+export function * watchGetFriendMsgAPIData(action: {
+  type: string,
+  payload: ApiTypes.Messages.GetFriendMsgAPIData
+}) {
+  try {
+    console.log("watchGetFriendMsgAPIData: ", action)
+    const response = yield API.messages.getFriendMessage(action.payload)
+    console.log("watchGetFriendMsgAPIData RESPONSE: ", response.data.messages)
+    if (response.status === 200) {
+      // response.data.messages
+      // yield put(Actions.messages.getFriendMsgSuccess())
+
+    } else if (response.status === 400) {
+      console.log("watchGetFriendMsgAPIData ERROR:", response)
+    }
+  } catch (error) {
+    yield put(Actions.common.getMsgToken())
+  }
+}
+
+export function * watchSendMsgToFriend(action: {
+  type: string, 
+  payload: ApiTypes.Feed.PostMessage
+}) {
+  try {
+    console.log("watchSendMsgToFriend: ", action)
+    const response = yield API.feed.postMessage(action.payload)
+    console.log("watchSendMsgToFriend RESPONSE: ", response)
+    if (response.status === 200) {
+      console.log("POST SUCCESS")
+
+    } else if (response.status === 400) {
+      console.log("watchSendMsgToFriend ERROR:", response)
+    }
+  } catch (error) {
+    if (!error.response) {
+      yield put(Actions.common.setConnectionError(true))
+    }
+  }
+}
+
+export function * watchGetDirectPostMsgToken(action: { type: string, payload: string }){
+  try {
+    const response = yield API.messages.getDirectPostMessageToken(action.payload)
+    if (response.status === 200) {
+      let tokens:CommonTypes.TokenData[] = Object.entries(response.data.tokens).map( ([key, value]) => ({
+        host: key,
+        token: value as string
+      }))
+      if ( tokens.length > 0)
+        yield put(Actions.messages.setDirectMsgPostToken(tokens[0]))
+
+    } else if (response.status === 400) {
+      console.log("getDirectPostMessageToken ERROR:", response)
+    }
+  } catch (error) {
+    if (!error.response) {
+      yield put(Actions.common.setConnectionError(true))
+    }
+  }
+}
 
 export function * watchGetDirectMessages() {
   try {

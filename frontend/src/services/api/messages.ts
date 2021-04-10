@@ -4,6 +4,19 @@ import { getHeaderConfig } from './commonAPIFunctions'
 
 export default {  
   
+  getDirectPostMessageToken: async (data: string) => {
+    return await axiosInstance.post(`/rpc.TokenService/PostMessage`, {friend_id: data} ).then(response => {
+      return response
+    }).catch(error => ({ error }))
+  },
+
+  getFriendMessage: async (data:ApiTypes.Messages.GetFriendMsgAPIData) => {
+    return await axiosInstance.post(`${data.host}/rpc.MessageService/Messages`, {
+      friend_id:data.friend.id,
+      token: data.token
+    }, getHeaderConfig()).then( response => response).catch( error => ({error}))
+  },
+
   getUserLastMessagesFromHub: async (data: ApiTypes.Messages.UserMessagesFromHub) => {
     return await Promise.all(data.friends.map(friend=>axiosInstance.post(`${data.host}/rpc.MessageService/Messages`, {
       friend_id:friend.id,

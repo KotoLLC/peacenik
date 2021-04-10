@@ -416,9 +416,9 @@ export const DirectMessageBoxWapper = styled.div`
 export const DMContentWrapper = styled.div`
   flex: 1 0 auto;
   overflow-y: auto;
-  max-height: 660px;
+  max-height: 750px;
   @media screen and (max-width: 770px) {
-    max-height: 650px;
+    max-height: 735px;
   }
 `
 export const DMContentInfoWrapper = styled.div`

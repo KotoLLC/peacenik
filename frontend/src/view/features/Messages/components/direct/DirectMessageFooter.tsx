@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState } from "react"
 import {
   createStyles,
   IconButton,
@@ -7,17 +7,16 @@ import {
   makeStyles,
   OutlinedInput,
   Theme,
-} from "@material-ui/core";
-import SendIcon from "@material-ui/icons/Send";
-import PhotoCameraOutlinedIcon from "@material-ui/icons/PhotoCameraOutlined";
-
-import { AttachmentButton, DMInFooterWrapper } from "../styles";
-import { Visibility } from "@material-ui/icons";
-import { UploadInput } from "@view/shared/styles";
-import { ChangeEvent } from "react";
-import { useDispatch } from "react-redux";
-import { ApiTypes } from "src/types";
-import Actions from "@store/actions";
+} from "@material-ui/core"
+import SendIcon from "@material-ui/icons/Send"
+import PhotoCameraOutlinedIcon from "@material-ui/icons/PhotoCameraOutlined"
+import { AttachmentButton, DMInFooterWrapper } from "../styles"
+import { Visibility } from "@material-ui/icons"
+import { UploadInput } from "@view/shared/styles"
+import { ChangeEvent } from "react"
+import { useSelector, useDispatch } from 'react-redux'
+import { CommonTypes, ApiTypes, StoreTypes } from "src/types"
+import Actions from "@store/actions"
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,59 +37,58 @@ const useStyles = makeStyles((theme: Theme) =>
       borderColor: "#43619d !important",
     },
   })
-);
+)
 const DirectMessageFooter = () => {
-  const [msgValue, setMsgValue] = useState("");
-  const msgInputStyles = useStyles();
-  const [isFileUploaded, setIsFileUploaded] = useState<boolean>(false);
+  const [msgValue, setMsgValue] = useState("")
+  const msgInputStyles = useStyles()
+  const [isFileUploaded, setIsFileUploaded] = useState<boolean>(false)
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
   // onGetMessageUploadLink: (data: ApiTypes.Feed.UploadLinkRequest) => dispatch(Actions.feed.getFeedMessageUploadLinkRequest(data))
   const handleImageFileUpload = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       const onGetUploadLink = (value: ApiTypes.Profile.UploadLinkRequest) =>
-        dispatch(Actions.profile.getUploadLinkRequest(value));
+        dispatch(Actions.profile.getUploadLinkRequest(value))
 
-      setIsFileUploaded(false);
+      setIsFileUploaded(false)
 
-      const file = event.target.files;
+      const file = event.target.files
 
       if (file && file[0]) {
         onGetUploadLink({
           content_type: file[0].type,
           file_name: file[0].name,
-        });
-
-        // const self = this;
-
-        /* tslint:disable */
-        // loadImage(
-        //   file[0],
-        //   function (img, data) {
-        //     if (data.imageHead && data.exif) {
-        //       // Reset Exif Orientation data:
-        //       loadImage.writeExifData(data.imageHead, data, "Orientation", 1);
-        //       img.toBlob(function (blob) {
-        //         loadImage.replaceHead(blob, data.imageHead, function (newBlob) {
-        //           self.setState({
-        //             file: newBlob,
-        //           });
-        //         });
-        //       }, "image/jpeg");
-        //     } else {
-        //       self.setState({
-        //         file: file[0],
-        //       });
-        //     }
-        //   },
-        //   { meta: true, orientation: true, canvas: true }
-        // );
-        /* tslint:enable */
+        })
       }
     },
     [dispatch]
-  );
+  )
+  const tokenData: CommonTypes.TokenData = useSelector((state: StoreTypes) => state.messages.directPostToken)
 
+  // const data = {
+  //   host: isGroupMsgPage ? groupMessageToken.host : props.currentHub.host,
+  //   body: {
+  //     token: isGroupMsgPage
+  //       ? groupMessageToken.token
+  //       : props.currentHub.token,
+  //     text: urlify(value),
+  //     attachment_id: uploadLink?.blob_id,
+  //     group_id: isGroupMsgPage ? group_id : undefined,
+  //   },
+  // }
+  // props.onMessagePost(data)
+
+  const sendMsg = () => {
+    let data: ApiTypes.Feed.PostMessage = {
+      host: tokenData.host,
+      body: {
+        token: tokenData.token,
+        text:msgValue,
+        attachment_id: ""
+      }
+    }
+    dispatch(Actions.messages.sendMessageToFriend(data))
+  }
   return (
     <DMInFooterWrapper>
       <OutlinedInput
@@ -123,11 +121,12 @@ const DirectMessageFooter = () => {
         className={msgInputStyles.button}
         aria-label="upload picture"
         component="span"
+        onClick={sendMsg}
       >
         <SendIcon />
       </IconButton>
     </DMInFooterWrapper>
-  );
-};
+  )
+}
 
-export default DirectMessageFooter;
+export default DirectMessageFooter

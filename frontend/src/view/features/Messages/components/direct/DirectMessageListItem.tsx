@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
+import { getAvatarUrl } from '@services/avatarUrl';
 
 import {
   ContactAvatarStyled,
@@ -40,9 +41,6 @@ const DirectMessageListItem: React.FC<Props> = ({
 }) => {
   const baseURL = useRouteMatch().path;
 
-  const getAvatarUrl = (id) => {
-    return id;
-  };
   const getLastMessageTime = () => {
     return dateToRelateString(accessTime);
   };

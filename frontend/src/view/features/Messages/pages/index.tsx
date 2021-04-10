@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   Switch,
@@ -13,7 +13,7 @@ import MesssageSidebar from '../components/MesssageSidebar'
 import DirectMessageBox from '../components/direct/DirectMessageBox'
 import MesssageNoSelectBox from '../components/MessageNoSelectBox'
 import DirectMessageInfoBox from '../components/direct/DirectMessageInfoBox'
-import { ApiTypes, StoreTypes } from 'src/types'
+import { CommonTypes, ApiTypes, StoreTypes } from 'src/types'
 import queryString from 'query-string'
 
 interface Props extends RouteComponentProps {}
@@ -22,34 +22,67 @@ const MessagesPage: React.FC<Props> = (props) => {
   const baseUrl = useRouteMatch().path
   const dispatch = useDispatch()
   const { location } = props
+  const parsed = queryString.parse(location.search)
+  const [friend_id, setFriendId] = useState("")
+  const [msgToken, setMsgToken] = useState("")
+
+  const directPostToken = useSelector(
+    (state: StoreTypes) => state.messages.directPostToken
+  )
+
+  const feedsTokens = useSelector(
+    (state: StoreTypes) => state.feed.feedsTokens
+  )
+
+  useEffect( () => {
+    feedsTokens.map( (item) => {
+      if ( item.host === directPostToken.host)
+        setMsgToken(item.token)
+    })
+  }, [feedsTokens, directPostToken])
+
+  useEffect( () => {
+    if ( location.pathname?.indexOf("messages/d/") > -1){
+      setFriendId(location.pathname?.substring(location.pathname?.lastIndexOf('/') + 1)) 
+    }
+
+    if ( (friend_id !== "" ) && (feedsTokens.length > 0) && (msgToken !== "")){
+      dispatch(Actions.messages.getFriendMsg({
+        host: directPostToken.host,
+        token: msgToken,
+        friend: {
+          id: friend_id
+        }
+      }))
+    }
+  })
 
   useEffect(() => {
-    const parsed = queryString.parse(location.search)
-    // console.log("SEARCH: ", parsed.id)
+    if ( parsed.id && parsed.fullname){
+      dispatch(Actions.messages.addFriendToRoom({
+        id: parsed.id as string,
+        fullName: parsed.fullname as string,
+        accessTime: new Date()
+      }))
 
-    dispatch(Actions.messages.getMessageTokensRequest())
-    if ( parsed.id)
-      dispatch(Actions.messages.addFriendToRoom(parsed.id as string))
+      dispatch(Actions.messages.getDirectPostMsgToken(parsed.id as string))
+    }
   }, [dispatch])
 
   
-  const directMsgRoomFriends = useSelector((state: StoreTypes) => state.messages.directMsgRoomFriends)
+  const directMsgRoomFriends: CommonTypes.MessageRoomFriendData[] = useSelector((state: StoreTypes) => state.messages.directMsgRoomFriends)
 
-  console.log(directMsgRoomFriends)
+  console.log("directMsgRoomFriends: ", directMsgRoomFriends)
 
-  const usersWithMessages = useSelector(
-    (state: StoreTypes) => state.messages.usersWithMessages
-  )
-
-  const messages = useSelector((state: StoreTypes) => state.messages)
-  // console.log(messages)
+  const state = useSelector((state: StoreTypes) => state)
+  console.log("state: ", state)
 
   return (
     <>
       <FriendsPageTabs />
       <MessagesWrapper>
         {(directMsgRoomFriends.length > 0) ? <>
-          <MesssageSidebar />
+          <MesssageSidebar location={location} />
           <ContentWrapper>
             <Switch>
               <Route

@@ -4,12 +4,7 @@ import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import DonutLargeIcon from '@material-ui/icons/DonutLarge';
 import DoneIcon from '@material-ui/icons/Done';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
-import {
-  MessageContentType,
-  MessageDirection,
-  MessageItemProps,
-  MessagePublishStatus,
-} from '../../types/types';
+import { CommonTypes, Enum } from 'src/types'
 import {
   MessageTextContent,
   MessageTextContentBody,
@@ -24,17 +19,17 @@ import {
   MessageImageContentFooter,
 } from '../styles';
 
-const MessageItem: React.FC<MessageItemProps> = ({
+const MessageItem: React.FC<CommonTypes.MessageTypes.MessageItemProps> = ({
   direction,
   actionTime,
   status,
   contentType,
   messeageContent,
-}: MessageItemProps) => {
+}: CommonTypes.MessageTypes.MessageItemProps) => {
   return (
     <MessageItemWrapper justify-content={direction}>
       {/* message  */}
-      {contentType === MessageContentType.TEXT_TYPE && (
+      {contentType === Enum.MessageContentType.TEXT_TYPE && (
         <MessageTextContent color={direction}>
           <MessageTextContentBody>{messeageContent}</MessageTextContentBody>
           <MessageTextContentFooter>
@@ -44,7 +39,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
           </MessageTextContentFooter>
         </MessageTextContent>
       )}
-      {contentType === MessageContentType.IMAGE_TYPE && (
+      {contentType === Enum.MessageContentType.IMAGE_TYPE && (
         <MessageImageContent color={direction}>
           <MessageImageContentBody
             src={messeageContent.toString()}

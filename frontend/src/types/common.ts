@@ -1,4 +1,5 @@
-import { ApiTypes } from 'src/types'
+import { ApiTypes, Enum } from 'src/types'
+import { Url } from "url";
 
 export declare namespace CommonTypes {
 
@@ -35,6 +36,17 @@ export declare namespace CommonTypes {
       token: string
     }
   }
+
+  export namespace MessageTypes{
+    export interface MessageItemProps {
+      msgId: string;
+      direction: Enum.MessageDirection;
+      actionTime: Date;
+      status: Enum.MessagePublishStatus;
+      contentType: Enum.MessageContentType;
+      messeageContent: string | Url;
+    }
+  }
   
   export interface UserNameData {
     userName: string
@@ -54,5 +66,16 @@ export declare namespace CommonTypes {
     id: string
     user_id: string
     friends: ApiTypes.Friends.Friend[] | null
+  }
+
+  export interface MessageRoomFriendData {
+    id: string
+    fullName: string
+    accessTime
+  }
+
+  export interface TokenData {
+    host: string
+    token: string
   }
 }

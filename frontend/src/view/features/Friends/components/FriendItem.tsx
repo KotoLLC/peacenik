@@ -33,7 +33,7 @@ export const FriendItem: React.FC<Props> = (props) => {
       </UserInfo>
       <ButtonGroup>
         <FriendsButtonOutlined className="grey disabled">Unfriend</FriendsButtonOutlined>
-        <Link to={`/messages?id=${id}`}><FriendsButtonOutlined>Send message</FriendsButtonOutlined></Link>
+        <Link to={`/messages?id=${id}&fullname=${fullName}`}><FriendsButtonOutlined>Send message</FriendsButtonOutlined></Link>
       </ButtonGroup>
     </FriendCard>
   )

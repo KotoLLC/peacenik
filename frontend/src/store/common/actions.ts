@@ -1,10 +1,15 @@
 
 export enum Types {
-  SET_ERROR_NOTIFY = 'SET_ERROR_NOTIFY',
-  SET_SUCCESS_NOTIFY = 'SET_SUCCESS_NOTIFY',
-  SET_ABOUT_US_VIEWD = 'SET_ABOUT_US_VIEWD',
-  SET_CONNECTION_ERROR = 'SET_CONNECTION_ERROR',
+  GET_MSG_TOKEN         = `GET_MSG_TOKEN`,
+  SET_ERROR_NOTIFY      = 'SET_ERROR_NOTIFY',
+  SET_SUCCESS_NOTIFY    = 'SET_SUCCESS_NOTIFY',
+  SET_ABOUT_US_VIEWD    = 'SET_ABOUT_US_VIEWD',
+  SET_CONNECTION_ERROR  = 'SET_CONNECTION_ERROR',
 }
+
+const getMsgToken = () => ({
+  type: Types.GET_MSG_TOKEN
+})
 
 const setErrorNotify = (payload: string) => ({
   type: Types.SET_ERROR_NOTIFY,
@@ -26,6 +31,7 @@ const setConnectionError = (payload: boolean) => ({
 })
 
 export default {
+  getMsgToken,
   setErrorNotify,
   setSuccessNotify,
   setAboutUsViewed,
