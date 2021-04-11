@@ -4,7 +4,6 @@ import Actions from '@store/actions';
 import _ from 'lodash';
 
 import DirectMessageListItem from './DirectMessageListItem';
-import { MessageDirection, MessagePublishStatus } from '../../types/types';
 import { CommonTypes, ApiTypes, StoreTypes } from 'src/types';
 import jwt_decode from 'jwt-decode';
 

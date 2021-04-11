@@ -1,4 +1,4 @@
-export declare namespace Enum {
+
   // status for the outgoing message
   export enum MessagePublishStatus {
     // outgoing status
@@ -45,4 +45,3 @@ export declare namespace Enum {
     VOICE_MAIL_TYPE = "VOICE_MAIL",
     UNKNOWN_TYPE = "UNKNOWN",
   }
-}

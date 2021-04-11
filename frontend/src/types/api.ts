@@ -65,6 +65,10 @@ export declare namespace ApiTypes {
     token: string
   }
 
+  export interface HubToken{
+    host: string
+    token: string
+  }
 
   export namespace Profile {
 

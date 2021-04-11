@@ -82,7 +82,8 @@ import {
     watchGetDirectMessages as watchGetLastDirectMessages,    
     watchGetDirectPostMsgToken,
     watchSendMsgToFriend,
-    watchGetFriendMsgAPIData
+    watchGetFriendMsgAPIData,
+    watchGetFriendsList
     // watchGetDirectMessagesFromHub
 } from './messsages'
 import {
@@ -189,6 +190,7 @@ export function* rootSaga() {
         takeEvery(DirectMessagesTypes.GET_DIRECT_POST_MSG_TOKEN, watchGetDirectPostMsgToken),
         takeEvery(DirectMessagesTypes.SEND_MESSAGE_TO_FRIEND, watchSendMsgToFriend),
         takeEvery(DirectMessagesTypes.GET_FRIEND_MSG_API_DATA, watchGetFriendMsgAPIData),
+        takeEvery(DirectMessagesTypes.GET_FRIENDS_LIST, watchGetFriendsList),
         
         takeEvery(NotificationsTypes.GET_NOTIFICATIONS_REQUEST, watchGetNotifications),
         takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_USER_HUB_REQUEST, watchCleanNotificationsInUserHub),

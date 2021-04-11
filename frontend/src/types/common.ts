@@ -1,4 +1,12 @@
-import { ApiTypes, Enum } from 'src/types'
+import { 
+  ApiTypes  
+} from 'src/types'
+import {
+  MessageDirection,
+  MessagePublishStatus,
+  MessageContentType
+} from './enum'
+
 import { Url } from "url";
 
 export declare namespace CommonTypes {
@@ -40,10 +48,10 @@ export declare namespace CommonTypes {
   export namespace MessageTypes{
     export interface MessageItemProps {
       msgId: string;
-      direction: Enum.MessageDirection;
-      actionTime: Date;
-      status: Enum.MessagePublishStatus;
-      contentType: Enum.MessageContentType;
+      direction: MessageDirection;
+      actionTime: string;
+      status: MessagePublishStatus;
+      contentType: MessageContentType;
       messeageContent: string | Url;
     }
   }

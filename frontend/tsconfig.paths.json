@@ -9,6 +9,7 @@
       "@selectors/*": ["./src/selectors/*"],
       "@assets/*": ["./src/assets/*"],
       "@hooks/*": ["./src/hooks/*"],
+      "@types/*": ["./src/types/*"],
     }
   }
 }

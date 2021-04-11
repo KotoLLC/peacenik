@@ -6,6 +6,8 @@ export enum Types {
   GET_DIRECT_POST_MSG_TOKEN               = 'GET_DIRECT_POST_MSG_TOKEN',
   GET_FRIEND_MSG_API_DATA                 = 'GET_FRIEND_MSG_API_DATA',
   GET_FRIEND_MSG_SUCCESS                  = 'GET_FRIEND_MSG_SUCCESS',
+  GET_FRIENDS_LIST                        = 'GET_FRIENDS_LIST',
+  GET_FRIENDS_FROM_HUB                    = 'GET_FRIENDS_FROM_HUB',
 
   ADD_FRIEND_TO_ROOM                      = 'ADD_FRIEND_TO_ROOM',
   GET_LAST_MESSAGE_TOKENS_REQUEST         = 'GET_MESSAGE_TOKENS_REQUEST',
@@ -33,6 +35,10 @@ const setDirectMsgPostToken = (payload: CommonTypes.TokenData) => ({
 const getFriendMsg = (payload: ApiTypes.Messages.GetFriendMsgAPIData) => ({
   type: Types.GET_FRIEND_MSG_API_DATA,
   payload
+})
+
+const getFriendsList = () => ({
+  type: Types.GET_FRIENDS_LIST
 })
 
 const getFriendMsgSuccess = (payload: CommonTypes.MessageTypes.MessageItemProps[]) => ({
@@ -88,6 +94,7 @@ export default {
   setDirectMsgPostToken,
   sendMessageToFriend,
   getFriendMsg,
+  getFriendsList,
   getFriendMsgSuccess,
   getDirectPostMsgToken,
   addFriendToRoom,

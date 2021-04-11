@@ -4,6 +4,12 @@ import { getHeaderConfig } from './commonAPIFunctions'
 
 export default {  
   
+  getFriendFromHub: async (data: ApiTypes.HubToken) => {
+    return await axiosInstance.post(`${data.host}/rpc.MessageService/Counters`, {
+      token: data.token
+    }, getHeaderConfig()).then(response => response).catch( error => ({error}))
+  },
+
   getDirectPostMessageToken: async (data: string) => {
     return await axiosInstance.post(`/rpc.TokenService/PostMessage`, {friend_id: data} ).then(response => {
       return response
