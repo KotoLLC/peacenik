@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { useRouteMatch, Switch, Route, Redirect } from 'react-router-dom';
 import styled from 'styled-components';
+import queryString from 'query-string'
 
 import { ButtonContained } from '@view/shared/styles';
 import DirectMessageList from './direct/DirectMessageList';
@@ -21,13 +22,16 @@ export const ButtonContainedStyled = styled(ButtonContained)`
     min-width: auto;
     width: 80px;
   }
-`;
-const MesssageSidebar: React.FC = () => {
+`
+const MesssageSidebar = (props) => {
   const baseUrl = useRouteMatch().path;
   const [isComposeDlgOpen, setIsComposeDlgOpen] = useState<boolean>(false);
   const handleSelectChatUser = useCallback((id: string) => {
     setIsComposeDlgOpen(false);
   }, []);
+
+  const { location } = props
+  const parsed = queryString.parse(location.search)
 
   return (
     <SidebarWrapper>
@@ -35,7 +39,7 @@ const MesssageSidebar: React.FC = () => {
         <MessagesListContent>
           <Switch>
             <Route path={`${baseUrl}/d`} component={DirectMessageList} />
-            <Redirect to={`${baseUrl}/d`} />
+            { (parsed.id) ? <Redirect to={`${baseUrl}/d/${parsed.id}`} /> : <Redirect to={`${baseUrl}/d`} />}
           </Switch>
         </MessagesListContent>
       </SidebarContent>

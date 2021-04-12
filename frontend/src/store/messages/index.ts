@@ -22,6 +22,9 @@ export interface State {
   isMessagesRequested: boolean | null
   uploadLink: ApiTypes.UploadLink | null
   messageById: ApiTypes.Feed.Message | null | undefined
+  directMsgRoomFriends: CommonTypes.MessageRoomFriendData[]
+  directPostToken: CommonTypes.TokenData
+  directMsgs: CommonTypes.MessageTypes.MessageItemProps[]
 }
 
 const peacenikmessagesTokens = localStorage.getItem('peacenikmessagesTokens') 
@@ -45,11 +48,40 @@ const initialState: State = {
   usersWithMessages: new Map([]),
   uploadLink: null,
   messageById: null,
-
+  directMsgRoomFriends: [],
+  directPostToken: {
+    host:"",
+    token:""
+  },
+  directMsgs: []
 }
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
+    case Types.GET_FRIEND_MSG_SUCCESS: {
+      return {
+        ...state,
+        directMsgs: action.payload
+      }
+    }
+    case Types.SET_DIRECT_MSG_POST_TOKEN: {
+      return {
+        ...state,
+        directPostToken: {
+          host: action.payload.host,
+          token: action.payload.token
+        }
+      }
+    }
+    case Types.ADD_FRIEND_TO_ROOM: {
+      return {
+        ...state, 
+        directMsgRoomFriends: uniqBy([
+          ...state.directMsgRoomFriends,
+          action.payload
+        ], 'id')
+      }
+    }
     case Types.GET_MESSAGE_TOKENS_SUCCESS: {
       return {
         ...state, ...{ 
@@ -57,22 +89,6 @@ const reducer = (state = initialState, action) => {
         }
       }
     }
-  
-  //   case Types.POST_MESSAGE_MESSAGE_SUCCESS: {
-  //     return {
-  //       ...state, ...{ isMessageMessagePostedSuccess: action.payload }
-  //     }
-  //   }
-  //   case Types.DELETE_MESSAGE_MESSAGES_REQUEST: {
-  //     return {
-  //       ...state, ...{ messages: state.messages.filter(item => item.id !== action.payload.body.message_id) }
-  //     }
-  //   }
-  //   case Types.HIDE_MESSAGE_MESSAGES_REQUEST: {
-  //     return {
-  //       ...state, ...{ messages: state.messages.filter(item => item.id !== action.payload.id) }
-  //     }
-  //   }
     case Types.GET_MORE_MESSAGE_REQUEST: {
       return {
         ...state, ...{ isMoreMessagesRequested: true }
@@ -83,19 +99,6 @@ const reducer = (state = initialState, action) => {
         ...state, ...{ isMoreMessagesRequested: false }
       }
     }
-  //   case Types.GET_MORE_MESSAGE_FROM_HUB_FAILED: {
-  //     return {
-  //       ...state, ...{ isMoreMessagesRequested: false }
-  //     }
-  //   }
-  //   case Types.GET_MORE_MESSAGE_SUCCESS: {
-  //     return {
-  //       ...state, ...{ 
-  //         messagesTokens: action.payload,
-  //         isMessagesRequested: false,
-  //       }
-  //     }
-  //   }
     case Types.GET_USER_LAST_MESSAGES_FROM_HUB_SUCCESS: {
       const { usersLastMessage , hub } = action.payload
 
@@ -105,49 +108,6 @@ const reducer = (state = initialState, action) => {
       }
       
     }
-  //   case Types.GET_MESSAGE_TOKENS_FROM_HUB_FAILED: {
-  //     return {
-  //       ...state, ...{ isMessagesRequested: false }
-  //     }
-  //   }
-  //   case Types.GET_MESSAGE_TOKENS_MESSAGES_UPLOAD_LINK_SUCCESS: {
-  //     return {
-  //       ...state, ...{ uploadLink: action.payload }
-  //     }
-  //   }
-  //   case Types.GET_LIKES_FOR_MESSAGE_MESSAGES_SUCCESS: {
-  //     return {
-  //       ...state, ...{ currentMessageLikes: action.payload }
-  //     }
-  //   }
-  //   case Types.GET_LIKES_FOR_MESSAGE_COMMENT_SUCCESS: {
-  //     return {
-  //       ...state, ...{ currentCommentLikes: action.payload }
-  //     }
-  //   }
-  //   case Types.GET_MESSAGE_TOKENS_MESSAGES_BY_ID_FROM_HUB_SUCCESS: {
-  //     return {
-  //       ...state, ...{ messageById: action.payload }
-  //     }
-  //   }
-  //   case Types.RESET_MESSAGE_MESSAGES_BY_ID: {
-  //     return {
-  //       ...state, ...{ messageById: null }
-  //     }
-  //   }
-  //   case Types.GET_MESSAGE_TOKENS_MESSAGES_BY_ID_FROM_HUB_FAILED: {
-  //     return {
-  //       ...state, ...{ messageById: undefined }
-  //     }
-  //   }
-  //   case Types.CLEAN_ALL_MESSAGE: {
-  //     return {
-  //       ...state, ...{ 
-  //         messagesTokens: [],
-  //         messages: [],
-  //        }
-  //     }
-  //   }
     default: return state
   }
 }

@@ -65,6 +65,10 @@ export declare namespace ApiTypes {
     token: string
   }
 
+  export interface HubToken{
+    host: string
+    token: string
+  }
 
   export namespace Profile {
 
@@ -330,6 +334,15 @@ export declare namespace ApiTypes {
         full_name: string
       }[]
     }
+
+    export interface GetFriendMsgAPIData {
+      host: string,
+      token: string,
+      friend: {
+        id: string
+      }
+    }
+
     export interface UserMessage {
       user_id: string
       messages: Feed.Message[]
@@ -337,10 +350,6 @@ export declare namespace ApiTypes {
       username?: string
       full_name?: string
     }  
-    
-  }
-
-  export namespace ChatMessages {
     
   }
 

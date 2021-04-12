@@ -10,6 +10,7 @@ module.exports = function override(config, env) {
 		'@services': path.resolve(__dirname, `${paths.appSrc}/services/`),
 		'@selectors': path.resolve(__dirname, `${paths.appSrc}/selectors/`),
 		'@assets': path.resolve(__dirname, `${paths.appSrc}/assets/`),
+		'@types': path.resolve(__dirname, `${paths.appSrc}/types/`),
 	})(config, env);
 	return config;
 };

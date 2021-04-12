@@ -20,7 +20,6 @@ interface Props {
 
 export const FriendItem: React.FC<Props> = (props) => {
   const { name, fullName, id } = props
-  
   return (
     <FriendCard>
       <UserInfo>
@@ -34,7 +33,7 @@ export const FriendItem: React.FC<Props> = (props) => {
       </UserInfo>
       <ButtonGroup>
         <FriendsButtonOutlined className="grey disabled">Unfriend</FriendsButtonOutlined>
-        <FriendsButtonOutlined className="disabled">Send message</FriendsButtonOutlined>
+        <Link to={`/messages?id=${id}&fullname=${fullName}`}><FriendsButtonOutlined>Send message</FriendsButtonOutlined></Link>
       </ButtonGroup>
     </FriendCard>
   )

@@ -4,10 +4,12 @@ import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
 import Avatar from '@material-ui/core/Avatar'
 import { IconWrapper } from '@view/shared/styles'
-import { MessageDirection, MessageInfoTextStatus } from '../types/types'
 import MenuItem from '@material-ui/core/MenuItem'
 import { Checkbox } from '@material-ui/core'
-
+import {
+  MessageInfoTextStatus,
+  MessageDirection
+} from '../../../../types/enum'
 
 export const MessagesWrapper = styled.div`
   position: relative;
@@ -416,9 +418,9 @@ export const DirectMessageBoxWapper = styled.div`
 export const DMContentWrapper = styled.div`
   flex: 1 0 auto;
   overflow-y: auto;
-  max-height: 660px;
+  max-height: 750px;
   @media screen and (max-width: 770px) {
-    max-height: 650px;
+    max-height: 735px;
   }
 `
 export const DMContentInfoWrapper = styled.div`

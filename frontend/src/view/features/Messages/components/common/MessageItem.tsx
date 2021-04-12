@@ -4,12 +4,11 @@ import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import DonutLargeIcon from '@material-ui/icons/DonutLarge';
 import DoneIcon from '@material-ui/icons/Done';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
+import { CommonTypes } from 'src/types'
+import { dateToRelateString } from '@services/dateToRelateString'
 import {
-  MessageContentType,
-  MessageDirection,
-  MessageItemProps,
-  MessagePublishStatus,
-} from '../../types/types';
+  MessageContentType
+} from '../../../../../types/enum'
 import {
   MessageTextContent,
   MessageTextContentBody,
@@ -24,13 +23,13 @@ import {
   MessageImageContentFooter,
 } from '../styles';
 
-const MessageItem: React.FC<MessageItemProps> = ({
+const MessageItem: React.FC<CommonTypes.MessageTypes.MessageItemProps> = ({
   direction,
   actionTime,
   status,
   contentType,
   messeageContent,
-}: MessageItemProps) => {
+}: CommonTypes.MessageTypes.MessageItemProps) => {
   return (
     <MessageItemWrapper justify-content={direction}>
       {/* message  */}
@@ -39,7 +38,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
           <MessageTextContentBody>{messeageContent}</MessageTextContentBody>
           <MessageTextContentFooter>
             <MessageTransmissionTime color={direction}>
-              10:09 pm
+              {dateToRelateString(actionTime)}
             </MessageTransmissionTime>
           </MessageTextContentFooter>
         </MessageTextContent>
@@ -52,7 +51,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
           />
           <MessageImageContentFooter color={direction}>
             <MessageTransmissionTime color={direction}>
-              10:09 pm
+              {dateToRelateString(actionTime)}
             </MessageTransmissionTime>
           </MessageImageContentFooter>
         </MessageImageContent>

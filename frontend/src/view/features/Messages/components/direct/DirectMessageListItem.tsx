@@ -1,76 +1,57 @@
-import React, { useCallback, useState } from 'react';
-import { Link, useRouteMatch } from 'react-router-dom';
+import React, { useCallback } from 'react'
+import { Link, useRouteMatch } from 'react-router-dom'
+import { getAvatarUrl } from '@services/avatarUrl'
 
 import {
   ContactAvatarStyled,
   MessageCard,
   MessageCardContent,
   MessageInfoBlock,
-  MessageInfoContent,
   MessageInfoDisplayName,
   MessageInfoHeader,
   MessageInfoLastAccessTime,
-  MessageInfoText,
-  MessageMissedCount,
-  StatusIconWrapper,
-  StatusWrapper,
-} from '@view/features/Messages/components/styles';
+} from '@view/features/Messages/components/styles'
 
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
-import DonutLargeIcon from '@material-ui/icons/DonutLarge';
-import DoneIcon from '@material-ui/icons/Done';
-import DoneAllIcon from '@material-ui/icons/DoneAll';
-import {
-  MessageDirection,
-  MessageInfoTextStatus,
-  MessagePublishStatus,
-} from '@view/features/Messages/types/types';
-import { dateTorelateString } from '@services/dateTorelateString';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined'
+import DonutLargeIcon from '@material-ui/icons/DonutLarge'
+import DoneIcon from '@material-ui/icons/Done'
+import DoneAllIcon from '@material-ui/icons/DoneAll'
+import * as Types from '../../../../../types/enum'
+import { dateToRelateString } from '@services/dateToRelateString'
 
 interface Props {
-  userId: string;
-  accessTime: string;
-  fullName: string;
-  lastMsg: string;
-  msgType: MessageDirection;
-  missedCount?: number;
-  messageStatus?: MessagePublishStatus;
+  userId: string
+  accessTime: string
+  fullName: string
 }
 
 const DirectMessageListItem: React.FC<Props> = ({
   fullName,
   userId,
-  lastMsg,
-  msgType,
-  missedCount,
-  messageStatus,
   accessTime,
 }) => {
-  const baseURL = useRouteMatch().path;
+  const baseURL = useRouteMatch().path
 
-  const getAvatarUrl = (id) => {
-    return id;
-  };
   const getLastMessageTime = () => {
-    return dateTorelateString(accessTime);
-  };
+    return dateToRelateString(accessTime)
+  }
 
   const renderOutgoingSwitch = useCallback(
-    (status: MessagePublishStatus | undefined) => {
+    (status: Types.MessagePublishStatus | undefined) => {
       switch (status) {
-        case MessagePublishStatus.PENDING_STATUS:
-          return <DonutLargeIcon />;
-        case MessagePublishStatus.ACCEPTED_STATUS:
-          return <DoneIcon />;
-        case MessagePublishStatus.READ_STATUS:
-          return <DoneAllIcon style={{ color: '#599C0B' }} />;
-        case MessagePublishStatus.NOT_SENT_STATUS:
-        case MessagePublishStatus.UNKNOWN_STATUS:
+        case Types.MessagePublishStatus.PENDING_STATUS:
+          return <DonutLargeIcon />
+        case Types.MessagePublishStatus.ACCEPTED_STATUS:
+          return <DoneIcon />
+        case Types.MessagePublishStatus.READ_STATUS:
+          return <DoneAllIcon style={{ color: '#599C0B' }} />
+        case Types.MessagePublishStatus.NOT_SENT_STATUS:
+        case Types.MessagePublishStatus.UNKNOWN_STATUS:
       }
-      return <InfoOutlinedIcon />;
+      return <InfoOutlinedIcon />
     },
     []
-  );
+  )
 
   return (
     <MessageCard>
@@ -88,7 +69,7 @@ const DirectMessageListItem: React.FC<Props> = ({
         </MessageInfoBlock>
       </MessageCardContent>
     </MessageCard>
-  );
-};
+  )
+}
 
-export default DirectMessageListItem;
+export default DirectMessageListItem

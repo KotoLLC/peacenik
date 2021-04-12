@@ -1,14 +1,11 @@
-import { ApiTypes } from 'src/types'
-import moment from 'moment'
-
-export const dateTorelateString = (d: string | null) => {
+export const dateToRelateString = (d: string | null) => {
   if(!d) return;
   const current = new Date();
   const oldDate = new Date(d);
   const diffSecond = (current.getTime() - oldDate.getTime()) / 1000;
 
   if(diffSecond < 60) {
-    return 'Just a moment'
+    return 'just ago'
   } else if(diffSecond < 600) {
     return 'Less in 10 min'
   } else if(diffSecond < 1800) {

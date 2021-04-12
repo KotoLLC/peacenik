@@ -1,16 +1,10 @@
 import { axiosInstance } from './index'
 import { CommonTypes } from 'src/types'
+import { getHeaderConfig } from './commonAPIFunctions'
 
 export default {
-  getNotificationsFromHub: async (host: string) => {
-    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
-    const config = {
-      withCredentials: false,
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      }
-    } 
-    return await axiosInstance.post(`${host}/rpc.NotificationService/Notifications`, {}, config).then(response => {
+  getNotificationsFromHub: async (host: string) => { 
+    return await axiosInstance.post(`${host}/rpc.NotificationService/Notifications`, {}, getHeaderConfig()).then(response => {
       return response
     }).catch(error => ({ error }))
   },
@@ -30,16 +24,9 @@ export default {
   },
   
   cleanNotificationsInHub: async (data: CommonTypes.NotificationTypes.LastKnown) => {
-    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
-    const config = {
-      withCredentials: false,
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      }
-    }
     return await axiosInstance.post(`${data.host}/rpc.NotificationService/Clean`, {
       last_known_id: data.id
-    }, config).then(response => {
+    }, getHeaderConfig()).then(response => {
       return response
     }).catch(error => ({ error }))
   },
@@ -53,16 +40,9 @@ export default {
   },
   
   markAsReadNotificationsInHub: async (data: CommonTypes.NotificationTypes.LastKnown) => {
-    const authToken = JSON.parse(localStorage.getItem('peacenikAuthToken')!)
-    const config = {
-      withCredentials: false,
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      }
-    }
     return await axiosInstance.post(`${data.host}/rpc.NotificationService/MarkRead`, {
       last_known_id: data.id
-    }, config).then(response => {
+    }, getHeaderConfig()).then(response => {
       return response
     }).catch(error => ({ error }))
   }

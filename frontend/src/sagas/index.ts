@@ -9,6 +9,11 @@ import { Types as DirectMessagesTypes } from '@store/messages/actions'
 import { Types as NotificationsTypes } from '@store/notifications/actions'
 import { Types as DashboardTypes } from '@store/dashboard/actions'
 import { Types as GroupsTypes } from '@store/groups/actions'
+import { Types as CommonTypes } from '@store/common/actions'
+
+import {
+    watchGetMsgToken
+} from './common'
 
 import {
     watchlogin,
@@ -75,6 +80,10 @@ import {
 } from './feed'
 import {  
     watchGetDirectMessages as watchGetLastDirectMessages,    
+    watchGetDirectPostMsgToken,
+    watchSendMsgToFriend,
+    watchGetFriendMsgAPIData,
+    watchGetFriendsList
     // watchGetDirectMessagesFromHub
 } from './messsages'
 import {
@@ -118,6 +127,8 @@ import {
 
 export function* rootSaga() {
     yield all([
+        takeEvery(CommonTypes.GET_MSG_TOKEN, watchGetMsgToken),
+        
         takeEvery(RegistrationTypes.SEND_CONFIRM_LINK_REQUEST, watchSendConfirmLink),
         takeEvery(RegistrationTypes.CONFIRM_USER_REQUEST, watchConfirmUser),
         takeEvery(RegistrationTypes.REGISTER_USER_REQUEST, watchRegisterUser),
@@ -175,7 +186,12 @@ export function* rootSaga() {
         takeEvery(FeedMessagesTypes.REPORT_FEED_MESSAGES_HUB_REQUEST, watchReportMessageHub),
         takeEvery(FeedMessagesTypes.REPORT_FEED_MESSAGES_CENTRAL_REQUEST, watchReportMessageCentral),
         
-        takeEvery(DirectMessagesTypes.GET_LAST_MESSAGE_TOKENS_REQUEST, watchGetLastDirectMessages),                
+        takeEvery(DirectMessagesTypes.GET_LAST_MESSAGE_TOKENS_REQUEST, watchGetLastDirectMessages),    
+        takeEvery(DirectMessagesTypes.GET_DIRECT_POST_MSG_TOKEN, watchGetDirectPostMsgToken),
+        takeEvery(DirectMessagesTypes.SEND_MESSAGE_TO_FRIEND, watchSendMsgToFriend),
+        takeEvery(DirectMessagesTypes.GET_FRIEND_MSG_API_DATA, watchGetFriendMsgAPIData),
+        takeEvery(DirectMessagesTypes.GET_FRIENDS_LIST, watchGetFriendsList),
+        
         takeEvery(NotificationsTypes.GET_NOTIFICATIONS_REQUEST, watchGetNotifications),
         takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_USER_HUB_REQUEST, watchCleanNotificationsInUserHub),
         takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_HUB_REQUEST, watchCleanNotificationsInHub),
