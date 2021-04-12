@@ -76,6 +76,14 @@ export declare namespace CommonTypes {
     friends: ApiTypes.Friends.Friend[] | null
   }
 
+  export interface FriendCounterData {
+    last_message_time: string
+    total_comment_count: number
+    total_count: number
+    unread_comment_count: number
+    unread_count: number
+  }
+  
   export interface MessageRoomFriendData {
     id: string
     fullName: string

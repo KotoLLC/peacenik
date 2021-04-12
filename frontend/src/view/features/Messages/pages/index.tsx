@@ -51,6 +51,7 @@ const MessagesPage: React.FC<Props> = (props) => {
   
   useEffect( () => {
     if ( (friend_id !== "" ) && (feedsTokens.length > 0) && (msgToken !== "")){
+      console.log("GET_FRIEND_MSG: ", friend_id)
       dispatch(Actions.messages.getFriendMsg({
         host: directPostToken.host,
         token: msgToken,
@@ -62,7 +63,7 @@ const MessagesPage: React.FC<Props> = (props) => {
   }, [friend_id, msgToken])
 
   useEffect(() => {
-    if ( parsed.id && parsed.fullname){
+    if ( (parsed.id && parsed.fullname)){
       dispatch(Actions.messages.addFriendToRoom({
         id: parsed.id as string,
         fullName: parsed.fullname as string,
@@ -70,6 +71,8 @@ const MessagesPage: React.FC<Props> = (props) => {
       }))
 
       dispatch(Actions.messages.getDirectPostMsgToken(parsed.id as string))
+    } else if (friend_id !== "") {
+      dispatch(Actions.messages.getDirectPostMsgToken(friend_id))
     }
   }, [dispatch])
 

@@ -10,6 +10,7 @@ export enum Types {
   GET_FRIENDS_FROM_HUB                    = 'GET_FRIENDS_FROM_HUB',
 
   ADD_FRIEND_TO_ROOM                      = 'ADD_FRIEND_TO_ROOM',
+  ADD_FRIENDS_TO_ROOM                     = 'ADD_FRIENDS_TO_ROOM',
   GET_LAST_MESSAGE_TOKENS_REQUEST         = 'GET_MESSAGE_TOKENS_REQUEST',
   GET_MESSAGE_TOKENS_SUCCESS              = 'GET_MESSAGE_TOKENS_SUCCESS',
 
@@ -48,6 +49,11 @@ const getFriendMsgSuccess = (payload: CommonTypes.MessageTypes.MessageItemProps[
 
 const getDirectPostMsgToken = (payload: string) => ({
   type: Types.GET_DIRECT_POST_MSG_TOKEN,
+  payload
+})
+
+const addFriendsToRoom = (payload: CommonTypes.MessageRoomFriendData[]) => ({
+  type: Types.ADD_FRIENDS_TO_ROOM,
   payload
 })
 
@@ -98,6 +104,7 @@ export default {
   getFriendMsgSuccess,
   getDirectPostMsgToken,
   addFriendToRoom,
+  addFriendsToRoom,
   getMessageTokensRequest,
   getMessageTokensSuccess, 
   getUserLastMessageFromHubSuccess,
