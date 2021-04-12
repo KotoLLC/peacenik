@@ -858,6 +858,7 @@ func (r *messageRepo) GroupCounts(currentUserID string, groupIDs []string) map[s
 			UnreadCount:        count.UnreadCount,
 			TotalCommentCount:  count.TotalCommentCount,
 			UnreadCommentCount: count.UnreadCommentCount,
+			LastMessageTime:    count.LastMessageTime,
 		}
 	}
 
@@ -899,6 +900,7 @@ func (r *messageRepo) DirectCounts(currentUserID string) map[string]Counts {
 			UnreadCount:        count.UnreadCount,
 			TotalCommentCount:  count.TotalCommentCount,
 			UnreadCommentCount: count.UnreadCommentCount,
+			LastMessageTime:    count.LastMessageTime,
 		}
 	}
 
