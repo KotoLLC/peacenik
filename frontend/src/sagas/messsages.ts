@@ -103,11 +103,8 @@ export function * watchSendMsgToFriend(action: {
   payload: ApiTypes.Feed.PostMessage
 }) {
   try {
-    console.log("watchSendMsgToFriend: ", action)
     const response = yield API.feed.postMessage(action.payload)
-    console.log("watchSendMsgToFriend RESPONSE: ", response)
     if (response.status === 200) {
-      console.log("POST SUCCESS")
 
     } else if (response.status === 400) {
       console.log("watchSendMsgToFriend ERROR:", response)
