@@ -85,7 +85,7 @@ type MessageRepo interface {
 	MarkRead(userID string, messageIDs []string)
 	Counts(currentUserID string, userIDs []string) Counts
 	GroupCounts(currentUserID string, groupIDs []string) map[string]Counts
-	DirectCounts(currentUserID string) map[string]Counts
+	DirectCounts(currentUserID string) map[string]*Counts
 }
 
 func NewMessages(db *sqlx.DB) MessageRepo {
@@ -865,22 +865,22 @@ func (r *messageRepo) GroupCounts(currentUserID string, groupIDs []string) map[s
 	return result
 }
 
-func (r *messageRepo) DirectCounts(currentUserID string) map[string]Counts {
+func (r *messageRepo) DirectCounts(currentUserID string) map[string]*Counts {
 	query := `
 		select
-			   m.user_id,
-			   coalesce(sum(case when m.parent_id is null then 1 end), 0) total_count, 
-			   coalesce(sum(case when m.parent_id is null and not exists(select * from message_reads where user_id = $1 and message_id = m.id) then 1 end), 0) unread_count, 
-			   coalesce(sum(case when m.parent_id is not null then 1 end), 0) total_comment_count, 
-			   coalesce(sum(case when m.parent_id is not null and not exists(select * from message_reads where user_id = $1 and message_id = m.id) then 1 end), 0) unread_comment_count, 
-		       max(m.created_at) last_message_time
+			m.user_id,
+			coalesce(sum(case when m.parent_id is null then 1 end), 0) total_count, 
+			coalesce(sum(case when m.parent_id is null and not exists(select * from message_reads where user_id = $1 and message_id = m.id) then 1 end), 0) unread_count, 
+			coalesce(sum(case when m.parent_id is not null then 1 end), 0) total_comment_count, 
+			coalesce(sum(case when m.parent_id is not null and not exists(select * from message_reads where user_id = $1 and message_id = m.id) then 1 end), 0) unread_comment_count, 
+			max(m.created_at) last_message_time
 		from messages m
 		where m.user_id <> $1
 			and m.friend_id = $1
 			and m.deleted_at is null
 			and not exists(select * from message_visibility mv where mv.user_id = $1 and mv.message_id = m.id and mv.visibility = false)
 		group by m.user_id;`
-	var counts []struct {
+	var toMeCounts []struct {
 		UserID             string    `db:"user_id"`
 		TotalCount         int       `db:"total_count"`
 		UnreadCount        int       `db:"unread_count"`
@@ -888,14 +888,37 @@ func (r *messageRepo) DirectCounts(currentUserID string) map[string]Counts {
 		UnreadCommentCount int       `db:"unread_comment_count"`
 		LastMessageTime    time.Time `db:"last_message_time"`
 	}
-	err := r.db.Select(&counts, query, currentUserID)
+	err := r.db.Select(&toMeCounts, query, currentUserID)
 	if err != nil {
 		panic(err)
 	}
 
-	result := make(map[string]Counts)
-	for _, count := range counts {
-		result[count.UserID] = Counts{
+	query = `
+		select
+			m.friend_id,
+			coalesce(sum(case when m.parent_id is null then 1 end), 0) total_count, 
+			coalesce(sum(case when m.parent_id is not null then 1 end), 0) total_comment_count, 
+			max(m.created_at) last_message_time
+		from messages m
+		where m.user_id = $1
+			and m.friend_id <> $1
+			and m.deleted_at is null
+			and not exists(select * from message_visibility mv where mv.user_id = $1 and mv.message_id = m.id and mv.visibility = false)
+		group by m.friend_id;`
+	var fromMeCounts []struct {
+		FriendID          string    `db:"friend_id"`
+		TotalCount        int       `db:"total_count"`
+		TotalCommentCount int       `db:"total_comment_count"`
+		LastMessageTime   time.Time `db:"last_message_time"`
+	}
+	err = r.db.Select(&fromMeCounts, query, currentUserID)
+	if err != nil {
+		panic(err)
+	}
+
+	result := make(map[string]*Counts)
+	for _, count := range toMeCounts {
+		result[count.UserID] = &Counts{
 			TotalCount:         count.TotalCount,
 			UnreadCount:        count.UnreadCount,
 			TotalCommentCount:  count.TotalCommentCount,
@@ -903,6 +926,20 @@ func (r *messageRepo) DirectCounts(currentUserID string) map[string]Counts {
 			LastMessageTime:    count.LastMessageTime,
 		}
 	}
-
+	for _, count := range fromMeCounts {
+		if c, ok := result[count.FriendID]; ok {
+			if c.LastMessageTime.Before(count.LastMessageTime) {
+				c.LastMessageTime = count.LastMessageTime
+			}
+			c.TotalCount += count.TotalCount
+			c.TotalCommentCount += count.TotalCommentCount
+		} else {
+			result[count.FriendID] = &Counts{
+				LastMessageTime:   count.LastMessageTime,
+				TotalCount:        count.TotalCount,
+				TotalCommentCount: count.TotalCommentCount,
+			}
+		}
+	}
 	return result
 }
