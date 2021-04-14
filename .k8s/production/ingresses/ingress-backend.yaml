@@ -13,7 +13,7 @@ spec:
   - hosts:
     - "central.peacenik.app"
     - "node1.peacenik.app"
-    secretName: koto-tls-backend
+    secretName: peacenik-tls-backend
   rules:
   - host: central.peacenik.app
     http:
