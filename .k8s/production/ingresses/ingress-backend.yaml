@@ -5,13 +5,14 @@ metadata:
   namespace: backend
   annotations:
     kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: "do-issuer"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
     # acme.cert-manager.io/http01-edit-in-place: "true"
     # cert-manager.io/issue-temporary-certificate: "true"
 spec:
   tls:
   - hosts:
-    - "*.peacenik.app"
+    - "central.peacenik.app"
+    - "node1.peacenik.app"
     secretName: koto-tls-backend
   rules:
   - host: central.peacenik.app

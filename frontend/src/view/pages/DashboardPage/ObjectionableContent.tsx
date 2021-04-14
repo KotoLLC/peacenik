@@ -10,6 +10,7 @@ import moment from 'moment'
 import { Player } from 'video-react'
 import DeleteComplainContentDialog from './DeleteComplainContentDialog'
 import UserEjectDialog from './UserEjectDialog'
+import { getUserNameByUserId } from '@services/userNames'
 import {
   DashboardSection,
   Header,
@@ -101,7 +102,7 @@ export const ObjectionableContent: React.FC<Props> = (props) => {
               <Avatar src={getAvatarUrl(item.reporter_id)} />
             </AvatarWrapper>
             <UserNameWrapper>
-              <UserName>{item.reporter_name}</UserName>
+              <UserName>{getUserNameByUserId(item.reporter_id)}</UserName>
               <MessageDate>{moment(item.created_at).fromNow()}</MessageDate>
             </UserNameWrapper>
           </UserInfo>
@@ -112,7 +113,7 @@ export const ObjectionableContent: React.FC<Props> = (props) => {
               <Avatar src={getAvatarUrl(item.author_id)} />
             </AvatarWrapper>
             <UserNameWrapper>
-              <UserName>{item.author_name}</UserName>
+              <UserName>{getUserNameByUserId(item.author_id)}</UserName>
             </UserNameWrapper>
           </UserInfo>
           <MessageContent className="markdown-body">

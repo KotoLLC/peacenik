@@ -73,6 +73,15 @@ const reducer = (state = initialState, action) => {
         }
       }
     }
+    case Types.ADD_FRIENDS_TO_ROOM: {
+      return {
+        ...state, 
+        directMsgRoomFriends: uniqBy([
+          ...state.directMsgRoomFriends,
+          ...action.payload
+        ], 'id')
+      }
+    }
     case Types.ADD_FRIEND_TO_ROOM: {
       return {
         ...state, 

@@ -12,6 +12,7 @@ import selectors from '@selectors/index'
 import { Types as DirectMessagesTypes } from '@store/messages/actions'
 import { Types as FeedMessagesTypes } from '@store/feed/actions'
 import { watchGetMessagesFromHub } from './feed'
+import { getUserNameByUserId } from '@services/userNames';
 
 //   {
 //     msgId: "1293903-4123412341-12341234134-12341234",
@@ -92,7 +93,18 @@ export function * watchGetFriendsFromHub( action: {
 }) {
   try {
     const response = yield API.messages.getFriendFromHub(action.payload)
-    console.log("getFriendFromHub: ", response)
+    if ( response.status === 200) {
+      // const friendsList = response.data.direct_counters
+      
+
+      const friendsList:CommonTypes.MessageRoomFriendData[] = Object.entries<CommonTypes.FriendCounterData>(response.data.direct_counters).map( ([key, value]) => ({
+        id: key,
+        fullName: getUserNameByUserId(key),
+        accessTime: value.last_message_time
+      }))
+      yield put(Actions.messages.addFriendsToRoom(friendsList))
+    }
+    console.log("getFriendFromHub: ", response.data.direct_counters)
   } catch (error) {
     console.log("watchGetFriendsFromHub: ", error)
   }
