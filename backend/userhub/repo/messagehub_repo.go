@@ -253,6 +253,32 @@ func (r *messageHubRepo) ConnectedHubs(user User) []ConnectedMessageHub {
 			})
 		}
 	}
+
+	sort.Slice(connectedHubs, func(i, j int) bool {
+		if connectedHubs[i].MinDistance < connectedHubs[j].MinDistance {
+			return true
+		}
+		if connectedHubs[j].MinDistance < connectedHubs[i].MinDistance {
+			return false
+		}
+
+		if connectedHubs[i].Count < connectedHubs[j].Count {
+			return true
+		}
+		if connectedHubs[j].Count < connectedHubs[i].Count {
+			return false
+		}
+
+		if connectedHubs[j].Hub.ApprovedAt.Time.Before(connectedHubs[i].Hub.ApprovedAt.Time) {
+			return true
+		}
+		if connectedHubs[i].Hub.ApprovedAt.Time.Before(connectedHubs[j].Hub.ApprovedAt.Time) {
+			return false
+		}
+
+		return connectedHubs[i].Hub.Address < connectedHubs[j].Hub.Address
+	})
+
 	return connectedHubs
 }
 

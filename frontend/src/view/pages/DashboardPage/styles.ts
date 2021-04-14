@@ -95,6 +95,7 @@ export const ResolveButton = styled(Button)`
 
 export const ReportText = styled.p`
   font-weight: bold;
+  margin-bottom: 20px;
 
   span {
     font-weight: normal;

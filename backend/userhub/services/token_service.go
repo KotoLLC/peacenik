@@ -82,31 +82,6 @@ func (s *tokenService) postMessage(ctx context.Context) (*rpc.TokenPostMessageRe
 		}, nil
 	}
 
-	sort.Slice(hubs, func(i, j int) bool {
-		if hubs[i].MinDistance < hubs[j].MinDistance {
-			return true
-		}
-		if hubs[j].MinDistance < hubs[i].MinDistance {
-			return false
-		}
-
-		if hubs[i].Count < hubs[j].Count {
-			return true
-		}
-		if hubs[j].Count < hubs[i].Count {
-			return false
-		}
-
-		if hubs[j].Hub.ApprovedAt.Time.Before(hubs[i].Hub.ApprovedAt.Time) {
-			return true
-		}
-		if hubs[i].Hub.ApprovedAt.Time.Before(hubs[j].Hub.ApprovedAt.Time) {
-			return false
-		}
-
-		return hubs[i].Hub.Address < hubs[j].Hub.Address
-	})
-
 	hubs = hubs[:1]
 	s.repos.MessageHubs.AssignUserToHub(me.ID, hubs[0].Hub.ID, hubs[0].MinDistance)
 
@@ -174,19 +149,22 @@ func (s *tokenService) postMessageForUser(ctx context.Context, friendID string) 
 
 	messageKey := s.repos.User.UsersKey(me.ID, user.ID)
 
-	hub := s.repos.MessageHubs.GroupHub(me.ID)
+	hubs := s.repos.MessageHubs.ConnectedHubs(me)
 	tokens := make(map[string]string)
-	if hub != "" {
+	if len(hubs) > 0 {
+		hub := hubs[0]
+		s.repos.MessageHubs.AssignUserToHub(me.ID, hub.Hub.ID, hub.MinDistance)
+
 		exp := time.Now().Add(s.tokenDuration)
 		claims := map[string]interface{}{
-			"hub":       hub,
+			"hub":       hub.Hub.Address,
 			"friend_id": friendID,
 		}
 		hubToken, err := s.tokenGenerator.Generate(me.ID, "post-message", exp, claims)
 		if err != nil {
 			return nil, merry.Wrap(err)
 		}
-		tokens[hub] = hubToken
+		tokens[hub.Hub.Address] = hubToken
 	}
 	return &rpc.TokenPostMessageResponse{
 		Tokens:     tokens,
