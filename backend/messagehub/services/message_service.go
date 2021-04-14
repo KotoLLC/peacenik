@@ -19,7 +19,6 @@ import (
 	"github.com/mreider/koto/backend/messagehub/repo"
 	"github.com/mreider/koto/backend/messagehub/rpc"
 	"github.com/mreider/koto/backend/messagehub/services/message"
-	"github.com/mreider/koto/backend/token"
 )
 
 const (
@@ -44,18 +43,15 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 
 	_, claims, err := s.tokenParser.Parse(r.Token, "post-message")
 	if err != nil {
-		if merry.Is(err, token.ErrInvalidToken) {
-			return nil, twirp.NewError(twirp.InvalidArgument, "invalid token (parse)")
-		}
-		return nil, err
+		return nil, twirp.NewError(twirp.InvalidArgument, err.Error())
 	}
 
 	if user.ID != claims["id"].(string) {
-		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (users %s %s)", user.ID, claims["id"].(string)))
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected user %s, was %s)", user.ID, claims["id"].(string)))
 	}
 
 	if strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
-		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (hubs %s %s)", s.externalAddress, claims["hub"].(string)))
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected hub %s, was %s)", s.externalAddress, claims["hub"].(string)))
 	}
 
 	var notifiedUsers []string
@@ -181,15 +177,15 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 
 	_, claims, err := s.tokenParser.Parse(r.Token, "get-messages")
 	if err != nil {
-		if merry.Is(err, token.ErrInvalidToken) {
-			return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
-		}
-		return nil, err
+		return nil, twirp.NewError(twirp.InvalidArgument, err.Error())
 	}
 
-	if user.ID != claims["id"].(string) ||
-		strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
-		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
+	if user.ID != claims["id"].(string) {
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected user %s, was %s)", user.ID, claims["id"].(string)))
+	}
+
+	if strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected hub %s, was %s)", s.externalAddress, claims["hub"].(string)))
 	}
 
 	var from time.Time
@@ -314,15 +310,15 @@ func (s *messageService) Message(ctx context.Context, r *rpc.MessageMessageReque
 
 	_, claims, err := s.tokenParser.Parse(r.Token, "get-messages")
 	if err != nil {
-		if merry.Is(err, token.ErrInvalidToken) {
-			return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
-		}
-		return nil, err
+		return nil, twirp.NewError(twirp.InvalidArgument, err.Error())
 	}
 
-	if user.ID != claims["id"].(string) ||
-		strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
-		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
+	if user.ID != claims["id"].(string) {
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected user %s, was %s)", user.ID, claims["id"].(string)))
+	}
+
+	if strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected hub %s, was %s)", s.externalAddress, claims["hub"].(string)))
 	}
 
 	msg := s.repos.Message.Message(user.ID, r.MessageId)
@@ -497,15 +493,15 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 
 	_, claims, err := s.tokenParser.Parse(r.Token, "get-messages")
 	if err != nil {
-		if merry.Is(err, token.ErrInvalidToken) {
-			return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
-		}
-		return nil, err
+		return nil, twirp.NewError(twirp.InvalidArgument, err.Error())
 	}
 
-	if user.ID != claims["id"].(string) ||
-		strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
-		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
+	if user.ID != claims["id"].(string) {
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected user %s, was %s)", user.ID, claims["id"].(string)))
+	}
+
+	if strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected hub %s, was %s)", s.externalAddress, claims["hub"].(string)))
 	}
 
 	msg := s.repos.Message.Message(user.ID, r.MessageId)
@@ -1016,15 +1012,15 @@ func (s *messageService) Counters(ctx context.Context, r *rpc.MessageCountersReq
 
 	_, claims, err := s.tokenParser.Parse(r.Token, "get-messages")
 	if err != nil {
-		if merry.Is(err, token.ErrInvalidToken) {
-			return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
-		}
-		return nil, err
+		return nil, twirp.NewError(twirp.InvalidArgument, err.Error())
 	}
 
-	if user.ID != claims["id"].(string) ||
-		strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
-		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
+	if user.ID != claims["id"].(string) {
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected user %s, was %s)", user.ID, claims["id"].(string)))
+	}
+
+	if strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected hub %s, was %s)", s.externalAddress, claims["hub"].(string)))
 	}
 
 	var userIDs []string

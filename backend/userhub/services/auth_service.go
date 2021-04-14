@@ -14,7 +14,6 @@ import (
 	"github.com/twitchtv/twirp"
 
 	"github.com/mreider/koto/backend/common"
-	"github.com/mreider/koto/backend/token"
 	"github.com/mreider/koto/backend/userhub/caches"
 	"github.com/mreider/koto/backend/userhub/repo"
 	"github.com/mreider/koto/backend/userhub/rpc"
@@ -230,7 +229,7 @@ func (s *authService) ResetPassword(_ context.Context, r *rpc.AuthResetPasswordR
 	var userName string
 	var ok bool
 	if userName, ok = claims["id"].(string); !ok {
-		return nil, token.ErrInvalidToken.Here()
+		return nil, fmt.Errorf("invalid token: missing id")
 	}
 
 	user := s.repos.User.FindUserByName(userName)
@@ -286,7 +285,7 @@ func (s *authService) confirmUser(ctx context.Context, confirmToken string) erro
 	var userID string
 	var ok bool
 	if userID, ok = claims["id"].(string); !ok {
-		return token.ErrInvalidToken.Here()
+		return fmt.Errorf("invalid token: missing id")
 	}
 
 	ok = s.repos.User.ConfirmUser(userID)
@@ -337,7 +336,7 @@ func (s *authService) confirmInviteToken(user repo.User, confirmToken string) er
 	var userEmail string
 	var ok bool
 	if userEmail, ok = claims["email"].(string); !ok || userInfo.Email != userEmail {
-		return token.ErrInvalidToken.Here()
+		return fmt.Errorf("invalid token: different/missing email")
 	}
 
 	s.repos.User.ConfirmUser(user.ID)
