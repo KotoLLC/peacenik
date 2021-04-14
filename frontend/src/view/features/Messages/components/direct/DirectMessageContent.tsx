@@ -7,7 +7,6 @@ import Actions from '@store/actions'
 
 const DirectMessageContent = () => {
   const directMsgs: CommonTypes.MessageTypes.MessageItemProps[] = useSelector((state: StoreTypes) => state.messages.directMsgs)
-  console.log("directMsgs: ", directMsgs)
   return (
     <div>
       {directMsgs.map((item) => (

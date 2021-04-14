@@ -25,6 +25,7 @@ export interface State {
   directMsgRoomFriends: CommonTypes.MessageRoomFriendData[]
   directPostToken: CommonTypes.TokenData
   directMsgs: CommonTypes.MessageTypes.MessageItemProps[]
+  directMsgSent: boolean
 }
 
 const peacenikmessagesTokens = localStorage.getItem('peacenikmessagesTokens') 
@@ -53,7 +54,8 @@ const initialState: State = {
     host:"",
     token:""
   },
-  directMsgs: []
+  directMsgs: [],
+  directMsgSent:false
 }
 
 const reducer = (state = initialState, action) => {
@@ -71,6 +73,12 @@ const reducer = (state = initialState, action) => {
           host: action.payload.host,
           token: action.payload.token
         }
+      }
+    }
+    case Types.SET_POST_MSG_TO_FRIEND_SUCCESS: {
+      return {
+        ...state, 
+        directMsgSent: action.payload
       }
     }
     case Types.ADD_FRIENDS_TO_ROOM: {

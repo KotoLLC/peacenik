@@ -288,7 +288,7 @@ export const MessageCardContent = styled.div`
 `;
 export const MessageCard = styled.div`
   padding-left: 20px;
-  &:hover {
+  &:hover, &.active {
     background-color: #599C0B20;    
   }
   @media screen and (max-width: 770px) {

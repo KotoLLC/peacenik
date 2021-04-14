@@ -44,14 +44,13 @@ const MessagesPage: React.FC<Props> = (props) => {
   }, [feedsTokens, directPostToken])
   
   if ( location.pathname?.indexOf("messages/d/") > -1){
-    let pathName = location.pathname?.substring(location.pathname?.lastIndexOf('/') + 1)
-    if ( pathName !== friend_id)
-      setFriendId(pathName) 
+    let pathFriendId = location.pathname?.substring(location.pathname?.lastIndexOf('/') + 1)
+    if ( (pathFriendId !== friend_id) && (pathFriendId !== ""))
+      setFriendId(pathFriendId) 
   }
   
   useEffect( () => {
     if ( (friend_id !== "" ) && (feedsTokens.length > 0) && (msgToken !== "")){
-      console.log("GET_FRIEND_MSG: ", friend_id)
       dispatch(Actions.messages.getFriendMsg({
         host: directPostToken.host,
         token: msgToken,
@@ -59,6 +58,9 @@ const MessagesPage: React.FC<Props> = (props) => {
           id: friend_id
         }
       }))
+    }
+    if ( (friend_id !== "" ) && (feedsTokens.length === 0) && (msgToken !== "")){
+      console.log("This is watching case.")
     }
   }, [friend_id, msgToken])
 
@@ -71,10 +73,15 @@ const MessagesPage: React.FC<Props> = (props) => {
       }))
 
       dispatch(Actions.messages.getDirectPostMsgToken(parsed.id as string))
-    } else if (friend_id !== "") {
-      dispatch(Actions.messages.getDirectPostMsgToken(friend_id))
     }
   }, [dispatch])
+
+  useEffect( () => {
+    if (friend_id !== "") {
+      console.log("friend_id: ", friend_id)
+      dispatch(Actions.messages.getDirectPostMsgToken(friend_id))
+    }
+  }, [friend_id])
 
   const directMsgRoomFriends: CommonTypes.MessageRoomFriendData[] = useSelector((state: StoreTypes) => state.messages.directMsgRoomFriends)
 
