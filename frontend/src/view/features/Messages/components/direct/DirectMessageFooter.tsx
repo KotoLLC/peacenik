@@ -38,11 +38,14 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 )
-const DirectMessageFooter = () => {
+const DirectMessageFooter = ({location}) => {
   const [msgValue, setMsgValue] = useState("")
   const msgInputStyles = useStyles()
   const [isFileUploaded, setIsFileUploaded] = useState<boolean>(false)
+  const tokenData: CommonTypes.TokenData = useSelector((state: StoreTypes) => state.messages.directPostToken)
+  const postDirectMsgStatus: boolean = useSelector( (state: StoreTypes) => state.messages.directMsgSent)
 
+  const feedsTokens = useSelector( (state: StoreTypes) => state.feed.feedsTokens )
   const dispatch = useDispatch()
   // onGetMessageUploadLink: (data: ApiTypes.Feed.UploadLinkRequest) => dispatch(Actions.feed.getFeedMessageUploadLinkRequest(data))
   const handleImageFileUpload = useCallback(
@@ -54,6 +57,7 @@ const DirectMessageFooter = () => {
 
       const file = event.target.files
 
+      console.log("upload file: ", file)
       if (file && file[0]) {
         onGetUploadLink({
           content_type: file[0].type,
@@ -63,32 +67,42 @@ const DirectMessageFooter = () => {
     },
     [dispatch]
   )
-  const tokenData: CommonTypes.TokenData = useSelector((state: StoreTypes) => state.messages.directPostToken)
 
-  // const data = {
-  //   host: isGroupMsgPage ? groupMessageToken.host : props.currentHub.host,
-  //   body: {
-  //     token: isGroupMsgPage
-  //       ? groupMessageToken.token
-  //       : props.currentHub.token,
-  //     text: urlify(value),
-  //     attachment_id: uploadLink?.blob_id,
-  //     group_id: isGroupMsgPage ? group_id : undefined,
-  //   },
-  // }
-  // props.onMessagePost(data)
+  if ( postDirectMsgStatus ){
+    setMsgValue("")
+    dispatch(Actions.messages.setPostMsgToFriendSuccess(false))
+  }
 
   const sendMsg = () => {
-    let data: ApiTypes.Feed.PostMessage = {
-      host: tokenData.host,
-      body: {
-        token: tokenData.token,
-        text:msgValue,
-        attachment_id: ""
+    if ( location.pathname?.indexOf("messages/d/") > -1){
+      let friend_id = location.pathname?.substring(location.pathname?.lastIndexOf('/') + 1)
+      if ( friend_id !== ""){
+        let getMsgToken = ""
+        feedsTokens.map( (item) => {
+          if ( item.host === tokenData.host)
+            getMsgToken = item.token
+        })
+        let data: ApiTypes.Feed.PostMessage = {
+          host: tokenData.host,
+          body: {
+            token: tokenData.token,
+            text:msgValue,
+            attachment_id: "",
+            friend_id: friend_id,
+            msg_token: getMsgToken
+          }
+        }
+        dispatch(Actions.messages.sendMessageToFriend(data))
       }
     }
-    dispatch(Actions.messages.sendMessageToFriend(data))
   }
+  
+  const onComandEnterDown = (event) => {
+    if (event.keyCode === 13) {
+      sendMsg();
+    }
+  };
+
   return (
     <DMInFooterWrapper>
       <OutlinedInput
@@ -101,6 +115,7 @@ const DirectMessageFooter = () => {
         value={msgValue}
         style={{ flex: "1 0 auto" }}
         onChange={(e) => setMsgValue(e.target.value)}
+        onKeyDown={onComandEnterDown}
         endAdornment={
           <InputAdornment position="end">
             <IconButton aria-label="toggle password visibility">

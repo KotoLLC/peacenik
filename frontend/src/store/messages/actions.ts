@@ -8,6 +8,7 @@ export enum Types {
   GET_FRIEND_MSG_SUCCESS                  = 'GET_FRIEND_MSG_SUCCESS',
   GET_FRIENDS_LIST                        = 'GET_FRIENDS_LIST',
   GET_FRIENDS_FROM_HUB                    = 'GET_FRIENDS_FROM_HUB',
+  SET_POST_MSG_TO_FRIEND_SUCCESS          = 'SET_POST_MSG_TO_FRIEND_SUCCESS',
 
   ADD_FRIEND_TO_ROOM                      = 'ADD_FRIEND_TO_ROOM',
   ADD_FRIENDS_TO_ROOM                     = 'ADD_FRIENDS_TO_ROOM',
@@ -30,6 +31,11 @@ const sendMessageToFriend = (payload: ApiTypes.Feed.PostMessage) => ({
 
 const setDirectMsgPostToken = (payload: CommonTypes.TokenData) => ({
   type: Types.SET_DIRECT_MSG_POST_TOKEN,
+  payload
+})
+
+const setPostMsgToFriendSuccess = (payload: boolean) => ({
+  type: Types.SET_POST_MSG_TO_FRIEND_SUCCESS,
   payload
 })
 
@@ -99,6 +105,7 @@ const getMoreMessageFailed = () => ({
 export default {
   setDirectMsgPostToken,
   sendMessageToFriend,
+  setPostMsgToFriendSuccess,
   getFriendMsg,
   getFriendsList,
   getFriendMsgSuccess,

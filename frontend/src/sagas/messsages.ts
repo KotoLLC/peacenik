@@ -14,7 +14,7 @@ import { Types as FeedMessagesTypes } from '@store/feed/actions'
 import { watchGetMessagesFromHub } from './feed'
 import { getUserNameByUserId } from '@services/userNames';
 
-//   {
+//   {  [message type]
 //     msgId: "1293903-4123412341-12341234134-12341234",
 //     direction: EnumTypes.MessageDirection.OUTGOING_MESSAGE,
 //     actionTime: new Date("2021-3-26"),
@@ -22,6 +22,15 @@ import { getUserNameByUserId } from '@services/userNames';
 //     contentType: EnumTypes.MessageContentType.TEXT_TYPE,
 //     messeageContent: "I'm looking for a truly",
 //   },
+//   {  [image type]
+//     msgId: "5123-4123412341-12341234134-12341234",
+//     direction: MessageDirection.INCOMMING_MESSAGE,
+//     actionTime: new Date("2021-3-26"),
+//     status: MessagePublishStatus.ACCEPTED_STATUS,
+//     contentType: MessageContentType.IMAGE_TYPE,
+//     messeageContent: "https://www.w3schools.com/html/pic_trulli.jpg",
+//   },
+
 //   "id": "5e183be8-be6e-44b9-9562-85eb87a282aa",
 //   "user_id": "2c415538-e86f-4553-a3d1-49ff2d4ab3ff",
 //   "text": "Test",
@@ -42,7 +51,6 @@ export function * watchGetFriendMsgAPIData(action: {
 }) {
   try {
     const response = yield API.messages.getFriendMessage(action.payload)
-    console.log("watchGetFriendMsgAPIData RESPONSE: ", response.data.messages)
     if (response.status === 200) {
       const state = yield select()
       const currentUserId = selectors.profile.userId(state)
@@ -94,9 +102,6 @@ export function * watchGetFriendsFromHub( action: {
   try {
     const response = yield API.messages.getFriendFromHub(action.payload)
     if ( response.status === 200) {
-      // const friendsList = response.data.direct_counters
-      
-
       const friendsList:CommonTypes.MessageRoomFriendData[] = Object.entries<CommonTypes.FriendCounterData>(response.data.direct_counters).map( ([key, value]) => ({
         id: key,
         fullName: getUserNameByUserId(key),
@@ -104,7 +109,6 @@ export function * watchGetFriendsFromHub( action: {
       }))
       yield put(Actions.messages.addFriendsToRoom(friendsList))
     }
-    console.log("getFriendFromHub: ", response.data.direct_counters)
   } catch (error) {
     console.log("watchGetFriendsFromHub: ", error)
   }
@@ -117,7 +121,14 @@ export function * watchSendMsgToFriend(action: {
   try {
     const response = yield API.feed.postMessage(action.payload)
     if (response.status === 200) {
-
+      yield put(Actions.messages.setPostMsgToFriendSuccess(true))
+      yield put(Actions.messages.getFriendMsg({
+          host: action.payload.host,
+          token: action.payload.body.msg_token ? action.payload.body.msg_token: "",
+          friend: {
+            id: action.payload.body.friend_id ? action.payload.body.friend_id: ""
+          }
+        }))
     } else if (response.status === 400) {
       console.log("watchSendMsgToFriend ERROR:", response)
     }
@@ -131,6 +142,7 @@ export function * watchSendMsgToFriend(action: {
 export function * watchGetDirectPostMsgToken(action: { type: string, payload: string }){
   try {
     const response = yield API.messages.getDirectPostMessageToken(action.payload)
+    console.log("watchGetDirectPostMsgToken result: ", response)
     if (response.status === 200) {
       let tokens:CommonTypes.TokenData[] = Object.entries(response.data.tokens).map( ([key, value]) => ({
         host: key,

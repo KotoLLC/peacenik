@@ -26,7 +26,7 @@ export default function DirectMessageBox(props: Props) {
       </DMContentWrapper>
 
       <DMFooterWapper>
-        <DirectMessageFooter />
+        <DirectMessageFooter location={location}/>
       </DMFooterWapper>
     </DirectMessageBoxWapper>
   );
