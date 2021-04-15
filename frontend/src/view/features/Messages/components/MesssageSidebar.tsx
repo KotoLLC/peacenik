@@ -43,11 +43,11 @@ const MesssageSidebar = (props) => {
           </Switch>
         </MessagesListContent>
       </SidebarContent>
-      <SidebarFooter>
+      {/* <SidebarFooter>
         <ButtonContainedStyled onClick={() => setIsComposeDlgOpen(true)}>
           Compose
         </ButtonContainedStyled>
-      </SidebarFooter>
+      </SidebarFooter> */}
       <DirectMessageDialog
         isOpenModal={isComposeDlgOpen}
         setOpenDialog={setIsComposeDlgOpen}
