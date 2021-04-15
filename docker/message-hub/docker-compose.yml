@@ -3,7 +3,7 @@ version: "3.7"
 services:
   message-hub:
     image: ghcr.io/kotollc/koto/messagehub:latest
-    restart: on-failure
+    restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
@@ -39,7 +39,7 @@ services:
 
   s3:
     image: minio/minio:latest
-    restart: on-failure
+    restart: unless-stopped
     volumes:
       - ${VOLUME_MINIO}:/data/
     environment:
