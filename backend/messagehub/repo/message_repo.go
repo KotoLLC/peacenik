@@ -547,7 +547,7 @@ func (r *messageRepo) MessageReport(reportID string) *MessageReport {
 		select mr.id, mr.user_id reported_by,
 		       mr.report, mr.created_at, mr.resolved_at,
 		       m.id as message_id, m.user_id author_id,
-		       m.attachment_type, m.attachment_id, m.attachment_thumbnail_id 
+		       m.text, m.attachment_type, m.attachment_id, m.attachment_thumbnail_id 
 		from message_reports mr
 			inner join messages m on m.id = mr.message_id
 		where mr.id = $1`,
@@ -567,7 +567,7 @@ func (r *messageRepo) MessageReports() []MessageReport {
 		select mr.id, mr.user_id reported_by,
 		       mr.report, mr.created_at, mr.resolved_at,
 		       m.id as message_id, m.user_id author_id,
-		       m.attachment_type, m.attachment_id, m.attachment_thumbnail_id 
+		       m.text, m.attachment_type, m.attachment_id, m.attachment_thumbnail_id 
 		from message_reports mr
 			inner join messages m on m.id = mr.message_id
 `)
