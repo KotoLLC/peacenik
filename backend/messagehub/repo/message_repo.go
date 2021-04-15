@@ -53,11 +53,11 @@ type MessageReport struct {
 }
 
 type Counts struct {
-	TotalCount         int       `db:"total_count"`
-	UnreadCount        int       `db:"unread_count"`
-	TotalCommentCount  int       `db:"total_comment_count"`
-	UnreadCommentCount int       `db:"unread_comment_count"`
-	LastMessageTime    time.Time `db:"last_message_time"`
+	TotalCount         int          `db:"total_count"`
+	UnreadCount        int          `db:"unread_count"`
+	TotalCommentCount  int          `db:"total_comment_count"`
+	UnreadCommentCount int          `db:"unread_comment_count"`
+	LastMessageTime    sql.NullTime `db:"last_message_time"`
 }
 
 type MessageRepo interface {
@@ -840,12 +840,12 @@ func (r *messageRepo) GroupCounts(currentUserID string, groupIDs []string) map[s
 	query = r.db.Rebind(query)
 
 	var counts []struct {
-		GroupID            string    `db:"group_id"`
-		TotalCount         int       `db:"total_count"`
-		UnreadCount        int       `db:"unread_count"`
-		TotalCommentCount  int       `db:"total_comment_count"`
-		UnreadCommentCount int       `db:"unread_comment_count"`
-		LastMessageTime    time.Time `db:"last_message_time"`
+		GroupID            string       `db:"group_id"`
+		TotalCount         int          `db:"total_count"`
+		UnreadCount        int          `db:"unread_count"`
+		TotalCommentCount  int          `db:"total_comment_count"`
+		UnreadCommentCount int          `db:"unread_comment_count"`
+		LastMessageTime    sql.NullTime `db:"last_message_time"`
 	}
 	err = r.db.Select(&counts, query, args...)
 	if err != nil {
@@ -882,12 +882,12 @@ func (r *messageRepo) DirectCounts(currentUserID string) map[string]*Counts {
 			and not exists(select * from message_visibility mv where mv.user_id = $1 and mv.message_id = m.id and mv.visibility = false)
 		group by m.user_id;`
 	var toMeCounts []struct {
-		UserID             string    `db:"user_id"`
-		TotalCount         int       `db:"total_count"`
-		UnreadCount        int       `db:"unread_count"`
-		TotalCommentCount  int       `db:"total_comment_count"`
-		UnreadCommentCount int       `db:"unread_comment_count"`
-		LastMessageTime    time.Time `db:"last_message_time"`
+		UserID             string       `db:"user_id"`
+		TotalCount         int          `db:"total_count"`
+		UnreadCount        int          `db:"unread_count"`
+		TotalCommentCount  int          `db:"total_comment_count"`
+		UnreadCommentCount int          `db:"unread_comment_count"`
+		LastMessageTime    sql.NullTime `db:"last_message_time"`
 	}
 	err := r.db.Select(&toMeCounts, query, currentUserID)
 	if err != nil {
@@ -907,10 +907,10 @@ func (r *messageRepo) DirectCounts(currentUserID string) map[string]*Counts {
 			and not exists(select * from message_visibility mv where mv.user_id = $1 and mv.message_id = m.id and mv.visibility = false)
 		group by m.friend_id;`
 	var fromMeCounts []struct {
-		FriendID          string    `db:"friend_id"`
-		TotalCount        int       `db:"total_count"`
-		TotalCommentCount int       `db:"total_comment_count"`
-		LastMessageTime   time.Time `db:"last_message_time"`
+		FriendID          string       `db:"friend_id"`
+		TotalCount        int          `db:"total_count"`
+		TotalCommentCount int          `db:"total_comment_count"`
+		LastMessageTime   sql.NullTime `db:"last_message_time"`
 	}
 	err = r.db.Select(&fromMeCounts, query, currentUserID)
 	if err != nil {
@@ -929,7 +929,7 @@ func (r *messageRepo) DirectCounts(currentUserID string) map[string]*Counts {
 	}
 	for _, count := range fromMeCounts {
 		if c, ok := result[count.FriendID]; ok {
-			if c.LastMessageTime.Before(count.LastMessageTime) {
+			if c.LastMessageTime.Time.Before(count.LastMessageTime.Time) {
 				c.LastMessageTime = count.LastMessageTime
 			}
 			c.TotalCount += count.TotalCount
