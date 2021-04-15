@@ -12,9 +12,10 @@ import {
 } from '../../../../types/enum'
 
 export const MessagesWrapper = styled.div`
+  min-height: calc(100vh - 355px);
   position: relative;
   width: 1140px;
-  height: 820px;
+  // height: 820px;
   background: #FFFFFF;
   margin: 0 auto 31px auto;
   display: flex;
@@ -25,7 +26,7 @@ export const MessagesWrapper = styled.div`
   @media (max-width: 770px) {
     width: calc(100% - 30px);
     padding: 15px 0 0 0;
-    min-height: calc(100vh - 100px);
+    min-height: calc(100vh - 275px);
   }
 `
 
@@ -176,15 +177,17 @@ export const SidebarWrapper = styled.div`
   padding: 0;
   height: 100%;  
   position: relative;
-  height: 820px;
+  // height: 820px;
   .huxzai {
     margin-bottom: 20px;
   }
   @media screen and (max-width: 900px) {
-    min-width: 250px;
+    width: unset!important;
+    // min-width: 250px;
   }
   @media screen and (max-width: 770px) {
-    min-width: 100px;
+    width: unset!important;
+    // min-width: 100px;
   }
   
 `;

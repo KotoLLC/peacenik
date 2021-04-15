@@ -113,7 +113,10 @@ const DirectMessageFooter = ({location}) => {
         type="text"
         placeholder="Write something"
         value={msgValue}
-        style={{ flex: "1 0 auto" }}
+        style={{ 
+          flex: "1 0 auto", 
+          width: "calc(-48px)"
+        }}
         onChange={(e) => setMsgValue(e.target.value)}
         onKeyDown={onComandEnterDown}
         endAdornment={
