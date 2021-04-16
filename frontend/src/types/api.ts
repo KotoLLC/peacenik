@@ -96,9 +96,9 @@ export declare namespace ApiTypes {
       avatar_id?: string
       full_name?: string
       full_name_changed?: string
-      password_changed?: boolean,
-      current_password?: string,
-      new_password?: string,
+      password_changed?: boolean
+      current_password?: string
+      new_password?: string
       background_changed?: boolean
       background_id?: string
     }
@@ -174,76 +174,76 @@ export declare namespace ApiTypes {
   export namespace Feed {
 
     export interface PostMessage {
-      host: string,
+      host: string
       body: {
-        token: string,
-        text: string,
-        attachment_id?: string,
-        attachment_changed?: boolean,
-        group_id?: string,
-        friend_id?: string,
+        token: string
+        text: string
+        attachment_id?: string
+        attachment_changed?: boolean
+        group_id?: string
+        friend_id?: string
         msg_token?: string
       }
     }
 
     export interface PostComment {
-      host: string,
+      host: string
       body: {
-        token: string,
-        text: string,
-        message_id: string,
+        token: string
+        text: string
+        message_id: string
       }
     }
 
     export interface DeleteMessage {
-      host: string,
+      host: string
       body: {
-        message_id: string,
+        message_id: string
       }
     }
 
     export interface ReportMessageHub {
-      host: string,
+      host: string
       body: {
-        message_id: string,
+        message_id: string
         report: string
       }
     }
 
     export interface ReportMessageCentral {
-      hub_id: string,
+      hub_id: string
       report_id: string
     }
 
     export interface EditMessage {
-      host: string,
+      host: string
       body: {
-        message_id: string,
-        text: string,
-        text_changed: boolean,
-        attachment_changed?: boolean,
-        attachment_id?: string,
+        message_id: string
+        text: string
+        text_changed: boolean
+        attachment_changed?: boolean
+        attachment_id?: string
       }
     }
 
     export interface EditComment {
-      host: string,
+      host: string
       body: {
-        comment_id: string,
-        text: string,
+        comment_id: string
+        text: string
         text_changed: boolean
       }
     }
 
     export interface DeleteComment {
-      host: string,
+      host: string
       body: {
-        comment_id: string,
+        comment_id: string
       }
     }
 
     export interface MessagesFromHub {
-      host: string,
+      host: string
       body: {
         token: string
         count?: string
@@ -253,7 +253,7 @@ export declare namespace ApiTypes {
     }
 
     export interface MessagesById {
-      host: string,
+      host: string
       body: {
         token: string
         message_id: string
@@ -329,21 +329,23 @@ export declare namespace ApiTypes {
   }
   export namespace Messages {
     export interface UserMessagesFromHub {
-      host: string,
+      host: string
       token: string
       friends: {
-        id: string,
-        username: string,
+        id: string
+        username: string
         full_name: string
       }[]
     }
 
     export interface GetFriendMsgAPIData {
-      host: string,
-      token: string,
+      host: string
+      token: string
       friend: {
         id: string
       }
+      from?: string
+      count?: number
     }
 
     export interface UserMessage {
@@ -373,8 +375,8 @@ export declare namespace ApiTypes {
     export type Type = MessageTypes | CommentTypes | HubTypes | InviteTypes
 
     export interface Notification {
-      id: string,
-      text: string,
+      id: string
+      text: string
       type: Type
       data: Data
       read_at: string
@@ -404,22 +406,22 @@ export declare namespace ApiTypes {
     }
 
     export interface ResolveReport {
-      host: string,
+      host: string
       body: {
-        report_id: string,
+        report_id: string
       }
     }
 
     export interface DeleteReportedMessage {
-      host: string,
+      host: string
       body: {
-        report_id: string,
+        report_id: string
       }
     }
 
     export interface EjectUser {
-      host: string,
-      user_id: string,
+      host: string
+      user_id: string
       report_id: string
     }
   }
@@ -429,7 +431,7 @@ export declare namespace ApiTypes {
     export type MemberStatus = 'member' | 'pending' | 'rejected' | ''
 
     export interface MessagesById {
-      host: string,
+      host: string
       body: {
         token: string
         group_id: string

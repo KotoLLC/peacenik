@@ -63,7 +63,7 @@ export function * watchGetFriendMsgAPIData(action: {
         messeageContent: (item.attachment === "") ? item.text as string : item.attachment
       }))
 
-      yield put(Actions.messages.getFriendMsgSuccess(resMessages))
+      yield put(Actions.messages.getFriendMsgSuccess(resMessages, action.payload))
 
     } else if (response.status === 400) {
       console.log("watchGetFriendMsgAPIData ERROR:", response)
@@ -141,7 +141,8 @@ export function * watchSendMsgToFriend(action: {
           token: action.payload.body.msg_token ? action.payload.body.msg_token: "",
           friend: {
             id: action.payload.body.friend_id ? action.payload.body.friend_id: ""
-          }
+          },
+          count:1
         }))
     } else if (response.status === 400) {
       console.log("watchSendMsgToFriend ERROR:", response)

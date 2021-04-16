@@ -50,9 +50,15 @@ const getFriendsList = () => ({
   type: Types.GET_FRIENDS_LIST
 })
 
-const getFriendMsgSuccess = (payload: CommonTypes.MessageTypes.MessageItemProps[]) => ({
+const getFriendMsgSuccess = (
+  payload: CommonTypes.MessageTypes.MessageItemProps[], 
+  reqData: ApiTypes.Messages.GetFriendMsgAPIData
+) => ({
   type: Types.GET_FRIEND_MSG_SUCCESS,
-  payload
+  payload: {
+    data: payload,
+    reqData
+  }
 })
 
 const getDirectPostMsgToken = (payload: string) => ({

@@ -226,12 +226,10 @@ const AdminPublicLayout: React.FC<Props> = React.memo((props) => {
         <PageCover resource={getGroupCoverUrl(group?.id)} />
         <GroupCoverBar
           className="desktop-only"
-          memberStatus={status}
           membersCounter={members?.length}
           invitesCounter={invites?.length || 0}
           groupId={group?.id}
           isAdminLayout={true}
-          isPublic={group?.is_public}
         />
         <Container>
           <PageColumnBarsWrapper>
@@ -246,12 +244,10 @@ const AdminPublicLayout: React.FC<Props> = React.memo((props) => {
               />
               <GroupCoverBar
                 className="mobile-only"
-                memberStatus={status}
                 membersCounter={members?.length}
                 invitesCounter={invites?.length || 0}
                 groupId={group?.id}
                 isAdminLayout={true}
-                isPublic={group?.is_public}
               />
             </LeftSideBar>
             <CentralBar>
