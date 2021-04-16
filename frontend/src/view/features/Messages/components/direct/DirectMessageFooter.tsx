@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useState, useEffect } from "react"
 import {
   createStyles,
   IconButton,
@@ -42,31 +42,42 @@ const DirectMessageFooter = ({location}) => {
   const [msgValue, setMsgValue] = useState("")
   const msgInputStyles = useStyles()
   const [isFileUploaded, setIsFileUploaded] = useState<boolean>(false)
+  // const [uploadImg, setUploadImg] = useState<FileList|null>(null)
   const tokenData: CommonTypes.TokenData = useSelector((state: StoreTypes) => state.messages.directPostToken)
   const postDirectMsgStatus: boolean = useSelector( (state: StoreTypes) => state.messages.directMsgSent)
+  const uploadLink: ApiTypes.UploadLink | null = useSelector( (state: StoreTypes) => state.messages.uploadLink)
+  
+  const [uploadImg, setUploadImg] = useState<FileList|null>(null)
 
   const feedsTokens = useSelector( (state: StoreTypes) => state.feed.feedsTokens )
   const dispatch = useDispatch()
   // onGetMessageUploadLink: (data: ApiTypes.Feed.UploadLinkRequest) => dispatch(Actions.feed.getFeedMessageUploadLinkRequest(data))
-  const handleImageFileUpload = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const onGetUploadLink = (value: ApiTypes.Profile.UploadLinkRequest) =>
-        dispatch(Actions.profile.getUploadLinkRequest(value))
+  const handleImageFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const onGetUploadLink = (value: ApiTypes.UploadLinkRequestWithHost) =>
+      dispatch(Actions.messages.getUploadLinkRequest(value))
 
-      setIsFileUploaded(false)
+    setIsFileUploaded(false)
 
-      const file = event.target.files
+    let tempUploadImg = event.target.files
 
-      console.log("upload file: ", file)
-      if (file && file[0]) {
+    setUploadImg(tempUploadImg)
+
+    if (tempUploadImg && tempUploadImg[0] && (tokenData.host !== "")) {
+      let getMsgToken = ""
+      feedsTokens.map( (item) => {
+        if ( item.host === tokenData.host)
+          getMsgToken = item.token
+      })
+      if ( getMsgToken !== "") {
         onGetUploadLink({
-          content_type: file[0].type,
-          file_name: file[0].name,
+          host: tokenData.host, 
+          content_type: tempUploadImg[0].type,
+          file_name: tempUploadImg[0].name,
         })
+        setMsgValue(tempUploadImg[0].name)
       }
-    },
-    [dispatch]
-  )
+    }
+  }
 
   if ( postDirectMsgStatus ){
     setMsgValue("")
@@ -87,7 +98,7 @@ const DirectMessageFooter = ({location}) => {
           body: {
             token: tokenData.token,
             text:msgValue,
-            attachment_id: "",
+            attachment_id: uploadLink?.blob_id,
             friend_id: friend_id,
             msg_token: getMsgToken
           }
@@ -96,6 +107,26 @@ const DirectMessageFooter = ({location}) => {
       }
     }
   }
+  
+  if (uploadLink && uploadImg) {
+    const { form_data } = uploadLink;
+    const data = new FormData();
+
+    for (let key in form_data) {
+      data.append(key, form_data[key]);
+    }
+
+    data.append('file', uploadImg[0], uploadImg[0]?.name);
+
+    dispatch(Actions.feed.setAttachmentRequest({
+      link: uploadLink.link,
+      form_data: data
+    }))
+  }
+
+  // useEffect( () => {
+
+  // }, [])
   
   const onComandEnterDown = (event) => {
     if (event.keyCode === 13) {

@@ -37,7 +37,7 @@ interface Props {
   avatarUploadLink: ApiTypes.UploadLink | null
   profileErrorMessage: string
 
-  onGetUploadLink: (value: ApiTypes.Profile.UploadLinkRequest) => void
+  onGetUploadLink: (value: ApiTypes.UploadLinkRequest) => void
   onSetAvatar: (data: ApiTypes.Profile.Avatar) => void
   onEditProfile: (data: ApiTypes.Profile.EditProfile) => void
   onGetProfile: () => void
@@ -446,7 +446,7 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
 
 type DispatchProps = Pick<Props, 'onGetUploadLink' | 'onSetAvatar' | 'onEditProfile' | 'onGetProfile'>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onGetUploadLink: (value: ApiTypes.Profile.UploadLinkRequest) => dispatch(Actions.profile.getUploadLinkRequest(value)),
+  onGetUploadLink: (value: ApiTypes.UploadLinkRequest) => dispatch(Actions.profile.getUploadLinkRequest(value)),
   onSetAvatar: (data: ApiTypes.Profile.Avatar) => dispatch(Actions.profile.setAvatarRequest(data)),
   onEditProfile: (data: ApiTypes.Profile.EditProfile) => dispatch(Actions.profile.editProfileRequest(data)),
   onGetProfile: () => dispatch(Actions.profile.getProfileRequest()),

@@ -198,7 +198,7 @@ const deleteJoinSuccess = (payload: boolean) => ({
   payload
 })
 
-const getGroupCoverUploadLinkRequest = (payload: ApiTypes.Groups.UploadLinkRequest) => ({
+const getGroupCoverUploadLinkRequest = (payload: ApiTypes.UploadLinkRequest) => ({
   type: Types.GET_GROUP_COVER_UPLOAD_LINK_REQUEST,
   payload,
 })
@@ -217,7 +217,7 @@ const setGroupCoverSuccess = () => ({
   type: Types.SET_GROUP_COVER_SUCCESS,
 })
 
-const getAvatarUploadLinkRequest = (payload: ApiTypes.Groups.UploadLinkRequest) => ({
+const getAvatarUploadLinkRequest = (payload: ApiTypes.UploadLinkRequest) => ({
   type: Types.GET_AVATAR_UPLOAD_LINK_REQUEST,
   payload,
 })

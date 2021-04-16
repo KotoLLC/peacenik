@@ -49,7 +49,7 @@ const getUsersSucces = (payload: ApiTypes.User[]) => ({
   payload
 })
 
-const getUploadLinkRequest = (payload: ApiTypes.Profile.UploadLinkRequest) => ({
+const getUploadLinkRequest = (payload: ApiTypes.UploadLinkRequest) => ({
   type: Types.GET_UPLOAD_LINK_REQUEST,
   payload,
 })

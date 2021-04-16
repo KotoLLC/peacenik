@@ -1,6 +1,8 @@
 import { ApiTypes, CommonTypes } from 'src/types'
 
 export enum Types {
+  GET_DIRECT_MSG_UPLOAD_LINK_REQUEST      = 'GET_DIRECT_MSG_UPLOAD_LINK_REQUEST',
+  GET_DIRECT_MSG_UPLOAD_LINK_SUCCESS      = 'GET_DIRECT_MSG_UPLOAD_LINK_SUCCESS',
   SET_DIRECT_MSG_POST_TOKEN               = 'SET_DIRECT_MSG_POST_TOKEN',
   SEND_MESSAGE_TO_FRIEND                  = 'SEND_MESSAGE_TO_FRIEND',
   GET_DIRECT_POST_MSG_TOKEN               = 'GET_DIRECT_POST_MSG_TOKEN',
@@ -102,7 +104,19 @@ const getMoreMessageFailed = () => ({
   type: Types.GET_MORE_MESSAGE_FAILED,
 })
 
+const getUploadLinkRequest = (payload: ApiTypes.UploadLinkRequestWithHost) => ({
+  type: Types.GET_DIRECT_MSG_UPLOAD_LINK_REQUEST,
+  payload
+})
+
+const getDirectMsgUploadLinkSucces = (payload: ApiTypes.UploadLink | null) => ({
+  type: Types.GET_DIRECT_MSG_UPLOAD_LINK_SUCCESS,
+  payload
+})
+
 export default {
+  getUploadLinkRequest,
+  getDirectMsgUploadLinkSucces,
   setDirectMsgPostToken,
   sendMessageToFriend,
   setPostMsgToFriendSuccess,

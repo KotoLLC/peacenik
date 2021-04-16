@@ -51,11 +51,6 @@ export declare namespace ApiTypes {
     link: string
   }
 
-  export interface UploadLinkRequest {
-    content_type: string
-    file_name: string
-  }
-
   export interface Attachment {
     form_data: FormData
     link: string
@@ -68,6 +63,17 @@ export declare namespace ApiTypes {
   export interface HubToken{
     host: string
     token: string
+  }
+  
+  export interface UploadLinkRequest {
+    content_type: string
+    file_name: string
+  }
+
+  export interface UploadLinkRequestWithHost {
+    host: string
+    content_type: string
+    file_name: string
   }
 
   export namespace Profile {
@@ -95,11 +101,6 @@ export declare namespace ApiTypes {
       new_password?: string,
       background_changed?: boolean
       background_id?: string
-    }
-
-    export interface UploadLinkRequest {
-      content_type: string
-      file_name: string
     }
   }
 
@@ -293,7 +294,7 @@ export declare namespace ApiTypes {
     }
 
     export interface UploadLinkRequest {
-      host: string,
+      host: string
       content_type: string
       file_name: string
     }
@@ -542,11 +543,6 @@ export declare namespace ApiTypes {
     
     export interface DeleteJoinRequest {
       group_id: string
-    }
-
-    export interface UploadLinkRequest {
-      content_type: string
-      file_name: string
     }
 
     export interface Image {

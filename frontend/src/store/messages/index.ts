@@ -60,6 +60,12 @@ const initialState: State = {
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
+    case Types.GET_DIRECT_MSG_UPLOAD_LINK_SUCCESS: {
+      return {
+        ...state,
+        uploadLink: action.payload
+      }
+    }
     case Types.GET_FRIEND_MSG_SUCCESS: {
       return {
         ...state,

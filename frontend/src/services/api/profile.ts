@@ -24,7 +24,7 @@ export default {
     }).catch(error => ({ error }))
   }, 
 
-  getUploadLink: async (data: ApiTypes.Profile.UploadLinkRequest) => {
+  getUploadLink: async (data: ApiTypes.UploadLinkRequest) => {
     return await axiosInstance.post('/rpc.BlobService/UploadLink', {
       'content_type': data.content_type,
       'file_name': data.file_name,

@@ -27,6 +27,14 @@ export function* watchGetNotifications() {
 export function* watchGetNotificationsFromHub(action: { type: string, payload: CommonTypes.HubTypes.CurrentHub }) {
 
   try {
+    
+    const res = yield API.feed.getMessages()
+
+    if (res.status === 200) {
+      const feedsTokens = hubsForMessagesBack2Front(res.data?.tokens)
+      yield put(Actions.feed.getFeedTokensSuccess(feedsTokens))
+    }
+
     const response = yield API.notifications.getNotificationsFromHub(action.payload.host)
 
     if (response.status === 200) {
