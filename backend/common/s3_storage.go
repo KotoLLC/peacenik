@@ -36,7 +36,7 @@ func NewS3Storage(client, externalClient *minio.Client, externalPathPrefix, buck
 		externalClient = client
 	}
 
-	return &S3Storage{
+	s := &S3Storage{
 		client:             client,
 		externalClient:     externalClient,
 		externalPathPrefix: externalPathPrefix,
@@ -44,6 +44,8 @@ func NewS3Storage(client, externalClient *minio.Client, externalPathPrefix, buck
 		cachedLinks:        make(map[string]string),
 		cachedTimes:        make(map[string]time.Time),
 	}
+	s.createBucketIfNotExist(context.TODO())
+	return s
 }
 
 func (s *S3Storage) createBucketIfNotExist(ctx context.Context) {
@@ -111,8 +113,6 @@ func (s *S3Storage) ReadN(ctx context.Context, blobID string, n int) ([]byte, er
 }
 
 func (s *S3Storage) CreateLink(ctx context.Context, blobID string, expiration time.Duration) (string, error) {
-	s.createBucketIfNotExist(ctx)
-
 	if expiration <= 0 {
 		expiration = defaultLinkExpiration
 	}
@@ -151,8 +151,6 @@ func (s *S3Storage) PutObject(ctx context.Context, blobID string, content []byte
 }
 
 func (s *S3Storage) CreateUploadLink(ctx context.Context, blobID, contentType string, metadata map[string]string) (uploadLink string, formData map[string]string, err error) {
-	s.createBucketIfNotExist(ctx)
-
 	expiration := defaultLinkExpiration
 
 	policy := minio.NewPostPolicy()
