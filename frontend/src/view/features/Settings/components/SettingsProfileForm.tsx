@@ -46,7 +46,7 @@ interface Props {
   coverUploadLink: ApiTypes.UploadLink | null;
   profileErrorMessage: string;
 
-  onGetUploadLink: (value: ApiTypes.Profile.UploadLinkRequest) => void;
+  onGetUploadLink: (value: ApiTypes.UploadLinkRequest) => void;
   onSetAvatar: (data: ApiTypes.Profile.Avatar) => void;
   onEditProfile: (data: ApiTypes.Profile.EditProfile) => void;
   onGetProfile: () => void;
@@ -537,7 +537,7 @@ type DispatchProps = Pick<
   | 'onSetProfileCover'
 >;
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onGetUploadLink: (value: ApiTypes.Profile.UploadLinkRequest) =>
+  onGetUploadLink: (value: ApiTypes.UploadLinkRequest) =>
     dispatch(Actions.profile.getUploadLinkRequest(value)),
   onSetAvatar: (data: ApiTypes.Profile.Avatar) =>
     dispatch(Actions.profile.setAvatarRequest(data)),

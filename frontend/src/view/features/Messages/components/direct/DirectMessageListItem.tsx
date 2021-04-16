@@ -64,10 +64,8 @@ const DirectMessageListItem: React.FC<Props> = ({
     <Link to={`${baseURL}/${userId}`} >
       <MessageCard className={(pathName === userId) ? "active" : ""}>
         <MessageCardContent>
-          <Link to={`/profile/user?id=${userId}`}>
-            <ContactAvatarStyled alt={fullName} src={getAvatarUrl(userId)} />
-          </Link>
-          <MessageInfoBlock to={`${baseURL}/${userId}`}>
+          <ContactAvatarStyled alt={fullName} src={getAvatarUrl(userId)} />
+          <MessageInfoBlock>
             <MessageInfoHeader>
               <MessageInfoDisplayName>{fullName}</MessageInfoDisplayName>
               <MessageInfoLastAccessTime>

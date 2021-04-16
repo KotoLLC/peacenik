@@ -78,7 +78,6 @@ const MessagesPage: React.FC<Props> = (props) => {
 
   useEffect( () => {
     if (friend_id !== "") {
-      console.log("friend_id: ", friend_id)
       dispatch(Actions.messages.getDirectPostMsgToken(friend_id))
     }
   }, [friend_id])

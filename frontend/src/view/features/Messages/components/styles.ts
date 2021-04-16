@@ -12,7 +12,7 @@ import {
 } from '../../../../types/enum'
 
 export const MessagesWrapper = styled.div`
-  min-height: calc(100vh - 355px);
+  height: calc(100vh - 355px);
   position: relative;
   width: 1140px;
   // height: 820px;
@@ -26,7 +26,7 @@ export const MessagesWrapper = styled.div`
   @media (max-width: 770px) {
     width: calc(100% - 30px);
     padding: 15px 0 0 0;
-    min-height: calc(100vh - 275px);
+    height: calc(100vh - 275px);
   }
 `
 
@@ -298,7 +298,7 @@ export const MessageCard = styled.div`
     padding-left: 0;
   }
 `
-export const MessageInfoBlock = styled(Link)`
+export const MessageInfoBlock = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -421,10 +421,15 @@ export const DirectMessageBoxWapper = styled.div`
 export const DMContentWrapper = styled.div`
   flex: 1 0 auto;
   overflow-y: auto;
+  height: calc(100% - 70px);
   max-height: 750px;
   @media screen and (max-width: 770px) {
     max-height: 735px;
   }
+`
+export const MsgWrapper = styled.div`
+  display: flex;
+  flex-direction: column-reverse;
 `
 export const DMContentInfoWrapper = styled.div`
   flex: 1 0 auto;

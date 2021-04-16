@@ -188,6 +188,7 @@ class FeedPage extends React.Component<Props, State> {
   }
 
   onScrollUp = () => {
+    console.log("editorRef: ", this.editorRef)
     this.editorRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
   }
 

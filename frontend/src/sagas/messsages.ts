@@ -59,8 +59,8 @@ export function * watchGetFriendMsgAPIData(action: {
         direction: (item.user_id === currentUserId) ? EnumTypes.MessageDirection.OUTGOING_MESSAGE : EnumTypes.MessageDirection.INCOMMING_MESSAGE,
         actionTime: item.created_at,
         status: (item.is_read) ? EnumTypes.MessagePublishStatus.ACCEPTED_STATUS : EnumTypes.MessagePublishStatus.PENDING_STATUS,
-        contentType: EnumTypes.MessageContentType.TEXT_TYPE,
-        messeageContent: item.text as string
+        contentType: (item.attachment === "") ? EnumTypes.MessageContentType.TEXT_TYPE : EnumTypes.MessageContentType.IMAGE_TYPE,
+        messeageContent: (item.attachment === "") ? item.text as string : item.attachment
       }))
 
       yield put(Actions.messages.getFriendMsgSuccess(resMessages))
@@ -70,6 +70,20 @@ export function * watchGetFriendMsgAPIData(action: {
     }
   } catch (error) {
     yield put(Actions.common.getMsgToken())
+  }
+}
+
+export function * watchDirectMsgUploadLink(action: {type: string, payload: ApiTypes.UploadLinkRequestWithHost}) {
+  try {
+    const response = yield API.messages.getUploadLink(action.payload)
+
+    if (response.status === 200) {
+      yield put(Actions.messages.getDirectMsgUploadLinkSucces(response.data))
+    } else {
+      yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+    }
+  } catch (error) {
+    console.log("watchDirectMsgUploadLink error: ", error)
   }
 }
 
@@ -91,7 +105,7 @@ export function * watchGetFriendsList(action: { type: string }) {
     }   
 
   } catch (error) {
-    console.log("watchGetFriendsList: ", error)
+    console.log("watchGetFriendsList error: ", error)
   }
 }
 
@@ -142,7 +156,6 @@ export function * watchSendMsgToFriend(action: {
 export function * watchGetDirectPostMsgToken(action: { type: string, payload: string }){
   try {
     const response = yield API.messages.getDirectPostMessageToken(action.payload)
-    console.log("watchGetDirectPostMsgToken result: ", response)
     if (response.status === 200) {
       let tokens:CommonTypes.TokenData[] = Object.entries(response.data.tokens).map( ([key, value]) => ({
         host: key,

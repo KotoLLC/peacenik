@@ -45,9 +45,9 @@ interface Props extends RouteComponentProps {
   editGroupSuccess: (value: boolean) => void
   onEditGroup: (data: ApiTypes.Groups.EditGroup) => void
   onGetMyGroupsRequest: () => void
-  onGetCoverUploadLinkRequest: (data: ApiTypes.Groups.UploadLinkRequest) => void
+  onGetCoverUploadLinkRequest: (data: ApiTypes.UploadLinkRequest) => void
   onSetCoverRequest: (data: ApiTypes.Groups.Image) => void
-  onGetAvatarUploadLinkRequest: (data: ApiTypes.Groups.UploadLinkRequest) => void
+  onGetAvatarUploadLinkRequest: (data: ApiTypes.UploadLinkRequest) => void
   onSetAvatarRequest: (data: ApiTypes.Groups.Image) => void
 }
 
@@ -378,10 +378,10 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onEditGroup: (data: ApiTypes.Groups.EditGroup) => dispatch(Actions.groups.editGroupRequest(data)),
   editGroupSuccess: (value: boolean) => dispatch(Actions.groups.editGroupSuccess(value)),
   onGetMyGroupsRequest: () => dispatch(Actions.groups.getMyGroupsRequest()),
-  onGetCoverUploadLinkRequest: (data: ApiTypes.Groups.UploadLinkRequest) =>
+  onGetCoverUploadLinkRequest: (data: ApiTypes.UploadLinkRequest) =>
     dispatch(Actions.groups.getGroupCoverUploadLinkRequest(data)),
   onSetCoverRequest: (data: ApiTypes.Groups.Image) => dispatch(Actions.groups.setGroupCoverRequest(data)),
-  onGetAvatarUploadLinkRequest: (data: ApiTypes.Groups.UploadLinkRequest) =>
+  onGetAvatarUploadLinkRequest: (data: ApiTypes.UploadLinkRequest) =>
     dispatch(Actions.groups.getAvatarUploadLinkRequest(data)),
   onSetAvatarRequest: (data: ApiTypes.Groups.Image) => dispatch(Actions.groups.setAvatarRequest(data))
 })

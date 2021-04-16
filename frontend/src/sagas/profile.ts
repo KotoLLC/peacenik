@@ -30,7 +30,7 @@ export function* watchGetProfile() {
   }
 }
 
-export function* watchGetUploadLink(action: { type: string, payload: ApiTypes.Profile.UploadLinkRequest }) {
+export function* watchGetUploadLink(action: { type: string, payload: ApiTypes.UploadLinkRequest }) {
   const response = yield API.profile.getUploadLink(action.payload)
 
   if (response.status === 200) {
