@@ -184,12 +184,25 @@ func (s *S3Storage) CreateUploadLink(ctx context.Context, blobID, contentType st
 		}
 	}
 
-	link, formData, err := s.client.PresignedPostPolicy(ctx, policy)
+	u, formData, err := s.client.PresignedPostPolicy(ctx, policy)
 	if err != nil {
 		return "", nil, merry.Prepend(err, "can't Presign")
 	}
 
-	return link.String(), formData, nil
+	link := u.String()
+	if s.externalAddress != "" {
+		switch {
+		case strings.HasPrefix(s.externalAddress, "https"):
+			u.Host = strings.TrimPrefix(s.externalAddress, "https")
+			u.Scheme = "https"
+		case strings.HasPrefix(s.externalAddress, "http"):
+			u.Host = strings.TrimPrefix(s.externalAddress, "http")
+			u.Scheme = "http"
+		}
+		link = u.String()
+	}
+
+	return link, formData, nil
 }
 
 func (s *S3Storage) RemoveObject(ctx context.Context, blobID string) error {
