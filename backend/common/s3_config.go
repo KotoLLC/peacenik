@@ -22,16 +22,9 @@ func (cfg S3Config) CreateStorage() (*S3Storage, error) {
 		return nil, nil
 	}
 
-	s3Endpoint := cfg.Endpoint
-	s3Secure := false
-	if strings.HasPrefix(s3Endpoint, "https://") {
-		s3Endpoint = strings.TrimPrefix(s3Endpoint, "https://")
-		s3Secure = true
-	} else {
-		s3Endpoint = strings.TrimPrefix(s3Endpoint, "http://")
-	}
+	s3Endpoint, s3Secure := cfg.splitEndpoint(cfg.Endpoint)
 
-	minioClient, err := minio.New(s3Endpoint, &minio.Options{
+	client, err := minio.New(s3Endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(cfg.Key, cfg.Secret, ""),
 		Region: cfg.Region,
 		Secure: s3Secure,
@@ -40,6 +33,54 @@ func (cfg S3Config) CreateStorage() (*S3Storage, error) {
 		return nil, merry.Wrap(err)
 	}
 
-	s3Storage := NewS3Storage(minioClient, cfg.ExternalEndpoint, cfg.Bucket)
+	externalClient, externalPathPrefix, err := cfg.createExternalClient()
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+
+	s3Storage := NewS3Storage(client, externalClient, externalPathPrefix, cfg.Bucket)
 	return s3Storage, nil
+}
+
+func (cfg S3Config) createExternalClient() (*minio.Client, string, error) {
+	if cfg.ExternalEndpoint == "" {
+		return nil, "", nil
+	}
+
+	hostStartIndex := 0
+	schemeSepIndex := strings.Index(cfg.ExternalEndpoint, "://")
+	if schemeSepIndex >= 0 {
+		hostStartIndex = schemeSepIndex + len("://")
+	}
+
+	slashIndex := strings.IndexRune(cfg.ExternalEndpoint[hostStartIndex:], '/')
+	externalEndpoint, externalPathPrefix := cfg.ExternalEndpoint, ""
+	if slashIndex >= 0 {
+		slashIndex += hostStartIndex
+		externalEndpoint, externalPathPrefix = cfg.ExternalEndpoint[:slashIndex], cfg.ExternalEndpoint[slashIndex:]
+	}
+
+	externalEndpoint, s3Secure := cfg.splitEndpoint(externalEndpoint)
+
+	externalClient, err := minio.New(externalEndpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(cfg.Key, cfg.Secret, ""),
+		Region: cfg.Region,
+		Secure: s3Secure,
+	})
+	if err != nil {
+		return nil, "", err
+	}
+
+	return externalClient, externalPathPrefix, err
+}
+
+func (cfg S3Config) splitEndpoint(endpoint string) (string, bool) {
+	s3Secure := false
+	if strings.HasPrefix(endpoint, "https://") {
+		endpoint = strings.TrimPrefix(endpoint, "https://")
+		s3Secure = true
+	} else {
+		endpoint = strings.TrimPrefix(endpoint, "http://")
+	}
+	return endpoint, s3Secure
 }
