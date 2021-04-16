@@ -22,6 +22,10 @@ func (cfg S3Config) CreateStorage() (*S3Storage, error) {
 		return nil, nil
 	}
 
+	if cfg.Region == "" {
+		cfg.Region = "us-east-1"
+	}
+
 	s3Endpoint, s3Secure := cfg.splitEndpoint(cfg.Endpoint)
 
 	client, err := minio.New(s3Endpoint, &minio.Options{
