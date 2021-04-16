@@ -835,7 +835,8 @@ export const CoverBarCounterName = styled.span`
 `
 
 export const CoverBarCounters = styled.div`
-  margin-left: 290px;
+  // margin-left: 290px;
+  margin: 20px auto;
   display: flex;
   align-items: center;
 
@@ -851,7 +852,8 @@ export const CoverBarCounters = styled.div`
 `
 
 export const CoverBarButtonsWrapper = styled.div`
-  margin-left: 290px;
+  // margin-left: 290px;
+  margin: 20px auto;
 
   &.profile {
     margin-left: 0;
