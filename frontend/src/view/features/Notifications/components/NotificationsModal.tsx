@@ -43,6 +43,7 @@ class NotificationsModal extends React.PureComponent<Props, State> {
 
   state = {
     isModalOpen: false,
+    isCheckedNotification: false,
     notifications: this.props.notifications || []
   }
 
@@ -151,6 +152,11 @@ class NotificationsModal extends React.PureComponent<Props, State> {
     })
   }
 
+  notifyClickHandler = () => {
+    this.state.isCheckedNotification = true
+    this.openModal(!this.state.isModalOpen)
+  }
+
   render() {
     const { isModalOpen, notifications } = this.state
     const { notificationsUnread } = this.props
@@ -159,8 +165,8 @@ class NotificationsModal extends React.PureComponent<Props, State> {
       <ClickAwayListener onClickAway={() => { this.openModal(false) }}>
         <MenuIconWrapper>
           <BadgeStyled
-            onClick={() => this.openModal(!isModalOpen)}
-            badgeContent={notificationsUnread.length}
+            onClick={this.notifyClickHandler}
+            badgeContent={this.state.isCheckedNotification ? 0 : notificationsUnread.length}
             color="secondary"
           >
             <NotificationsActiveIcon />

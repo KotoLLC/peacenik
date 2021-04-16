@@ -19,7 +19,9 @@ export default {
   getFriendMessage: async (data:ApiTypes.Messages.GetFriendMsgAPIData) => {
     return await axiosInstance.post(`${data.host}/rpc.MessageService/Messages`, {
       friend_id:data.friend.id,
-      token: data.token
+      token: data.token,
+      from: data.from ? data.from : "",
+      count: data.count ? data.count : 10
     }, getHeaderConfig()).then( response => response).catch( error => ({error}))
   },
 

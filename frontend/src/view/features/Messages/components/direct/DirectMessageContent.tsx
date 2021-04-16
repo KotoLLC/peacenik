@@ -11,17 +11,24 @@ import {
 
 const DirectMessageContent = () => {
   const firstMsgRef = React.createRef<HTMLDivElement>()
+  // const dispatch = useDispatch()
+  // const isMessagesRequested = useSelector(
+  //   (state: StoreTypes) => state.messages.isMessagesRequested
+  // )
+  const directMsgs: CommonTypes.MessageTypes.MessageItemProps[] = useSelector((state: StoreTypes) => state.messages.directMsgs)
 
   useEffect( () => {
-    firstMsgRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
-  }, [firstMsgRef])
-  console.log("firstMsgRef: ", firstMsgRef)
+    // if ( (directMsgs.length < 11 ) && isMessagesRequested && dispatch) {
+      // console.log("scroll down", directMsgs, isMessagesRequested)
+      firstMsgRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    // }
+  }, [firstMsgRef, directMsgs])
+  // console.log("firstMsgRef: ", firstMsgRef)
 
-  const directMsgs: CommonTypes.MessageTypes.MessageItemProps[] = useSelector((state: StoreTypes) => state.messages.directMsgs)
   return (
     <MsgWrapper>
       {directMsgs.map((item, idx) => (
-        (idx !== 0) ? <MessageItem key={item.msgId} {...item}></MessageItem> : <div ref={firstMsgRef} key={item.msgId}><MessageItem {...item}></MessageItem></div>
+        (idx !== 0) ? <MessageItem key={idx} {...item}></MessageItem> : <div ref={firstMsgRef} key={idx}><MessageItem {...item}></MessageItem></div>
       ))}
     </MsgWrapper>
   )

@@ -36,6 +36,7 @@ interface State {
 interface Props {
   isHubCreatedSuccessfully: boolean
   hubCreationStatus: CommonTypes.HubTypes.CreationStatus
+  isAdmin: boolean | undefined
   onHubCreate: (data: ApiTypes.Hubs.Create) => void
   onHubCreationStatusReset: () => void
 }
@@ -128,6 +129,8 @@ class HubOptionB extends React.PureComponent<Props, State> {
       postLimit,
     } = this.state
 
+    const { isAdmin } = this.props
+
     return (
       <>
         <HubOptionText>This option is for software nerds only. If you're lost - go with Option A.</HubOptionText>
@@ -181,7 +184,7 @@ class HubOptionB extends React.PureComponent<Props, State> {
               value={postLimit}
               onChange={value => this.onPostLimitChange(value)}
             >
-              <MenuItem value={0}>Unlimited posts</MenuItem>
+              {isAdmin && <MenuItem value={0}>Unlimited posts</MenuItem> }
               <MenuItem value={1}>Only admin can post</MenuItem>
               <MenuItem value={2}>Only admin's friends can post</MenuItem>
               <MenuItem value={3}>Admin's 2nd level of friends can post</MenuItem>
@@ -212,9 +215,10 @@ class HubOptionB extends React.PureComponent<Props, State> {
   }
 }
 
-type StateProps = Pick<Props, 'isHubCreatedSuccessfully'>
+type StateProps = Pick<Props, 'isHubCreatedSuccessfully' | 'isAdmin'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   isHubCreatedSuccessfully: selectors.hubs.isHubCreatedSuccessfully(state),
+  isAdmin: selectors.profile.isAdmin(state),
 })
 
 type DispatchProps = Pick<Props, 'onHubCreate' | 'onHubCreationStatusReset'>

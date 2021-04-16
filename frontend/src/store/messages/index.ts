@@ -66,11 +66,46 @@ const reducer = (state = initialState, action) => {
         uploadLink: action.payload
       }
     }
-    case Types.GET_FRIEND_MSG_SUCCESS: {
-      return {
-        ...state,
-        directMsgs: action.payload
+    case Types.GET_FRIEND_MSG_API_DATA: {
+      if ( action.payload.from || action.payload.count ) {
+        return {
+          ...state,
+          isMoreMessagesRequested: true,
+          isMessagesRequested: false
+        }
+      } else {
+        return {
+          ...state,
+          isMoreMessagesRequested: false,
+          isMessagesRequested: true
+        }
       }
+    }
+    case Types.GET_FRIEND_MSG_SUCCESS: {
+      let retObj
+      if ( action.payload.reqData.from ){
+        retObj = {
+          ...state,
+          directMsgs: uniqBy([
+            ...state.directMsgs,
+            ...action.payload.data
+          ], 'msgId')
+        }
+      } else if (action.payload.reqData.count) {
+        retObj = {
+          ...state,
+          directMsgs: uniqBy([
+            ...action.payload.data,
+            ...state.directMsgs
+          ], 'msgId')
+        }
+      } else {
+        retObj = {
+          ...state,
+          directMsgs: action.payload.data
+        }
+      }
+      return retObj
     }
     case Types.SET_DIRECT_MSG_POST_TOKEN: {
       return {

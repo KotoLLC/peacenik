@@ -59,9 +59,6 @@ const MessagesPage: React.FC<Props> = (props) => {
         }
       }))
     }
-    if ( (friend_id !== "" ) && (feedsTokens.length === 0) && (msgToken !== "")){
-      console.log("This is watching case.")
-    }
   }, [friend_id, msgToken])
 
   useEffect(() => {
