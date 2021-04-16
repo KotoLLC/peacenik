@@ -5,6 +5,7 @@ import (
 	"context"
 	"io"
 	"log"
+	"net/url"
 	"strings"
 	"sync"
 	"time"
@@ -18,10 +19,14 @@ const (
 )
 
 type S3Storage struct {
-	client          *minio.Client
-	externalAddress string
-	bucket          string
-	bucketOnce      sync.Once
+	client *minio.Client
+
+	externalScheme string
+	externalHost   string
+	externalPath   string
+
+	bucket     string
+	bucketOnce sync.Once
 
 	cachedLinks   map[string]string
 	cachedTimes   map[string]time.Time
@@ -29,12 +34,33 @@ type S3Storage struct {
 }
 
 func NewS3Storage(client *minio.Client, externalAddress, bucket string) *S3Storage {
+	externalScheme, externalHost, externalPath := "", "", ""
+	if externalAddress != "" {
+		externalScheme = "https"
+		switch {
+		case strings.HasPrefix(externalAddress, "https://"):
+			externalScheme = "https"
+			externalAddress = strings.TrimPrefix(externalAddress, "https://")
+		case strings.HasPrefix(externalAddress, "http://"):
+			externalScheme = "http"
+			externalAddress = strings.TrimPrefix(externalAddress, "http://")
+		}
+		slashIndex := strings.IndexRune(externalAddress, '/')
+		externalHost, externalPath = externalAddress, ""
+		if slashIndex >= 0 {
+			externalHost = externalAddress[:slashIndex]
+			externalPath = externalAddress[slashIndex:]
+		}
+	}
+
 	return &S3Storage{
-		client:          client,
-		externalAddress: externalAddress,
-		bucket:          bucket,
-		cachedLinks:     make(map[string]string),
-		cachedTimes:     make(map[string]time.Time),
+		client:         client,
+		externalScheme: externalScheme,
+		externalHost:   externalHost,
+		externalPath:   externalPath,
+		bucket:         bucket,
+		cachedLinks:    make(map[string]string),
+		cachedTimes:    make(map[string]time.Time),
 	}
 }
 
@@ -122,24 +148,12 @@ func (s *S3Storage) CreateLink(ctx context.Context, blobID string, expiration ti
 	if err != nil {
 		return "", merry.Prepend(err, "can't Presign")
 	}
-
-	link := u.String()
-	if s.externalAddress != "" {
-		switch {
-		case strings.HasPrefix(s.externalAddress, "https"):
-			u.Host = strings.TrimPrefix(s.externalAddress, "https")
-			u.Scheme = "https"
-		case strings.HasPrefix(s.externalAddress, "http"):
-			u.Host = strings.TrimPrefix(s.externalAddress, "http")
-			u.Scheme = "http"
-		}
-		link = u.String()
-	}
+	link := s.convertToExternalLink(u)
 
 	s.cachedLinks[blobID] = link
 	s.cachedTimes[blobID] = expiresAt
 
-	return u.String(), nil
+	return link, nil
 }
 
 func (s *S3Storage) PutObject(ctx context.Context, blobID string, content []byte, contentType string) error {
@@ -188,19 +202,7 @@ func (s *S3Storage) CreateUploadLink(ctx context.Context, blobID, contentType st
 	if err != nil {
 		return "", nil, merry.Prepend(err, "can't Presign")
 	}
-
-	link := u.String()
-	if s.externalAddress != "" {
-		switch {
-		case strings.HasPrefix(s.externalAddress, "https"):
-			u.Host = strings.TrimPrefix(s.externalAddress, "https")
-			u.Scheme = "https"
-		case strings.HasPrefix(s.externalAddress, "http"):
-			u.Host = strings.TrimPrefix(s.externalAddress, "http")
-			u.Scheme = "http"
-		}
-		link = u.String()
-	}
+	link := s.convertToExternalLink(u)
 
 	return link, formData, nil
 }
@@ -213,4 +215,15 @@ func (s *S3Storage) RemoveObject(ctx context.Context, blobID string) error {
 		return merry.Prepend(err, "can't RemoveObject")
 	}
 	return nil
+}
+
+func (s *S3Storage) convertToExternalLink(link *url.URL) string {
+	if s.externalHost == "" {
+		return link.String()
+	}
+
+	link.Scheme = s.externalScheme
+	link.Host = s.externalHost
+	link.Path = s.externalPath + link.Path
+	return link.String()
 }
