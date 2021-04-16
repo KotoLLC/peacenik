@@ -38,7 +38,7 @@ func configure(envPath string) (externalAddress string, err error) {
 
 	fmt.Println("")
 
-	s3Cfg, err := common.ConfigureS3("message_hub")
+	s3Cfg, err := common.ConfigureS3("message-hub")
 	if err != nil {
 		return "", fmt.Errorf("can't configure S3: %w", err)
 	}

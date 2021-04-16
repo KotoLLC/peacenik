@@ -5,6 +5,7 @@ import (
 	"context"
 	"io"
 	"log"
+	"strings"
 	"sync"
 	"time"
 
@@ -17,21 +18,23 @@ const (
 )
 
 type S3Storage struct {
-	client     *minio.Client
-	bucket     string
-	bucketOnce sync.Once
+	client          *minio.Client
+	externalAddress string
+	bucket          string
+	bucketOnce      sync.Once
 
 	cachedLinks   map[string]string
 	cachedTimes   map[string]time.Time
 	cachedLinksMu sync.Mutex
 }
 
-func NewS3Storage(client *minio.Client, bucket string) *S3Storage {
+func NewS3Storage(client *minio.Client, externalAddress, bucket string) *S3Storage {
 	return &S3Storage{
-		client:      client,
-		bucket:      bucket,
-		cachedLinks: make(map[string]string),
-		cachedTimes: make(map[string]time.Time),
+		client:          client,
+		externalAddress: externalAddress,
+		bucket:          bucket,
+		cachedLinks:     make(map[string]string),
+		cachedTimes:     make(map[string]time.Time),
 	}
 }
 
@@ -120,7 +123,20 @@ func (s *S3Storage) CreateLink(ctx context.Context, blobID string, expiration ti
 		return "", merry.Prepend(err, "can't Presign")
 	}
 
-	s.cachedLinks[blobID] = u.String()
+	link := u.String()
+	if s.externalAddress != "" {
+		switch {
+		case strings.HasPrefix(s.externalAddress, "https"):
+			u.Host = strings.TrimPrefix(s.externalAddress, "https")
+			u.Scheme = "https"
+		case strings.HasPrefix(s.externalAddress, "http"):
+			u.Host = strings.TrimPrefix(s.externalAddress, "http")
+			u.Scheme = "http"
+		}
+		link = u.String()
+	}
+
+	s.cachedLinks[blobID] = link
 	s.cachedTimes[blobID] = expiresAt
 
 	return u.String(), nil

@@ -19,6 +19,7 @@ services:
       KOTO_DB_PASSWORD: ${KOTO_DB_PASSWORD}
       KOTO_DB_NAME: ${KOTO_DB_NAME}
       KOTO_S3_ENDPOINT: ${KOTO_S3_ENDPOINT}
+      KOTO_S3_EXTERNAL_ENDPOINT: ${KOTO_S3_EXTERNAL_ENDPOINT}
       KOTO_S3_REGION: ${KOTO_S3_REGION}
       KOTO_S3_KEY: ${KOTO_S3_KEY}
       KOTO_S3_SECRET: ${KOTO_S3_SECRET}
@@ -42,6 +43,8 @@ services:
     restart: unless-stopped
     volumes:
       - ${VOLUME_MINIO}:/data/
+    ports:
+      - 9000:9000
     environment:
       MINIO_ROOT_USER: ${KOTO_S3_KEY}
       MINIO_ROOT_PASSWORD: ${KOTO_S3_SECRET}
