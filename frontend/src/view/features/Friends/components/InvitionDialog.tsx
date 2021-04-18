@@ -112,7 +112,7 @@ class InvitionDialog extends React.Component<Props, State> {
 
   renderSuccessfulyMessage = () => (
     <>
-      <DialogSubTitle>Invitation send successfully</DialogSubTitle>
+      <DialogSubTitle>Invitation sent successfully</DialogSubTitle>
       <DialogIconWrapper>
         <TelegramIcon />
       </DialogIconWrapper>
