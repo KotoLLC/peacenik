@@ -341,8 +341,8 @@ const CreateGroupPage: React.FC<Props> = (props) => {
       </EmptyGroupsIconWrapper>
       <EmptyGroupsTextWrapper>
         <EmptyGroupsText>
-          Sorry! You can’t create new group. Your hub does not support groups. <EmptyGroupsTextLink to="/settings/hub">
-            Visit the hub page</EmptyGroupsTextLink> in your profile to create a hub with group support.
+          Sorry! The hub you're using doesn't support groups. <EmptyGroupsTextLink to="/settings/hub">
+            Visit the hub page</EmptyGroupsTextLink> to create a group-enabled hub.
       </EmptyGroupsText>
       </EmptyGroupsTextWrapper>
     </EmptyScrenWrapper>

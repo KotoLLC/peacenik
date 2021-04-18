@@ -46,7 +46,7 @@ func (s *inviteService) Create(ctx context.Context, r *rpc.InviteCreateRequest) 
 			if len(friends) == 1 {
 				friend = &friends[0]
 			} else if len(friends) > 1 {
-				return nil, twirp.NewError(twirp.AlreadyExists, "Email belongs to more than one account. Invite by username instead.")
+				return nil, twirp.NewError(twirp.AlreadyExists, "This email belongs to more than one account. Invite this person using their username instead.")
 			}
 		} else {
 			return nil, twirp.NotFoundError("user not found")
@@ -92,7 +92,7 @@ func (s *inviteService) Accept(ctx context.Context, r *rpc.InviteAcceptRequest) 
 	}
 	userInfo := s.userCache.User(me.ID, r.InviterId)
 	if s.notificationSender != nil {
-		s.notificationSender.SendNotification([]string{r.InviterId}, userInfo.DisplayName+" accepted your invite!", "friend-invite/accept", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{r.InviterId}, userInfo.DisplayName+" accepted your invitation!", "friend-invite/accept", map[string]interface{}{
 			"user_id": me.ID,
 		})
 	}
@@ -105,7 +105,7 @@ func (s *inviteService) Reject(ctx context.Context, r *rpc.InviteRejectRequest) 
 		return nil, twirp.NotFoundError("invite not found")
 	}
 	if s.notificationSender != nil {
-		s.notificationSender.SendNotification([]string{r.InviterId}, "Your invite is rejected", "friend-invite/reject", map[string]interface{}{
+		s.notificationSender.SendNotification([]string{r.InviterId}, "Your invitation was rejected", "friend-invite/reject", map[string]interface{}{
 			"user_id": me.ID,
 		})
 	}

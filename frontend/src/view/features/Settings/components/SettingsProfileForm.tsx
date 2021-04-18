@@ -483,7 +483,7 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
                   color='primary'
                 />
               }
-              label='Hide my profile. Only your friends can see real name and profile page'
+              label='Hide my profile. Only your friends will be able to see your real name and profile'
             />
           </CheckboxFieldWrapper>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
