@@ -6,6 +6,7 @@ import { ApiTypes, StoreTypes } from 'src/types'
 import { CoverBarDropdown } from './CoverBarDropdown'
 import RemoveFriendDialog from './RemoveFriendDialog'
 import { history } from '@view/routes'
+import { Link } from 'react-router-dom'
 import {
   CoverBarWrapper,
   CoverBarContainer,
@@ -115,9 +116,11 @@ const UserCoverBar: React.FC<Props> = React.memo((props) => {
           </ButtonContained>}
         {!isUser && <CoverBarButtonsWrapper className="profile">
           {renderCurrentButton()}
-          <ButtonOutlinedStyled disabled className="large">
-            Send message
-          </ButtonOutlinedStyled>
+          <Link to={`/messages?id=${id}&fullname=${userName}`}>
+            <ButtonOutlinedStyled className="large">
+              Send message
+            </ButtonOutlinedStyled>
+          </Link>
           <CoverBarDropdown userId={id!}/>
         </CoverBarButtonsWrapper> }
       </CoverBarContainer>

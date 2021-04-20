@@ -288,7 +288,6 @@ export const MenuItemStyled = styled(MenuItem)`
   min-width: 180px;
 
   &.logout {
-    color: ${grayColor};
     position: relative;
 
     svg {
@@ -962,6 +961,7 @@ export const UsersListItemNamesWrapper = styled.div`
 export const UsersListItemFullName = styled(Link)`
   display: block;
   text-decoration: none;
+  margin-left: 10px;
   font-family: 'SFUITextMedium';
   color: ${blackColor};
   text-overflow: ellipsis;
@@ -1031,6 +1031,7 @@ export const UsersListHeaderSidebar = styled.div`
 
 export const UsersListNameWrapperSidebar = styled.div`
   display: flex;
+  margin-left: 10px;
   align-items: center;
   flex-wrap: wrap;
   text-overflow: ellipsis;

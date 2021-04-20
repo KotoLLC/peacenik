@@ -82,7 +82,6 @@ const MessagesPage: React.FC<Props> = (props) => {
   const directMsgRoomFriends: CommonTypes.MessageRoomFriendData[] = useSelector((state: StoreTypes) => state.messages.directMsgRoomFriends)
 
   const state = useSelector((state: StoreTypes) => state)
-  console.log("state: ", state)
 
   return (
     <>

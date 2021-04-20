@@ -81,11 +81,12 @@ const DirectMessageFooter = ({location}) => {
 
   if ( postDirectMsgStatus ){
     setMsgValue("")
+    setUploadImg(null)
     dispatch(Actions.messages.setPostMsgToFriendSuccess(false))
   }
 
   const sendMsg = () => {
-    if ( location.pathname?.indexOf("messages/d/") > -1){
+    if ( (msgValue !== "") && (location.pathname?.indexOf("messages/d/") > -1)){
       let friend_id = location.pathname?.substring(location.pathname?.lastIndexOf('/') + 1)
       if ( friend_id !== ""){
         let getMsgToken = ""
@@ -124,10 +125,6 @@ const DirectMessageFooter = ({location}) => {
     }))
   }
 
-  // useEffect( () => {
-
-  // }, [])
-  
   const onComandEnterDown = (event) => {
     if (event.keyCode === 13) {
       sendMsg();

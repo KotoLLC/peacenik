@@ -32,11 +32,13 @@ interface Props extends RouteComponentProps {
   isMessagesRequested: boolean | null
   isAboutUsViewed: boolean
   friends: ApiTypes.Friends.Friend[] | null
+  postUpdated: boolean
   
   onGetFriends: () => void
   onGetMessages: () => void
   onGetMoreMessages: () => void
   onGetCurrentHub: () => void
+  onSetPostUpdated: (data) => void
 }
 
 interface State {
@@ -220,14 +222,24 @@ class FeedPage extends React.Component<Props, State> {
         <>
           <div ref={this.editorRef}><Editor /></div>
           {this.mapMessages(messages)}
-          <CommentDialog isOpen={this.state.isPopupOpen} setOpen={this.setPopupOpen} popupData={this.state.popupData}/>
+          <CommentDialog 
+            isOpen={this.state.isPopupOpen} 
+            setOpen={this.setPopupOpen} 
+            popupData={this.state.popupData}
+          />
         </>
       )
     }
   }
  
   componentDidUpdate(prevProps, prevState) {
-    const { isMessagesRequested, feedsTokens, isAboutUsViewed, currentHub } = this.props
+    const { 
+      isMessagesRequested, 
+      feedsTokens, 
+      isAboutUsViewed, 
+      currentHub,
+      postUpdated
+    } = this.props
     const parsed = queryString.parse(this.props.history.location.search)
 
     if (isAboutUsViewed) return false
@@ -257,14 +269,41 @@ class FeedPage extends React.Component<Props, State> {
           attachment_type: response.data.message.attachment_type,
           attachment: response.data.message.attachment,
           comments: response.data.message.comments,
-          sourceHost: parsed?.sourceHost,
-          messageToken: parsed?.messageToken,
+          sourceHost: parsed?.sourceHost as string,
+          messageToken: parsed?.messageToken as string,
           id: response.data.message.id,
           user_id: response.data.message.user_id,
           friends: []
         })
       }).catch(error => {
         console.log("GET MESSAGE ERROR: ", error)
+      })
+    } else if ( postUpdated ) {
+      API.feed.getMessageById({
+        host: this.state.popupData.sourceHost,
+        body: {
+          token: this.state.popupData.messageToken,
+          message_id: this.state.popupData.id,
+        }
+      }).then( (response: any) => {
+        this.setState({
+          popupData:{
+            created_at: response.data.message.created_at,
+            message: response.data.message.text,
+            isAttacmentDeleted: false,
+            attachment_type: response.data.message.attachment_type,
+            attachment: response.data.message.attachment,
+            comments: response.data.message.comments,
+            sourceHost: this.state.popupData.sourceHost,
+            messageToken: this.state.popupData.messageToken,
+            id: response.data.message.id,
+            user_id: response.data.message.user_id,
+            friends: []
+          }
+        })
+        this.props.onSetPostUpdated(false)
+      }).catch(error => {
+        console.log("GET MESSAGE ERROR 2: ", error)
       })
     }
 
@@ -300,6 +339,7 @@ type StateProps = Pick<Props,
   | 'isAboutUsViewed'
   | 'isCurrentHubRequested'
   | 'friends'
+  | 'postUpdated'
 >
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   feedsTokens: selectors.feed.feedsTokens(state),
@@ -312,6 +352,7 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   isAboutUsViewed: selectors.common.isAboutUsViewed(state),
   isCurrentHubRequested: selectors.feed.isCurrentHubRequested(state),
   friends: selectors.friends.friends(state),
+  postUpdated: selectors.feed.postUpdated(state)
 })
 
 type DispatchProps = Pick<Props, 
@@ -319,12 +360,14 @@ type DispatchProps = Pick<Props,
   | 'onGetCurrentHub' 
   | 'onGetMoreMessages'
   | 'onGetFriends'
+  | 'onSetPostUpdated'
   >
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetMessages: () => dispatch(Actions.feed.getFeedTokensRequest()),
   onGetCurrentHub: () => dispatch(Actions.feed.getCurrentHubRequest()),
   onGetMoreMessages: () => dispatch(Actions.feed.getMoreFeedRequest()),
   onGetFriends: () => dispatch(Actions.friends.getFriendsRequest()),
+  onSetPostUpdated: (data) => dispatch(Actions.feed.setPostUpdated(data))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(FeedPage)

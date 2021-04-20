@@ -62,6 +62,7 @@ const FeedComment = (props) => {
               </svg>
           }
         </IconButton>
+        <b>{comments?.length || 0}</b> comments
       </ReactionNavItem>
     </>
   )
