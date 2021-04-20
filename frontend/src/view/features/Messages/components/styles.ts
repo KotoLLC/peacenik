@@ -6,6 +6,7 @@ import Avatar from '@material-ui/core/Avatar'
 import { IconWrapper } from '@view/shared/styles'
 import MenuItem from '@material-ui/core/MenuItem'
 import { Checkbox } from '@material-ui/core'
+import { ReactComponent as CloseIcon } from '@assets/images/close-icon.svg'
 import {
   MessageInfoTextStatus,
   MessageDirection
@@ -464,9 +465,22 @@ export const DMInFooterWrapper = styled.div`
   align-item:center;  
 `
   
+export const DirectMsgCloseIcon = styled(CloseIcon)`
+  background-color: white;
+  right: -5px;
+  position: absolute;
+  border-radius: 10px;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  top: -5px;
+  cursor: pointer;
+  z-index: 1;
+`
 
 export const MessageItemWrapper = styled.div`
   display: flex;
+  position: relative;
   flex-direction: row;
   justify-content: ${p=>(p['justify-content']==MessageDirection.OUTGOING_MESSAGE)?'flex-end':'flex-start'};
   margin: 15px;  

@@ -48,8 +48,6 @@ const ComplainContentDialog: React.SFC<Props> = (props) => {
     }
   }
 
-  console.log('description', description)
-
   return (
     <>
       <MenuItemWrapper onClick={() => setOpen(true)}>

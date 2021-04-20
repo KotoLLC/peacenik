@@ -58,9 +58,7 @@ export const Notification: React.FC<Props> = (props) => {
           <StorageIconStyled />
         </IconBackground>
       )
-    }
-
-    if (type.indexOf('message') !== -1) {
+    } else if (type.indexOf('message') !== -1) {
       return (type === 'message/like') ? (
         <IconBackground color="#FF0000">
           <LikeIconStyled />
@@ -70,9 +68,7 @@ export const Notification: React.FC<Props> = (props) => {
           <CommentIconStyled alt="" src={Comment} />
         </IconBackground>
       )
-    }
-
-    if (type.indexOf('comment') !== -1) {
+    } else if (type.indexOf('comment') !== -1) {
       return (type === 'comment/like') ? (
         <IconBackground color="#FF0000">
           <LikeIconStyled />
@@ -82,9 +78,7 @@ export const Notification: React.FC<Props> = (props) => {
           <CommentIconStyled alt="" src={Comment} />
         </IconBackground>
       )
-    }
-
-    if (type.indexOf('invite') !== -1) {
+    } else if (type.indexOf('invite') !== -1) {
       return (
         <IconBackground color="#599C0B">
           <AddIconStyled />
@@ -101,7 +95,10 @@ export const Notification: React.FC<Props> = (props) => {
     }
 
     if (type.indexOf('message') !== -1) {
-      return `/feed/info${urlVars}`
+      if (dataObj['friend-id']){
+        return `/messages/d/${dataObj['user_id']}`
+      } else
+        return `/feed/info${urlVars}`
     }
 
     if (type.indexOf('comment') !== -1) {

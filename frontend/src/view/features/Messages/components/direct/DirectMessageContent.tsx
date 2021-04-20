@@ -23,7 +23,6 @@ const DirectMessageContent = () => {
       firstMsgRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
     // }
   }, [firstMsgRef, directMsgs])
-  // console.log("firstMsgRef: ", firstMsgRef)
 
   return (
     <MsgWrapper>
