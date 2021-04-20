@@ -99,7 +99,7 @@ const DirectMessageFooter = ({location}) => {
           body: {
             token: tokenData.token,
             text:msgValue,
-            attachment_id: uploadLink?.blob_id,
+            attachment_id: uploadImg ? uploadLink?.blob_id : "",
             friend_id: friend_id,
             msg_token: getMsgToken
           }

@@ -362,7 +362,7 @@ export const GroupItemAvatar = styled(Avatar)`
 //   text-decoration: none;
 // `
 
-export const GroupNameLink = styled(Link)`
+export const GroupNameLink = styled.div`
   display: inline-block;
   color: #262626;
   font-family: 'SFUITextSemibold';

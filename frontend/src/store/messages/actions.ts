@@ -11,6 +11,7 @@ export enum Types {
   GET_FRIENDS_LIST                        = 'GET_FRIENDS_LIST',
   GET_FRIENDS_FROM_HUB                    = 'GET_FRIENDS_FROM_HUB',
   SET_POST_MSG_TO_FRIEND_SUCCESS          = 'SET_POST_MSG_TO_FRIEND_SUCCESS',
+  DELETE_DIRECT_MESSAGES_REQUEST          = 'DELETE_DIRECT_MESSAGES_REQUEST',
 
   ADD_FRIEND_TO_ROOM                      = 'ADD_FRIEND_TO_ROOM',
   ADD_FRIENDS_TO_ROOM                     = 'ADD_FRIENDS_TO_ROOM',
@@ -120,6 +121,11 @@ const getDirectMsgUploadLinkSucces = (payload: ApiTypes.UploadLink | null) => ({
   payload
 })
 
+const deleteDirectMsgRequest = (payload: ApiTypes.Messages.DeleteMessage) => ({
+  type: Types.DELETE_DIRECT_MESSAGES_REQUEST,
+  payload
+})
+
 export default {
   getUploadLinkRequest,
   getDirectMsgUploadLinkSucces,
@@ -136,4 +142,5 @@ export default {
   getMessageTokensSuccess, 
   getUserLastMessageFromHubSuccess,
   getMessageFromHubFailed,
+  deleteDirectMsgRequest
 }

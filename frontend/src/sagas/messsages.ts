@@ -14,36 +14,35 @@ import { Types as FeedMessagesTypes } from '@store/feed/actions'
 import { watchGetMessagesFromHub } from './feed'
 import { getUserNameByUserId } from '@services/userNames';
 
-//   {  [message type]
-//     msgId: "1293903-4123412341-12341234134-12341234",
-//     direction: EnumTypes.MessageDirection.OUTGOING_MESSAGE,
-//     actionTime: new Date("2021-3-26"),
-//     status: EnumTypes.MessagePublishStatus.ACCEPTED_STATUS,
-//     contentType: EnumTypes.MessageContentType.TEXT_TYPE,
-//     messeageContent: "I'm looking for a truly",
-//   },
-//   {  [image type]
-//     msgId: "5123-4123412341-12341234134-12341234",
-//     direction: MessageDirection.INCOMMING_MESSAGE,
-//     actionTime: new Date("2021-3-26"),
-//     status: MessagePublishStatus.ACCEPTED_STATUS,
-//     contentType: MessageContentType.IMAGE_TYPE,
-//     messeageContent: "https://www.w3schools.com/html/pic_trulli.jpg",
-//   },
-
-//   "id": "5e183be8-be6e-44b9-9562-85eb87a282aa",
-//   "user_id": "2c415538-e86f-4553-a3d1-49ff2d4ab3ff",
-//   "text": "Test",
-//   "attachment": "",
-//   "attachment_type": "",
-//   "attachment_thumbnail": "",
-//   "created_at": "2021-04-09T08:36:21.433-06:00",
-//   "updated_at": "2021-04-09T08:36:21.433-06:00",
-//   "likes": 0,
-//   "liked_by_me": false,
-//   "comments": [],
-//   "liked_by": [],
-//   "is_read": false
+export function * watchDeleteDirectMsg(action: {
+  type: string,
+  payload: ApiTypes.Messages.DeleteMessage
+}) {
+  try {
+    const response = yield API.feed.deleteMessage(action.payload)
+    if (response.status === 200) {
+      const state = yield select()
+      const feedsTokens = selectors.feed.feedsTokens(state)
+      let msgToken = ""
+      feedsTokens.map( (item) => {
+        if ( item.host === action.payload.host)
+          msgToken = item.token
+      })
+      yield call(watchGetFriendMsgAPIData, {
+        type: "test",
+        payload: {
+          host: action.payload.host,
+          token: msgToken,
+          friend: {
+            id: action.payload.body.friend_id
+          }
+        }
+      })
+    } 
+  } catch (error) {
+    console.log("watchDeleteDirectMsg Error: ", error)
+  }
+}
 
 export function * watchGetFriendMsgAPIData(action: {
   type: string,

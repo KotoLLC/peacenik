@@ -21,7 +21,6 @@ const DirectMessageHeader = () => {
   const friends = useSelector( (state: StoreTypes) => state.friends.friends )
 
   const userid = useRouteMatch().params['id'] || undefined;
-  console.log("userid: ", userid)
   let userInfo;
   if ( friends) {
     friends.forEach(friend => {
@@ -30,14 +29,13 @@ const DirectMessageHeader = () => {
       }
     });
   }
-  console.log("USERINFO: ", userInfo)
   return (
     <DMInHeaderWrapper>
       <ContactUserInfo>
         <ContactAvatarStyled src={getAvatarUrl(userid)} />
         <UserInfoBlock>
           <UserInfoName>{userInfo?.full_name}</UserInfoName>
-          <UserInfoStatus>Online</UserInfoStatus>
+          {/* <UserInfoStatus>Online</UserInfoStatus> */}
         </UserInfoBlock>
       </ContactUserInfo>
       {/* <DirectMessageDropDownMenu /> */}

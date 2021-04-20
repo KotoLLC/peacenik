@@ -328,6 +328,14 @@ export declare namespace ApiTypes {
     }
   }
   export namespace Messages {
+    export interface DeleteMessage {
+      host: string
+      body: {
+        message_id: string
+        friend_id: string
+      }
+    }
+
     export interface UserMessagesFromHub {
       host: string
       token: string
