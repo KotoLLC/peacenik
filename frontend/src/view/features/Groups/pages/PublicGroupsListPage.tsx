@@ -53,22 +53,11 @@ const PublicGroupsListPage: React.FC<Props> = (props) => {
           <path className="groug-icon" fillRule="evenodd" clipRule="evenodd" d="M21.5 21H24V16.6667C24 14.3446 21.2047 12.8867 18.7503 12.2983C20.3777 13.3643 21.5 14.8602 21.5 16.6667V21ZM9 21V16.6667C9 14.2653 11.9896 12.788 14.5 12.241C17.0104 12.788 20 14.2653 20 16.6667V21H9ZM16.0999 9.97692C16.2331 9.99217 16.3685 10 16.5058 10C18.4457 10 20 8.43667 20 6.5C20 4.56333 18.4457 3 16.5058 3C16.3685 3 16.2331 3.00783 16.0999 3.02308C16.9676 3.92215 17.5 5.1474 17.5 6.5C17.5 7.8526 16.9676 9.07785 16.0999 9.97692ZM14.5039 9.37576C15.4103 8.74425 16 7.69295 16 6.5C16 5.30705 15.4103 4.25575 14.5039 3.62424C13.5942 4.25575 13 5.30705 13 6.5C13 7.69295 13.5942 8.74425 14.5039 9.37576Z" />
         </svg>
       </EmptyGroupsIconWrapper>
-      {isHubsOwnerCheck() ?
         <EmptyGroupsTextWrapper>
           <EmptyGroupsText>
-            No groups. You can either
-          <EmptyGroupsTextLink to="/groups/public"> join a public group</EmptyGroupsTextLink> <br />
-          or <EmptyGroupsTextLink to="/groups/create">create</EmptyGroupsTextLink> a public or private group of your own
+            There are no public groups. <EmptyGroupsTextLink to="/groups/create">Create</EmptyGroupsTextLink> a public group of your own!
         </EmptyGroupsText>
         </EmptyGroupsTextWrapper>
-        :
-        <EmptyGroupsTextWrapper>
-          <EmptyGroupsText>
-            Sorry! You can’t create new group. Your hub does not support groups. <EmptyGroupsTextLink to="/settings/hub">
-              Visit the hub page</EmptyGroupsTextLink> in your profile to create a hub with group support.
-          </EmptyGroupsText>
-        </EmptyGroupsTextWrapper>
-      }
     </EmptyGroups>
   )
 

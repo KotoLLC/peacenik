@@ -34,7 +34,7 @@ export const HubStepsInfo: React.FC<Props> = React.memo((props) => {
           </CreationHubStepWrapper>
           <CreationHubStepWrapper>
             <CreationHubStepIcon src={StepIcon2} />
-            <CreationHubStepDescription>Give storage for your friends, or they friends as well</CreationHubStepDescription>
+            <CreationHubStepDescription>Provide storage for your network of friends</CreationHubStepDescription>
           </CreationHubStepWrapper>
           <CreationHubStepWrapper>
             <CreationHubStepIcon src={StepIcon3} />

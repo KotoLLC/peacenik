@@ -40,7 +40,7 @@ const RemoveFriendDialog: React.SFC<Props> = (props) => {
       setOpenModal={() => setOpen(!isOpen)}
     >
       <ModalSubTitle>
-        Are you sure you'd like to remove <b>@{userName}</b> from your friend's list?
+        Are you sure you'd like to unfriend <b>@{userName}</b>?
       </ModalSubTitle>
       <ModalButtonsGroup>
         <ModalCancelButton

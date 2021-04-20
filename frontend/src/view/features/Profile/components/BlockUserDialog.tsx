@@ -36,8 +36,8 @@ const BlockUserDialog: React.FC<Props> = (props) => {
       setOpenModal={() => setOpen(!isOpen)}
       >
       <ModalSubTitle>
-        Blocking a user is permanent. There is no way to un-block them. This means you will not be able to see
-        them in any friend lists, read their comments, invite them to be friends, or receive invitations from
+        Blocking a user is permanent. There is no way to un-block them. You will not see
+        them in lists, read their comments, or receive invitations from
         them. Your profile will also be hidden from them.
         </ModalSubTitle>
       <ModalButtonsGroup>
