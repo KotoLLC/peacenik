@@ -10,6 +10,7 @@ import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
 import PullToRefresh from 'react-simple-pull-to-refresh'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import queryString from 'query-string'
+import { API } from '@services/api'
 import {
   UpButton,
 } from '../../Feed/components/styles'
@@ -47,12 +48,14 @@ interface Props {
   groupMessageToken: CommonTypes.GroupTypes.GroupMsgToken
   feedsTokens: CommonTypes.HubTypes.CurrentHub[]
   userId: string
+  postUpdated: boolean
 
   onGetFriends: () => void
   onGetInvitesToConfirmRequest: () => void
 
   onGetGroupMessages: (data: ApiTypes.Groups.MessagesById) => void
   onGetGroupMessagesToken: (data: ApiTypes.Groups.MessagesById) => void
+  onSetPostUpdated: (data) => void
 }
 
 const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
@@ -82,14 +85,22 @@ const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
     feedsTokens,
     state,
     userId,
+    postUpdated,
 
     onGetGroupMessages,
     onGetGroupMessagesToken,
     onGetInvitesToConfirmRequest, 
     onGetFriends,
-   } = props
+    onSetPostUpdated
+  } = props
 
   const parsed = queryString.parse(location.search)
+
+  let msgToken: string = feedsTokens[0].token
+  feedsTokens.map( (item: CommonTypes.HubTypes.CurrentHub ) => {
+    if(item.host === groupMessageToken.host)
+      msgToken = item.token
+  })
 
   const getGroupMsg = () => {
     onGetGroupMessages({
@@ -101,6 +112,34 @@ const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
     })
   }
   
+  useEffect( () => {
+    if ( postUpdated ) {
+      API.feed.getMessageById({
+        host: popupData.sourceHost,
+        body: {
+          token: popupData.messageToken,
+          message_id: popupData.id,
+        }
+      }).then( (response: any) => {
+        setPopupData({
+          created_at: response.data.message.created_at,
+          message: response.data.message.message,
+          isAttacmentDeleted: false,
+          attachment_type: response.data.message.attachment_type,
+          attachment: response.data.message.attachment,
+          comments: response.data.message.comments,
+          sourceHost: popupData.sourceHost,
+          messageToken: popupData.messageToken,
+          id: response.data.message.id,
+          user_id: response.data.message.user_id,
+          friends: [],
+        })
+        onSetPostUpdated(false)
+      }).catch(error => {
+        console.log("GET MESSAGE ERROR 3: ", error)
+      })
+    }
+  }, [postUpdated])
   useEffect( () => {
     onGetGroupMessagesToken({
       host: groupMessageToken.host as string,
@@ -140,12 +179,6 @@ const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
   if (!groupDetails) return null
   const { group, members, status, invites } = groupDetails
   let timerId: any = null
-
-  let msgToken: string = ""
-  feedsTokens.map( (item: CommonTypes.HubTypes.CurrentHub ) => {
-    if(item.host === groupMessageToken.host)
-      msgToken = item.token
-  })
 
   const showCommentPopup = (displayData: CommonTypes.PopupData) => {
     setPopupData({
@@ -315,6 +348,7 @@ type StateProps = Pick<Props,
   | 'messages'
   | 'groupMessageToken'  
   | 'feedsTokens'
+  | 'postUpdated'
   >
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   state: state,
@@ -322,7 +356,7 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   groupMessageToken: selectors.groups.groupMessageToken(state),
   feedsTokens: selectors.feed.feedsTokens(state),
   userId: selectors.profile.userId(state),
-
+  postUpdated: selectors.feed.postUpdated(state),
   groupDetails: selectors.groups.groupDetails(state),
   friends: selectors.friends.friends(state),
 })
@@ -332,12 +366,14 @@ type DispatchProps = Pick<Props,
   | 'onGetFriends'
   | 'onGetGroupMessagesToken'
   | 'onGetGroupMessages'
+  | 'onSetPostUpdated'
   >
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetGroupMessagesToken: (data: ApiTypes.Groups.MessagesById) => dispatch(Actions.groups.getGroupFeedTokenRequest(data)),
   onGetGroupMessages: (data: ApiTypes.Groups.MessagesById) => dispatch(Actions.groups.getGroupFeedRequest(data)),
   onGetInvitesToConfirmRequest: () => dispatch(Actions.groups.getInvitesToConfirmRequest()),
   onGetFriends: () => dispatch(Actions.friends.getFriendsRequest()),
+  onSetPostUpdated: (data) => dispatch(Actions.feed.setPostUpdated(data))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(AdminPrivateLayout)

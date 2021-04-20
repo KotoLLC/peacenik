@@ -61,13 +61,13 @@ class NotificationsModal extends React.PureComponent<Props, State> {
     if (notifications.length) {
       return (
         <>
+          <ClearButtonWrapper>
+            <ButtonContained onClick={this.onClean}>Clear all</ButtonContained>
+          </ClearButtonWrapper >
           <NewNotifications>New</NewNotifications>
           {notifications.map(item => (
             <Notification onClick={() => this.openModal(false)} key={item.id} {...item} />
           ))}
-          <ClearButtonWrapper>
-            <ButtonContained onClick={this.onClean}>Clear all</ButtonContained>
-          </ClearButtonWrapper >
         </>
       )
     } else {

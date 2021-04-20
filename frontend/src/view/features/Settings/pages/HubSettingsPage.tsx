@@ -64,7 +64,7 @@ const HubSettingsPage: React.FC<Props> = (props) => {
       <>
         <HubMajorInfo {...myActiveHub} currentHub={currentHub}/>
         <HubStepsInfo isHubActive={false} myActiveHub={myActiveHub}/>
-        <HubOptionA />
+        {/* <HubOptionA /> */}
         <HubOptionB hubCreationStatus={hubCreationStatus} />
       </>
     )

@@ -17,9 +17,9 @@ export default function DirectMessageBox(props: Props) {
   
   return (
     <DirectMessageBoxWapper>
-      {/* <DMHeaderWrapper>
+      <DMHeaderWrapper>
         <DirectMessageHeader />
-      </DMHeaderWrapper> */}
+      </DMHeaderWrapper>
 
       <DMContentWrapper>
         <DirectMessageContent />

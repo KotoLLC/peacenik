@@ -17,6 +17,7 @@ import Actions from '@store/actions'
 import FeedPost from '../../Feed/components/FeedPost'
 import CommentDialog from '../../Feed/components/CommentDialog'
 import JoinGroupDialog from './../components/JoinGroupDialog'
+import { API } from '@services/api'
 import {
   UpButton,
 } from '../../Feed/components/styles'
@@ -50,12 +51,14 @@ interface Props {
   groupDetails?: ApiTypes.Groups.GroupDetails | null
   isGroupLeavedSuccess: boolean
   errorMessage: string
+  postUpdated: boolean
 
   onLeaveGroupSuccess: (value: boolean) => void
   onLeaveGroupRequest: (value: string) => void
   onDeleteJoinRequest: (data: ApiTypes.Groups.DeleteJoinRequest) => void
   onGetGroupMessages: (data: ApiTypes.Groups.MessagesById) => void
   onGetGroupMessagesToken: (data: ApiTypes.Groups.MessagesById) => void
+  onSetPostUpdated: (data) => void
 }
 
 const MemberLayout: React.FC<Props> = React.memo((props) => {
@@ -84,18 +87,20 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
     state,
     isGroupLeavedSuccess,
     errorMessage,
+    postUpdated,
     
     onGetGroupMessages,
     onGetGroupMessagesToken,
     onLeaveGroupRequest,
     onLeaveGroupSuccess,
-    onDeleteJoinRequest
-   } = props
+    onDeleteJoinRequest,
+    onSetPostUpdated
+  } = props
 
   //  console.log("MEMBER LAYOUT: ", props)
   const parsed = queryString.parse(location.search)
   let timerId: any = null
-  let msgToken: string = ""
+  let msgToken: string = feedsTokens[0].token
   feedsTokens.map( (item: CommonTypes.HubTypes.CurrentHub ) => {
     if(item.host === groupMessageToken.host)
       msgToken = item.token
@@ -131,6 +136,35 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
       clearInterval(timerId)
     }
   }, [groupMessageToken])
+
+  useEffect( () => {
+    if ( postUpdated ) {
+      API.feed.getMessageById({
+        host: popupData.sourceHost,
+        body: {
+          token: popupData.messageToken,
+          message_id: popupData.id,
+        }
+      }).then( (response: any) => {
+        setPopupData({
+          created_at: response.data.message.created_at,
+          message: response.data.message.message,
+          isAttacmentDeleted: false,
+          attachment_type: response.data.message.attachment_type,
+          attachment: response.data.message.attachment,
+          comments: response.data.message.comments,
+          sourceHost: popupData.sourceHost,
+          messageToken: popupData.messageToken,
+          id: response.data.message.id,
+          user_id: response.data.message.user_id,
+          friends: [],
+        })
+        onSetPostUpdated(false)
+      }).catch(error => {
+        console.log("GET MESSAGE ERROR 3: ", error)
+      })
+    }
+  }, [postUpdated])
 
   if (!groupDetails) return null
 
@@ -314,6 +348,7 @@ type StateProps = Pick<Props,
   | 'groupMessageToken' 
   | 'feedsTokens'
   | 'errorMessage'
+  | 'postUpdated'
 >
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   state: state,
@@ -324,6 +359,7 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   feedsTokens: selectors.feed.feedsTokens(state),
   isGroupLeavedSuccess: selectors.groups.isGroupLeavedSuccess(state),
   errorMessage: selectors.common.errorMessage(state),
+  postUpdated: selectors.feed.postUpdated(state)
 })
 
 type DispatchProps = Pick<Props, 
@@ -332,6 +368,7 @@ type DispatchProps = Pick<Props,
   | 'onLeaveGroupRequest' 
   | 'onLeaveGroupSuccess' 
   | 'onDeleteJoinRequest'
+  | 'onSetPostUpdated'
 >
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetGroupMessagesToken: (data: ApiTypes.Groups.MessagesById) => dispatch(Actions.groups.getGroupFeedTokenRequest(data)),
@@ -339,6 +376,7 @@ const mapDispatchToProps = (dispatch): DispatchProps => ({
   onLeaveGroupRequest: (value: string) => dispatch(Actions.groups.leaveGroupRequest(value)),
   onLeaveGroupSuccess: (value: boolean) => dispatch(Actions.groups.leaveGroupSuccess(value)),
   onDeleteJoinRequest: (data: ApiTypes.Groups.DeleteJoinRequest) => dispatch(Actions.groups.deleteJoinRequest(data)),
+  onSetPostUpdated: (data) => dispatch(Actions.feed.setPostUpdated(data))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(MemberLayout)

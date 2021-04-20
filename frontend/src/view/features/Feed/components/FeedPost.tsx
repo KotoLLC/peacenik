@@ -164,6 +164,7 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
               </svg>
             )}
           </IconButton>
+          <b>{likes || 0}</b> likes
         </ReactionNavItem>
         <FeedComment
           user_name={userName}
@@ -217,7 +218,6 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
         <YoutubeFrame text={message} />
         {renderViewAttachment()}
       </FeedAttachmentWrapper>
-      {renderReactions()}
       <FeedFooter>
         {renderReactionNav()}
         {isAuthor ? (
