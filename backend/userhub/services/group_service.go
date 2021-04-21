@@ -289,6 +289,7 @@ func (s *groupService) RequestJoin(ctx context.Context, r *rpc.GroupRequestJoinR
 		"GroupName":       group.Name,
 		"AcceptLink":      link,
 		"RejectLink":      link,
+		"Message":         r.Message,
 	})
 	if err != nil {
 		return nil, err
