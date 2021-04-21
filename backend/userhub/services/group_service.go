@@ -520,6 +520,7 @@ func (s *groupService) RemoveUser(ctx context.Context, r *rpc.GroupRemoveUserReq
 }
 
 func (s *groupService) ConfirmInvite(ctx context.Context, r *rpc.GroupConfirmInviteRequest) (*rpc.Empty, error) {
+	me := s.getMe(ctx)
 	group, isGroupAdmin := s.getGroup(ctx, r.GroupId)
 	if group == nil {
 		return nil, twirp.NotFoundError("group not found")
@@ -529,6 +530,37 @@ func (s *groupService) ConfirmInvite(ctx context.Context, r *rpc.GroupConfirmInv
 	}
 
 	s.repos.Group.ConfirmInvite(r.GroupId, r.InviterId, r.InvitedId)
+
+	if s.notificationSender != nil {
+		s.notificationSender.SendNotification([]string{r.InvitedId}, fmt.Sprintf("You've been added to the group %s", group.Name), "group-invite/confirm", map[string]interface{}{
+			"group_id": group.ID,
+			"user_id":  me.ID,
+		})
+	}
+
+	if s.mailSender != nil {
+		messagesLink := fmt.Sprintf("%s/messages", s.cfg.FrontendAddress)
+		groupLink := fmt.Sprintf("%s/groups/group?id=%s", s.cfg.FrontendAddress, group.ID)
+
+		userInfo := s.userCache.UserFullAccess(r.InvitedId)
+		meInfo := s.userCache.UserFullAccess(me.ID)
+		var message bytes.Buffer
+		err := s.rootEmailTemplate.ExecuteTemplate(&message, "group_add.gohtml", map[string]interface{}{
+			"AdminDisplayName": meInfo.DisplayName,
+			"GroupName":        group.Name,
+			"FeedLink":         messagesLink,
+			"GroupLink":        groupLink,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		err = s.mailSender.SendHTMLEmail([]string{userInfo.Email}, fmt.Sprintf("You've been added to %s", group.Name), message.String(), nil)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return &rpc.Empty{}, nil
 }
 
