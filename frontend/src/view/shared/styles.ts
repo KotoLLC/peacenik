@@ -330,6 +330,12 @@ export const ButtonContained = styled(Button)`
   text-transform: none;
   margin-right: 20px;
 
+  &.join-group{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
   &.large {
     min-width: 160px;
   }
@@ -551,8 +557,8 @@ export const PageCover = styled.div`
 export const ProfileAvatar = styled(Avatar)`
   width: 200px;
   height: 200px;
-  background: ${bkGray}
-  margin: -160px auto 30px;
+  background: ${bkGray};
+  margin: auto;
   border: 6px solid #FFFFFF;
   position: relative;
   z-index: 20;

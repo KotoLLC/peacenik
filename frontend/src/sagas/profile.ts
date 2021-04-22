@@ -1,8 +1,9 @@
-import { put } from 'redux-saga/effects'
+import { put, all, call, select } from 'redux-saga/effects'
 import Actions from '@store/actions'
 import { API } from '@services/api'
 import { ApiTypes } from 'src/types'
 import { usersInviteStatusFromBackToFront } from '@services/dataTransforms/usersInviteStatusFromBackToFront'
+import selectors from '@selectors/index'
 
 export function* watchGetProfile() {
   
@@ -110,5 +111,25 @@ export function* watchSetProfileCover(action: { type: string, payload: ApiTypes.
     yield put(Actions.profile.setProfileCoverSuccess())
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+  }
+}
+
+export function * watchDeleteAccount( action: {type: string}) {
+  try {
+    let response = yield API.profile.deleteAccountFromUserHub()
+    if ( response.status === 200) {
+      const state = yield select()
+      const feedsTokens = selectors.feed.feedsTokens(state)
+      yield all(feedsTokens.map(item => {             
+        return call(API.profile.deleteAccountFromMsgHub, item.host)
+      }))
+      yield put(Actions.profile.deleteAccountSuccess())
+    } else {
+      yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+    }
+  } catch (error) {
+    if (!error.response) {
+      yield put(Actions.common.setConnectionError(true))
+    }
   }
 }

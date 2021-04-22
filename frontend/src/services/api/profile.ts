@@ -1,5 +1,6 @@
 import { axiosInstance } from './index'
 import { ApiTypes } from 'src/types'
+import { getHeaderConfig } from './commonAPIFunctions'
 
 export default {
   getProfile: async () => {
@@ -50,4 +51,22 @@ export default {
       return response
     }).catch(error => ({ error }))
   },
+
+  deleteAccountFromUserHub: async () => {
+    const config = {
+      withCredentials: false,
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    }
+    return await axiosInstance.post('/rpc.UserService/DeleteMe', config).then(response => {
+      return response
+    }).catch(error => ({error}))
+  },
+
+  deleteAccountFromMsgHub: async (host) => {
+    return await axiosInstance.post(`${host}/rpc.UserService/DeleteMe`, {}, getHeaderConfig()).then(response => {
+      return response
+    }).catch(error => ({error}))
+  }
 }
