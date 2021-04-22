@@ -53,6 +53,7 @@ import {
     watchDisableUser,
     watchGetProfileCoverUploadLink,
     watchSetProfileCover,
+    watchDeleteAccount,
 } from './profile'
 import {
     watchGetMessages,
@@ -164,6 +165,7 @@ export function* rootSaga() {
         takeEvery(ProfileTypes.DISABLE_USER_REQUEST, watchDisableUser),
         takeEvery(ProfileTypes.GET_PROFILE_COVER_UPLOAD_LINK_REQUEST, watchGetProfileCoverUploadLink),
         takeEvery(ProfileTypes.SET_PROFILE_COVER_REQUEST, watchSetProfileCover),
+        takeEvery(ProfileTypes.DELETE_ACCOUNT_REQUEST, watchDeleteAccount),
 
         takeEvery(FeedMessagesTypes.GET_FEED_TOKENS_REQUEST, watchGetMessages),
         takeEvery(FeedMessagesTypes.GET_CURRENT_HUB_REQUEST, watchGetCurrentHub),

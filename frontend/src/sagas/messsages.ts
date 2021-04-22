@@ -6,12 +6,9 @@ import {
   CommonTypes
 } from 'src/types'
 import * as EnumTypes from '../types/enum'
-import { setUserNames } from '@services/userNames'
 import { hubsForMessagesBack2Front } from '@services/dataTransforms/hubsForMessagesTransform'
 import selectors from '@selectors/index'
 import { Types as DirectMessagesTypes } from '@store/messages/actions'
-import { Types as FeedMessagesTypes } from '@store/feed/actions'
-import { watchGetMessagesFromHub } from './feed'
 import { getUserNameByUserId } from '@services/userNames';
 
 export function * watchDeleteDirectMsg(action: {
@@ -237,15 +234,7 @@ export function* watchGetUserLastMessagesFromHub(action: { type: string, payload
   try {
     const resultData = yield API.messages.getUserLastMessagesFromHub(action.payload)
     // sort the last date
-    resultData.sort((a,b)=>a.created_at > b.created_at? -1: 1)
-    // console.log(resultData)
-    // export interface UserMessage {
-    //   user_id: string
-    //   messages: Feed.Message[]
-    //   lastMessageDate?: string | null
-    //   username?: string
-    //   full_name?: string
-    // }  
+    resultData.sort((a,b)=>a.created_at > b.created_at? -1: 1) 
     yield put(Actions.messages.getUserLastMessageFromHubSuccess({
       hub: action.payload.host,
       usersLastMessage: resultData

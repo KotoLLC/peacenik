@@ -259,22 +259,20 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
           Leave group
         </ButtonOutlined>
       )
-    }
-    if (status === 'pending') {
-      return <ButtonOutlined 
-        onClick={() => onDeleteJoinRequest({
-          group_id: group?.id,
-        })}
-        className="extra-small green">
-        Remove invite
-      </ButtonOutlined>
-    }
-    if (status === '' || status === 'rejected') {
-      return <JoinGroupDialog
-        groupId={group?.id}
-        buttonClassName="large"
-        buttonText="Join group"
-      />
+    // } else if (status === 'pending') {
+    //   return <ButtonOutlined 
+    //     onClick={() => onDeleteJoinRequest({
+    //       group_id: group?.id,
+    //     })}
+    //     className="extra-small green">
+    //     Remove invite
+    //   </ButtonOutlined>
+    // } else if (status === '' || status === 'rejected') {
+    //   return <JoinGroupDialog
+    //     groupId={group?.id}
+    //     buttonClassName="large"
+    //     buttonText="Join group"
+    //   />
     }
   }
 
@@ -307,7 +305,22 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
               />
             </LeftSideBar>
             <CentralBar>
-              {checkCurrentHub()}
+              {(status === 'member') && checkCurrentHub()}
+              {(status === 'pending') && 
+                <ButtonOutlined 
+                  onClick={() => onDeleteJoinRequest({
+                    group_id: group?.id,
+                  })}
+                  className="extra-small green">
+                  Remove invite
+                </ButtonOutlined>}
+              {(status === '' || status === 'rejected') && 
+                <JoinGroupDialog
+                  groupId={group?.id}
+                  buttonClassName="large join-group"
+                  buttonText="Join group"
+                />
+              }
               {/* <ViewMoreButton>View more</ViewMoreButton> */}
             </CentralBar>
             <RightSideBar>

@@ -16,6 +16,8 @@ export interface State extends ApiTypes.Profile.UserProfile {
   owned_hubs: string[]
   users: ApiTypes.User[]
   coverUploadLink: ApiTypes.UploadLink | null
+  deleteAccountRequest: boolean
+  deleteAccountSuccess: boolean
 }
 
 const initialState: State = {
@@ -24,7 +26,9 @@ const initialState: State = {
   profileErrorMessage: '',
   owned_hubs: [],
   users: [], 
-  coverUploadLink: null
+  coverUploadLink: null,
+  deleteAccountRequest: false,
+  deleteAccountSuccess: false
 }
 
 const reducer = (state = initialState, action) => {
@@ -67,6 +71,26 @@ const reducer = (state = initialState, action) => {
         ...state, ...{ 
           coverUploadLink: action.payload 
         }
+      }
+    }
+    case Types.DELETE_ACCOUNT_REQUEST: {
+      return {
+        ...state,
+        deleteAccountRequest: true
+      }
+    }
+    case Types.DELETE_ACCOUNT_SUCCESS: {
+      console.log("PASSED!")
+      return {
+        ...state,
+        deleteAccountRequest: false,
+        deleteAccountSuccess: true
+      }
+    }
+    case Types.SET_DELETE_ACCOUNT_SUCCESS: {
+      return {
+        ...state,
+        deleteAccountSuccess: false
       }
     }
     default: return state

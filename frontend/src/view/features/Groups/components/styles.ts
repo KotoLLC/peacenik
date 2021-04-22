@@ -385,6 +385,7 @@ export const ItemsGroupPublicity = styled.span`
 `
 
 export const GroupDescription = styled.p`
+  color: #788692;
   font-size: 14px;
   font-family: 'SFUITextLight';
   height: 60px;

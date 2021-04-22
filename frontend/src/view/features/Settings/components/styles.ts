@@ -26,6 +26,14 @@ export const SettingsContainer = styled.main`
     padding: 10px 15px 15px;
 }
 `
+export const DangerZoneWrapper = styled.div`
+  text-align: center;
+  padding: 30px;
+`
+
+export const DeleteAccountNote = styled.p`
+  margin: 20px;
+`
 
 export const SettingsContentWrapper = styled.div`
   width: calc(100% - 262px);
