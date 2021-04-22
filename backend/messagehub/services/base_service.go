@@ -22,11 +22,21 @@ type User struct {
 	IsHubAdmin   bool
 	IsBlocked    bool
 	BlockedUsers []string
+	OwnedGroups  []string
 }
 
 func (u User) IsBlockedUser(userID string) bool {
 	for _, id := range u.BlockedUsers {
 		if id == userID {
+			return true
+		}
+	}
+	return false
+}
+
+func (u User) IsOwnedGroup(groupID string) bool {
+	for _, id := range u.OwnedGroups {
+		if id == groupID {
 			return true
 		}
 	}

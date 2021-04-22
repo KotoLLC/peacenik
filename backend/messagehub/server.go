@@ -186,8 +186,8 @@ func (s *Server) checkAuth(next http.Handler) http.Handler {
 		userID := claims["id"].(string)
 		userName, _ := claims["name"].(string)
 		userFullName, _ := claims["full_name"].(string)
+
 		var isHubAdmin bool
-		var blockedUsers []string
 		if ownedHubs, ok := claims["owned_hubs"].([]interface{}); ok {
 			for _, hub := range ownedHubs {
 				if hub.(string) == s.cfg.ExternalAddress {
@@ -196,6 +196,16 @@ func (s *Server) checkAuth(next http.Handler) http.Handler {
 				}
 			}
 		}
+
+		var ownedGroups []string
+		if rawOwnedGroups, ok := claims["owned_groups"].([]interface{}); ok {
+			ownedGroups = make([]string, len(rawOwnedGroups))
+			for i, groupID := range rawOwnedGroups {
+				ownedGroups[i] = groupID.(string)
+			}
+		}
+
+		var blockedUsers []string
 		if rawBlockedUsers, ok := claims["blocked_users"].([]interface{}); ok {
 			for _, id := range rawBlockedUsers {
 				blockedUsers = append(blockedUsers, id.(string))
@@ -211,6 +221,7 @@ func (s *Server) checkAuth(next http.Handler) http.Handler {
 			IsHubAdmin:   isHubAdmin,
 			IsBlocked:    user.BlockedAt.Valid,
 			BlockedUsers: blockedUsers,
+			OwnedGroups:  ownedGroups,
 		})
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

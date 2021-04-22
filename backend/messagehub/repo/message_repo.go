@@ -2,6 +2,7 @@ package repo
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 
 	"github.com/ansel1/merry"
@@ -68,7 +69,7 @@ type MessageRepo interface {
 	AddMessage(parentID string, message Message)
 	EditMessageText(userID, messageID, text string, updatedAt time.Time) bool
 	EditMessageAttachment(userID, messageID, attachmentID, attachmentType, attachmentThumbnailID string, updatedAt time.Time) bool
-	DeleteMessage(userID, messageID string) bool
+	DeleteMessage(messageID string) bool
 	Comments(currentUserID string, messageIDs []string) map[string][]Message
 	LikeMessage(userID, messageID string) int
 	UnlikeMessage(userID, messageID string) int
@@ -198,12 +199,13 @@ func (r *messageRepo) DirectMessages(userID1, userID2 string, from time.Time, co
 func (r *messageRepo) Message(currentUserID string, messageID string) *Message {
 	var message Message
 	err := r.db.Get(&message, `
-			select m.id, m.parent_id, m.user_id, m.text,
-			       m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at, m.group_id, m.friend_id,
-				   (select count(*) from message_likes where message_id = m.id) likes,
-				   case when exists(select * from message_likes where message_id = m.id and user_id = $1) then true else false end liked_by_me
-			from messages m
-			where m.id = $2`, currentUserID, messageID)
+		select m.id, m.parent_id, m.user_id, m.text,
+			   m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at, m.group_id, m.friend_id,
+			   (select count(*) from message_likes where message_id = m.id) likes,
+			   case when exists(select * from message_likes where message_id = m.id and user_id = $1) then true else false end liked_by_me
+		from messages m
+		where m.id = $2`,
+		currentUserID, messageID)
 	if err != nil {
 		if merry.Is(err, sql.ErrNoRows) {
 			return nil
@@ -301,10 +303,10 @@ func (r *messageRepo) EditMessageAttachment(userID, messageID, attachmentID, att
 	return ok
 }
 
-func (r *messageRepo) DeleteMessage(userID, messageID string) bool {
+func (r *messageRepo) DeleteMessage(messageID string) bool {
 	var ok bool
 	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
-		ok = r.deleteMessage(tx, userID, messageID)
+		ok = r.deleteMessage(tx, messageID)
 		return nil
 	})
 	if err != nil {
@@ -313,43 +315,43 @@ func (r *messageRepo) DeleteMessage(userID, messageID string) bool {
 	return ok
 }
 
-func (r *messageRepo) deleteMessage(tx *sqlx.Tx, userID, messageID string) bool {
-	var messages []Message
-	err := tx.Select(&messages, "select attachment_id, attachment_thumbnail_id from messages where (id = $1 and user_id = $2) or parent_id = $1",
-		messageID, userID)
+func (r *messageRepo) deleteMessage(tx *sqlx.Tx, messageID string) bool {
+	var message Message
+	err := tx.Get(&message, `
+		select attachment_id, attachment_thumbnail_id
+		from messages
+		where id = $1;`,
+		messageID)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false
+		}
 		panic(err)
 	}
 	now := common.CurrentTimestamp()
-	for _, msg := range messages {
-		if msg.AttachmentID != "" {
-			_, err = tx.Exec(`
-				insert into blob_pending_deletes(blob_id, deleted_at)
-				values ($1, $2)`,
-				msg.AttachmentID, now)
-			if err != nil {
-				panic(err)
-			}
+	if message.AttachmentID != "" {
+		_, err = tx.Exec(`
+			insert into blob_pending_deletes(blob_id, deleted_at)
+			values ($1, $2)`,
+			message.AttachmentID, now)
+		if err != nil {
+			panic(err)
 		}
-		if msg.AttachmentThumbnailID != "" && msg.AttachmentThumbnailID != msg.AttachmentID {
-			_, err = tx.Exec(`
-				insert into blob_pending_deletes(blob_id, deleted_at)
-				values ($1, $2)`,
-				msg.AttachmentThumbnailID, now)
-			if err != nil {
-				panic(err)
-			}
+	}
+	if message.AttachmentThumbnailID != "" && message.AttachmentThumbnailID != message.AttachmentID {
+		_, err = tx.Exec(`
+			insert into blob_pending_deletes(blob_id, deleted_at)
+			values ($1, $2)`,
+			message.AttachmentThumbnailID, now)
+		if err != nil {
+			panic(err)
 		}
 	}
 
 	_, err = tx.Exec(`
 		delete from message_likes
-		where message_id in (
-		    select id     
-		    from messages
-			where parent_id = $1
-		  		and (select user_id from messages where messages.id = $1) = $2)`,
-		messageID, userID)
+		where message_id = $1;`,
+		messageID)
 	if err != nil {
 		panic(err)
 	}
@@ -361,42 +363,10 @@ func (r *messageRepo) deleteMessage(tx *sqlx.Tx, userID, messageID string) bool 
 		    attachment_id = '',
 		    attachment_thumbnail_id = '',
 		    deleted_at = $1
-		where parent_id = $2
-		  and (select user_id from messages where messages.id = $2) = $3`,
-		common.CurrentTimestamp(), messageID, userID)
+		where id = $2;`,
+		common.CurrentTimestamp(), messageID)
 	if err != nil {
 		panic(err)
-	}
-
-	_, err = tx.Exec(`
-		delete from message_likes
-		where message_id in (
-		    select id
-		    from messages
-			where id = $1 and user_id = $2)`,
-		messageID, userID)
-	if err != nil {
-		panic(err)
-	}
-
-	res, err := tx.Exec(`
-		update messages
-		set text = '(deleted)',
-		    attachment_type = '',
-		    attachment_id = '',
-		    attachment_thumbnail_id = '',
-		    deleted_at = $1
-		where id = $2 and user_id = $3`,
-		common.CurrentTimestamp(), messageID, userID)
-	if err != nil {
-		panic(err)
-	}
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		panic(err)
-	}
-	if rowsAffected < 1 {
-		return false
 	}
 	return true
 }
@@ -593,7 +563,7 @@ func (r *messageRepo) DeleteReportedMessage(reportID string) bool {
 
 	ok := false
 	err = common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
-		if !r.deleteMessage(tx, message.UserID, message.ID) {
+		if !r.deleteMessage(tx, message.ID) {
 			return nil
 		}
 		_, err := tx.Exec(`

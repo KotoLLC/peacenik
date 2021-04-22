@@ -478,9 +478,21 @@ func (s *messageService) Edit(ctx context.Context, r *rpc.MessageEditRequest) (*
 }
 
 func (s *messageService) Delete(ctx context.Context, r *rpc.MessageDeleteRequest) (_ *rpc.Empty, err error) {
-	user := s.getUser(ctx)
-	if !s.repos.Message.DeleteMessage(user.ID, r.MessageId) {
+	me := s.getUser(ctx)
+	msg := s.repos.Message.Message(me.ID, r.MessageId)
+	switch {
+	case msg == nil:
 		return nil, twirp.NotFoundError("not found")
+	case msg.UserID == me.ID:
+		if !s.repos.Message.DeleteMessage(r.MessageId) {
+			return nil, twirp.NotFoundError("not found")
+		}
+	case msg.GroupID.Valid && me.IsOwnedGroup(msg.GroupID.String):
+		if !s.repos.Message.DeleteMessage(r.MessageId) {
+			return nil, twirp.NotFoundError("not found")
+		}
+	default:
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 	return &rpc.Empty{}, nil
 }
@@ -673,9 +685,21 @@ func (s *messageService) EditComment(ctx context.Context, r *rpc.MessageEditComm
 }
 
 func (s *messageService) DeleteComment(ctx context.Context, r *rpc.MessageDeleteCommentRequest) (_ *rpc.Empty, err error) {
-	user := s.getUser(ctx)
-	if !s.repos.Message.DeleteMessage(user.ID, r.CommentId) {
+	me := s.getUser(ctx)
+	comment := s.repos.Message.Message(me.ID, r.CommentId)
+	switch {
+	case comment == nil:
 		return nil, twirp.NotFoundError("not found")
+	case comment.UserID == me.ID:
+		if !s.repos.Message.DeleteMessage(r.CommentId) {
+			return nil, twirp.NotFoundError("not found")
+		}
+	case comment.GroupID.Valid && me.IsOwnedGroup(comment.GroupID.String):
+		if !s.repos.Message.DeleteMessage(r.CommentId) {
+			return nil, twirp.NotFoundError("not found")
+		}
+	default:
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 	return &rpc.Empty{}, nil
 }

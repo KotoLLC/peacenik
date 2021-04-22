@@ -37,6 +37,12 @@ func (s *tokenService) Auth(ctx context.Context, _ *rpc.Empty) (*rpc.TokenAuthRe
 		ownedHubAddresses[i] = hub.Address
 	}
 
+	ownedGroups := s.repos.Group.ManagedGroups(me.ID)
+	ownedGroupIDs := make([]string, len(ownedGroups))
+	for i, group := range ownedGroups {
+		ownedGroupIDs[i] = group.ID
+	}
+
 	blockedUserIDs := s.repos.User.BlockedUserIDs(me.ID)
 	if blockedUserIDs == nil {
 		blockedUserIDs = []string{}
@@ -45,6 +51,7 @@ func (s *tokenService) Auth(ctx context.Context, _ *rpc.Empty) (*rpc.TokenAuthRe
 	meInfo := s.userCache.UserFullAccess(me.ID)
 	claims := map[string]interface{}{
 		"owned_hubs":    ownedHubAddresses,
+		"owned_groups":  ownedGroupIDs,
 		"blocked_users": blockedUserIDs,
 		"name":          meInfo.Name,
 		"full_name":     meInfo.FullName,
