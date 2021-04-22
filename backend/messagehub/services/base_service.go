@@ -68,7 +68,7 @@ func NewBase(repos repo.Repos, tokenParser token.Parser, externalAddress string,
 	}
 }
 
-func (s *BaseService) getUser(ctx context.Context) User {
+func (s *BaseService) getMe(ctx context.Context) User {
 	return ctx.Value(ContextUserKey).(User)
 }
 

@@ -21,8 +21,8 @@ type adminService struct {
 }
 
 func (s *adminService) DestroyData(ctx context.Context, _ *rpc.Empty) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
-	if !user.IsHubAdmin {
+	me := s.getMe(ctx)
+	if !me.IsHubAdmin {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 	*s.destroy = true

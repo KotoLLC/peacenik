@@ -19,8 +19,8 @@ type userService struct {
 }
 
 func (s *userService) BlockUser(ctx context.Context, r *rpc.UserBlockRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
-	if !user.IsHubAdmin {
+	me := s.getMe(ctx)
+	if !me.IsHubAdmin {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 	s.repos.User.BlockUser(r.UserId)
@@ -28,7 +28,7 @@ func (s *userService) BlockUser(ctx context.Context, r *rpc.UserBlockRequest) (*
 }
 
 func (s *userService) DeleteMe(ctx context.Context, _ *rpc.Empty) (*rpc.Empty, error) {
-	me := s.getUser(ctx)
+	me := s.getMe(ctx)
 	s.repos.DeleteUserData(me.ID)
 	return &rpc.Empty{}, nil
 }
