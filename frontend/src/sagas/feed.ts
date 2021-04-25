@@ -206,6 +206,7 @@ export function* watchDeleteMessage(action: { type: string, payload: ApiTypes.Fe
 
   if (response.status === 200) {
     yield put(Actions.feed.deleteFeedMessageSucces())
+    yield put(Actions.feed.postFeedCommentSucces(true))
     yield put(Actions.feed.getFeedTokensRequest())
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
