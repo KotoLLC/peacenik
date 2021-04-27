@@ -117,7 +117,7 @@ class HubOptionB extends React.PureComponent<Props, State> {
   }
 
   renderSuccessfulyMessage = () => (
-    <HubOptionText>Your request for the new Hub sended successfuly, await for response.</HubOptionText>
+    <HubOptionText>Your request for the new hub sent. Please wait for a response.</HubOptionText>
   )
 
   renderForm = () => {
@@ -133,10 +133,9 @@ class HubOptionB extends React.PureComponent<Props, State> {
 
     return (
       <>
-        <HubOptionText>This option is for software nerds only. If you're lost - go with Option A.</HubOptionText>
         <HubFieldWrapper>
           <HubFieldLabel>
-            1. Run the installation on Ubunty (18.04+)
+            1. Run the installer on Ubuntu (18.04+)
           </HubFieldLabel>
           <HubFieldInput
             value="wget -c https://fra1.digitaloceanspaces.com/peacenik/message-hub-installer.tar.gz -O - | tar -xz && ./message-hub-installer"
@@ -147,7 +146,7 @@ class HubOptionB extends React.PureComponent<Props, State> {
         </HubFieldWrapper>
         <HubFieldWrapper>
           <HubFieldLabel>
-            2. Configure DNS for your server and enter a domain name
+            2. Configure DNS and enter a domain name
           </HubFieldLabel>
           <HubFieldInput
             id="hub-name"

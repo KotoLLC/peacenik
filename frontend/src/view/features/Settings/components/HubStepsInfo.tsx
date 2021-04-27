@@ -43,7 +43,7 @@ export const HubStepsInfo: React.FC<Props> = React.memo((props) => {
         </CreationHubStepsWrapper>
         {!isHubActive ?
           <CreationHubNote>
-            You can (A) activate a <b>sponsored hub</b> or (B) <b>create a hub</b> yourself.
+            Follow the instructions below to create a hub
         </CreationHubNote> :
           <RemoveHubDialog {...myActiveHub}/>
         }

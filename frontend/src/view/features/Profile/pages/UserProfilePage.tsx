@@ -126,7 +126,7 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
           <NoFriendsWrapper>
             <PeopleAltIcon />
           </NoFriendsWrapper>
-          <NoFriendsTitle>No friens yet</NoFriendsTitle>
+          <NoFriendsTitle>No friends yet</NoFriendsTitle>
         </>
       )
     }
