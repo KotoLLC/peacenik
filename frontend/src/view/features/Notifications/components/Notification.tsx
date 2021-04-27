@@ -90,35 +90,28 @@ export const Notification: React.FC<Props> = (props) => {
   }
 
   const renderCorrectPath = () => {
+    console.log("type: ", type)
     if (type.indexOf('message-hub') !== -1) {
       return `/settings/hub`
-    }
-
-    if (type.indexOf('message') !== -1) {
+    } else if (type.indexOf('message') !== -1) {
       if (dataObj['friend-id']){
         return `/messages/d/${dataObj['user_id']}`
       } else
         return `/feed/info${urlVars}`
-    }
-
-    if (type.indexOf('comment') !== -1) {
+    } else  if (type.indexOf('comment') !== -1) {
       return `/feed/info${urlVars}`
-    }
-
-    if (type.indexOf('like') !== -1) {
+    } else if (type.indexOf('like') !== -1) {
       return `/feed/info${urlVars}`
-    }
-
-    if (type.indexOf('invite') !== -1) {
+    } else if (type.indexOf('invite') !== -1) {
       if (type.indexOf('group-invite') !== -1) {
         return '/groups'
-      }
-
-      if (type.indexOf('friend-invite') !== -1) {
-        return '/friends/all'
+      } else if (type.indexOf('friend-invite') !== -1) {
+        if ( type.indexOf('friend-invite/add') !== -1){
+          return '/friends/invitations'
+        } else
+          return '/friends/all'
       }
     }
-
     return ''
   }
 

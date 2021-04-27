@@ -1256,6 +1256,8 @@ export const EditsAvatar = styled(Avatar)`
   height: 140px;
   cursor: pointer;
   margin-left: 23px;
+  border-radius: 50%;
+  background-color: lightsteelblue;
 
   @media (max-width: 770px){
     width: 90px;
