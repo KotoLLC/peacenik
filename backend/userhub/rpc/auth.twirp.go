@@ -11,7 +11,7 @@ It is generated from these files:
 	group.proto
 	info.proto
 	invite.proto
-	messagehub_notification.proto
+	messagehub_internal.proto
 	messagehub.proto
 	model.proto
 	notification.proto

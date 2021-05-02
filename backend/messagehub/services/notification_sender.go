@@ -1,12 +1,15 @@
 package services
 
 import (
+	"bytes"
 	"context"
-	"fmt"
+	"encoding/json"
+	"io"
 	"log"
 	"net/http"
-	"strings"
 	"time"
+
+	"github.com/tidwall/sjson"
 
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/token"
@@ -85,22 +88,29 @@ func (n *notificationSender) Start() {
 }
 
 func (n *notificationSender) sendNotifications(notifications []Notification) {
-	claims := map[string]interface{}{
-		"notifications": notifications,
-	}
-	notificationsToken, err := n.tokenGenerator.Generate(n.externalAddress, "notifications",
-		time.Now().Add(time.Minute*1), claims)
+	jsonNotifications, err := json.Marshal(notifications)
 	if err != nil {
-		log.Println("can't generate notifications token:", err)
+		log.Println("can't encode notifications:", err)
+		return
+	}
+	body, err := sjson.SetBytes([]byte("{}"), "notifications", jsonNotifications)
+	if err != nil {
+		log.Println("can't encode body:", err)
 		return
 	}
 
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodPost, n.userHubEndpoint,
-		strings.NewReader(fmt.Sprintf(`{"node": "%s", "notifications_token": "%s"}`, n.externalAddress, notificationsToken)))
+	authToken, err := n.tokenGenerator.Generate(n.externalAddress, "auth", time.Now().Add(time.Minute*1), nil)
+	if err != nil {
+		log.Println("can't generate auth token:", err)
+		return
+	}
+
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodPost, n.userHubEndpoint, bytes.NewReader(body))
 	if err != nil {
 		log.Println("can't generate notifications request:", err)
 		return
 	}
+	req.Header.Set("Authorization", "Bearer "+authToken)
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := n.userHubClient.Do(req)
@@ -110,7 +120,8 @@ func (n *notificationSender) sendNotifications(notifications []Notification) {
 	}
 	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusOK {
-		log.Println("notifications response - unexpected status:", resp.Status)
+		respBody, _ := io.ReadAll(resp.Body)
+		log.Printf("notifications response - unexpected status: %s. %s", resp.Status, string(respBody))
 		return
 	}
 }

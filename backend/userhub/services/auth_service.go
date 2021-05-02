@@ -222,7 +222,7 @@ func (s *authService) ResetPassword(_ context.Context, r *rpc.AuthResetPasswordR
 		return nil, twirp.InvalidArgumentError("new password", "is empty")
 	}
 
-	_, claims, err := s.tokenParser.Parse(r.ResetToken, "user-password-reset")
+	_, claims, err := s.tokenParsers.Primary().Parse(r.ResetToken, "user-password-reset")
 	if err != nil {
 		return nil, err
 	}
@@ -278,7 +278,7 @@ func (s *authService) sendConfirmLink(user repo.User) error {
 }
 
 func (s *authService) confirmUser(ctx context.Context, confirmToken string) error {
-	_, claims, err := s.tokenParser.Parse(confirmToken, "user-confirm")
+	_, claims, err := s.tokenParsers.Primary().Parse(confirmToken, "user-confirm")
 	if err != nil {
 		return merry.Wrap(err)
 	}
@@ -328,7 +328,7 @@ func (s *authService) confirmUser(ctx context.Context, confirmToken string) erro
 }
 
 func (s *authService) confirmInviteToken(user repo.User, confirmToken string) error {
-	_, claims, err := s.tokenParser.Parse(confirmToken, "user-invite")
+	_, claims, err := s.tokenParsers.Primary().Parse(confirmToken, "user-invite")
 	if err != nil {
 		return merry.Wrap(err)
 	}

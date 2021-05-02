@@ -10,6 +10,7 @@ import (
 
 type Parser interface {
 	Parse(rawToken string, scope string) (token *jwt.Token, claims jwt.MapClaims, err error)
+	ParseUnverified(rawToken string) (token *jwt.Token, claims jwt.MapClaims, err error)
 }
 
 type parser struct {
@@ -40,6 +41,15 @@ func (p *parser) Parse(rawToken string, scope string) (token *jwt.Token, claims 
 
 	if scope != claims["scope"].(string) {
 		return jwtToken, claims, fmt.Errorf("invalid token (expected scope %s, was %s)", scope, claims["scope"].(string))
+	}
+	return jwtToken, claims, nil
+}
+
+func (p *parser) ParseUnverified(rawToken string) (token *jwt.Token, claims jwt.MapClaims, err error) {
+	claims = jwt.MapClaims{}
+	jwtToken, _, err := new(jwt.Parser).ParseUnverified(rawToken, claims)
+	if err != nil {
+		return nil, nil, fmt.Errorf("invalid token: %w", err)
 	}
 	return jwtToken, claims, nil
 }
