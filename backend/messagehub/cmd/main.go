@@ -5,6 +5,7 @@ import (
 	"crypto/rsa"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -21,6 +22,7 @@ import (
 	"github.com/mreider/koto/backend/messagehub/config"
 	"github.com/mreider/koto/backend/messagehub/migrate"
 	"github.com/mreider/koto/backend/messagehub/repo"
+	"github.com/mreider/koto/backend/messagehub/services"
 	"github.com/mreider/koto/backend/token"
 )
 
@@ -83,7 +85,10 @@ func main() {
 	s3Cleaner := common.NewS3Cleaner(db, s3Storage)
 	go s3Cleaner.Clean(context.Background())
 
-	go cleanOldGuestMessages(repos.Message)
+	messageCleaner := services.NewMessageCleaner(cfg.ExternalAddress,
+		fmt.Sprintf("%s/rpc.MessageHubInternalService/ExpirationDays", cfg.UserHubAddress),
+		tokenGenerator)
+	go messageCleaner.DeleteExpiredMessages(repos.Message)
 
 	server := messagehub.NewServer(cfg, repos, tokenParser, s3Storage, tokenGenerator, string(publicKeyPEM), db)
 	err = server.Run()
@@ -145,20 +150,4 @@ func loadConfig(execDir string) (config.Config, error) {
 	}
 
 	return cfg, nil
-}
-
-func cleanOldGuestMessages(messageRepo repo.MessageRepo) {
-	ticker := time.NewTicker(time.Hour * 1)
-	defer ticker.Stop()
-
-	for range ticker.C {
-		func() {
-			defer func() {
-				if r := recover(); r != nil {
-					log.Println("can't delete old guest messages:", r)
-				}
-			}()
-			messageRepo.DeleteOldGuestMessages(time.Now().UTC().AddDate(0, 0, -30))
-		}()
-	}
 }

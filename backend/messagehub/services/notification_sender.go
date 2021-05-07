@@ -107,7 +107,7 @@ func (n *notificationSender) sendNotifications(notifications []Notification) {
 
 	req, err := http.NewRequestWithContext(context.Background(), http.MethodPost, n.userHubEndpoint, bytes.NewReader(body))
 	if err != nil {
-		log.Println("can't generate notifications request:", err)
+		log.Println("can't create notifications request:", err)
 		return
 	}
 	req.Header.Set("Authorization", "Bearer "+authToken)

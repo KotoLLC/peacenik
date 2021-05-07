@@ -3,6 +3,7 @@ package repo
 import (
 	"database/sql"
 	"errors"
+	"log"
 	"time"
 
 	"github.com/ansel1/merry"
@@ -82,7 +83,7 @@ type MessageRepo interface {
 	DeleteReportedMessage(reportID string) bool
 	BlockReportedUser(reportID string) bool
 	ResolveMessageReport(reportID string) bool
-	DeleteOldGuestMessages(until time.Time)
+	DeleteExpiredMessages(until time.Time, onlyGuestMessages bool)
 	MarkRead(userID string, messageIDs []string)
 	Counts(currentUserID string, userIDs []string) Counts
 	GroupCounts(currentUserID string, groupIDs []string) map[string]Counts
@@ -645,79 +646,84 @@ func (r *messageRepo) ResolveMessageReport(reportID string) bool {
 	return true
 }
 
-func (r *messageRepo) DeleteOldGuestMessages(until time.Time) {
+func (r *messageRepo) DeleteExpiredMessages(until time.Time, onlyGuestMessages bool) {
 	until = until.UTC()
 	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
 		_, err := tx.Exec(`
-			with m as (select id from messages where parent_id is null and is_guest = true and created_at < $1),
+			with m as (select id from messages where parent_id is null and ($1 = false or is_guest = true) and created_at < $2),
 				 c as (select id from messages where parent_id in (select id from m)),
 				 mc as (select id from m union select id from c)
 			delete from message_likes
 			where message_id in (select id from mc);`,
-			until)
+			onlyGuestMessages, until)
 		if err != nil {
 			return merry.Wrap(err)
 		}
 
 		_, err = tx.Exec(`
-			with m as (select id from messages where parent_id is null and is_guest = true and created_at < $1),
+			with m as (select id from messages where parent_id is null and ($1 = false or is_guest = true) and created_at < $2),
 				 c as (select id from messages where parent_id in (select id from m)),
 				 mc as (select id from m union select id from c)
 			delete from message_visibility
 			where message_id in (select id from mc);`,
-			until)
+			onlyGuestMessages, until)
 		if err != nil {
 			return merry.Wrap(err)
 		}
 
 		_, err = tx.Exec(`
-			with m as (select id from messages where parent_id is null and is_guest = true and created_at < $1),
+			with m as (select id from messages where parent_id is null and ($1 = false or is_guest = true) and created_at < $2),
 				 c as (select id from messages where parent_id in (select id from m)),
 				 mc as (select id from m union select id from c)
 			delete from message_reports
 			where message_id in (select id from mc);`,
-			until)
+			onlyGuestMessages, until)
 		if err != nil {
 			return merry.Wrap(err)
 		}
 
 		_, err = tx.Exec(`
-			with m as (select id from messages where parent_id is null and is_guest = true and created_at < $1),
+			with m as (select id from messages where parent_id is null and ($1 = false or is_guest = true) and created_at < $2),
 				 c as (select id from messages where parent_id in (select id from m)),
 				 mc as (select id from m union select id from c)
 			delete from message_reads
 			where message_id in (select id from mc);`,
-			until)
+			onlyGuestMessages, until)
 		if err != nil {
 			return merry.Wrap(err)
 		}
 
 		_, err = tx.Exec(`
-			with m as (select id from messages where parent_id is null and is_guest = true and created_at < $1),
+			with m as (select id from messages where parent_id is null and ($1 = false or is_guest = true) and created_at < $2),
 				 c as (select id from messages where parent_id in (select id from m)),
 				 mc as (select id from m union select id from c)
 			insert into blob_pending_deletes(blob_id, deleted_at)
-			select attachment_id, $2::timestamptz
+			select attachment_id, $3::timestamptz
 			from messages
 			where id in (select id from mc) and attachment_id != ''
 			union
-			select attachment_thumbnail_id, $2::timestamptz
+			select attachment_thumbnail_id, $3::timestamptz
 			from messages
 			where id in (select id from mc) and attachment_thumbnail_id != '';`,
-			until, common.CurrentTimestamp())
+			onlyGuestMessages, until, common.CurrentTimestamp())
 		if err != nil {
 			return merry.Wrap(err)
 		}
 
-		_, err = tx.Exec(`
-			with m as (select id from messages where parent_id is null and is_guest = true and created_at < $1),
+		res, err := tx.Exec(`
+			with m as (select id from messages where parent_id is null and ($1 = false or is_guest = true) and created_at < $2),
 				 c as (select id from messages where parent_id in (select id from m)),
 				 mc as (select id from m union select id from c)
 			delete from messages
 			where id in (select id from mc);`,
-			until)
+			onlyGuestMessages, until)
 		if err != nil {
 			return merry.Wrap(err)
+		}
+
+		rowsAffected, err := res.RowsAffected()
+		if err == nil {
+			log.Printf("Deleted %d expired messages", rowsAffected)
 		}
 
 		return nil
