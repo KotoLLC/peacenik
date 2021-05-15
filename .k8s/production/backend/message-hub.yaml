@@ -5,6 +5,7 @@ metadata:
   name: message-hub
   namespace: backend
 spec:
+  replicas: 3
   selector:
     matchLabels:
       app: message-hub
