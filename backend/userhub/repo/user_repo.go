@@ -88,7 +88,8 @@ func (r *userRepo) FindUsersByEmail(email string) []User {
 	err := r.db.Select(&users, `
 		select id, password_hash, created_at, updated_at, confirmed_at
 		from users
-		where email = $1`, email)
+		where lower(email) = $1`,
+		strings.ToLower(email))
 	if err != nil {
 		panic(err)
 	}
