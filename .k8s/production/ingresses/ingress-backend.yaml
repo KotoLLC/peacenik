@@ -14,7 +14,7 @@ spec:
     - "central.peacenik.app"
     - "node1.peacenik.app"
     - "progresso-pg.peacenik.app"
-    secretName: peacenik-tls-backend
+    secretName: peacenik-tls-backend-new
   rules:
   - host: central.peacenik.app
     http:
