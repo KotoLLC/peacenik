@@ -1,10 +1,10 @@
 on: 
   workflow_dispatch:
-    inputs:
-      destination:
-        description: 's (staging) p (prod) b (both)'     
-        default: 's'
-        required: true
+#    inputs:
+#      destination:
+#        description: 's (staging) p (prod) b (both)'     
+#        default: 's'
+#        required: true
       branch:
         description: 'branch'     
         default: 'master'
@@ -77,9 +77,9 @@ jobs:
 
       - name: Update deployment file (staging)
         run: |
-          sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/staging/backend-staging/user-hub.yaml
-          sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/staging/frontend-staging/frontend.yaml
-          sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/staging/backend-staging/message-hub.yaml
+#          sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/staging/backend-staging/user-hub.yaml
+#          sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/staging/frontend-staging/frontend.yaml
+#          sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/staging/backend-staging/message-hub.yaml
           sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/production/backend/user-hub.yaml
           sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/production/frontend/frontend.yaml
           sed -i 's|<TAG>|'${{ github.run_number }}'|' $GITHUB_WORKSPACE/.k8s/production/backend/message-hub.yaml
@@ -105,15 +105,15 @@ jobs:
           kubectl delete secret user-hub-key --ignore-not-found -n backend
           kubectl delete secret do-token --ignore-not-found -n backend
 
-          kubectl delete secret db-message-hub-password --ignore-not-found -n backend-staging
-          kubectl delete secret db-user-hub-password --ignore-not-found -n backend-staging
-          kubectl delete secret message-hub-secrets --ignore-not-found -n backend-staging
-          kubectl delete secret user-hub-s3 --ignore-not-found -n backend-staging
-          kubectl delete secret user-hub-smtp --ignore-not-found -n backend-staging
-          kubectl delete secret pgadmin --ignore-not-found -n backend-staging
-          kubectl delete secret user-hub-firebase --ignore-not-found -n backend-staging
-          kubectl delete secret user-hub-key --ignore-not-found -n backend-staging
-          kubectl delete secret do-token --ignore-not-found -n backend-staging
+#          kubectl delete secret db-message-hub-password --ignore-not-found -n backend-staging
+#          kubectl delete secret db-user-hub-password --ignore-not-found -n backend-staging
+#          kubectl delete secret message-hub-secrets --ignore-not-found -n backend-staging
+#          kubectl delete secret user-hub-s3 --ignore-not-found -n backend-staging
+#          kubectl delete secret user-hub-smtp --ignore-not-found -n backend-staging
+#          kubectl delete secret pgadmin --ignore-not-found -n backend-staging
+#          kubectl delete secret user-hub-firebase --ignore-not-found -n backend-staging
+#          kubectl delete secret user-hub-key --ignore-not-found -n backend-staging
+#          kubectl delete secret do-token --ignore-not-found -n backend-staging
 
           kubectl create secret generic db-message-hub-password --from-literal=password="${{ secrets.K8S_COMMON_SECRET }}" -n backend
           kubectl create secret generic db-user-hub-password --from-literal=password="${{ secrets.K8S_COMMON_SECRET }}" -n backend
@@ -125,27 +125,27 @@ jobs:
           kubectl create secret generic user-hub-key --from-literal=password="${{ secrets.USERHUB_SECRET }}" -n backend
           kubectl create secret generic do-token --from-literal=token="${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" -n backend
 
-          kubectl create secret generic db-message-hub-password --from-literal=password="${{ secrets.K8S_COMMON_SECRET }}" -n backend-staging
-          kubectl create secret generic db-user-hub-password --from-literal=password="${{ secrets.K8S_COMMON_SECRET }}" -n backend-staging
-          kubectl create secret generic message-hub-secrets --from-literal=s3_key="${{ secrets.DIGITALOCEAN_S3_KEY }}" --from-literal=s3_secret="${{ secrets.DIGITALOCEAN_S3_SECRET }}" -n backend-staging
-          kubectl create secret generic user-hub-s3 --from-literal=s3_key="${{ secrets.DIGITALOCEAN_S3_KEY }}" --from-literal=s3_secret="${{ secrets.DIGITALOCEAN_S3_SECRET }}" -n backend-staging
-          kubectl create secret generic user-hub-smtp --from-literal=smtp_user="postmaster@mg.peacenik.app" --from-literal=smtp_password="${{ secrets.MAILGUN_PASSWORD }}" -n backend-staging
-          kubectl create secret generic pgadmin --from-literal=pgadmin-password="${{ secrets.PGADMIN_PASSWORD_STAGING }}" -n backend-staging
-          kubectl create secret generic user-hub-firebase --from-literal=firebase_token="${{ secrets.FIREBASE_TOKEN }}" -n backend-staging
-          kubectl create secret generic user-hub-key --from-literal=password="${{ secrets.USERHUB_SECRET }}" -n backend-staging
-          kubectl create secret generic do-token --from-literal=token="${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" -n backend-staging
+#          kubectl create secret generic db-message-hub-password --from-literal=password="${{ secrets.K8S_COMMON_SECRET }}" -n backend-staging
+#          kubectl create secret generic db-user-hub-password --from-literal=password="${{ secrets.K8S_COMMON_SECRET }}" -n backend-staging
+#          kubectl create secret generic message-hub-secrets --from-literal=s3_key="${{ secrets.DIGITALOCEAN_S3_KEY }}" --from-literal=s3_secret="${{ secrets.DIGITALOCEAN_S3_SECRET }}" -n backend-staging
+#          kubectl create secret generic user-hub-s3 --from-literal=s3_key="${{ secrets.DIGITALOCEAN_S3_KEY }}" --from-literal=s3_secret="${{ secrets.DIGITALOCEAN_S3_SECRET }}" -n backend-staging
+#          kubectl create secret generic user-hub-smtp --from-literal=smtp_user="postmaster@mg.peacenik.app" --from-literal=smtp_password="${{ secrets.MAILGUN_PASSWORD }}" -n backend-staging
+#          kubectl create secret generic pgadmin --from-literal=pgadmin-password="${{ secrets.PGADMIN_PASSWORD_STAGING }}" -n backend-staging
+#          kubectl create secret generic user-hub-firebase --from-literal=firebase_token="${{ secrets.FIREBASE_TOKEN }}" -n backend-staging
+#          kubectl create secret generic user-hub-key --from-literal=password="${{ secrets.USERHUB_SECRET }}" -n backend-staging
+#          kubectl create secret generic do-token --from-literal=token="${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" -n backend-staging
 
-      - name: Deploy Frontend and User-hub to DigitalOcean Kubernetes (staging)
-        if: ${{ github.event.inputs.destination == 's' }} || ${{ github.event.inputs.destination == 'b' }}
-        run: |
-          kubectl apply --recursive -f $GITHUB_WORKSPACE/.k8s/staging/  --force
+#      - name: Deploy Frontend and User-hub to DigitalOcean Kubernetes (staging)
+#        if: ${{ github.event.inputs.destination == 's' }} || ${{ github.event.inputs.destination == 'b' }}
+#        run: |
+#          kubectl apply --recursive -f $GITHUB_WORKSPACE/.k8s/staging/  --force
       - name: Deploy Frontend and User-hub to DigitalOcean Kubernetes (production)
-        if: ${{ github.event.inputs.destination == 'p' }} || ${{ github.event.inputs.destination == 'b' }}
+#        if: ${{ github.event.inputs.destination == 'p' }} || ${{ github.event.inputs.destination == 'b' }}
         run: |
           kubectl apply --recursive -f $GITHUB_WORKSPACE/.k8s/production/  --force
       - name: Slack notify
         uses: edge/simple-slack-notify@master
         with:
           channel: '#engineering'
-          text: 'Branch ${{ github.event.inputs.branch }} pushed to ${{ github.event.inputs.destination }} (s=staging, p=prod, b=both)'
+          text: 'Branch ${{ github.event.inputs.branch }} pushed'
           color: 'good'
