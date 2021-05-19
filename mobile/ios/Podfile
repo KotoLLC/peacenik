@@ -8,6 +8,7 @@ target 'Peacenik' do
   pod 'Firebase/Analytics'
   pod 'Firebase/Auth'
   pod 'Firebase/Firestore'
+  pod 'Firebase/Messaging'
 
   use_react_native!(:path => config["reactNativePath"])
 

@@ -45,4 +45,4 @@ spec:
           service:
             name: pgadmin
             port:
-              number: 80
+              number: 443
