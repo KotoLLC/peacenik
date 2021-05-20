@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "74736799007",
+    "project_id": "peacenik-981dd",
+    "storage_bucket": "peacenik-981dd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:74736799007:android:8d20ddd6abbce63eaaf42a",
+        "android_client_info": {
+          "package_name": "com.peacenik"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "74736799007-jgnphjtm729sdc77l9accd3emsf8gjlt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_i5SKTyjwtwiYCoicQcPG5q8Gij6NaLk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "74736799007-jgnphjtm729sdc77l9accd3emsf8gjlt.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "74736799007-an751jkrep1tms7bcb9crde3nu8bpe68.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "app.peacenik",
+                "app_store_id": "1550909356"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
