@@ -99,7 +99,7 @@ func (s *notificationSender) sendFCMNotifications(n Notification) {
 		resp, err := s.firebaseClient.SendWithRetry(&fcm.Message{
 			To: fcmToken,
 			Notification: &fcm.Notification{
-				Title: "KOTO",
+				Title: "Peacenik",
 				Body:  n.Text,
 			},
 		}, 3)
