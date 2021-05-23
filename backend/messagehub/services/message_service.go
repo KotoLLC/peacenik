@@ -19,7 +19,6 @@ import (
 	"github.com/mreider/koto/backend/messagehub/repo"
 	"github.com/mreider/koto/backend/messagehub/rpc"
 	"github.com/mreider/koto/backend/messagehub/services/message"
-	"github.com/mreider/koto/backend/token"
 )
 
 const (
@@ -37,25 +36,22 @@ type messageService struct {
 }
 
 func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*rpc.MessagePostResponse, error) {
-	user := s.getUser(ctx)
-	if user.IsBlocked {
+	me := s.getMe(ctx)
+	if me.IsBlocked {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 
 	_, claims, err := s.tokenParser.Parse(r.Token, "post-message")
 	if err != nil {
-		if merry.Is(err, token.ErrInvalidToken) {
-			return nil, twirp.NewError(twirp.InvalidArgument, "invalid token (parse)")
-		}
-		return nil, err
+		return nil, twirp.NewError(twirp.InvalidArgument, err.Error())
 	}
 
-	if user.ID != claims["id"].(string) {
-		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (users %s %s)", user.ID, claims["id"].(string)))
+	if me.ID != claims["id"].(string) {
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected user %s, was %s)", me.ID, claims["id"].(string)))
 	}
 
 	if strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
-		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (hubs %s %s)", s.externalAddress, claims["hub"].(string)))
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected hub %s, was %s)", s.externalAddress, claims["hub"].(string)))
 	}
 
 	var notifiedUsers []string
@@ -125,7 +121,7 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 	if len(notifiedUsers) > 0 && s.notificationSender != nil {
 		s.notificationSender.SendNotification(Notification{
 			UserIDs:     notifiedUsers,
-			Text:        user.DisplayName() + " posted a new message",
+			Text:        me.DisplayName() + " posted a new message",
 			MessageType: "message/post",
 			Data:        notifyData,
 		})
@@ -137,14 +133,14 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 	}
 	notifyUsers := make([]string, 0, len(userTags))
 	for _, taggedUserID := range userTags {
-		if taggedUserID != msg.UserID && !user.IsBlockedUser(taggedUserID) {
+		if taggedUserID != msg.UserID && !me.IsBlockedUser(taggedUserID) {
 			notifyUsers = append(notifyUsers, taggedUserID)
 		}
 	}
 	if len(notifyUsers) > 0 && s.notificationSender != nil {
 		notification := Notification{
 			UserIDs:     notifyUsers,
-			Text:        user.DisplayName() + " mentioned you in a message",
+			Text:        me.DisplayName() + " mentioned you in a message",
 			MessageType: "message/tag",
 			Data:        notifyData,
 		}
@@ -177,19 +173,19 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 }
 
 func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesRequest) (*rpc.MessageMessagesResponse, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 
 	_, claims, err := s.tokenParser.Parse(r.Token, "get-messages")
 	if err != nil {
-		if merry.Is(err, token.ErrInvalidToken) {
-			return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
-		}
-		return nil, err
+		return nil, twirp.NewError(twirp.InvalidArgument, err.Error())
 	}
 
-	if user.ID != claims["id"].(string) ||
-		strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
-		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
+	if me.ID != claims["id"].(string) {
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected user %s, was %s)", me.ID, claims["id"].(string)))
+	}
+
+	if strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected hub %s, was %s)", s.externalAddress, claims["hub"].(string)))
 	}
 
 	var from time.Time
@@ -215,9 +211,9 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 		if !found {
 			return &rpc.MessageMessagesResponse{}, nil
 		}
-		messages = s.repos.Message.GroupMessages(user.ID, r.GroupId, from, int(r.Count))
+		messages = s.repos.Message.GroupMessages(me.ID, r.GroupId, from, int(r.Count))
 	case r.FriendId != "":
-		messages = s.repos.Message.DirectMessages(user.ID, r.FriendId, from, int(r.Count))
+		messages = s.repos.Message.DirectMessages(me.ID, r.FriendId, from, int(r.Count))
 	default:
 		if rawUserIDs, ok := claims["users"]; ok {
 			rawUserIDs := rawUserIDs.([]interface{})
@@ -225,7 +221,7 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 			for i, rawUserID := range rawUserIDs {
 				userIDs[i] = rawUserID.(string)
 			}
-			messages = s.repos.Message.Messages(user.ID, userIDs, from, int(r.Count))
+			messages = s.repos.Message.Messages(me.ID, userIDs, from, int(r.Count))
 		}
 	}
 
@@ -270,11 +266,11 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 		rpcMessageMap[msgID].LikedBy = rpcLikes
 	}
 
-	comments := s.repos.Message.Comments(user.ID, messageIDs)
+	comments := s.repos.Message.Comments(me.ID, messageIDs)
 	for messageID, messageComments := range comments {
 		rpcComments := make([]*rpc.Message, 0, len(messageComments))
 		for _, comment := range messageComments {
-			if user.IsBlockedUser(comment.UserID) {
+			if me.IsBlockedUser(comment.UserID) {
 				continue
 			}
 
@@ -310,22 +306,22 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 }
 
 func (s *messageService) Message(ctx context.Context, r *rpc.MessageMessageRequest) (*rpc.MessageMessageResponse, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 
 	_, claims, err := s.tokenParser.Parse(r.Token, "get-messages")
 	if err != nil {
-		if merry.Is(err, token.ErrInvalidToken) {
-			return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
-		}
-		return nil, err
+		return nil, twirp.NewError(twirp.InvalidArgument, err.Error())
 	}
 
-	if user.ID != claims["id"].(string) ||
-		strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
-		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
+	if me.ID != claims["id"].(string) {
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected user %s, was %s)", me.ID, claims["id"].(string)))
 	}
 
-	msg := s.repos.Message.Message(user.ID, r.MessageId)
+	if strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected hub %s, was %s)", s.externalAddress, claims["hub"].(string)))
+	}
+
+	msg := s.repos.Message.Message(me.ID, r.MessageId)
 	if msg == nil {
 		return nil, twirp.NotFoundError("message not found")
 	}
@@ -389,11 +385,11 @@ func (s *messageService) Message(ctx context.Context, r *rpc.MessageMessageReque
 		rpcMessage.LikedBy = rpcLikes
 	}
 
-	comments := s.repos.Message.Comments(user.ID, []string{msg.ID})
+	comments := s.repos.Message.Comments(me.ID, []string{msg.ID})
 	for _, messageComments := range comments {
 		rpcComments := make([]*rpc.Message, 0, len(messageComments))
 		for _, comment := range messageComments {
-			if user.IsBlockedUser(comment.UserID) {
+			if me.IsBlockedUser(comment.UserID) {
 				continue
 			}
 
@@ -429,14 +425,14 @@ func (s *messageService) Message(ctx context.Context, r *rpc.MessageMessageReque
 }
 
 func (s *messageService) Edit(ctx context.Context, r *rpc.MessageEditRequest) (*rpc.MessageEditResponse, error) {
-	user := s.getUser(ctx)
-	if user.IsBlocked {
+	me := s.getMe(ctx)
+	if me.IsBlocked {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 
 	now := common.CurrentTimestamp()
 	if r.TextChanged {
-		if !s.repos.Message.EditMessageText(user.ID, r.MessageId, r.Text, now) {
+		if !s.repos.Message.EditMessageText(me.ID, r.MessageId, r.Text, now) {
 			return nil, twirp.NotFoundError("not found")
 		}
 	}
@@ -446,12 +442,12 @@ func (s *messageService) Edit(ctx context.Context, r *rpc.MessageEditRequest) (*
 			return nil, err
 		}
 
-		if !s.repos.Message.EditMessageAttachment(user.ID, r.MessageId, r.AttachmentId, attachmentType, attachmentThumbnailID, now) {
+		if !s.repos.Message.EditMessageAttachment(me.ID, r.MessageId, r.AttachmentId, attachmentType, attachmentThumbnailID, now) {
 			return nil, twirp.NotFoundError("not found")
 		}
 	}
 
-	msg := s.repos.Message.Message(user.ID, r.MessageId)
+	msg := s.repos.Message.Message(me.ID, r.MessageId)
 	if msg == nil {
 		return nil, twirp.NotFoundError("not found")
 	}
@@ -482,33 +478,45 @@ func (s *messageService) Edit(ctx context.Context, r *rpc.MessageEditRequest) (*
 }
 
 func (s *messageService) Delete(ctx context.Context, r *rpc.MessageDeleteRequest) (_ *rpc.Empty, err error) {
-	user := s.getUser(ctx)
-	if !s.repos.Message.DeleteMessage(user.ID, r.MessageId) {
+	me := s.getMe(ctx)
+	msg := s.repos.Message.Message(me.ID, r.MessageId)
+	switch {
+	case msg == nil:
 		return nil, twirp.NotFoundError("not found")
+	case msg.UserID == me.ID:
+		if !s.repos.Message.DeleteMessage(r.MessageId) {
+			return nil, twirp.NotFoundError("not found")
+		}
+	case msg.GroupID.Valid && me.IsOwnedGroup(msg.GroupID.String):
+		if !s.repos.Message.DeleteMessage(r.MessageId) {
+			return nil, twirp.NotFoundError("not found")
+		}
+	default:
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 	return &rpc.Empty{}, nil
 }
 
 func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostCommentRequest) (*rpc.MessagePostCommentResponse, error) {
-	user := s.getUser(ctx)
-	if user.IsBlocked {
+	me := s.getMe(ctx)
+	if me.IsBlocked {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 
 	_, claims, err := s.tokenParser.Parse(r.Token, "get-messages")
 	if err != nil {
-		if merry.Is(err, token.ErrInvalidToken) {
-			return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
-		}
-		return nil, err
+		return nil, twirp.NewError(twirp.InvalidArgument, err.Error())
 	}
 
-	if user.ID != claims["id"].(string) ||
-		strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
-		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
+	if me.ID != claims["id"].(string) {
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected user %s, was %s)", me.ID, claims["id"].(string)))
 	}
 
-	msg := s.repos.Message.Message(user.ID, r.MessageId)
+	if strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected hub %s, was %s)", s.externalAddress, claims["hub"].(string)))
+	}
+
+	msg := s.repos.Message.Message(me.ID, r.MessageId)
 	if msg == nil {
 		return nil, twirp.NotFoundError("not found")
 	}
@@ -525,7 +533,7 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 			}
 		}
 	case msg.FriendID.Valid:
-		found = user.ID == msg.UserID || user.ID == msg.FriendID.String
+		found = me.ID == msg.UserID || me.ID == msg.FriendID.String
 	default:
 		if rawUserIDs, ok := claims["users"]; ok {
 			for _, rawUserID := range rawUserIDs.([]interface{}) {
@@ -563,7 +571,7 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 	s.repos.Message.AddMessage(r.MessageId, comment)
 
 	notifyData := map[string]interface{}{
-		"user_id":    user.ID,
+		"user_id":    me.ID,
 		"message_id": msg.ID,
 		"comment_id": comment.ID,
 	}
@@ -574,10 +582,10 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 		notifyData["friend-id"] = msg.FriendID.String
 	}
 
-	if user.ID != msg.UserID {
+	if me.ID != msg.UserID {
 		s.notificationSender.SendNotification(Notification{
 			UserIDs:     []string{msg.UserID},
-			Text:        user.DisplayName() + " posted a new comment",
+			Text:        me.DisplayName() + " posted a new comment",
 			MessageType: "comment/post",
 			Data:        notifyData,
 		})
@@ -586,13 +594,13 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 	userTags := message.FindUserTags(comment.Text)
 	notifyUsers := make([]string, 0, len(userTags))
 	for _, taggedUserID := range userTags {
-		if taggedUserID != comment.UserID && !user.IsBlockedUser(taggedUserID) {
+		if taggedUserID != comment.UserID && !me.IsBlockedUser(taggedUserID) {
 			notifyUsers = append(notifyUsers, taggedUserID)
 		}
 	}
 	s.notificationSender.SendNotification(Notification{
 		UserIDs:     notifyUsers,
-		Text:        user.DisplayName() + " mentioned you in a comment",
+		Text:        me.DisplayName() + " mentioned you in a comment",
 		MessageType: "comment/tag",
 		Data:        notifyData,
 	})
@@ -624,13 +632,13 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 }
 
 func (s *messageService) EditComment(ctx context.Context, r *rpc.MessageEditCommentRequest) (*rpc.MessageEditCommentResponse, error) {
-	user := s.getUser(ctx)
-	if user.IsBlocked {
+	me := s.getMe(ctx)
+	if me.IsBlocked {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 	now := common.CurrentTimestamp()
 	if r.TextChanged {
-		if !s.repos.Message.EditMessageText(user.ID, r.CommentId, r.Text, now) {
+		if !s.repos.Message.EditMessageText(me.ID, r.CommentId, r.Text, now) {
 			return nil, twirp.NotFoundError("not found")
 		}
 	}
@@ -640,12 +648,12 @@ func (s *messageService) EditComment(ctx context.Context, r *rpc.MessageEditComm
 			return nil, err
 		}
 
-		if !s.repos.Message.EditMessageAttachment(user.ID, r.CommentId, r.AttachmentId, attachmentType, attachmentThumbnailID, now) {
+		if !s.repos.Message.EditMessageAttachment(me.ID, r.CommentId, r.AttachmentId, attachmentType, attachmentThumbnailID, now) {
 			return nil, twirp.NotFoundError("not found")
 		}
 	}
 
-	comment := s.repos.Message.Message(user.ID, r.CommentId)
+	comment := s.repos.Message.Message(me.ID, r.CommentId)
 	if comment == nil {
 		return nil, twirp.NotFoundError("not found")
 	}
@@ -677,9 +685,21 @@ func (s *messageService) EditComment(ctx context.Context, r *rpc.MessageEditComm
 }
 
 func (s *messageService) DeleteComment(ctx context.Context, r *rpc.MessageDeleteCommentRequest) (_ *rpc.Empty, err error) {
-	user := s.getUser(ctx)
-	if !s.repos.Message.DeleteMessage(user.ID, r.CommentId) {
+	me := s.getMe(ctx)
+	comment := s.repos.Message.Message(me.ID, r.CommentId)
+	switch {
+	case comment == nil:
 		return nil, twirp.NotFoundError("not found")
+	case comment.UserID == me.ID:
+		if !s.repos.Message.DeleteMessage(r.CommentId) {
+			return nil, twirp.NotFoundError("not found")
+		}
+	case comment.GroupID.Valid && me.IsOwnedGroup(comment.GroupID.String):
+		if !s.repos.Message.DeleteMessage(r.CommentId) {
+			return nil, twirp.NotFoundError("not found")
+		}
+	default:
+		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 	return &rpc.Empty{}, nil
 }
@@ -731,12 +751,12 @@ func (s *messageService) getAttachmentThumbnailID(ctx context.Context, attachmen
 }
 
 func (s *messageService) LikeMessage(ctx context.Context, r *rpc.MessageLikeMessageRequest) (*rpc.MessageLikeMessageResponse, error) {
-	user := s.getUser(ctx)
-	if user.IsBlocked {
+	me := s.getMe(ctx)
+	if me.IsBlocked {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 
-	msg := s.repos.Message.Message(user.ID, r.MessageId)
+	msg := s.repos.Message.Message(me.ID, r.MessageId)
 	if msg == nil {
 		return &rpc.MessageLikeMessageResponse{
 			Likes: -1,
@@ -747,17 +767,17 @@ func (s *messageService) LikeMessage(ctx context.Context, r *rpc.MessageLikeMess
 		return nil, twirp.InvalidArgumentError("message_id", "is not a message")
 	}
 
-	if user.IsBlockedUser(msg.UserID) {
+	if me.IsBlockedUser(msg.UserID) {
 		return nil, twirp.NotFoundError("message not found")
 	}
 
 	var newLikeCount int
 	if r.Unlike {
-		newLikeCount = s.repos.Message.UnlikeMessage(user.ID, msg.ID)
+		newLikeCount = s.repos.Message.UnlikeMessage(me.ID, msg.ID)
 	} else {
-		newLikeCount = s.repos.Message.LikeMessage(user.ID, msg.ID)
+		newLikeCount = s.repos.Message.LikeMessage(me.ID, msg.ID)
 		notifyData := map[string]interface{}{
-			"user_id":    user.ID,
+			"user_id":    me.ID,
 			"message_id": msg.ID,
 		}
 		if msg.GroupID.Valid {
@@ -768,7 +788,7 @@ func (s *messageService) LikeMessage(ctx context.Context, r *rpc.MessageLikeMess
 		}
 		s.notificationSender.SendNotification(Notification{
 			UserIDs:     []string{msg.UserID},
-			Text:        user.DisplayName() + " liked your post",
+			Text:        me.DisplayName() + " liked your post",
 			MessageType: "message/like",
 			Data:        notifyData,
 		})
@@ -780,12 +800,12 @@ func (s *messageService) LikeMessage(ctx context.Context, r *rpc.MessageLikeMess
 }
 
 func (s *messageService) LikeComment(ctx context.Context, r *rpc.MessageLikeCommentRequest) (*rpc.MessageLikeCommentResponse, error) {
-	user := s.getUser(ctx)
-	if user.IsBlocked {
+	me := s.getMe(ctx)
+	if me.IsBlocked {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 
-	comment := s.repos.Message.Message(user.ID, r.CommentId)
+	comment := s.repos.Message.Message(me.ID, r.CommentId)
 	if comment == nil {
 		return &rpc.MessageLikeCommentResponse{
 			Likes: -1,
@@ -796,19 +816,19 @@ func (s *messageService) LikeComment(ctx context.Context, r *rpc.MessageLikeComm
 		return nil, twirp.InvalidArgumentError("comment_id", "is not a comment")
 	}
 
-	if user.IsBlockedUser(comment.UserID) {
+	if me.IsBlockedUser(comment.UserID) {
 		return nil, twirp.NotFoundError("message not found")
 	}
 
 	var newLikeCount int
 	if r.Unlike {
-		newLikeCount = s.repos.Message.UnlikeMessage(user.ID, comment.ID)
+		newLikeCount = s.repos.Message.UnlikeMessage(me.ID, comment.ID)
 	} else {
-		newLikeCount = s.repos.Message.LikeMessage(user.ID, comment.ID)
+		newLikeCount = s.repos.Message.LikeMessage(me.ID, comment.ID)
 
-		msg := s.repos.Message.Message(user.ID, comment.ParentID.String)
+		msg := s.repos.Message.Message(me.ID, comment.ParentID.String)
 		notifyData := map[string]interface{}{
-			"user_id":    user.ID,
+			"user_id":    me.ID,
 			"message_id": comment.ParentID.String,
 			"comment_id": comment.ID,
 		}
@@ -820,7 +840,7 @@ func (s *messageService) LikeComment(ctx context.Context, r *rpc.MessageLikeComm
 		}
 		s.notificationSender.SendNotification(Notification{
 			UserIDs:     []string{comment.UserID},
-			Text:        user.DisplayName() + " liked your comment",
+			Text:        me.DisplayName() + " liked your comment",
 			MessageType: "comment/like",
 			Data:        notifyData,
 		})
@@ -894,32 +914,32 @@ func (s *messageService) processAttachment(ctx context.Context, attachmentID str
 }
 
 func (s *messageService) SetMessageVisibility(ctx context.Context, r *rpc.MessageSetMessageVisibilityRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
-	s.repos.Message.SetMessageVisibility(user.ID, r.MessageId, r.Visibility)
+	me := s.getMe(ctx)
+	s.repos.Message.SetMessageVisibility(me.ID, r.MessageId, r.Visibility)
 	return &rpc.Empty{}, nil
 }
 
 func (s *messageService) SetCommentVisibility(ctx context.Context, r *rpc.MessageSetCommentVisibilityRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
-	s.repos.Message.SetMessageVisibility(user.ID, r.CommentId, r.Visibility)
+	me := s.getMe(ctx)
+	s.repos.Message.SetMessageVisibility(me.ID, r.CommentId, r.Visibility)
 	return &rpc.Empty{}, nil
 }
 
 func (s *messageService) ReportMessage(ctx context.Context, r *rpc.MessageReportMessageRequest) (*rpc.MessageReportMessageResponse, error) {
-	user := s.getUser(ctx)
-	if user.IsBlocked {
+	me := s.getMe(ctx)
+	if me.IsBlocked {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 
-	reportID := s.repos.Message.ReportMessage(user.ID, r.MessageId, r.Report)
+	reportID := s.repos.Message.ReportMessage(me.ID, r.MessageId, r.Report)
 	return &rpc.MessageReportMessageResponse{
 		ReportId: reportID,
 	}, nil
 }
 
 func (s *messageService) MessageReport(ctx context.Context, r *rpc.MessageMessageReportRequest) (*rpc.MessageMessageReportResponse, error) {
-	user := s.getUser(ctx)
-	if !user.IsHubAdmin {
+	me := s.getMe(ctx)
+	if !me.IsHubAdmin {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 
@@ -936,8 +956,8 @@ func (s *messageService) MessageReport(ctx context.Context, r *rpc.MessageMessag
 }
 
 func (s *messageService) MessageReports(ctx context.Context, _ *rpc.Empty) (*rpc.MessageMessageReportsResponse, error) {
-	user := s.getUser(ctx)
-	if !user.IsHubAdmin {
+	me := s.getMe(ctx)
+	if !me.IsHubAdmin {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 	reports := s.repos.Message.MessageReports()
@@ -973,8 +993,8 @@ func (s *messageService) MessageReports(ctx context.Context, _ *rpc.Empty) (*rpc
 }
 
 func (s *messageService) DeleteReportedMessage(ctx context.Context, r *rpc.MessageDeleteReportedMessageRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
-	if !user.IsHubAdmin {
+	me := s.getMe(ctx)
+	if !me.IsHubAdmin {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 	if !s.repos.Message.DeleteReportedMessage(r.ReportId) {
@@ -984,8 +1004,8 @@ func (s *messageService) DeleteReportedMessage(ctx context.Context, r *rpc.Messa
 }
 
 func (s *messageService) BlockReportedUser(ctx context.Context, r *rpc.MessageBlockReportedUserRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
-	if !user.IsHubAdmin {
+	me := s.getMe(ctx)
+	if !me.IsHubAdmin {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 	if !s.repos.Message.BlockReportedUser(r.ReportId) {
@@ -995,8 +1015,8 @@ func (s *messageService) BlockReportedUser(ctx context.Context, r *rpc.MessageBl
 }
 
 func (s *messageService) ResolveMessageReport(ctx context.Context, r *rpc.MessageResolveMessageReportRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
-	if !user.IsHubAdmin {
+	me := s.getMe(ctx)
+	if !me.IsHubAdmin {
 		return nil, twirp.NewError(twirp.PermissionDenied, "")
 	}
 	if !s.repos.Message.ResolveMessageReport(r.ReportId) {
@@ -1006,25 +1026,25 @@ func (s *messageService) ResolveMessageReport(ctx context.Context, r *rpc.Messag
 }
 
 func (s *messageService) MarkRead(ctx context.Context, r *rpc.MessageMarkReadRequest) (*rpc.Empty, error) {
-	user := s.getUser(ctx)
-	s.repos.Message.MarkRead(user.ID, r.MessageIds)
+	me := s.getMe(ctx)
+	s.repos.Message.MarkRead(me.ID, r.MessageIds)
 	return &rpc.Empty{}, nil
 }
 
 func (s *messageService) Counters(ctx context.Context, r *rpc.MessageCountersRequest) (*rpc.MessageCountersResponse, error) {
-	user := s.getUser(ctx)
+	me := s.getMe(ctx)
 
 	_, claims, err := s.tokenParser.Parse(r.Token, "get-messages")
 	if err != nil {
-		if merry.Is(err, token.ErrInvalidToken) {
-			return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
-		}
-		return nil, err
+		return nil, twirp.NewError(twirp.InvalidArgument, err.Error())
 	}
 
-	if user.ID != claims["id"].(string) ||
-		strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
-		return nil, twirp.NewError(twirp.InvalidArgument, "invalid token")
+	if me.ID != claims["id"].(string) {
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected user %s, was %s)", me.ID, claims["id"].(string)))
+	}
+
+	if strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected hub %s, was %s)", s.externalAddress, claims["hub"].(string)))
 	}
 
 	var userIDs []string
@@ -1045,9 +1065,9 @@ func (s *messageService) Counters(ctx context.Context, r *rpc.MessageCountersReq
 		}
 	}
 
-	counts := s.repos.Message.Counts(user.ID, userIDs)
+	counts := s.repos.Message.Counts(me.ID, userIDs)
 
-	groupCounts := s.repos.Message.GroupCounts(user.ID, groupIDs)
+	groupCounts := s.repos.Message.GroupCounts(me.ID, groupIDs)
 	rpcGroupCounts := make(map[string]*rpc.MessageCounters, len(groupCounts))
 	for groupID, counts := range groupCounts {
 		rpcGroupCounts[groupID] = &rpc.MessageCounters{
@@ -1055,11 +1075,11 @@ func (s *messageService) Counters(ctx context.Context, r *rpc.MessageCountersReq
 			UnreadCount:        int32(counts.UnreadCount),
 			TotalCommentCount:  int32(counts.TotalCommentCount),
 			UnreadCommentCount: int32(counts.UnreadCommentCount),
-			LastMessageTime:    common.TimeToRPCString(counts.LastMessageTime),
+			LastMessageTime:    common.NullTimeToRPCString(counts.LastMessageTime),
 		}
 	}
 
-	directCounts := s.repos.Message.DirectCounts(user.ID)
+	directCounts := s.repos.Message.DirectCounts(me.ID)
 	rpcDirectCounts := make(map[string]*rpc.MessageCounters, len(directCounts))
 	for userID, counts := range directCounts {
 		rpcDirectCounts[userID] = &rpc.MessageCounters{
@@ -1067,7 +1087,7 @@ func (s *messageService) Counters(ctx context.Context, r *rpc.MessageCountersReq
 			UnreadCount:        int32(counts.UnreadCount),
 			TotalCommentCount:  int32(counts.TotalCommentCount),
 			UnreadCommentCount: int32(counts.UnreadCommentCount),
-			LastMessageTime:    common.TimeToRPCString(counts.LastMessageTime),
+			LastMessageTime:    common.NullTimeToRPCString(counts.LastMessageTime),
 		}
 	}
 

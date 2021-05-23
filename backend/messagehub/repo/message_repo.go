@@ -2,6 +2,8 @@ package repo
 
 import (
 	"database/sql"
+	"errors"
+	"log"
 	"time"
 
 	"github.com/ansel1/merry"
@@ -53,11 +55,11 @@ type MessageReport struct {
 }
 
 type Counts struct {
-	TotalCount         int       `db:"total_count"`
-	UnreadCount        int       `db:"unread_count"`
-	TotalCommentCount  int       `db:"total_comment_count"`
-	UnreadCommentCount int       `db:"unread_comment_count"`
-	LastMessageTime    time.Time `db:"last_message_time"`
+	TotalCount         int          `db:"total_count"`
+	UnreadCount        int          `db:"unread_count"`
+	TotalCommentCount  int          `db:"total_comment_count"`
+	UnreadCommentCount int          `db:"unread_comment_count"`
+	LastMessageTime    sql.NullTime `db:"last_message_time"`
 }
 
 type MessageRepo interface {
@@ -68,7 +70,7 @@ type MessageRepo interface {
 	AddMessage(parentID string, message Message)
 	EditMessageText(userID, messageID, text string, updatedAt time.Time) bool
 	EditMessageAttachment(userID, messageID, attachmentID, attachmentType, attachmentThumbnailID string, updatedAt time.Time) bool
-	DeleteMessage(userID, messageID string) bool
+	DeleteMessage(messageID string) bool
 	Comments(currentUserID string, messageIDs []string) map[string][]Message
 	LikeMessage(userID, messageID string) int
 	UnlikeMessage(userID, messageID string) int
@@ -81,11 +83,12 @@ type MessageRepo interface {
 	DeleteReportedMessage(reportID string) bool
 	BlockReportedUser(reportID string) bool
 	ResolveMessageReport(reportID string) bool
-	DeleteOldGuestMessages(until time.Time)
+	DeleteExpiredMessages(until time.Time, onlyGuestMessages bool)
 	MarkRead(userID string, messageIDs []string)
 	Counts(currentUserID string, userIDs []string) Counts
 	GroupCounts(currentUserID string, groupIDs []string) map[string]Counts
-	DirectCounts(currentUserID string) map[string]Counts
+	DirectCounts(currentUserID string) map[string]*Counts
+	DeleteUserData(tx *sqlx.Tx, userID string) error
 }
 
 func NewMessages(db *sqlx.DB) MessageRepo {
@@ -197,12 +200,13 @@ func (r *messageRepo) DirectMessages(userID1, userID2 string, from time.Time, co
 func (r *messageRepo) Message(currentUserID string, messageID string) *Message {
 	var message Message
 	err := r.db.Get(&message, `
-			select m.id, m.parent_id, m.user_id, m.text,
-			       m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at, m.group_id, m.friend_id,
-				   (select count(*) from message_likes where message_id = m.id) likes,
-				   case when exists(select * from message_likes where message_id = m.id and user_id = $1) then true else false end liked_by_me
-			from messages m
-			where m.id = $2`, currentUserID, messageID)
+		select m.id, m.parent_id, m.user_id, m.text,
+			   m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at, m.group_id, m.friend_id,
+			   (select count(*) from message_likes where message_id = m.id) likes,
+			   case when exists(select * from message_likes where message_id = m.id and user_id = $1) then true else false end liked_by_me
+		from messages m
+		where m.id = $2`,
+		currentUserID, messageID)
 	if err != nil {
 		if merry.Is(err, sql.ErrNoRows) {
 			return nil
@@ -300,10 +304,10 @@ func (r *messageRepo) EditMessageAttachment(userID, messageID, attachmentID, att
 	return ok
 }
 
-func (r *messageRepo) DeleteMessage(userID, messageID string) bool {
+func (r *messageRepo) DeleteMessage(messageID string) bool {
 	var ok bool
 	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
-		ok = r.deleteMessage(tx, userID, messageID)
+		ok = r.deleteMessage(tx, messageID)
 		return nil
 	})
 	if err != nil {
@@ -312,43 +316,43 @@ func (r *messageRepo) DeleteMessage(userID, messageID string) bool {
 	return ok
 }
 
-func (r *messageRepo) deleteMessage(tx *sqlx.Tx, userID, messageID string) bool {
-	var messages []Message
-	err := tx.Select(&messages, "select attachment_id, attachment_thumbnail_id from messages where (id = $1 and user_id = $2) or parent_id = $1",
-		messageID, userID)
+func (r *messageRepo) deleteMessage(tx *sqlx.Tx, messageID string) bool {
+	var message Message
+	err := tx.Get(&message, `
+		select attachment_id, attachment_thumbnail_id
+		from messages
+		where id = $1;`,
+		messageID)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false
+		}
 		panic(err)
 	}
 	now := common.CurrentTimestamp()
-	for _, msg := range messages {
-		if msg.AttachmentID != "" {
-			_, err = tx.Exec(`
-				insert into blob_pending_deletes(blob_id, deleted_at)
-				values ($1, $2)`,
-				msg.AttachmentID, now)
-			if err != nil {
-				panic(err)
-			}
+	if message.AttachmentID != "" {
+		_, err = tx.Exec(`
+			insert into blob_pending_deletes(blob_id, deleted_at)
+			values ($1, $2)`,
+			message.AttachmentID, now)
+		if err != nil {
+			panic(err)
 		}
-		if msg.AttachmentThumbnailID != "" && msg.AttachmentThumbnailID != msg.AttachmentID {
-			_, err = tx.Exec(`
-				insert into blob_pending_deletes(blob_id, deleted_at)
-				values ($1, $2)`,
-				msg.AttachmentThumbnailID, now)
-			if err != nil {
-				panic(err)
-			}
+	}
+	if message.AttachmentThumbnailID != "" && message.AttachmentThumbnailID != message.AttachmentID {
+		_, err = tx.Exec(`
+			insert into blob_pending_deletes(blob_id, deleted_at)
+			values ($1, $2)`,
+			message.AttachmentThumbnailID, now)
+		if err != nil {
+			panic(err)
 		}
 	}
 
 	_, err = tx.Exec(`
 		delete from message_likes
-		where message_id in (
-		    select id     
-		    from messages
-			where parent_id = $1
-		  		and (select user_id from messages where messages.id = $1) = $2)`,
-		messageID, userID)
+		where message_id = $1;`,
+		messageID)
 	if err != nil {
 		panic(err)
 	}
@@ -360,42 +364,10 @@ func (r *messageRepo) deleteMessage(tx *sqlx.Tx, userID, messageID string) bool 
 		    attachment_id = '',
 		    attachment_thumbnail_id = '',
 		    deleted_at = $1
-		where parent_id = $2
-		  and (select user_id from messages where messages.id = $2) = $3`,
-		common.CurrentTimestamp(), messageID, userID)
+		where id = $2;`,
+		common.CurrentTimestamp(), messageID)
 	if err != nil {
 		panic(err)
-	}
-
-	_, err = tx.Exec(`
-		delete from message_likes
-		where message_id in (
-		    select id
-		    from messages
-			where id = $1 and user_id = $2)`,
-		messageID, userID)
-	if err != nil {
-		panic(err)
-	}
-
-	res, err := tx.Exec(`
-		update messages
-		set text = '(deleted)',
-		    attachment_type = '',
-		    attachment_id = '',
-		    attachment_thumbnail_id = '',
-		    deleted_at = $1
-		where id = $2 and user_id = $3`,
-		common.CurrentTimestamp(), messageID, userID)
-	if err != nil {
-		panic(err)
-	}
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		panic(err)
-	}
-	if rowsAffected < 1 {
-		return false
 	}
 	return true
 }
@@ -546,7 +518,7 @@ func (r *messageRepo) MessageReport(reportID string) *MessageReport {
 		select mr.id, mr.user_id reported_by,
 		       mr.report, mr.created_at, mr.resolved_at,
 		       m.id as message_id, m.user_id author_id,
-		       m.attachment_type, m.attachment_id, m.attachment_thumbnail_id 
+		       m.text, m.attachment_type, m.attachment_id, m.attachment_thumbnail_id 
 		from message_reports mr
 			inner join messages m on m.id = mr.message_id
 		where mr.id = $1`,
@@ -566,7 +538,7 @@ func (r *messageRepo) MessageReports() []MessageReport {
 		select mr.id, mr.user_id reported_by,
 		       mr.report, mr.created_at, mr.resolved_at,
 		       m.id as message_id, m.user_id author_id,
-		       m.attachment_type, m.attachment_id, m.attachment_thumbnail_id 
+		       m.text, m.attachment_type, m.attachment_id, m.attachment_thumbnail_id 
 		from message_reports mr
 			inner join messages m on m.id = mr.message_id
 `)
@@ -592,7 +564,7 @@ func (r *messageRepo) DeleteReportedMessage(reportID string) bool {
 
 	ok := false
 	err = common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
-		if !r.deleteMessage(tx, message.UserID, message.ID) {
+		if !r.deleteMessage(tx, message.ID) {
 			return nil
 		}
 		_, err := tx.Exec(`
@@ -674,79 +646,84 @@ func (r *messageRepo) ResolveMessageReport(reportID string) bool {
 	return true
 }
 
-func (r *messageRepo) DeleteOldGuestMessages(until time.Time) {
+func (r *messageRepo) DeleteExpiredMessages(until time.Time, onlyGuestMessages bool) {
 	until = until.UTC()
 	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
 		_, err := tx.Exec(`
-			with m as (select id from messages where parent_id is null and is_guest = true and created_at < $1),
+			with m as (select id from messages where parent_id is null and ($1 = false or is_guest = true) and created_at < $2),
 				 c as (select id from messages where parent_id in (select id from m)),
 				 mc as (select id from m union select id from c)
 			delete from message_likes
 			where message_id in (select id from mc);`,
-			until)
+			onlyGuestMessages, until)
 		if err != nil {
 			return merry.Wrap(err)
 		}
 
 		_, err = tx.Exec(`
-			with m as (select id from messages where parent_id is null and is_guest = true and created_at < $1),
+			with m as (select id from messages where parent_id is null and ($1 = false or is_guest = true) and created_at < $2),
 				 c as (select id from messages where parent_id in (select id from m)),
 				 mc as (select id from m union select id from c)
 			delete from message_visibility
 			where message_id in (select id from mc);`,
-			until)
+			onlyGuestMessages, until)
 		if err != nil {
 			return merry.Wrap(err)
 		}
 
 		_, err = tx.Exec(`
-			with m as (select id from messages where parent_id is null and is_guest = true and created_at < $1),
+			with m as (select id from messages where parent_id is null and ($1 = false or is_guest = true) and created_at < $2),
 				 c as (select id from messages where parent_id in (select id from m)),
 				 mc as (select id from m union select id from c)
 			delete from message_reports
 			where message_id in (select id from mc);`,
-			until)
+			onlyGuestMessages, until)
 		if err != nil {
 			return merry.Wrap(err)
 		}
 
 		_, err = tx.Exec(`
-			with m as (select id from messages where parent_id is null and is_guest = true and created_at < $1),
+			with m as (select id from messages where parent_id is null and ($1 = false or is_guest = true) and created_at < $2),
 				 c as (select id from messages where parent_id in (select id from m)),
 				 mc as (select id from m union select id from c)
 			delete from message_reads
 			where message_id in (select id from mc);`,
-			until)
+			onlyGuestMessages, until)
 		if err != nil {
 			return merry.Wrap(err)
 		}
 
 		_, err = tx.Exec(`
-			with m as (select id from messages where parent_id is null and is_guest = true and created_at < $1),
+			with m as (select id from messages where parent_id is null and ($1 = false or is_guest = true) and created_at < $2),
 				 c as (select id from messages where parent_id in (select id from m)),
 				 mc as (select id from m union select id from c)
 			insert into blob_pending_deletes(blob_id, deleted_at)
-			select attachment_id, $2::timestamptz
+			select attachment_id, $3::timestamptz
 			from messages
 			where id in (select id from mc) and attachment_id != ''
 			union
-			select attachment_thumbnail_id, $2::timestamptz
+			select attachment_thumbnail_id, $3::timestamptz
 			from messages
 			where id in (select id from mc) and attachment_thumbnail_id != '';`,
-			until, common.CurrentTimestamp())
+			onlyGuestMessages, until, common.CurrentTimestamp())
 		if err != nil {
 			return merry.Wrap(err)
 		}
 
-		_, err = tx.Exec(`
-			with m as (select id from messages where parent_id is null and is_guest = true and created_at < $1),
+		res, err := tx.Exec(`
+			with m as (select id from messages where parent_id is null and ($1 = false or is_guest = true) and created_at < $2),
 				 c as (select id from messages where parent_id in (select id from m)),
 				 mc as (select id from m union select id from c)
 			delete from messages
 			where id in (select id from mc);`,
-			until)
+			onlyGuestMessages, until)
 		if err != nil {
 			return merry.Wrap(err)
+		}
+
+		rowsAffected, err := res.RowsAffected()
+		if err == nil {
+			log.Printf("Deleted %d expired messages", rowsAffected)
 		}
 
 		return nil
@@ -839,12 +816,12 @@ func (r *messageRepo) GroupCounts(currentUserID string, groupIDs []string) map[s
 	query = r.db.Rebind(query)
 
 	var counts []struct {
-		GroupID            string    `db:"group_id"`
-		TotalCount         int       `db:"total_count"`
-		UnreadCount        int       `db:"unread_count"`
-		TotalCommentCount  int       `db:"total_comment_count"`
-		UnreadCommentCount int       `db:"unread_comment_count"`
-		LastMessageTime    time.Time `db:"last_message_time"`
+		GroupID            string       `db:"group_id"`
+		TotalCount         int          `db:"total_count"`
+		UnreadCount        int          `db:"unread_count"`
+		TotalCommentCount  int          `db:"total_comment_count"`
+		UnreadCommentCount int          `db:"unread_comment_count"`
+		LastMessageTime    sql.NullTime `db:"last_message_time"`
 	}
 	err = r.db.Select(&counts, query, args...)
 	if err != nil {
@@ -865,37 +842,60 @@ func (r *messageRepo) GroupCounts(currentUserID string, groupIDs []string) map[s
 	return result
 }
 
-func (r *messageRepo) DirectCounts(currentUserID string) map[string]Counts {
+func (r *messageRepo) DirectCounts(currentUserID string) map[string]*Counts {
 	query := `
 		select
-			   m.user_id,
-			   coalesce(sum(case when m.parent_id is null then 1 end), 0) total_count, 
-			   coalesce(sum(case when m.parent_id is null and not exists(select * from message_reads where user_id = $1 and message_id = m.id) then 1 end), 0) unread_count, 
-			   coalesce(sum(case when m.parent_id is not null then 1 end), 0) total_comment_count, 
-			   coalesce(sum(case when m.parent_id is not null and not exists(select * from message_reads where user_id = $1 and message_id = m.id) then 1 end), 0) unread_comment_count, 
-		       max(m.created_at) last_message_time
+			m.user_id,
+			coalesce(sum(case when m.parent_id is null then 1 end), 0) total_count, 
+			coalesce(sum(case when m.parent_id is null and not exists(select * from message_reads where user_id = $1 and message_id = m.id) then 1 end), 0) unread_count, 
+			coalesce(sum(case when m.parent_id is not null then 1 end), 0) total_comment_count, 
+			coalesce(sum(case when m.parent_id is not null and not exists(select * from message_reads where user_id = $1 and message_id = m.id) then 1 end), 0) unread_comment_count, 
+			max(m.created_at) last_message_time
 		from messages m
 		where m.user_id <> $1
 			and m.friend_id = $1
 			and m.deleted_at is null
 			and not exists(select * from message_visibility mv where mv.user_id = $1 and mv.message_id = m.id and mv.visibility = false)
 		group by m.user_id;`
-	var counts []struct {
-		UserID             string    `db:"user_id"`
-		TotalCount         int       `db:"total_count"`
-		UnreadCount        int       `db:"unread_count"`
-		TotalCommentCount  int       `db:"total_comment_count"`
-		UnreadCommentCount int       `db:"unread_comment_count"`
-		LastMessageTime    time.Time `db:"last_message_time"`
+	var toMeCounts []struct {
+		UserID             string       `db:"user_id"`
+		TotalCount         int          `db:"total_count"`
+		UnreadCount        int          `db:"unread_count"`
+		TotalCommentCount  int          `db:"total_comment_count"`
+		UnreadCommentCount int          `db:"unread_comment_count"`
+		LastMessageTime    sql.NullTime `db:"last_message_time"`
 	}
-	err := r.db.Select(&counts, query, currentUserID)
+	err := r.db.Select(&toMeCounts, query, currentUserID)
 	if err != nil {
 		panic(err)
 	}
 
-	result := make(map[string]Counts)
-	for _, count := range counts {
-		result[count.UserID] = Counts{
+	query = `
+		select
+			m.friend_id,
+			coalesce(sum(case when m.parent_id is null then 1 end), 0) total_count, 
+			coalesce(sum(case when m.parent_id is not null then 1 end), 0) total_comment_count, 
+			max(m.created_at) last_message_time
+		from messages m
+		where m.user_id = $1
+			and m.friend_id <> $1
+			and m.deleted_at is null
+			and not exists(select * from message_visibility mv where mv.user_id = $1 and mv.message_id = m.id and mv.visibility = false)
+		group by m.friend_id;`
+	var fromMeCounts []struct {
+		FriendID          string       `db:"friend_id"`
+		TotalCount        int          `db:"total_count"`
+		TotalCommentCount int          `db:"total_comment_count"`
+		LastMessageTime   sql.NullTime `db:"last_message_time"`
+	}
+	err = r.db.Select(&fromMeCounts, query, currentUserID)
+	if err != nil {
+		panic(err)
+	}
+
+	result := make(map[string]*Counts)
+	for _, count := range toMeCounts {
+		result[count.UserID] = &Counts{
 			TotalCount:         count.TotalCount,
 			UnreadCount:        count.UnreadCount,
 			TotalCommentCount:  count.TotalCommentCount,
@@ -903,6 +903,80 @@ func (r *messageRepo) DirectCounts(currentUserID string) map[string]Counts {
 			LastMessageTime:    count.LastMessageTime,
 		}
 	}
-
+	for _, count := range fromMeCounts {
+		if c, ok := result[count.FriendID]; ok {
+			if c.LastMessageTime.Time.Before(count.LastMessageTime.Time) {
+				c.LastMessageTime = count.LastMessageTime
+			}
+			c.TotalCount += count.TotalCount
+			c.TotalCommentCount += count.TotalCommentCount
+		} else {
+			result[count.FriendID] = &Counts{
+				LastMessageTime:   count.LastMessageTime,
+				TotalCount:        count.TotalCount,
+				TotalCommentCount: count.TotalCommentCount,
+			}
+		}
+	}
 	return result
+}
+
+func (r *messageRepo) DeleteUserData(tx *sqlx.Tx, userID string) error {
+	_, err := tx.Exec(`
+		delete from message_likes
+		where user_id = $1;`,
+		userID)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+
+	_, err = tx.Exec(`
+		delete from message_visibility
+		where user_id = $1;`,
+		userID)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+
+	_, err = tx.Exec(`
+		delete from message_reports
+		where user_id = $1;`,
+		userID)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+
+	_, err = tx.Exec(`
+		delete from message_reads
+		where user_id = $1;`,
+		userID)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+
+	_, err = tx.Exec(`
+		insert into blob_pending_deletes(blob_id, deleted_at)
+		select attachment_id, $1::timestamptz
+		from messages
+		where user_id = $2 and attachment_id != ''
+		union
+		select attachment_thumbnail_id, $1::timestamptz
+		from messages
+		where user_id = $2 and attachment_thumbnail_id != '';`,
+		common.CurrentTimestamp(), userID)
+	if err != nil {
+		return merry.Wrap(err)
+	}
+
+	_, err = tx.Exec(`
+		update messages
+		set text = '(deleted)',
+		    attachment_type = '',
+		    attachment_id = '',
+		    attachment_thumbnail_id = '',
+		    deleted_at = $1
+		where user_id = $2`,
+		common.CurrentTimestamp(), userID)
+
+	return nil
 }

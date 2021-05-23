@@ -53,6 +53,7 @@ import {
     watchDisableUser,
     watchGetProfileCoverUploadLink,
     watchSetProfileCover,
+    watchDeleteAccount,
 } from './profile'
 import {
     watchGetMessages,
@@ -83,7 +84,9 @@ import {
     watchGetDirectPostMsgToken,
     watchSendMsgToFriend,
     watchGetFriendMsgAPIData,
-    watchGetFriendsList
+    watchGetFriendsList,
+    watchDirectMsgUploadLink,
+    watchDeleteDirectMsg
     // watchGetDirectMessagesFromHub
 } from './messsages'
 import {
@@ -162,6 +165,7 @@ export function* rootSaga() {
         takeEvery(ProfileTypes.DISABLE_USER_REQUEST, watchDisableUser),
         takeEvery(ProfileTypes.GET_PROFILE_COVER_UPLOAD_LINK_REQUEST, watchGetProfileCoverUploadLink),
         takeEvery(ProfileTypes.SET_PROFILE_COVER_REQUEST, watchSetProfileCover),
+        takeEvery(ProfileTypes.DELETE_ACCOUNT_REQUEST, watchDeleteAccount),
 
         takeEvery(FeedMessagesTypes.GET_FEED_TOKENS_REQUEST, watchGetMessages),
         takeEvery(FeedMessagesTypes.GET_CURRENT_HUB_REQUEST, watchGetCurrentHub),
@@ -191,6 +195,8 @@ export function* rootSaga() {
         takeEvery(DirectMessagesTypes.SEND_MESSAGE_TO_FRIEND, watchSendMsgToFriend),
         takeEvery(DirectMessagesTypes.GET_FRIEND_MSG_API_DATA, watchGetFriendMsgAPIData),
         takeEvery(DirectMessagesTypes.GET_FRIENDS_LIST, watchGetFriendsList),
+        takeEvery(DirectMessagesTypes.GET_DIRECT_MSG_UPLOAD_LINK_REQUEST, watchDirectMsgUploadLink),
+        takeEvery(DirectMessagesTypes.DELETE_DIRECT_MESSAGES_REQUEST, watchDeleteDirectMsg),
         
         takeEvery(NotificationsTypes.GET_NOTIFICATIONS_REQUEST, watchGetNotifications),
         takeEvery(NotificationsTypes.CLEAN_NOTIFICATIONS_IN_USER_HUB_REQUEST, watchCleanNotificationsInUserHub),

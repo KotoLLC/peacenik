@@ -17,6 +17,7 @@ import { sortByDate } from '@services/sortByDate'
 import FeedPost from '../../Feed/components/FeedPost'
 import queryString from 'query-string'
 import CommentDialog from '../../Feed/components/CommentDialog'
+import { API } from '@services/api'
 import {
   UpButton,
 } from '../../Feed/components/styles'
@@ -49,10 +50,12 @@ interface Props {
   location: any
   feedsTokens: CommonTypes.HubTypes.CurrentHub[]
   groupMessageToken: CommonTypes.GroupTypes.GroupMsgToken
+  postUpdated: boolean
 
   onGetInvitesToConfirmRequest: () => void
   onGetGroupMessages: (data: ApiTypes.Groups.MessagesById) => void
   onGetGroupMessagesToken: (data: ApiTypes.Groups.MessagesById) => void
+  onSetPostUpdated: (data) => void
 }
 
 const AdminPublicLayout: React.FC<Props> = React.memo((props) => {
@@ -80,10 +83,20 @@ const AdminPublicLayout: React.FC<Props> = React.memo((props) => {
     groupMessageToken,
     feedsTokens,
     state,
+    postUpdated,
     onGetInvitesToConfirmRequest, 
     onGetGroupMessages,
-    onGetGroupMessagesToken
+    onGetGroupMessagesToken,
+    onSetPostUpdated
   } = props
+
+  let timerId: any = null
+  
+  let msgToken: string = feedsTokens[0].token
+  feedsTokens.map( (item: CommonTypes.HubTypes.CurrentHub ) => {
+    if(item.host === groupMessageToken.host)
+      msgToken = item.token
+  })
 
   const getGroupMsg = () => {
     onGetGroupMessages({
@@ -115,6 +128,34 @@ const AdminPublicLayout: React.FC<Props> = React.memo((props) => {
     }
   }, [])
 
+  useEffect( () => {
+    if ( postUpdated ) {
+      API.feed.getMessageById({
+        host: popupData.sourceHost,
+        body: {
+          token: popupData.messageToken,
+          message_id: popupData.id,
+        }
+      }).then( (response: any) => {
+        setPopupData({
+          created_at: response.data.message.created_at,
+          message: response.data.message.message,
+          isAttacmentDeleted: false,
+          attachment_type: response.data.message.attachment_type,
+          attachment: response.data.message.attachment,
+          comments: response.data.message.comments,
+          sourceHost: popupData.sourceHost,
+          messageToken: popupData.messageToken,
+          id: response.data.message.id,
+          user_id: response.data.message.user_id,
+          friends: [],
+        })
+        onSetPostUpdated(false)
+      }).catch(error => {
+        console.log("GET MESSAGE ERROR 3: ", error)
+      })
+    }
+  }, [postUpdated])
   useEffect(() => {
     if (groupInvites === null && !isRequested) {
       onGetInvitesToConfirmRequest()
@@ -134,13 +175,6 @@ const AdminPublicLayout: React.FC<Props> = React.memo((props) => {
 
   const parsed = queryString.parse(location.search)
   // console.log("ADMIN PUBLIC LAYOUT", props)
-  let timerId: any = null
-  
-  let msgToken: string = ""
-  feedsTokens.map( (item: CommonTypes.HubTypes.CurrentHub ) => {
-    if(item.host === groupMessageToken.host)
-      msgToken = item.token
-  })
 
   const fixInvitesGroupId = () => {
     if (!groupDetails?.invites?.length) return []
@@ -226,12 +260,10 @@ const AdminPublicLayout: React.FC<Props> = React.memo((props) => {
         <PageCover resource={getGroupCoverUrl(group?.id)} />
         <GroupCoverBar
           className="desktop-only"
-          memberStatus={status}
           membersCounter={members?.length}
           invitesCounter={invites?.length || 0}
           groupId={group?.id}
           isAdminLayout={true}
-          isPublic={group?.is_public}
         />
         <Container>
           <PageColumnBarsWrapper>
@@ -246,12 +278,10 @@ const AdminPublicLayout: React.FC<Props> = React.memo((props) => {
               />
               <GroupCoverBar
                 className="mobile-only"
-                memberStatus={status}
                 membersCounter={members?.length}
                 invitesCounter={invites?.length || 0}
                 groupId={group?.id}
                 isAdminLayout={true}
-                isPublic={group?.is_public}
               />
             </LeftSideBar>
             <CentralBar>
@@ -302,7 +332,9 @@ type StateProps = Pick<Props,
   | 'userId' 
   | 'groupMessageToken' 
   | 'feedsTokens'
-  | 'isMoreMessagesRequested'>
+  | 'isMoreMessagesRequested'
+  | 'postUpdated'
+>
   
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   state: state,
@@ -313,17 +345,20 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   feedsTokens: selectors.feed.feedsTokens(state),
   isMoreMessagesRequested: selectors.feed.isMoreMessagesRequested(state),
   invitesToConfirm: selectors.groups.invitesToConfirm(state),
+  postUpdated: selectors.feed.postUpdated(state)
 })
 
 type DispatchProps = Pick<Props, 
   'onGetInvitesToConfirmRequest' 
   | 'onGetGroupMessages' 
   | 'onGetGroupMessagesToken'
+  | 'onSetPostUpdated'
 >
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetGroupMessagesToken: (data: ApiTypes.Groups.MessagesById) => dispatch(Actions.groups.getGroupFeedTokenRequest(data)),
   onGetGroupMessages: (data: ApiTypes.Groups.MessagesById) => dispatch(Actions.groups.getGroupFeedRequest(data)),
   onGetInvitesToConfirmRequest: () => dispatch(Actions.groups.getInvitesToConfirmRequest()),
+  onSetPostUpdated: (data) => dispatch(Actions.feed.setPostUpdated(data))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(AdminPublicLayout)

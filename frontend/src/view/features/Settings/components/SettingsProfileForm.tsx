@@ -46,7 +46,7 @@ interface Props {
   coverUploadLink: ApiTypes.UploadLink | null;
   profileErrorMessage: string;
 
-  onGetUploadLink: (value: ApiTypes.Profile.UploadLinkRequest) => void;
+  onGetUploadLink: (value: ApiTypes.UploadLinkRequest) => void;
   onSetAvatar: (data: ApiTypes.Profile.Avatar) => void;
   onEditProfile: (data: ApiTypes.Profile.EditProfile) => void;
   onGetProfile: () => void;
@@ -483,7 +483,7 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
                   color='primary'
                 />
               }
-              label='Hide my profile. Only your friends can see real name and profile page'
+              label='Hide my profile. Only your friends will be able to see your real name and profile'
             />
           </CheckboxFieldWrapper>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
@@ -537,7 +537,7 @@ type DispatchProps = Pick<
   | 'onSetProfileCover'
 >;
 const mapDispatchToProps = (dispatch): DispatchProps => ({
-  onGetUploadLink: (value: ApiTypes.Profile.UploadLinkRequest) =>
+  onGetUploadLink: (value: ApiTypes.UploadLinkRequest) =>
     dispatch(Actions.profile.getUploadLinkRequest(value)),
   onSetAvatar: (data: ApiTypes.Profile.Avatar) =>
     dispatch(Actions.profile.setAvatarRequest(data)),

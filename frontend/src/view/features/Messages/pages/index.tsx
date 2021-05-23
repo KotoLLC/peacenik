@@ -44,9 +44,9 @@ const MessagesPage: React.FC<Props> = (props) => {
   }, [feedsTokens, directPostToken])
   
   if ( location.pathname?.indexOf("messages/d/") > -1){
-    let pathName = location.pathname?.substring(location.pathname?.lastIndexOf('/') + 1)
-    if ( pathName !== friend_id)
-      setFriendId(pathName) 
+    let pathFriendId = location.pathname?.substring(location.pathname?.lastIndexOf('/') + 1)
+    if ( (pathFriendId !== friend_id) && (pathFriendId !== ""))
+      setFriendId(pathFriendId) 
   }
   
   useEffect( () => {
@@ -62,7 +62,7 @@ const MessagesPage: React.FC<Props> = (props) => {
   }, [friend_id, msgToken])
 
   useEffect(() => {
-    if ( parsed.id && parsed.fullname){
+    if ( (parsed.id && parsed.fullname)){
       dispatch(Actions.messages.addFriendToRoom({
         id: parsed.id as string,
         fullName: parsed.fullname as string,
@@ -73,10 +73,15 @@ const MessagesPage: React.FC<Props> = (props) => {
     }
   }, [dispatch])
 
+  useEffect( () => {
+    if (friend_id !== "") {
+      dispatch(Actions.messages.getDirectPostMsgToken(friend_id))
+    }
+  }, [friend_id])
+
   const directMsgRoomFriends: CommonTypes.MessageRoomFriendData[] = useSelector((state: StoreTypes) => state.messages.directMsgRoomFriends)
 
   const state = useSelector((state: StoreTypes) => state)
-  console.log("state: ", state)
 
   return (
     <>

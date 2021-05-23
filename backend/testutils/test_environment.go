@@ -42,7 +42,7 @@ func NewTestEnvironment(name string, migrate func(db *sqlx.DB, dialect string) (
 		panic(err)
 	}
 
-	storage := common.NewS3Storage(minioClient, "test-bucket")
+	storage := common.NewS3Storage(minioClient, nil, "", "test-bucket")
 
 	te := &TestEnvironment{
 		name:    name,

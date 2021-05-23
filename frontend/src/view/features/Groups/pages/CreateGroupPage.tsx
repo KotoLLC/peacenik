@@ -49,9 +49,9 @@ interface Props extends RouteComponentProps {
 
   addGroupSucces: (value: boolean) => void
   onAddGroup: (data: ApiTypes.Groups.AddGroup) => void
-  onGetCoverUploadLinkRequest: (data: ApiTypes.Groups.UploadLinkRequest) => void
+  onGetCoverUploadLinkRequest: (data: ApiTypes.UploadLinkRequest) => void
   onSetCoverRequest: (data: ApiTypes.Groups.Image) => void
-  onGetAvatarUploadLinkRequest: (data: ApiTypes.Groups.UploadLinkRequest) => void
+  onGetAvatarUploadLinkRequest: (data: ApiTypes.UploadLinkRequest) => void
   onSetAvatarRequest: (data: ApiTypes.Groups.Image) => void
 }
 
@@ -341,8 +341,8 @@ const CreateGroupPage: React.FC<Props> = (props) => {
       </EmptyGroupsIconWrapper>
       <EmptyGroupsTextWrapper>
         <EmptyGroupsText>
-          Sorry! You can’t create new group. Your hub does not support groups. <EmptyGroupsTextLink to="/settings/hub">
-            Visit the hub page</EmptyGroupsTextLink> in your profile to create a hub with group support.
+          Sorry! You can only create groups on your own message hub. <EmptyGroupsTextLink to="/settings/hub">
+            Visit the hub page</EmptyGroupsTextLink> to create a hub and host your own group.
       </EmptyGroupsText>
       </EmptyGroupsTextWrapper>
     </EmptyScrenWrapper>
@@ -381,10 +381,10 @@ type DispatchProps = Pick<Props,
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onAddGroup: (data: ApiTypes.Groups.AddGroup) => dispatch(Actions.groups.addGroupRequest(data)),
   addGroupSucces: (value: boolean) => dispatch(Actions.groups.addGroupSucces(value)),
-  onGetCoverUploadLinkRequest: (data: ApiTypes.Groups.UploadLinkRequest) =>
+  onGetCoverUploadLinkRequest: (data: ApiTypes.UploadLinkRequest) =>
     dispatch(Actions.groups.getGroupCoverUploadLinkRequest(data)),
   onSetCoverRequest: (data: ApiTypes.Groups.Image) => dispatch(Actions.groups.setGroupCoverRequest(data)),
-  onGetAvatarUploadLinkRequest: (data: ApiTypes.Groups.UploadLinkRequest) =>
+  onGetAvatarUploadLinkRequest: (data: ApiTypes.UploadLinkRequest) =>
     dispatch(Actions.groups.getAvatarUploadLinkRequest(data)),
   onSetAvatarRequest: (data: ApiTypes.Groups.Image) => dispatch(Actions.groups.setAvatarRequest(data))
 })

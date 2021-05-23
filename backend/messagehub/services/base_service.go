@@ -22,11 +22,21 @@ type User struct {
 	IsHubAdmin   bool
 	IsBlocked    bool
 	BlockedUsers []string
+	OwnedGroups  []string
 }
 
 func (u User) IsBlockedUser(userID string) bool {
 	for _, id := range u.BlockedUsers {
 		if id == userID {
+			return true
+		}
+	}
+	return false
+}
+
+func (u User) IsOwnedGroup(groupID string) bool {
+	for _, id := range u.OwnedGroups {
+		if id == groupID {
 			return true
 		}
 	}
@@ -58,7 +68,7 @@ func NewBase(repos repo.Repos, tokenParser token.Parser, externalAddress string,
 	}
 }
 
-func (s *BaseService) getUser(ctx context.Context) User {
+func (s *BaseService) getMe(ctx context.Context) User {
 	return ctx.Value(ContextUserKey).(User)
 }
 

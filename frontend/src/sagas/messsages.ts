@@ -6,34 +6,40 @@ import {
   CommonTypes
 } from 'src/types'
 import * as EnumTypes from '../types/enum'
-import { setUserNames } from '@services/userNames'
 import { hubsForMessagesBack2Front } from '@services/dataTransforms/hubsForMessagesTransform'
 import selectors from '@selectors/index'
 import { Types as DirectMessagesTypes } from '@store/messages/actions'
-import { Types as FeedMessagesTypes } from '@store/feed/actions'
-import { watchGetMessagesFromHub } from './feed'
+import { getUserNameByUserId } from '@services/userNames';
 
-//   {
-//     msgId: "1293903-4123412341-12341234134-12341234",
-//     direction: EnumTypes.MessageDirection.OUTGOING_MESSAGE,
-//     actionTime: new Date("2021-3-26"),
-//     status: EnumTypes.MessagePublishStatus.ACCEPTED_STATUS,
-//     contentType: EnumTypes.MessageContentType.TEXT_TYPE,
-//     messeageContent: "I'm looking for a truly",
-//   },
-//   "id": "5e183be8-be6e-44b9-9562-85eb87a282aa",
-//   "user_id": "2c415538-e86f-4553-a3d1-49ff2d4ab3ff",
-//   "text": "Test",
-//   "attachment": "",
-//   "attachment_type": "",
-//   "attachment_thumbnail": "",
-//   "created_at": "2021-04-09T08:36:21.433-06:00",
-//   "updated_at": "2021-04-09T08:36:21.433-06:00",
-//   "likes": 0,
-//   "liked_by_me": false,
-//   "comments": [],
-//   "liked_by": [],
-//   "is_read": false
+export function * watchDeleteDirectMsg(action: {
+  type: string,
+  payload: ApiTypes.Messages.DeleteMessage
+}) {
+  try {
+    const response = yield API.feed.deleteMessage(action.payload)
+    if (response.status === 200) {
+      const state = yield select()
+      const feedsTokens = selectors.feed.feedsTokens(state)
+      let msgToken = ""
+      feedsTokens.map( (item) => {
+        if ( item.host === action.payload.host)
+          msgToken = item.token
+      })
+      yield call(watchGetFriendMsgAPIData, {
+        type: "test",
+        payload: {
+          host: action.payload.host,
+          token: msgToken,
+          friend: {
+            id: action.payload.body.friend_id
+          }
+        }
+      })
+    } 
+  } catch (error) {
+    console.log("watchDeleteDirectMsg Error: ", error)
+  }
+}
 
 export function * watchGetFriendMsgAPIData(action: {
   type: string,
@@ -41,7 +47,6 @@ export function * watchGetFriendMsgAPIData(action: {
 }) {
   try {
     const response = yield API.messages.getFriendMessage(action.payload)
-    console.log("watchGetFriendMsgAPIData RESPONSE: ", response.data.messages)
     if (response.status === 200) {
       const state = yield select()
       const currentUserId = selectors.profile.userId(state)
@@ -50,17 +55,31 @@ export function * watchGetFriendMsgAPIData(action: {
         direction: (item.user_id === currentUserId) ? EnumTypes.MessageDirection.OUTGOING_MESSAGE : EnumTypes.MessageDirection.INCOMMING_MESSAGE,
         actionTime: item.created_at,
         status: (item.is_read) ? EnumTypes.MessagePublishStatus.ACCEPTED_STATUS : EnumTypes.MessagePublishStatus.PENDING_STATUS,
-        contentType: EnumTypes.MessageContentType.TEXT_TYPE,
-        messeageContent: item.text as string
+        contentType: (item.attachment === "") ? EnumTypes.MessageContentType.TEXT_TYPE : EnumTypes.MessageContentType.IMAGE_TYPE,
+        messeageContent: (item.attachment === "") ? item.text as string : item.attachment
       }))
 
-      yield put(Actions.messages.getFriendMsgSuccess(resMessages))
+      yield put(Actions.messages.getFriendMsgSuccess(resMessages, action.payload))
 
     } else if (response.status === 400) {
       console.log("watchGetFriendMsgAPIData ERROR:", response)
     }
   } catch (error) {
     yield put(Actions.common.getMsgToken())
+  }
+}
+
+export function * watchDirectMsgUploadLink(action: {type: string, payload: ApiTypes.UploadLinkRequestWithHost}) {
+  try {
+    const response = yield API.messages.getUploadLink(action.payload)
+
+    if (response.status === 200) {
+      yield put(Actions.messages.getDirectMsgUploadLinkSucces(response.data))
+    } else {
+      yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
+    }
+  } catch (error) {
+    console.log("watchDirectMsgUploadLink error: ", error)
   }
 }
 
@@ -82,7 +101,7 @@ export function * watchGetFriendsList(action: { type: string }) {
     }   
 
   } catch (error) {
-    console.log("watchGetFriendsList: ", error)
+    console.log("watchGetFriendsList error: ", error)
   }
 }
 
@@ -92,7 +111,14 @@ export function * watchGetFriendsFromHub( action: {
 }) {
   try {
     const response = yield API.messages.getFriendFromHub(action.payload)
-    console.log("getFriendFromHub: ", response)
+    if ( response.status === 200) {
+      const friendsList:CommonTypes.MessageRoomFriendData[] = Object.entries<CommonTypes.FriendCounterData>(response.data.direct_counters).map( ([key, value]) => ({
+        id: key,
+        fullName: getUserNameByUserId(key),
+        accessTime: value.last_message_time
+      }))
+      yield put(Actions.messages.addFriendsToRoom(friendsList))
+    }
   } catch (error) {
     console.log("watchGetFriendsFromHub: ", error)
   }
@@ -105,7 +131,15 @@ export function * watchSendMsgToFriend(action: {
   try {
     const response = yield API.feed.postMessage(action.payload)
     if (response.status === 200) {
-
+      yield put(Actions.messages.setPostMsgToFriendSuccess(true))
+      yield put(Actions.messages.getFriendMsg({
+          host: action.payload.host,
+          token: action.payload.body.msg_token ? action.payload.body.msg_token: "",
+          friend: {
+            id: action.payload.body.friend_id ? action.payload.body.friend_id: ""
+          },
+          count:1
+        }))
     } else if (response.status === 400) {
       console.log("watchSendMsgToFriend ERROR:", response)
     }
@@ -200,15 +234,7 @@ export function* watchGetUserLastMessagesFromHub(action: { type: string, payload
   try {
     const resultData = yield API.messages.getUserLastMessagesFromHub(action.payload)
     // sort the last date
-    resultData.sort((a,b)=>a.created_at > b.created_at? -1: 1)
-    // console.log(resultData)
-    // export interface UserMessage {
-    //   user_id: string
-    //   messages: Feed.Message[]
-    //   lastMessageDate?: string | null
-    //   username?: string
-    //   full_name?: string
-    // }  
+    resultData.sort((a,b)=>a.created_at > b.created_at? -1: 1) 
     yield put(Actions.messages.getUserLastMessageFromHubSuccess({
       hub: action.payload.host,
       usersLastMessage: resultData

@@ -33,11 +33,11 @@ type notificationSender struct {
 }
 
 type Notification struct {
-	UserIDs     []string
-	Text        string
-	MessageType string
-	Data        map[string]interface{}
-	IsExternal  bool
+	UserIDs     []string               `json:"users"`
+	Text        string                 `json:"text"`
+	MessageType string                 `json:"message_type"`
+	Data        map[string]interface{} `json:"data"`
+	IsExternal  bool                   `json:"is_external"`
 }
 
 func NewNotificationSender(repos repo.Repos, userCache caches.Users, firebaseClient *fcm.Client, mailSender *common.MailSender, rootEmailTemplate *template.Template) NotificationSender {
@@ -99,7 +99,7 @@ func (s *notificationSender) sendFCMNotifications(n Notification) {
 		resp, err := s.firebaseClient.SendWithRetry(&fcm.Message{
 			To: fcmToken,
 			Notification: &fcm.Notification{
-				Title: "KOTO",
+				Title: "Peacenik",
 				Body:  n.Text,
 			},
 		}, 3)

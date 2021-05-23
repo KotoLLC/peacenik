@@ -34,7 +34,7 @@ export const HubStepsInfo: React.FC<Props> = React.memo((props) => {
           </CreationHubStepWrapper>
           <CreationHubStepWrapper>
             <CreationHubStepIcon src={StepIcon2} />
-            <CreationHubStepDescription>Give storage for your friends, or they friends as well</CreationHubStepDescription>
+            <CreationHubStepDescription>Provide storage for your network of friends</CreationHubStepDescription>
           </CreationHubStepWrapper>
           <CreationHubStepWrapper>
             <CreationHubStepIcon src={StepIcon3} />
@@ -43,7 +43,7 @@ export const HubStepsInfo: React.FC<Props> = React.memo((props) => {
         </CreationHubStepsWrapper>
         {!isHubActive ?
           <CreationHubNote>
-            You can (A) activate a <b>sponsored hub</b> or (B) <b>create a hub</b> yourself.
+            Follow the instructions below to create a hub
         </CreationHubNote> :
           <RemoveHubDialog {...myActiveHub}/>
         }

@@ -5,14 +5,16 @@ metadata:
   namespace: backend
   annotations:
     kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: "do-issuer"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
     # acme.cert-manager.io/http01-edit-in-place: "true"
     # cert-manager.io/issue-temporary-certificate: "true"
 spec:
   tls:
   - hosts:
-    - "*.peacenik.app"
-    secretName: koto-tls-backend
+    - "central.peacenik.app"
+    - "node1.peacenik.app"
+    - "progresso-pg.peacenik.app"
+    secretName: peacenik-tls-backend-new
   rules:
   - host: central.peacenik.app
     http:
@@ -34,3 +36,13 @@ spec:
             name: message-hub-service
             port:
               number: 12002
+  - host: progresso-pg.peacenik.app
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: pgadmin
+            port:
+              number: 443

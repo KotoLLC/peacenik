@@ -61,21 +61,21 @@ const GroupsListItem: React.FC<Props> = React.memo((props) => {
 
   return (
     <GroupsListItemWrapper>
-      <ItemCover resource={getGroupCoverUrl(id!)} />
-      <ItemContentWraper>
-        <ItemHeader>
-          <Link to={`/groups/group?id=${id}`}>
+      <Link to={`/groups/group?id=${id}`}>
+        <ItemCover resource={getGroupCoverUrl(id!)} />
+        <ItemContentWraper>
+          <ItemHeader>
             <GroupItemAvatar src={getGroupAvatarUrl(id)}>
               <CameraAltIcon />
             </GroupItemAvatar>
-          </Link>
-          {renderCurrentButton()}
-        </ItemHeader>
-        <GroupNameLink to={`/groups/group?id=${id}`}>{name}</GroupNameLink>
-        <GroupCounter>{member_count} participants</GroupCounter>
-        <ItemsGroupPublicity>{is_public ? 'Public' : 'Private'} {userId === admin.id && '- My group'}</ItemsGroupPublicity>
-        <GroupDescription>{description}</GroupDescription>
-      </ItemContentWraper>
+            {renderCurrentButton()}
+          </ItemHeader>
+          <GroupNameLink>{name}</GroupNameLink>
+          <GroupCounter>{member_count} participants</GroupCounter>
+          <ItemsGroupPublicity>{is_public ? 'Public' : 'Private'} {userId === admin.id && '- My group'}</ItemsGroupPublicity>
+          <GroupDescription>{description}</GroupDescription>
+        </ItemContentWraper>
+      </Link>
     </GroupsListItemWrapper>
   )
 })

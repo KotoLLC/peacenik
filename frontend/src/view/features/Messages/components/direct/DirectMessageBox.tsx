@@ -1,5 +1,6 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom'
+import { useRouteMatch } from 'react-router';
 import {
   DirectMessageBoxWapper,
   DMContentWrapper,
@@ -15,19 +16,23 @@ interface Props extends RouteComponentProps {}
 export default function DirectMessageBox(props: Props) {
   const { location } = props
   
-  return (
-    <DirectMessageBoxWapper>
-      {/* <DMHeaderWrapper>
-        <DirectMessageHeader />
-      </DMHeaderWrapper> */}
+  const userid = useRouteMatch().params['id'] || undefined;
+  if ( userid)
+    return (
+      <DirectMessageBoxWapper>
+        <DMHeaderWrapper>
+          <DirectMessageHeader />
+        </DMHeaderWrapper>
 
-      <DMContentWrapper>
-        <DirectMessageContent />
-      </DMContentWrapper>
+        <DMContentWrapper>
+          <DirectMessageContent />
+        </DMContentWrapper>
 
-      <DMFooterWapper>
-        <DirectMessageFooter />
-      </DMFooterWapper>
-    </DirectMessageBoxWapper>
-  );
+        <DMFooterWapper>
+          <DirectMessageFooter location={location}/>
+        </DMFooterWapper>
+      </DirectMessageBoxWapper>
+    );
+  else 
+    return <></>
 }

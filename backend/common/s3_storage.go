@@ -5,6 +5,7 @@ import (
 	"context"
 	"io"
 	"log"
+	"net/url"
 	"sync"
 	"time"
 
@@ -17,7 +18,11 @@ const (
 )
 
 type S3Storage struct {
-	client     *minio.Client
+	client         *minio.Client
+	externalClient *minio.Client
+
+	externalPathPrefix string
+
 	bucket     string
 	bucketOnce sync.Once
 
@@ -26,13 +31,21 @@ type S3Storage struct {
 	cachedLinksMu sync.Mutex
 }
 
-func NewS3Storage(client *minio.Client, bucket string) *S3Storage {
-	return &S3Storage{
-		client:      client,
-		bucket:      bucket,
-		cachedLinks: make(map[string]string),
-		cachedTimes: make(map[string]time.Time),
+func NewS3Storage(client, externalClient *minio.Client, externalPathPrefix, bucket string) *S3Storage {
+	if externalClient == nil {
+		externalClient = client
 	}
+
+	s := &S3Storage{
+		client:             client,
+		externalClient:     externalClient,
+		externalPathPrefix: externalPathPrefix,
+		bucket:             bucket,
+		cachedLinks:        make(map[string]string),
+		cachedTimes:        make(map[string]time.Time),
+	}
+	s.createBucketIfNotExist(context.TODO())
+	return s
 }
 
 func (s *S3Storage) createBucketIfNotExist(ctx context.Context) {
@@ -100,8 +113,6 @@ func (s *S3Storage) ReadN(ctx context.Context, blobID string, n int) ([]byte, er
 }
 
 func (s *S3Storage) CreateLink(ctx context.Context, blobID string, expiration time.Duration) (string, error) {
-	s.createBucketIfNotExist(ctx)
-
 	if expiration <= 0 {
 		expiration = defaultLinkExpiration
 	}
@@ -115,15 +126,16 @@ func (s *S3Storage) CreateLink(ctx context.Context, blobID string, expiration ti
 		return s.cachedLinks[blobID], nil
 	}
 
-	u, err := s.client.PresignedGetObject(ctx, s.bucket, blobID, expiration, nil)
+	u, err := s.externalClient.PresignedGetObject(ctx, s.bucket, blobID, expiration, nil)
 	if err != nil {
 		return "", merry.Prepend(err, "can't Presign")
 	}
+	link := s.convertToExternalLink(u)
 
-	s.cachedLinks[blobID] = u.String()
+	s.cachedLinks[blobID] = link
 	s.cachedTimes[blobID] = expiresAt
 
-	return u.String(), nil
+	return link, nil
 }
 
 func (s *S3Storage) PutObject(ctx context.Context, blobID string, content []byte, contentType string) error {
@@ -139,8 +151,6 @@ func (s *S3Storage) PutObject(ctx context.Context, blobID string, content []byte
 }
 
 func (s *S3Storage) CreateUploadLink(ctx context.Context, blobID, contentType string, metadata map[string]string) (uploadLink string, formData map[string]string, err error) {
-	s.createBucketIfNotExist(ctx)
-
 	expiration := defaultLinkExpiration
 
 	policy := minio.NewPostPolicy()
@@ -168,12 +178,13 @@ func (s *S3Storage) CreateUploadLink(ctx context.Context, blobID, contentType st
 		}
 	}
 
-	link, formData, err := s.client.PresignedPostPolicy(ctx, policy)
+	u, formData, err := s.externalClient.PresignedPostPolicy(ctx, policy)
 	if err != nil {
 		return "", nil, merry.Prepend(err, "can't Presign")
 	}
+	link := s.convertToExternalLink(u)
 
-	return link.String(), formData, nil
+	return link, formData, nil
 }
 
 func (s *S3Storage) RemoveObject(ctx context.Context, blobID string) error {
@@ -184,4 +195,11 @@ func (s *S3Storage) RemoveObject(ctx context.Context, blobID string) error {
 		return merry.Prepend(err, "can't RemoveObject")
 	}
 	return nil
+}
+
+func (s *S3Storage) convertToExternalLink(link *url.URL) string {
+	if s.externalPathPrefix != "" {
+		link.Path = s.externalPathPrefix + link.Path
+	}
+	return link.String()
 }

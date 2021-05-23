@@ -249,7 +249,7 @@ export function* watchDeleteJoinRequest(action: { type: string, payload: ApiType
   }
 }
 
-export function* watchGetGroupCoverUploadLink(action: { type: string, payload: ApiTypes.Groups.UploadLinkRequest }) {
+export function* watchGetGroupCoverUploadLink(action: { type: string, payload: ApiTypes.UploadLinkRequest }) {
   const response = yield API.groups.getUploadLink(action.payload)
 
   if (response.status === 200) {
@@ -269,7 +269,7 @@ export function* watchSetGroupCover(action: { type: string, payload: ApiTypes.Pr
   }
 }
 
-export function* watchGetGroupAvatarUploadLink(action: { type: string, payload: ApiTypes.Groups.UploadLinkRequest }) {
+export function* watchGetGroupAvatarUploadLink(action: { type: string, payload: ApiTypes.UploadLinkRequest }) {
   const response = yield API.groups.getUploadLink(action.payload)
 
   if (response.status === 200) {

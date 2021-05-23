@@ -19,6 +19,7 @@ import (
 	"github.com/mreider/koto/backend/userhub/config"
 	"github.com/mreider/koto/backend/userhub/migrate"
 	"github.com/mreider/koto/backend/userhub/repo"
+	"github.com/mreider/koto/backend/userhub/services"
 )
 
 func main() {
@@ -73,7 +74,8 @@ func main() {
 
 	confirmAdminUsers(repos.User, cfg)
 
-	server := userhub.NewServer(cfg, string(publicKeyPEM), repos, userCache, tokenGenerator, tokenParser, s3Storage, staticFS)
+	tokenParsers := services.NewTokenParsers(tokenParser)
+	server := userhub.NewServer(cfg, string(publicKeyPEM), repos, userCache, tokenGenerator, tokenParsers, s3Storage, staticFS)
 	err = server.Run()
 	if err != nil {
 		log.Fatalln(err)

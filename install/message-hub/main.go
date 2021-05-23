@@ -26,9 +26,10 @@ This script will install the following:
 	peacenikDir := filepath.Join(userDir, "peacenik")
 	envPath := filepath.Join(peacenikDir, ".env")
 	var externalAddress string
+	var dockerizedMinio bool
 	if _, err := os.Stat(envPath); err != nil {
 		if os.IsNotExist(err) {
-			externalAddress, err = configure(envPath)
+			externalAddress, dockerizedMinio, err = configure(envPath)
 			if err != nil {
 				log.Fatalln(err)
 			}
@@ -94,7 +95,7 @@ This script will install the following:
 	println("Caddy version:", caddyVersion)
 
 	if externalAddress != "" {
-		err := createCaddyConfig(externalAddress)
+		err := createCaddyConfig(externalAddress, dockerizedMinio)
 		if err != nil {
 			log.Fatalln("can't create Caddy config:", err)
 		}

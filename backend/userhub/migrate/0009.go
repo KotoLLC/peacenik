@@ -1,0 +1,17 @@
+package migrate
+
+import (
+	migrate "github.com/rubenv/sql-migrate"
+)
+
+func m0009a() *migrate.Migration {
+	return &migrate.Migration{
+		Id: "0009a",
+		Up: []string{
+			`
+drop index users_name_uindex;
+create index "users_name_index" on users ((lower(name)));
+`,
+		},
+	}
+}

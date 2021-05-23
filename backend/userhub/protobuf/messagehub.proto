@@ -6,90 +6,97 @@ option go_package = "../rpc";
 import "model.proto";
 
 service MessageHubService {
-    rpc Create (MessageHubCreateRequest) returns (Empty);
-    rpc Register (MessageHubRegisterRequest) returns (Empty);
-    rpc Hubs (Empty) returns (MessageHubHubsResponse);
-    rpc Verify (MessageHubVerifyRequest) returns (MessageHubVerifyResponse);
-    rpc Approve (MessageHubApproveRequest) returns (MessageHubApproveResponse);
-    rpc Remove (MessageHubRemoveRequest) returns (MessageHubRemoveResponse);
-    rpc SetPostLimit (MessageHubSetPostLimitRequest) returns (Empty);
-    rpc SetAllowFriendGroups (MessageHubSetAllowFriendGroupsRequest) returns (Empty);
-    rpc ReportMessage (MessageHubReportMessageRequest) returns (Empty);
-    rpc BlockUser (MessageHubBlockUserRequest) returns (Empty);
+  rpc Create (MessageHubCreateRequest) returns (Empty);
+  rpc Register (MessageHubRegisterRequest) returns (Empty);
+  rpc Hubs (Empty) returns (MessageHubHubsResponse);
+  rpc Verify (MessageHubVerifyRequest) returns (MessageHubVerifyResponse);
+  rpc Approve (MessageHubApproveRequest) returns (MessageHubApproveResponse);
+  rpc Remove (MessageHubRemoveRequest) returns (MessageHubRemoveResponse);
+  rpc SetPostLimit (MessageHubSetPostLimitRequest) returns (Empty);
+  rpc SetAllowFriendGroups (MessageHubSetAllowFriendGroupsRequest) returns (Empty);
+  rpc SetExpirationDays (MessageHubSetExpirationDaysRequest) returns (Empty);
+  rpc ReportMessage (MessageHubReportMessageRequest) returns (Empty);
+  rpc BlockUser (MessageHubBlockUserRequest) returns (Empty);
 }
 
 message MessageHubCreateRequest {
-    string owner = 1;
-    string subdomain = 2;
-    string notes = 3;
-    string hub_type = 4;
-    string transaction_reference = 5;
+  string owner = 1;
+  string subdomain = 2;
+  string notes = 3;
+  string hub_type = 4;
+  string transaction_reference = 5;
 }
 
 message MessageHubRegisterRequest {
-    string address = 1;
-    string details = 2;
-    int32 post_limit = 3;
-    bool allow_friend_groups = 4;
+  string address = 1;
+  string details = 2;
+  int32 post_limit = 3;
+  bool allow_friend_groups = 4;
 }
 
 message MessageHubHubsResponseHub {
-    string id = 1;
-    string address = 2;
-    User user = 3;
-    string created_at = 4;
-    string approved_at = 5;
-    string disabled_at = 6;
-    string details = 7;
-    int32 post_limit = 8;
-    bool allow_friend_groups = 9;
+  string id = 1;
+  string address = 2;
+  User user = 3;
+  string created_at = 4;
+  string approved_at = 5;
+  string disabled_at = 6;
+  string details = 7;
+  int32 post_limit = 8;
+  bool allow_friend_groups = 9;
+  int32 expiration_days = 10;
 }
 
 message MessageHubHubsResponse {
-    repeated MessageHubHubsResponseHub hubs = 1;
+  repeated MessageHubHubsResponseHub hubs = 1;
 }
 
 message MessageHubVerifyRequest {
-    string hub_id = 1;
+  string hub_id = 1;
 }
 
 message MessageHubVerifyResponse {
-    string error = 1;
+  string error = 1;
 }
 
 message MessageHubApproveRequest {
-    string hub_id = 1;
+  string hub_id = 1;
 }
 
 message MessageHubApproveResponse {
-    string error = 1;
+  string error = 1;
 }
 
 message MessageHubRemoveRequest {
-    string hub_id = 1;
-    string subdomain = 2;
+  string hub_id = 1;
+  string subdomain = 2;
 }
 
 message MessageHubRemoveResponse {
-    repeated string messages = 1;
+  repeated string messages = 1;
 }
 
 message MessageHubSetPostLimitRequest {
-    string hub_id = 1;
-    int32 post_limit = 2;
+  string hub_id = 1;
+  int32 post_limit = 2;
 }
 
 message MessageHubSetAllowFriendGroupsRequest {
-    string hub_id = 1;
-    bool allow_friend_groups = 2;
+  string hub_id = 1;
+  bool allow_friend_groups = 2;
+}
+
+message MessageHubSetExpirationDaysRequest {
+  string hub_id = 1;
+  int32 expiration_days = 2;
 }
 
 message MessageHubReportMessageRequest {
-    string hub_id = 1;
-    string report_id = 2;
+  string hub_id = 1;
+  string report_id = 2;
 }
 
 message MessageHubBlockUserRequest {
-    string hub_id = 1;
-    string user_id = 2;
+  string hub_id = 1;
+  string user_id = 2;
 }

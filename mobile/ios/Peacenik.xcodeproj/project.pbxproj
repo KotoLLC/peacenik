@@ -13,6 +13,7 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		9E47872626506A5E00364E1B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9E47872526506A5E00364E1B /* GoogleService-Info.plist */; };
 		B5A2ABC00639E2F98B706C5C /* libPods-Peacenik-PeacenikTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D282DB15F472679A82061748 /* libPods-Peacenik-PeacenikTests.a */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +42,7 @@
 		58E90779E382FF0FC61700B9 /* Pods-Peacenik-PeacenikTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Peacenik-PeacenikTests.release.xcconfig"; path = "Target Support Files/Pods-Peacenik-PeacenikTests/Pods-Peacenik-PeacenikTests.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Peacenik/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		845604EC25DD9C7A000A7548 /* Peacenik.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Peacenik.entitlements; path = Peacenik/Peacenik.entitlements; sourceTree = "<group>"; };
+		9E47872526506A5E00364E1B /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C58FEEA504F20E892E8B587E /* Pods-Peacenik.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Peacenik.debug.xcconfig"; path = "Target Support Files/Pods-Peacenik/Pods-Peacenik.debug.xcconfig"; sourceTree = "<group>"; };
 		C78B006F46D4D1FE901681A2 /* Pods-Peacenik-PeacenikTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Peacenik-PeacenikTests.debug.xcconfig"; path = "Target Support Files/Pods-Peacenik-PeacenikTests/Pods-Peacenik-PeacenikTests.debug.xcconfig"; sourceTree = "<group>"; };
 		CE84509C8882FECB8F6B463D /* libPods-Peacenik.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Peacenik.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -89,6 +91,7 @@
 		13B07FAE1A68108700A75B9A /* Peacenik */ = {
 			isa = PBXGroup;
 			children = (
+				9E47872526506A5E00364E1B /* GoogleService-Info.plist */,
 				845604EC25DD9C7A000A7548 /* Peacenik.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -249,6 +252,7 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				9E47872626506A5E00364E1B /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -467,7 +471,7 @@
 				CODE_SIGN_ENTITLEMENTS = Peacenik/Peacenik.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = CZQ6J5YDFK;
 				ENABLE_BITCODE = NO;
 				ENABLE_TESTABILITY = NO;
@@ -477,7 +481,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.3.1;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -502,7 +506,7 @@
 				CODE_SIGN_ENTITLEMENTS = Peacenik/Peacenik.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = CZQ6J5YDFK;
 				ENABLE_TESTABILITY = YES;
 				INFOPLIST_FILE = Peacenik/Info.plist;
@@ -511,7 +515,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.3.1;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",

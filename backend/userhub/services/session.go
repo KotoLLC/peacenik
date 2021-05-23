@@ -10,6 +10,7 @@ const (
 	ContextUserKey    ContextKey = "user"
 	ContextIsAdminKey ContextKey = "isAdmin"
 	ContextSession    ContextKey = "session"
+	ContextHubKey     ContextKey = "hub"
 )
 
 type SessionSaveOptions struct {

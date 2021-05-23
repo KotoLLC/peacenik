@@ -23,12 +23,14 @@ interface Props {
   userId: string
   accessTime: string
   fullName: string
+  location: any
 }
 
 const DirectMessageListItem: React.FC<Props> = ({
   fullName,
   userId,
   accessTime,
+  location
 }) => {
   const baseURL = useRouteMatch().path
 
@@ -36,6 +38,11 @@ const DirectMessageListItem: React.FC<Props> = ({
     return dateToRelateString(accessTime)
   }
 
+  let pathName = ""
+  if ( location.pathname?.indexOf("messages/d/") > -1){
+    pathName = location.pathname?.substring(location.pathname?.lastIndexOf('/') + 1)
+  }
+  
   const renderOutgoingSwitch = useCallback(
     (status: Types.MessagePublishStatus | undefined) => {
       switch (status) {
@@ -54,21 +61,21 @@ const DirectMessageListItem: React.FC<Props> = ({
   )
 
   return (
-    <MessageCard>
-      <MessageCardContent>
-        <Link to={`/profile/user?id=${userId}`}>
+    <Link to={`${baseURL}/${userId}`} >
+      <MessageCard className={(pathName === userId) ? "active" : ""}>
+        <MessageCardContent>
           <ContactAvatarStyled alt={fullName} src={getAvatarUrl(userId)} />
-        </Link>
-        <MessageInfoBlock to={`${baseURL}/${userId}`}>
-          <MessageInfoHeader>
-            <MessageInfoDisplayName>{fullName}</MessageInfoDisplayName>
-            <MessageInfoLastAccessTime>
-              {getLastMessageTime()}
-            </MessageInfoLastAccessTime>
-          </MessageInfoHeader>
-        </MessageInfoBlock>
-      </MessageCardContent>
-    </MessageCard>
+          <MessageInfoBlock>
+            <MessageInfoHeader>
+              <MessageInfoDisplayName>{fullName}</MessageInfoDisplayName>
+              <MessageInfoLastAccessTime>
+                {getLastMessageTime()}
+              </MessageInfoLastAccessTime>
+            </MessageInfoHeader>
+          </MessageInfoBlock>
+        </MessageCardContent>
+      </MessageCard>
+    </Link>
   )
 }
 

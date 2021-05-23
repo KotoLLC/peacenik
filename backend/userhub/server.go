@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httputil"
+	"strings"
 
 	"github.com/ansel1/merry"
 	"github.com/appleboy/go-fcm"
@@ -44,13 +45,13 @@ type Server struct {
 	repos          repo.Repos
 	userCache      caches.Users
 	tokenGenerator token.Generator
-	tokenParser    token.Parser
+	tokenParsers   *services.TokenParsers
 	s3Storage      *common.S3Storage
 	sessionStore   *sessions.CookieStore
 	staticFS       http.FileSystem
 }
 
-func NewServer(cfg config.Config, pubKeyPEM string, repos repo.Repos, userCache caches.Users, tokenGenerator token.Generator, tokenParser token.Parser, s3Storage *common.S3Storage,
+func NewServer(cfg config.Config, pubKeyPEM string, repos repo.Repos, userCache caches.Users, tokenGenerator token.Generator, tokenParsers *services.TokenParsers, s3Storage *common.S3Storage,
 	staticFS http.FileSystem) *Server {
 	sessionStore := sessions.NewCookieStore([]byte(cookieAuthenticationKey))
 	sessionStore.Options.HttpOnly = true
@@ -62,7 +63,7 @@ func NewServer(cfg config.Config, pubKeyPEM string, repos repo.Repos, userCache 
 		repos:          repos,
 		userCache:      userCache,
 		tokenGenerator: tokenGenerator,
-		tokenParser:    tokenParser,
+		tokenParsers:   tokenParsers,
 		s3Storage:      s3Storage,
 		sessionStore:   sessionStore,
 		staticFS:       staticFS,
@@ -118,7 +119,7 @@ func (s *Server) Run() error {
 		UserCache:          s.userCache,
 		S3Storage:          s.s3Storage,
 		TokenGenerator:     s.tokenGenerator,
-		TokenParser:        s.tokenParser,
+		TokenParsers:       s.tokenParsers,
 		MailSender:         mailSender,
 		Cfg:                s.cfg,
 		NotificationSender: notificationSender,
@@ -160,9 +161,9 @@ func (s *Server) Run() error {
 	notificationServiceHandler := rpc.NewNotificationServiceServer(notificationService, rpcOptions...)
 	r.Handle(notificationServiceHandler.PathPrefix()+"*", s.checkAuth(notificationServiceHandler))
 
-	messageHubNotificationService := services.NewMessageHubNotification(baseService)
-	messageHubNotificationServiceHandler := rpc.NewMessageHubNotificationServiceServer(messageHubNotificationService, rpcOptions...)
-	r.Handle(messageHubNotificationServiceHandler.PathPrefix()+"*", messageHubNotificationServiceHandler)
+	messageHubInternalService := services.NewMessageHubInternal(baseService)
+	messageHubInternalServiceHandler := rpc.NewMessageHubInternalServiceServer(messageHubInternalService, rpcOptions...)
+	r.Handle(messageHubInternalServiceHandler.PathPrefix()+"*", s.checkHubAuth(messageHubInternalServiceHandler))
 
 	groupService := services.NewGroup(baseService)
 	groupServiceHandler := rpc.NewGroupServiceServer(groupService, rpcOptions...)
@@ -258,6 +259,30 @@ func (s *Server) authSessionProvider(next http.Handler) http.Handler {
 			r:       r,
 		}
 		ctx := context.WithValue(r.Context(), services.ContextSession, sessionWrapper)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+func (s *Server) checkHubAuth(next http.Handler) http.Handler {
+	const bearerPrefix = "bearer "
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		authorizationToken := r.Header.Get("Authorization")
+		if authorizationToken == "" || !strings.HasPrefix(strings.ToLower(authorizationToken), bearerPrefix) {
+			http.Error(w, "", http.StatusUnauthorized)
+			return
+		}
+		rawToken := authorizationToken[len(bearerPrefix):]
+		_, claims, err := s.tokenParsers.Primary().ParseUnverified(rawToken)
+		hubAddress := claims["id"].(string)
+
+		_, claims, err = s.tokenParsers.Hub(r.Context(), hubAddress).Parse(rawToken, "auth")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		hubAddress = claims["id"].(string)
+		ctx := context.WithValue(r.Context(), services.ContextHubKey, hubAddress)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

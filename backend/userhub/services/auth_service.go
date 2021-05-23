@@ -14,7 +14,6 @@ import (
 	"github.com/twitchtv/twirp"
 
 	"github.com/mreider/koto/backend/common"
-	"github.com/mreider/koto/backend/token"
 	"github.com/mreider/koto/backend/userhub/caches"
 	"github.com/mreider/koto/backend/userhub/repo"
 	"github.com/mreider/koto/backend/userhub/rpc"
@@ -223,14 +222,14 @@ func (s *authService) ResetPassword(_ context.Context, r *rpc.AuthResetPasswordR
 		return nil, twirp.InvalidArgumentError("new password", "is empty")
 	}
 
-	_, claims, err := s.tokenParser.Parse(r.ResetToken, "user-password-reset")
+	_, claims, err := s.tokenParsers.Primary().Parse(r.ResetToken, "user-password-reset")
 	if err != nil {
 		return nil, err
 	}
 	var userName string
 	var ok bool
 	if userName, ok = claims["id"].(string); !ok {
-		return nil, token.ErrInvalidToken.Here()
+		return nil, fmt.Errorf("invalid token: missing id")
 	}
 
 	user := s.repos.User.FindUserByName(userName)
@@ -279,14 +278,14 @@ func (s *authService) sendConfirmLink(user repo.User) error {
 }
 
 func (s *authService) confirmUser(ctx context.Context, confirmToken string) error {
-	_, claims, err := s.tokenParser.Parse(confirmToken, "user-confirm")
+	_, claims, err := s.tokenParsers.Primary().Parse(confirmToken, "user-confirm")
 	if err != nil {
 		return merry.Wrap(err)
 	}
 	var userID string
 	var ok bool
 	if userID, ok = claims["id"].(string); !ok {
-		return token.ErrInvalidToken.Here()
+		return fmt.Errorf("invalid token: missing id")
 	}
 
 	ok = s.repos.User.ConfirmUser(userID)
@@ -329,7 +328,7 @@ func (s *authService) confirmUser(ctx context.Context, confirmToken string) erro
 }
 
 func (s *authService) confirmInviteToken(user repo.User, confirmToken string) error {
-	_, claims, err := s.tokenParser.Parse(confirmToken, "user-invite")
+	_, claims, err := s.tokenParsers.Primary().Parse(confirmToken, "user-invite")
 	if err != nil {
 		return merry.Wrap(err)
 	}
@@ -337,7 +336,7 @@ func (s *authService) confirmInviteToken(user repo.User, confirmToken string) er
 	var userEmail string
 	var ok bool
 	if userEmail, ok = claims["email"].(string); !ok || userInfo.Email != userEmail {
-		return token.ErrInvalidToken.Here()
+		return fmt.Errorf("invalid token: different/missing email")
 	}
 
 	s.repos.User.ConfirmUser(user.ID)

@@ -36,6 +36,7 @@ interface State {
 interface Props {
   isHubCreatedSuccessfully: boolean
   hubCreationStatus: CommonTypes.HubTypes.CreationStatus
+  isAdmin: boolean | undefined
   onHubCreate: (data: ApiTypes.Hubs.Create) => void
   onHubCreationStatusReset: () => void
 }
@@ -116,7 +117,7 @@ class HubOptionB extends React.PureComponent<Props, State> {
   }
 
   renderSuccessfulyMessage = () => (
-    <HubOptionText>Your request for the new Hub sended successfuly, await for response.</HubOptionText>
+    <HubOptionText>Your request for the new hub sent. Please wait for a response.</HubOptionText>
   )
 
   renderForm = () => {
@@ -128,12 +129,13 @@ class HubOptionB extends React.PureComponent<Props, State> {
       postLimit,
     } = this.state
 
+    const { isAdmin } = this.props
+
     return (
       <>
-        <HubOptionText>This option is for software nerds only. If you're lost - go with Option A.</HubOptionText>
         <HubFieldWrapper>
           <HubFieldLabel>
-            1. Run the installation on Ubunty (18.04+)
+            1. Run the installer on Ubuntu (18.04+)
           </HubFieldLabel>
           <HubFieldInput
             value="wget -c https://fra1.digitaloceanspaces.com/peacenik/message-hub-installer.tar.gz -O - | tar -xz && ./message-hub-installer"
@@ -144,7 +146,7 @@ class HubOptionB extends React.PureComponent<Props, State> {
         </HubFieldWrapper>
         <HubFieldWrapper>
           <HubFieldLabel>
-            2. Configure DNS for your server and enter a domain name
+            2. Configure DNS and enter a domain name
           </HubFieldLabel>
           <HubFieldInput
             id="hub-name"
@@ -181,7 +183,7 @@ class HubOptionB extends React.PureComponent<Props, State> {
               value={postLimit}
               onChange={value => this.onPostLimitChange(value)}
             >
-              <MenuItem value={0}>Unlimited posts</MenuItem>
+              {isAdmin && <MenuItem value={0}>Unlimited posts</MenuItem> }
               <MenuItem value={1}>Only admin can post</MenuItem>
               <MenuItem value={2}>Only admin's friends can post</MenuItem>
               <MenuItem value={3}>Admin's 2nd level of friends can post</MenuItem>
@@ -203,18 +205,16 @@ class HubOptionB extends React.PureComponent<Props, State> {
     const { isHubCreatedSuccessfully, hubCreationStatus } = this.props
     return (
       <HubSettingsBlock>
-        <HubOptionTitle>
-          Option B: create a hub
-        </HubOptionTitle>
         {(isHubCreatedSuccessfully || ((isHubCreatedSuccessfully !== false) && (hubCreationStatus !== '') )) ? this.renderSuccessfulyMessage() : this.renderForm()}
       </HubSettingsBlock>
     )
   }
 }
 
-type StateProps = Pick<Props, 'isHubCreatedSuccessfully'>
+type StateProps = Pick<Props, 'isHubCreatedSuccessfully' | 'isAdmin'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   isHubCreatedSuccessfully: selectors.hubs.isHubCreatedSuccessfully(state),
+  isAdmin: selectors.profile.isAdmin(state),
 })
 
 type DispatchProps = Pick<Props, 'onHubCreate' | 'onHubCreationStatusReset'>

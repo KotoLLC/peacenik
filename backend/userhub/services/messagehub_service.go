@@ -3,6 +3,7 @@ package services
 import (
 	"bytes"
 	"context"
+	"crypto/rsa"
 	"encoding/json"
 	"fmt"
 	"html"
@@ -19,6 +20,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/twitchtv/twirp"
 	yptr "github.com/vmware-labs/yaml-jsonpointer"
 	"gopkg.in/yaml.v3"
@@ -28,16 +30,16 @@ import (
 	"github.com/mreider/koto/backend/userhub/rpc"
 )
 
-type messageHubService struct {
-	*BaseService
-	admins []string
-}
-
 func NewMessageHub(base *BaseService, admins []string) rpc.MessageHubService {
 	return &messageHubService{
 		BaseService: base,
 		admins:      admins,
 	}
+}
+
+type messageHubService struct {
+	*BaseService
+	admins []string
 }
 
 func (s *messageHubService) Register(ctx context.Context, r *rpc.MessageHubRegisterRequest) (*rpc.Empty, error) {
@@ -109,6 +111,7 @@ func (s *messageHubService) Hubs(ctx context.Context, _ *rpc.Empty) (*rpc.Messag
 			Details:           hub.Details,
 			PostLimit:         int32(hub.PostLimit),
 			AllowFriendGroups: hub.AllowFriendGroups,
+			ExpirationDays:    int32(hub.ExpirationDays),
 		}
 	}
 
@@ -275,6 +278,26 @@ func (s *messageHubService) SetAllowFriendGroups(ctx context.Context, r *rpc.Mes
 	}
 
 	s.repos.MessageHubs.SetHubAllowFriendGroups(me.ID, r.HubId, r.AllowFriendGroups)
+
+	return &rpc.Empty{}, nil
+}
+
+func (s *messageHubService) SetExpirationDays(ctx context.Context, r *rpc.MessageHubSetExpirationDaysRequest) (*rpc.Empty, error) {
+	if r.ExpirationDays < 0 {
+		return nil, twirp.InvalidArgumentError("expiration_days", "is invalid")
+	}
+
+	me := s.getMe(ctx)
+	hub := s.repos.MessageHubs.HubByID(r.HubId)
+	if hub == nil {
+		return nil, twirp.NotFoundError("hub not found")
+	}
+
+	if hub.AdminID != me.ID {
+		return nil, twirp.NotFoundError("hub not found")
+	}
+
+	s.repos.MessageHubs.SetHubExpirationDays(me.ID, r.HubId, int(r.ExpirationDays))
 
 	return &rpc.Empty{}, nil
 }
@@ -675,4 +698,35 @@ func (s *messageHubService) deleteMessageHubConfiguration(cfg *messageHubConfig)
 		return merry.Prepend(err, string(output))
 	}
 	return nil
+}
+
+func loadNodePublicKey(ctx context.Context, nodeAddress string) (*rsa.PublicKey, error) {
+	client := &http.Client{
+		Timeout: time.Second * 30,
+	}
+	r, err := http.NewRequestWithContext(ctx, http.MethodPost,
+		fmt.Sprintf("%s/rpc.InfoService/PublicKey", strings.TrimSuffix(nodeAddress, "/")),
+		strings.NewReader("{}"))
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+	r.Header.Set("Content-Type", "application/json")
+
+	resp, err := client.Do(r)
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+	var body struct {
+		PublicKey string `json:"public_key"`
+	}
+	err = json.NewDecoder(resp.Body).Decode(&body)
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+	key, err := jwt.ParseRSAPublicKeyFromPEM([]byte(body.PublicKey))
+	if err != nil {
+		return nil, merry.Wrap(err)
+	}
+	return key, nil
 }

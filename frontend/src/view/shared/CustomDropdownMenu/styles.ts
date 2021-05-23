@@ -67,7 +67,6 @@ export const CustomMenuItem = styled.li`
   }
 
   &.logout {
-    color: #A1AEC8;
     position: relative;
 
     svg {

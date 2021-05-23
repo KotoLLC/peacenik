@@ -288,7 +288,6 @@ export const MenuItemStyled = styled(MenuItem)`
   min-width: 180px;
 
   &.logout {
-    color: ${grayColor};
     position: relative;
 
     svg {
@@ -331,6 +330,12 @@ export const ButtonContained = styled(Button)`
   text-transform: none;
   margin-right: 20px;
 
+  &.join-group{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
   &.large {
     min-width: 160px;
   }
@@ -552,8 +557,8 @@ export const PageCover = styled.div`
 export const ProfileAvatar = styled(Avatar)`
   width: 200px;
   height: 200px;
-  background: ${bkGray}
-  margin: -160px auto 30px;
+  background: ${bkGray};
+  margin: auto;
   border: 6px solid #FFFFFF;
   position: relative;
   z-index: 20;
@@ -835,7 +840,8 @@ export const CoverBarCounterName = styled.span`
 `
 
 export const CoverBarCounters = styled.div`
-  margin-left: 290px;
+  // margin-left: 290px;
+  margin: 20px auto;
   display: flex;
   align-items: center;
 
@@ -851,7 +857,8 @@ export const CoverBarCounters = styled.div`
 `
 
 export const CoverBarButtonsWrapper = styled.div`
-  margin-left: 290px;
+  // margin-left: 290px;
+  margin: 20px auto;
 
   &.profile {
     margin-left: 0;
@@ -960,6 +967,7 @@ export const UsersListItemNamesWrapper = styled.div`
 export const UsersListItemFullName = styled(Link)`
   display: block;
   text-decoration: none;
+  margin-left: 10px;
   font-family: 'SFUITextMedium';
   color: ${blackColor};
   text-overflow: ellipsis;
@@ -1029,6 +1037,7 @@ export const UsersListHeaderSidebar = styled.div`
 
 export const UsersListNameWrapperSidebar = styled.div`
   display: flex;
+  margin-left: 10px;
   align-items: center;
   flex-wrap: wrap;
   text-overflow: ellipsis;
@@ -1247,6 +1256,8 @@ export const EditsAvatar = styled(Avatar)`
   height: 140px;
   cursor: pointer;
   margin-left: 23px;
+  border-radius: 50%;
+  background-color: lightsteelblue;
 
   @media (max-width: 770px){
     width: 90px;

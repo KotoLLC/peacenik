@@ -6,15 +6,17 @@ import Avatar from '@material-ui/core/Avatar'
 import { IconWrapper } from '@view/shared/styles'
 import MenuItem from '@material-ui/core/MenuItem'
 import { Checkbox } from '@material-ui/core'
+import { ReactComponent as CloseIcon } from '@assets/images/close-icon.svg'
 import {
   MessageInfoTextStatus,
   MessageDirection
 } from '../../../../types/enum'
 
 export const MessagesWrapper = styled.div`
+  height: calc(100vh - 355px);
   position: relative;
   width: 1140px;
-  height: 820px;
+  // height: 820px;
   background: #FFFFFF;
   margin: 0 auto 31px auto;
   display: flex;
@@ -25,7 +27,7 @@ export const MessagesWrapper = styled.div`
   @media (max-width: 770px) {
     width: calc(100% - 30px);
     padding: 15px 0 0 0;
-    min-height: calc(100vh - 100px);
+    height: calc(100vh - 275px);
   }
 `
 
@@ -176,15 +178,17 @@ export const SidebarWrapper = styled.div`
   padding: 0;
   height: 100%;  
   position: relative;
-  height: 820px;
+  // height: 820px;
   .huxzai {
     margin-bottom: 20px;
   }
   @media screen and (max-width: 900px) {
-    min-width: 250px;
+    width: unset!important;
+    // min-width: 250px;
   }
   @media screen and (max-width: 770px) {
-    min-width: 100px;
+    width: unset!important;
+    // min-width: 100px;
   }
   
 `;
@@ -288,14 +292,14 @@ export const MessageCardContent = styled.div`
 `;
 export const MessageCard = styled.div`
   padding-left: 20px;
-  &:hover {
+  &:hover, &.active {
     background-color: #599C0B20;    
   }
   @media screen and (max-width: 770px) {
     padding-left: 0;
   }
 `
-export const MessageInfoBlock = styled(Link)`
+export const MessageInfoBlock = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -418,10 +422,15 @@ export const DirectMessageBoxWapper = styled.div`
 export const DMContentWrapper = styled.div`
   flex: 1 0 auto;
   overflow-y: auto;
+  height: calc(100% - 156px);
   max-height: 750px;
   @media screen and (max-width: 770px) {
     max-height: 735px;
   }
+`
+export const MsgWrapper = styled.div`
+  display: flex;
+  flex-direction: column-reverse;
 `
 export const DMContentInfoWrapper = styled.div`
   flex: 1 0 auto;
@@ -456,9 +465,22 @@ export const DMInFooterWrapper = styled.div`
   align-item:center;  
 `
   
+export const DirectMsgCloseIcon = styled(CloseIcon)`
+  background-color: white;
+  right: -5px;
+  position: absolute;
+  border-radius: 10px;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  top: -5px;
+  cursor: pointer;
+  z-index: 1;
+`
 
 export const MessageItemWrapper = styled.div`
   display: flex;
+  position: relative;
   flex-direction: row;
   justify-content: ${p=>(p['justify-content']==MessageDirection.OUTGOING_MESSAGE)?'flex-end':'flex-start'};
   margin: 15px;  

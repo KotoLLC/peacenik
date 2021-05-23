@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useState, useEffect } from "react"
 import {
   createStyles,
   IconButton,
@@ -38,57 +38,99 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 )
-const DirectMessageFooter = () => {
+const DirectMessageFooter = ({location}) => {
   const [msgValue, setMsgValue] = useState("")
   const msgInputStyles = useStyles()
   const [isFileUploaded, setIsFileUploaded] = useState<boolean>(false)
+  // const [uploadImg, setUploadImg] = useState<FileList|null>(null)
+  const tokenData: CommonTypes.TokenData = useSelector((state: StoreTypes) => state.messages.directPostToken)
+  const postDirectMsgStatus: boolean = useSelector( (state: StoreTypes) => state.messages.directMsgSent)
+  const uploadLink: ApiTypes.UploadLink | null = useSelector( (state: StoreTypes) => state.messages.uploadLink)
+  
+  const [uploadImg, setUploadImg] = useState<FileList|null>(null)
 
+  const feedsTokens = useSelector( (state: StoreTypes) => state.feed.feedsTokens )
   const dispatch = useDispatch()
   // onGetMessageUploadLink: (data: ApiTypes.Feed.UploadLinkRequest) => dispatch(Actions.feed.getFeedMessageUploadLinkRequest(data))
-  const handleImageFileUpload = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const onGetUploadLink = (value: ApiTypes.Profile.UploadLinkRequest) =>
-        dispatch(Actions.profile.getUploadLinkRequest(value))
+  const handleImageFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const onGetUploadLink = (value: ApiTypes.UploadLinkRequestWithHost) =>
+      dispatch(Actions.messages.getUploadLinkRequest(value))
 
-      setIsFileUploaded(false)
+    setIsFileUploaded(false)
 
-      const file = event.target.files
+    let tempUploadImg = event.target.files
 
-      if (file && file[0]) {
+    setUploadImg(tempUploadImg)
+
+    if (tempUploadImg && tempUploadImg[0] && (tokenData.host !== "")) {
+      let getMsgToken = ""
+      feedsTokens.map( (item) => {
+        if ( item.host === tokenData.host)
+          getMsgToken = item.token
+      })
+      if ( getMsgToken !== "") {
         onGetUploadLink({
-          content_type: file[0].type,
-          file_name: file[0].name,
+          host: tokenData.host, 
+          content_type: tempUploadImg[0].type,
+          file_name: tempUploadImg[0].name,
         })
-      }
-    },
-    [dispatch]
-  )
-  const tokenData: CommonTypes.TokenData = useSelector((state: StoreTypes) => state.messages.directPostToken)
-
-  // const data = {
-  //   host: isGroupMsgPage ? groupMessageToken.host : props.currentHub.host,
-  //   body: {
-  //     token: isGroupMsgPage
-  //       ? groupMessageToken.token
-  //       : props.currentHub.token,
-  //     text: urlify(value),
-  //     attachment_id: uploadLink?.blob_id,
-  //     group_id: isGroupMsgPage ? group_id : undefined,
-  //   },
-  // }
-  // props.onMessagePost(data)
-
-  const sendMsg = () => {
-    let data: ApiTypes.Feed.PostMessage = {
-      host: tokenData.host,
-      body: {
-        token: tokenData.token,
-        text:msgValue,
-        attachment_id: ""
+        setMsgValue(tempUploadImg[0].name)
       }
     }
-    dispatch(Actions.messages.sendMessageToFriend(data))
   }
+
+  if ( postDirectMsgStatus ){
+    setMsgValue("")
+    setUploadImg(null)
+    dispatch(Actions.messages.setPostMsgToFriendSuccess(false))
+  }
+
+  const sendMsg = () => {
+    if ( (msgValue !== "") && (location.pathname?.indexOf("messages/d/") > -1)){
+      let friend_id = location.pathname?.substring(location.pathname?.lastIndexOf('/') + 1)
+      if ( friend_id !== ""){
+        let getMsgToken = ""
+        feedsTokens.map( (item) => {
+          if ( item.host === tokenData.host)
+            getMsgToken = item.token
+        })
+        let data: ApiTypes.Feed.PostMessage = {
+          host: tokenData.host,
+          body: {
+            token: tokenData.token,
+            text:msgValue,
+            attachment_id: uploadImg ? uploadLink?.blob_id : "",
+            friend_id: friend_id,
+            msg_token: getMsgToken
+          }
+        }
+        dispatch(Actions.messages.sendMessageToFriend(data))
+      }
+    }
+  }
+  
+  if (uploadLink && uploadImg) {
+    const { form_data } = uploadLink;
+    const data = new FormData();
+
+    for (let key in form_data) {
+      data.append(key, form_data[key]);
+    }
+
+    data.append('file', uploadImg[0], uploadImg[0]?.name);
+
+    dispatch(Actions.feed.setAttachmentRequest({
+      link: uploadLink.link,
+      form_data: data
+    }))
+  }
+
+  const onComandEnterDown = (event) => {
+    if (event.keyCode === 13) {
+      sendMsg();
+    }
+  };
+
   return (
     <DMInFooterWrapper>
       <OutlinedInput
@@ -99,8 +141,12 @@ const DirectMessageFooter = () => {
         type="text"
         placeholder="Write something"
         value={msgValue}
-        style={{ flex: "1 0 auto" }}
+        style={{ 
+          flex: "1 0 auto", 
+          width: "calc(-48px)"
+        }}
         onChange={(e) => setMsgValue(e.target.value)}
+        onKeyDown={onComandEnterDown}
         endAdornment={
           <InputAdornment position="end">
             <IconButton aria-label="toggle password visibility">

@@ -25,6 +25,7 @@ type MessageHub struct {
 	Details           string       `db:"details"`
 	PostLimit         int          `db:"post_limit"`
 	AllowFriendGroups bool         `db:"allow_friend_groups"`
+	ExpirationDays    int          `db:"expiration_days"`
 }
 
 type ConnectedMessageHub struct {
@@ -45,20 +46,22 @@ type MessageHubRepo interface {
 	ConnectedHubs(user User) []ConnectedMessageHub
 	SetHubPostLimit(hubAdminID, hubID string, postLimit int)
 	SetHubAllowFriendGroups(hubAdminID, hubID string, allowFriendGroups bool)
+	SetHubExpirationDays(hubAdminID, hubID string, expirationDays int)
 	AssignUserToHub(userID, hubID string, minDistance int)
 	UserHubs(userIDs []string) map[string][]string
 	GroupHub(groupAdminID string) string
 	BlockUser(userID, hubID string)
-}
-
-type messageHubRepo struct {
-	db *sqlx.DB
+	DeleteUserData(tx *sqlx.Tx, userID string)
 }
 
 func NewMessageHubs(db *sqlx.DB) MessageHubRepo {
 	return &messageHubRepo{
 		db: db,
 	}
+}
+
+type messageHubRepo struct {
+	db *sqlx.DB
 }
 
 func (r *messageHubRepo) HubExists(address string) bool {
@@ -94,7 +97,7 @@ func (r *messageHubRepo) AllHubs() []MessageHub {
 	var hubs []MessageHub
 	err := r.db.Select(&hubs, `
 		select h.id, h.address, h.admin_id, h.created_at, h.approved_at, h.disabled_at, h.details,
-			   h.post_limit, h.allow_friend_groups
+			   h.post_limit, h.allow_friend_groups, h.expiration_days
 		from message_hubs h;`)
 	if err != nil {
 		panic(err)
@@ -106,7 +109,7 @@ func (r *messageHubRepo) Hubs(user User) []MessageHub {
 	var hubs []MessageHub
 	err := r.db.Select(&hubs, `
 		select h.id, h.address, h.admin_id, h.created_at, h.approved_at, h.disabled_at, h.details,
-		       h.post_limit, h.allow_friend_groups
+		       h.post_limit, h.allow_friend_groups, h.expiration_days
 		from message_hubs h
 		where h.admin_id = $1`, user.ID)
 	if err != nil {
@@ -118,7 +121,7 @@ func (r *messageHubRepo) Hubs(user User) []MessageHub {
 func (r *messageHubRepo) HubByID(hubID string) *MessageHub {
 	var hub MessageHub
 	err := r.db.Get(&hub, `
-		select id, address, admin_id, created_at, approved_at, disabled_at, details, post_limit
+		select id, address, admin_id, created_at, approved_at, disabled_at, details, post_limit, allow_friend_groups, expiration_days
 		from message_hubs
 		where id = $1`, hubID)
 	if err != nil {
@@ -133,7 +136,7 @@ func (r *messageHubRepo) HubByID(hubID string) *MessageHub {
 func (r *messageHubRepo) HubByIDOrAddress(hubID string) *MessageHub {
 	var hub MessageHub
 	err := r.db.Get(&hub, `
-		select id, address, admin_id, created_at, approved_at, disabled_at, details, post_limit
+		select id, address, admin_id, created_at, approved_at, disabled_at, details, post_limit, allow_friend_groups, expiration_days
 		from message_hubs
 		where id = $1 or address = $1`, hubID)
 	if err != nil {
@@ -228,7 +231,7 @@ func (r *messageHubRepo) ConnectedHubs(user User) []ConnectedMessageHub {
 
 	var hubs []MessageHub
 	err := r.db.Select(&hubs, `
-		select id, address, admin_id, created_at, approved_at, disabled_at, details, post_limit
+		select id, address, admin_id, created_at, approved_at, disabled_at, details, post_limit, allow_friend_groups, expiration_days
 		from message_hubs mh
 		where approved_at is not null and disabled_at is null
 		  and not exists(select * from user_message_hubs where hub_id = mh.id and user_id = $1 and blocked_at is not null);`,
@@ -253,6 +256,32 @@ func (r *messageHubRepo) ConnectedHubs(user User) []ConnectedMessageHub {
 			})
 		}
 	}
+
+	sort.Slice(connectedHubs, func(i, j int) bool {
+		if connectedHubs[i].MinDistance < connectedHubs[j].MinDistance {
+			return true
+		}
+		if connectedHubs[j].MinDistance < connectedHubs[i].MinDistance {
+			return false
+		}
+
+		if connectedHubs[i].Count < connectedHubs[j].Count {
+			return true
+		}
+		if connectedHubs[j].Count < connectedHubs[i].Count {
+			return false
+		}
+
+		if connectedHubs[j].Hub.ApprovedAt.Time.Before(connectedHubs[i].Hub.ApprovedAt.Time) {
+			return true
+		}
+		if connectedHubs[i].Hub.ApprovedAt.Time.Before(connectedHubs[j].Hub.ApprovedAt.Time) {
+			return false
+		}
+
+		return connectedHubs[i].Hub.Address < connectedHubs[j].Hub.Address
+	})
+
 	return connectedHubs
 }
 
@@ -277,6 +306,21 @@ func (r *messageHubRepo) SetHubAllowFriendGroups(hubAdminID, hubID string, allow
 		set allow_friend_groups = $1
 		where id = $2 and admin_id = $3`,
 		allowFriendGroups, hubID, hubAdminID)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (r *messageHubRepo) SetHubExpirationDays(hubAdminID, hubID string, expirationDays int) {
+	if expirationDays < 0 {
+		expirationDays = 0
+	}
+
+	_, err := r.db.Exec(`
+		update message_hubs
+		set expiration_days = $1
+		where id = $2 and admin_id = $3`,
+		expirationDays, hubID, hubAdminID)
 	if err != nil {
 		panic(err)
 	}
@@ -395,5 +439,23 @@ func (r *messageHubRepo) BlockUser(userID, hubID string) {
 		if err != nil {
 			panic(err)
 		}
+	}
+}
+
+func (r *messageHubRepo) DeleteUserData(tx *sqlx.Tx, userID string) {
+	_, err := tx.Exec(`
+		delete from user_message_hubs
+		where user_id = $1
+		   or hub_id in (select id from message_hubs where admin_id = $1);`,
+		userID)
+	if err != nil {
+		panic(err)
+	}
+	_, err = tx.Exec(`
+		delete from message_hubs
+		where admin_id = $1;`,
+		userID)
+	if err != nil {
+		panic(err)
 	}
 }

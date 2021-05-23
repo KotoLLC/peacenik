@@ -5,6 +5,7 @@ metadata:
   name: user-hub
   namespace: backend
 spec:
+  replicas: 3
   selector:
     matchLabels:
       app: user-hub

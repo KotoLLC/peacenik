@@ -1,5 +1,8 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router';
+import { useSelector } from 'react-redux'
+import { StoreTypes } from 'src/types'
+import { getAvatarUrl } from '@services/avatarUrl';
 
 import {
   ContactAvatarStyled,
@@ -10,25 +13,32 @@ import {
   DMInHeaderWrapper,
 } from '../styles';
 
-import useGetUserInfoById from '@services/hooks/useGetUserInfoById';
 import DirectMessageDropDownMenu from './DirectMessageDropDownMenu';
 
 const DirectMessageHeader = () => {
-  const getUserInfo = useGetUserInfoById();
+  // const getUserInfo = useGetUserInfoById();
+
+  const friends = useSelector( (state: StoreTypes) => state.friends.friends )
 
   const userid = useRouteMatch().params['id'] || undefined;
-  const userInfo = getUserInfo(userid);
-
+  let userInfo;
+  if ( friends) {
+    friends.forEach(friend => {
+      if ( friend.user.id === userid){
+        userInfo = friend.user
+      }
+    });
+  }
   return (
     <DMInHeaderWrapper>
       <ContactUserInfo>
-        <ContactAvatarStyled alt={userInfo.fullName} src={userInfo.avatarUrl} />
+        <ContactAvatarStyled src={getAvatarUrl(userid)} />
         <UserInfoBlock>
-          <UserInfoName>{userInfo.fullName}</UserInfoName>
-          <UserInfoStatus>{userInfo.status}</UserInfoStatus>
+          <UserInfoName>{userInfo?.full_name}</UserInfoName>
+          {/* <UserInfoStatus>Online</UserInfoStatus> */}
         </UserInfoBlock>
       </ContactUserInfo>
-      <DirectMessageDropDownMenu />
+      {/* <DirectMessageDropDownMenu /> */}
     </DMInHeaderWrapper>
   );
 };

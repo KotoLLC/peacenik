@@ -69,13 +69,21 @@ export declare namespace CommonTypes {
     attachment_type: string
     attachment: string
     comments: string[]
-    sourceHost: string | string[] | null | undefined
-    messageToken: string | string[] | null | undefined
+    sourceHost: string
+    messageToken: string
     id: string
     user_id: string
     friends: ApiTypes.Friends.Friend[] | null
   }
 
+  export interface FriendCounterData {
+    last_message_time: string
+    total_comment_count: number
+    total_count: number
+    unread_comment_count: number
+    unread_count: number
+  }
+  
   export interface MessageRoomFriendData {
     id: string
     fullName: string

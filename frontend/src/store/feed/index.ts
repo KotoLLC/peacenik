@@ -18,6 +18,7 @@ export interface State {
   currentMessageLikes: ApiTypes.Feed.LikesInfoData | null
   currentCommentLikes: ApiTypes.Feed.LikesInfoData | null
   messageById: ApiTypes.Feed.Message | null | undefined
+  postUpdated: boolean
 }
 
 const peacenikfeedsTokens = localStorage.getItem('peacenikfeedsTokens') 
@@ -42,6 +43,7 @@ const initialState: State = {
   currentMessageLikes: null,
   currentCommentLikes: null,
   messageById: null,
+  postUpdated: false
 }
 
 const reducer = (state = initialState, action) => {
@@ -180,6 +182,20 @@ const reducer = (state = initialState, action) => {
           feedsTokens: [],
           messages: [],
          }
+      }
+    }
+    case Types.SET_POST_UPDATED: {
+      return {
+        ...state,
+        postUpdated: action.payload
+      }
+    }
+    case Types.LIKE_FEED_COMMENT_SUCCESS:
+    case Types.POST_FEED_COMMENT_SUCCESS:
+    case Types.LIKE_FEED_MESSAGES_SUCCESS: {
+      return {
+        ...state, 
+        postUpdated: true
       }
     }
     default: return state

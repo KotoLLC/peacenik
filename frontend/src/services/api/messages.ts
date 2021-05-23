@@ -19,7 +19,9 @@ export default {
   getFriendMessage: async (data:ApiTypes.Messages.GetFriendMsgAPIData) => {
     return await axiosInstance.post(`${data.host}/rpc.MessageService/Messages`, {
       friend_id:data.friend.id,
-      token: data.token
+      token: data.token,
+      from: data.from ? data.from : "",
+      count: data.count ? data.count : 10
     }, getHeaderConfig()).then( response => response).catch( error => ({error}))
   },
 
@@ -84,7 +86,7 @@ export default {
     }).catch(error => ({ error }))
   },
 
-  getUploadLink: async (data: ApiTypes.Feed.UploadLinkRequest) => {
+  getUploadLink: async (data: ApiTypes.UploadLinkRequestWithHost) => {
     return await axiosInstance.post(`${data.host}/rpc.BlobService/UploadLink`, {
       'content_type': data.content_type,
       'file_name': data.file_name,

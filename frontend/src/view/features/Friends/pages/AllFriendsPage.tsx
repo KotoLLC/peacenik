@@ -53,9 +53,9 @@ class AllFriendsPage extends React.Component<Props, State> {
             <Text>No one's been found.</Text>
           ) : (
             <Text>
-              No friends. You can{" "}
+              You have no friends. Try {" "}
               <TextUnderlined onClick={() => onOpenInvitationsDialog(true)}>
-                invite friends
+                inviting some.
               </TextUnderlined>
             </Text>
           )}

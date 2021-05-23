@@ -25,6 +25,7 @@ export interface State {
   directMsgRoomFriends: CommonTypes.MessageRoomFriendData[]
   directPostToken: CommonTypes.TokenData
   directMsgs: CommonTypes.MessageTypes.MessageItemProps[]
+  directMsgSent: boolean
 }
 
 const peacenikmessagesTokens = localStorage.getItem('peacenikmessagesTokens') 
@@ -53,16 +54,58 @@ const initialState: State = {
     host:"",
     token:""
   },
-  directMsgs: []
+  directMsgs: [],
+  directMsgSent:false
 }
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case Types.GET_FRIEND_MSG_SUCCESS: {
+    case Types.GET_DIRECT_MSG_UPLOAD_LINK_SUCCESS: {
       return {
         ...state,
-        directMsgs: action.payload
+        uploadLink: action.payload
       }
+    }
+    case Types.GET_FRIEND_MSG_API_DATA: {
+      if ( action.payload.from || action.payload.count ) {
+        return {
+          ...state,
+          isMoreMessagesRequested: true,
+          isMessagesRequested: false
+        }
+      } else {
+        return {
+          ...state,
+          isMoreMessagesRequested: false,
+          isMessagesRequested: true
+        }
+      }
+    }
+    case Types.GET_FRIEND_MSG_SUCCESS: {
+      let retObj
+      if ( action.payload.reqData.from ){
+        retObj = {
+          ...state,
+          directMsgs: uniqBy([
+            ...state.directMsgs,
+            ...action.payload.data
+          ], 'msgId')
+        }
+      } else if (action.payload.reqData.count) {
+        retObj = {
+          ...state,
+          directMsgs: uniqBy([
+            ...action.payload.data,
+            ...state.directMsgs
+          ], 'msgId')
+        }
+      } else {
+        retObj = {
+          ...state,
+          directMsgs: action.payload.data
+        }
+      }
+      return retObj
     }
     case Types.SET_DIRECT_MSG_POST_TOKEN: {
       return {
@@ -71,6 +114,21 @@ const reducer = (state = initialState, action) => {
           host: action.payload.host,
           token: action.payload.token
         }
+      }
+    }
+    case Types.SET_POST_MSG_TO_FRIEND_SUCCESS: {
+      return {
+        ...state, 
+        directMsgSent: action.payload
+      }
+    }
+    case Types.ADD_FRIENDS_TO_ROOM: {
+      return {
+        ...state, 
+        directMsgRoomFriends: uniqBy([
+          ...state.directMsgRoomFriends,
+          ...action.payload
+        ], 'id')
       }
     }
     case Types.ADD_FRIEND_TO_ROOM: {

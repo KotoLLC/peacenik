@@ -7,6 +7,7 @@ import (
 )
 
 type Repos struct {
+	db           *sqlx.DB
 	User         UserRepo
 	Invite       InviteRepo
 	Friend       FriendRepo
@@ -19,6 +20,7 @@ type Repos struct {
 
 func NewRepos(db *sqlx.DB) Repos {
 	return Repos{
+		db:           db,
 		User:         NewUsers(db),
 		Invite:       NewInvites(db),
 		Friend:       NewFriends(db),
@@ -27,5 +29,24 @@ func NewRepos(db *sqlx.DB) Repos {
 		FCMToken:     NewFCMToken(db),
 		Setting:      common.NewSettings(db),
 		Group:        NewGroups(db),
+	}
+}
+
+func (r Repos) DeleteUserData(userID string) {
+	err := common.RunInTransaction(r.db, func(tx *sqlx.Tx) error {
+		r.FCMToken.DeleteUserTokens(tx, userID)
+		r.Invite.DeleteUserInvites(tx, userID)
+		r.Friend.DeleteUserFriends(tx, userID)
+		r.Group.DeleteUserData(tx, userID)
+		r.MessageHubs.DeleteUserData(tx, userID)
+		r.User.DeleteUser(tx, userID)
+		err := r.Notification.DeleteUserNotifications(tx, userID)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		panic(err)
 	}
 }

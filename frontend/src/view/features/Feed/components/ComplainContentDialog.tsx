@@ -33,7 +33,6 @@ const ComplainContentDialog: React.SFC<Props> = (props) => {
   const { onComplainContent, id, sourceHost } = props
 
   const onComplane = () => {
-
     if (!Boolean(description)) {
       setError(true)
     } else {
@@ -47,7 +46,6 @@ const ComplainContentDialog: React.SFC<Props> = (props) => {
       setOpen(false)
       setError(false)
     }
-
   }
 
   return (
@@ -67,7 +65,7 @@ const ComplainContentDialog: React.SFC<Props> = (props) => {
           <TextFieldLabel>Tell us why is this content offensive?</TextFieldLabel>
           <TextareaStyled
             rows={4}
-            onChange={(event) => setDescription(event?.target?.value)}
+            onChange={(event) => setDescription(event.target.value)}
             defaultValue={description}
           />
           {isError && <ErrorMessage>The message cannot be empty</ErrorMessage>}

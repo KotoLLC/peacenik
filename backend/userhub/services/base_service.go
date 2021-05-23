@@ -25,7 +25,7 @@ type BaseService struct {
 	userCache          caches.Users
 	s3Storage          *common.S3Storage
 	tokenGenerator     token.Generator
-	tokenParser        token.Parser
+	tokenParsers       *TokenParsers
 	mailSender         *common.MailSender
 	cfg                config.Config
 	notificationSender NotificationSender
@@ -36,7 +36,7 @@ type BaseServiceOptions struct {
 	UserCache          caches.Users
 	S3Storage          *common.S3Storage
 	TokenGenerator     token.Generator
-	TokenParser        token.Parser
+	TokenParsers       *TokenParsers
 	MailSender         *common.MailSender
 	Cfg                config.Config
 	NotificationSender NotificationSender
@@ -49,7 +49,7 @@ func NewBase(repos repo.Repos, options BaseServiceOptions) *BaseService {
 		userCache:          options.UserCache,
 		s3Storage:          options.S3Storage,
 		tokenGenerator:     options.TokenGenerator,
-		tokenParser:        options.TokenParser,
+		tokenParsers:       options.TokenParsers,
 		mailSender:         options.MailSender,
 		cfg:                options.Cfg,
 		notificationSender: options.NotificationSender,
@@ -91,6 +91,10 @@ func (s *BaseService) getUser(ctx context.Context, userID string) (*repo.User, b
 }
 
 func (s *BaseService) GetUserAttachments(ctx context.Context, userID string) common.MailAttachmentList {
+	if !s.hasMe(ctx) {
+		return nil
+	}
+
 	me := s.getMe(ctx)
 	userInfo := s.userCache.User(userID, me.ID)
 	if userInfo.AvatarThumbnailID == "" {
@@ -157,4 +161,8 @@ func (s *BaseService) saveThumbnail(ctx context.Context, avatarID string) (strin
 		return "", merry.Wrap(err)
 	}
 	return thumbnailID, nil
+}
+
+func (s *BaseService) getHubAddress(ctx context.Context) string {
+	return ctx.Value(ContextHubKey).(string)
 }
