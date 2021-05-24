@@ -118,7 +118,7 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		notifyData["friend-id"] = friendID.String
 	}
 
-	if len(notifiedUsers) > 0 && s.notificationSender != nil {
+	if (len(notifiedUsers) > 0 || groupID.Valid) && s.notificationSender != nil {
 		s.notificationSender.SendNotification(Notification{
 			UserIDs:     notifiedUsers,
 			Text:        me.DisplayName() + " posted a new message",
