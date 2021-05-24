@@ -273,14 +273,23 @@ func (s *groupService) RequestJoin(ctx context.Context, r *rpc.GroupRequestJoinR
 	if err != nil {
 		return nil, err
 	}
+
+	group, _ := s.getGroup(ctx, r.GroupId)
+	meInfo := s.userCache.UserFullAccess(me.ID)
+	notifyText := fmt.Sprintf("%s wants to join %s", meInfo.DisplayName, group.Name)
+
+	if s.notificationSender != nil {
+		s.notificationSender.SendNotification([]string{group.AdminID}, notifyText, "group-invite/request-join", map[string]interface{}{
+			"user_id":  me.ID,
+			"group_id": group.ID,
+		})
+	}
+
 	if s.mailSender == nil {
 		return &rpc.Empty{}, nil
 	}
 
-	group, _ := s.getGroup(ctx, r.GroupId)
 	groupAdminInfo := s.userCache.UserFullAccess(group.AdminID)
-
-	meInfo := s.userCache.UserFullAccess(me.ID)
 	link := fmt.Sprintf("%s/groups", s.cfg.FrontendAddress)
 	var message bytes.Buffer
 	err = s.rootEmailTemplate.ExecuteTemplate(&message, "group_request.gohtml", map[string]interface{}{
@@ -295,7 +304,7 @@ func (s *groupService) RequestJoin(ctx context.Context, r *rpc.GroupRequestJoinR
 		return nil, err
 	}
 
-	err = s.mailSender.SendHTMLEmail([]string{groupAdminInfo.Email}, fmt.Sprintf("%s wants to join %s", meInfo.DisplayName, group.Name), message.String(), nil)
+	err = s.mailSender.SendHTMLEmail([]string{groupAdminInfo.Email}, notifyText, message.String(), nil)
 	if err != nil {
 		return nil, err
 	}
