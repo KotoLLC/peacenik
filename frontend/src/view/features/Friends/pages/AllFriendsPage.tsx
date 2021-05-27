@@ -103,20 +103,6 @@ class AllFriendsPage extends React.Component<Props, State> {
 
     return (
       <>
-        <SearchInputWrapper>
-          <SearchInput
-            id="outlined-adornment-amount"
-            ref={this.searchInputRef}
-            placeholder="Filter"
-            onChange={this.onSearch}
-            value={searchValue}
-            startAdornment={
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            }
-          />
-        </SearchInputWrapper>
         <ButtonContained
           className="mobile-only desktop-none"
           onClick={() => onOpenInvitationsDialog(true)}

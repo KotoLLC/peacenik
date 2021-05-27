@@ -13,6 +13,12 @@ import { getAvatarUrl, getProfileCoverUrl } from '@services/avatarUrl';
 import { validate } from '@services/validation';
 import loadImage from 'blueimp-load-image';
 import { history } from '@view/routes';
+import cropImg from '@assets/images/1.nohub.png'
+import CoverBkImgCropDialog from './CoverBkImgCropDialog';
+import Cropper from 'react-easy-crop'
+import {
+  getCroppedImg
+} from "@services/canvasUtils"
 import {
   EditCoverWrapper,
   EditCoverIconWrapper,
@@ -34,7 +40,14 @@ import {
   TextFieldStyled,
   CheckboxFieldWrapper,
   ButtonContainedStyled,
+  CroperContainer,
+  SliderContainer,
+  CropBottomBar,
+  CropZoomLabel,
+  CropZoomSlider,
 } from './styles';
+import { updateJsxSelfClosingElement } from 'typescript';
+import { StringifyOptions } from 'querystring';
 
 interface Props {
   userName: string;
@@ -69,6 +82,10 @@ interface State {
   noValideField: FieldsType;
   isCurrentPasswordVisible: boolean;
   isNewPasswordVisible: boolean;
+  isOpen: boolean;
+  crop: Object,
+  zoom: number | number[],
+  croppedAreaPixels: any
 }
 
 class SettingsProfileForm extends React.PureComponent<Props, State> {
@@ -85,7 +102,54 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
     noValideField: '' as FieldsType,
     isCurrentPasswordVisible: false,
     isNewPasswordVisible: false,
+    isOpen: false,
+    crop: { x: 0, y: 0 },
+    zoom: 1,
+    croppedAreaPixels: null
   };
+
+  coverImgUrl:any
+  isCoverImage:boolean = true
+
+  setOpen = (bIsOpen: boolean) => {
+    console.log("Dialog has been opened?", bIsOpen)
+    this.setState({
+      isOpen: bIsOpen
+    })
+  }
+
+  setCropImage = async () => {
+    const croppedImage: any = await getCroppedImg(
+      this.coverImgUrl,
+      this.state.croppedAreaPixels
+    )
+    this.setState({
+      isOpen: false
+    })
+    if ( this.isCoverImage) {
+      this.setState({
+        coverFile: croppedImage,
+      });
+    } else {
+      this.setState({
+        avatarFile: croppedImage
+      })
+    }
+  }
+
+  onCropComplete = (croppedArea, croppedAreaPixels) => {
+    this.setState({
+      croppedAreaPixels: croppedAreaPixels
+    })
+  }
+
+  readFile = file => {
+    return new Promise(resolve => {
+      const reader = new FileReader()
+      reader.addEventListener('load', () => resolve(reader.result), false)
+      reader.readAsDataURL(file)
+    })
+  }
 
   onEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
     this.setState({
@@ -199,7 +263,7 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
     });
   };
 
-  onAvatarUpload = (event: ChangeEvent<HTMLInputElement>) => {
+  onAvatarUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     const { onGetUploadLink } = this.props;
 
     this.setState({
@@ -213,36 +277,40 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
         content_type: file[0].type,
         file_name: file[0].name,
       });
+      
+      this.coverImgUrl = await this.readFile(file[0])
+      this.isCoverImage = false
+      this.setOpen(true)
 
-      const self = this;
+      // const self = this;
 
       /* tslint:disable */
-      loadImage(
-        file[0],
-        function (img, data) {
-          if (data.imageHead && data.exif) {
-            // Reset Exif Orientation data:
-            loadImage.writeExifData(data.imageHead, data, 'Orientation', 1);
-            img.toBlob(function (blob) {
-              loadImage.replaceHead(blob, data.imageHead, function (newBlob) {
-                self.setState({
-                  avatarFile: newBlob,
-                });
-              });
-            }, 'image/jpeg');
-          } else {
-            self.setState({
-              avatarFile: file[0],
-            });
-          }
-        },
-        { meta: true, orientation: true, canvas: true }
-      );
+      // loadImage(
+      //   file[0],
+      //   function (img, data) {
+      //     if (data.imageHead && data.exif) {
+      //       // Reset Exif Orientation data:
+      //       loadImage.writeExifData(data.imageHead, data, 'Orientation', 1);
+      //       img.toBlob(function (blob) {
+      //         loadImage.replaceHead(blob, data.imageHead, function (newBlob) {
+      //           self.setState({
+      //             avatarFile: newBlob,
+      //           });
+      //         });
+      //       }, 'image/jpeg');
+      //     } else {
+      //       self.setState({
+      //         avatarFile: file[0],
+      //       });
+      //     }
+      //   },
+      //   { meta: true, orientation: true, canvas: true }
+      // );
       /* tslint:enable */
     }
   };
 
-  onCoverUpload = (event: ChangeEvent<HTMLInputElement>) => {
+  onCoverUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     const { onGetProfileCoverUploadLink } = this.props;
 
     this.setState({
@@ -259,28 +327,33 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
 
       const self = this;
 
+      
+      //insert image crop dialog
+      this.coverImgUrl = await this.readFile(file[0])
+      this.isCoverImage = true
+      self.setOpen(true)
       /* tslint:disable */
-      loadImage(
-        file[0],
-        function (img, data) {
-          if (data.imageHead && data.exif) {
-            // Reset Exif Orientation data:
-            loadImage.writeExifData(data.imageHead, data, 'Orientation', 1);
-            img.toBlob(function (blob) {
-              loadImage.replaceHead(blob, data.imageHead, function (newBlob) {
-                self.setState({
-                  coverFile: newBlob,
-                });
-              });
-            }, 'image/jpeg');
-          } else {
-            self.setState({
-              coverFile: file[0],
-            });
-          }
-        },
-        { meta: true, orientation: true, canvas: true }
-      );
+      // loadImage(
+      //   file[0],
+      //   function (img, data) {
+      //     if (data.imageHead && data.exif) {
+      //       // Reset Exif Orientation data:
+      //       loadImage.writeExifData(data.imageHead, data, 'Orientation', 1);
+      //       img.toBlob(function (blob) {
+      //         loadImage.replaceHead(blob, data.imageHead, function (newBlob) {
+      //           self.setState({
+      //             coverFile: newBlob,
+      //           });
+      //         });
+      //       }, 'image/jpeg');
+      //     } else {
+      //       self.setState({
+      //         coverFile: file[0],
+      //       });
+      //     }
+      //   },
+      //   { meta: true, orientation: true, canvas: true }
+      // );
       /* tslint:enable */
     }
   };
@@ -500,6 +573,49 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
             </ButtonContainedStyled>
           </EditButtonsWrapper>
         </SettingsFormWrapper>
+                
+        <CoverBkImgCropDialog
+          isModalOpen={this.state.isOpen}
+          setOpenModal={() => this.setOpen(!this.state.isOpen)}
+          >  
+          <CroperContainer>
+            <Cropper
+              image={this.coverImgUrl || undefined}
+              crop={this.state.crop}
+              zoom={this.state.zoom}
+              aspect={ this.isCoverImage ? 17 / 4 : 1/1}
+              onCropChange={({x, y}) => this.setState({
+                crop: {x:x, y:y}
+              })}
+              onCropComplete={this.onCropComplete}
+              onZoomChange={ (value) => this.setState({
+                zoom: value
+              })}
+            />
+
+            <CropBottomBar>
+              <SliderContainer>
+                <CropZoomLabel variant="overline" >
+                  Zoom
+                </CropZoomLabel>
+                <CropZoomSlider
+                  value={this.state.zoom}
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  aria-labelledby="Zoom"
+                  onChange={(e, zoom) => this.setState({
+                    zoom: zoom
+                  })}
+                />
+              </SliderContainer>
+              <ButtonContained
+                onClick={this.setCropImage} >
+                Apply
+              </ButtonContained>
+            </CropBottomBar>
+          </CroperContainer>
+        </CoverBkImgCropDialog>
       </>
     );
   }

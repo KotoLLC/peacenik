@@ -37,6 +37,7 @@
 		"react-awesome-slider": "^4.1.0",
 		"react-cookie": "^4.0.3",
 		"react-dom": "16.13.1",
+		"react-easy-crop": "^3.4.0",
 		"react-easy-swipe": "0.0.21",
 		"react-iframe": "^1.8.0",
 		"react-markdown": "^4.3.1",

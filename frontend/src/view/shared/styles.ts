@@ -1162,7 +1162,7 @@ export const EditCoverWrapper = styled.div`
   background-color: ${grayColor};
   background-image:  ${props => `url(${props.resource})`};
   background-position: center;
-  background-size: cover;
+  background-size: 100% 100%;
 
   @media (max-width: 770px){
     height: 100px;
