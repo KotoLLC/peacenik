@@ -7,7 +7,7 @@ import IconButton from '@material-ui/core/IconButton'
 import RemoveMessageDialog from './RemoveMessageDialog'
 import { ListItemIconStyled } from '@view/shared/styles'
 import { ListItemTextStyled } from './styles'
- 
+
 interface Props {
   isEditer: boolean
   sourceHost: string

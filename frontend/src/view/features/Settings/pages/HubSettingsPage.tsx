@@ -14,7 +14,7 @@ interface Props {
   userName: string
   currentHub: CommonTypes.HubTypes.CurrentHub
   isConnectionError: boolean
- 
+
   onGetHubs: () => void
   onGetCurrentHub: () => void
 }
@@ -23,10 +23,10 @@ const HubSettingsPage: React.FC<Props> = (props) => {
   const [isHubsRequested, setHubsRequested] = useState<boolean | null>(null)
   const [hubCreationStatus, setHubCreationStatus] = useState<CommonTypes.HubTypes.CreationStatus>('')
   const myActiveHubInitialState = {
-    domain: '', 
-    author: '', 
-    created: '', 
-    aproved: '', 
+    domain: '',
+    author: '',
+    created: '',
+    aproved: '',
     description: '',
     id: ''
   }
@@ -40,10 +40,10 @@ const HubSettingsPage: React.FC<Props> = (props) => {
         const currentHubs = hubsList.filter(item => item.author === userName)
 
         if (currentHubs.some(item => item.aproved !== '')) {
-          setMyActiveHub(currentHubs.filter(item => item.aproved !== '')[0])  
+          setMyActiveHub(currentHubs.filter(item => item.aproved !== '')[0])
           setHubCreationStatus('approved')
         } else {
-          setMyActiveHub(currentHubs.filter(item => item.aproved === '')[0])  
+          setMyActiveHub(currentHubs.filter(item => item.aproved === '')[0])
           setHubCreationStatus('pending')
         }
       }
@@ -54,16 +54,16 @@ const HubSettingsPage: React.FC<Props> = (props) => {
     if (hubCreationStatus === 'approved') {
       return (
         <>
-          <HubMajorInfo {...myActiveHub} currentHub={currentHub}/>
-          <HubStepsInfo isHubActive={true} myActiveHub={myActiveHub}/>
+          <HubMajorInfo {...myActiveHub} currentHub={currentHub} />
+          <HubStepsInfo isHubActive={true} myActiveHub={myActiveHub} />
         </>
       )
     }
 
     return (
       <>
-        <HubMajorInfo {...myActiveHub} currentHub={currentHub}/>
-        <HubStepsInfo isHubActive={false} myActiveHub={myActiveHub}/>
+        <HubMajorInfo {...myActiveHub} currentHub={currentHub} />
+        <HubStepsInfo isHubActive={false} myActiveHub={myActiveHub} />
         {/* <HubOptionA /> */}
         <HubOptionB hubCreationStatus={hubCreationStatus} />
       </>

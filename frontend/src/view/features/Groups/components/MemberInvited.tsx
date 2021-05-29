@@ -11,12 +11,12 @@ import {
   UsersListItemWrapper,
   UsersListItemAvatar,
   UsersListItemFullName,
-  ButtonOutlined, 
+  ButtonOutlined,
   ButtonContained,
   UsersListHeaderSidebar,
   UsersListNameWrapperSidebar,
   UsersListButtonsWrapperSidebar,
-} from '@view/shared/styles' 
+} from '@view/shared/styles'
 
 interface Props extends ApiTypes.Groups.Invite {
   calback?: (data: ApiTypes.Groups.ConfirmDenyInvite) => void

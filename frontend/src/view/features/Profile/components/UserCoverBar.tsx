@@ -111,8 +111,8 @@ const UserCoverBar: React.FC<Props> = React.memo((props) => {
             <CoverBarCounter>{friendsLenght}</CoverBarCounter>
           </CoverBarCounterWrapper>
         </CoverBarCounters>
-        {isUser && <ButtonContained onClick={() => {history.push('/settings')}}>
-            Edit Profile
+        {isUser && <ButtonContained onClick={() => { history.push('/settings') }}>
+          Edit Profile
           </ButtonContained>}
         {!isUser && <CoverBarButtonsWrapper className="profile">
           {renderCurrentButton()}
@@ -121,10 +121,10 @@ const UserCoverBar: React.FC<Props> = React.memo((props) => {
               Send message
             </ButtonOutlinedStyled>
           </Link>
-          <CoverBarDropdown userId={id!}/>
-        </CoverBarButtonsWrapper> }
+          <CoverBarDropdown userId={id!} />
+        </CoverBarButtonsWrapper>}
       </CoverBarContainer>
-      <RemoveFriendDialog 
+      <RemoveFriendDialog
         userId={id!}
         userName={userName!}
         isOpen={isUnfriendDialogOpen}
@@ -134,7 +134,7 @@ const UserCoverBar: React.FC<Props> = React.memo((props) => {
   )
 })
 
- type StateProps = Pick<Props, 'errorMessage'>
+type StateProps = Pick<Props, 'errorMessage'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   errorMessage: selectors.common.errorMessage(state),
 })

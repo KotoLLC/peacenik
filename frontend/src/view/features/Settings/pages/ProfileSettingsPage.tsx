@@ -11,7 +11,7 @@ export const ProfileSettingsPage = () => {
         <SettingsProfileForm />
       </ProfileSettingsContent>
       <ProfileSettingsContent>
-        <ChangePasswordForm/>
+        <ChangePasswordForm />
         <DangerZone />
       </ProfileSettingsContent>
     </>

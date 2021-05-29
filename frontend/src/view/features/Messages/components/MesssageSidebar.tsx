@@ -39,7 +39,7 @@ const MesssageSidebar = (props) => {
         <MessagesListContent>
           <Switch>
             <Route path={`${baseUrl}/d`} component={DirectMessageList} />
-            { (parsed.id) ? <Redirect to={`${baseUrl}/d/${parsed.id}`} /> : <Redirect to={`${baseUrl}/d`} />}
+            {(parsed.id) ? <Redirect to={`${baseUrl}/d/${parsed.id}`} /> : <Redirect to={`${baseUrl}/d`} />}
           </Switch>
         </MessagesListContent>
       </SidebarContent>

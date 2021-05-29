@@ -108,8 +108,8 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
     croppedAreaPixels: null
   };
 
-  coverImgUrl:any
-  isCoverImage:boolean = true
+  coverImgUrl: any
+  isCoverImage: boolean = true
 
   setOpen = (bIsOpen: boolean) => {
     console.log("Dialog has been opened?", bIsOpen)
@@ -126,7 +126,7 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
     this.setState({
       isOpen: false
     })
-    if ( this.isCoverImage) {
+    if (this.isCoverImage) {
       this.setState({
         coverFile: croppedImage,
       });
@@ -277,7 +277,7 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
         content_type: file[0].type,
         file_name: file[0].name,
       });
-      
+
       this.coverImgUrl = await this.readFile(file[0])
       this.isCoverImage = false
       this.setOpen(true)
@@ -327,7 +327,7 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
 
       const self = this;
 
-      
+
       //insert image crop dialog
       this.coverImgUrl = await this.readFile(file[0])
       this.isCoverImage = true
@@ -573,22 +573,22 @@ class SettingsProfileForm extends React.PureComponent<Props, State> {
             </ButtonContainedStyled>
           </EditButtonsWrapper>
         </SettingsFormWrapper>
-                
+
         <CoverBkImgCropDialog
           isModalOpen={this.state.isOpen}
           setOpenModal={() => this.setOpen(!this.state.isOpen)}
-          >  
+        >
           <CroperContainer>
             <Cropper
               image={this.coverImgUrl || undefined}
               crop={this.state.crop}
               zoom={this.state.zoom}
-              aspect={ this.isCoverImage ? 17 / 4 : 1/1}
-              onCropChange={({x, y}) => this.setState({
-                crop: {x:x, y:y}
+              aspect={this.isCoverImage ? 17 / 4 : 1 / 1}
+              onCropChange={({ x, y }) => this.setState({
+                crop: { x: x, y: y }
               })}
               onCropComplete={this.onCropComplete}
-              onZoomChange={ (value) => this.setState({
+              onZoomChange={(value) => this.setState({
                 zoom: value
               })}
             />

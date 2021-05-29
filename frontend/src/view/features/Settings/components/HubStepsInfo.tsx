@@ -45,7 +45,7 @@ export const HubStepsInfo: React.FC<Props> = React.memo((props) => {
           <CreationHubNote>
             Follow the instructions below to create a hub
         </CreationHubNote> :
-          <RemoveHubDialog {...myActiveHub}/>
+          <RemoveHubDialog {...myActiveHub} />
         }
       </CreationHubWrapper>
     </HubSettingsBlock>

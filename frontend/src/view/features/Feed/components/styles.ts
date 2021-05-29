@@ -626,7 +626,7 @@ export const TextFieldStyled = styled(TextField)`
       max-width: 300px;
     }
   }
-` 
+`
 
 export const FeedWrapper = styled.div`
   background: #fff;

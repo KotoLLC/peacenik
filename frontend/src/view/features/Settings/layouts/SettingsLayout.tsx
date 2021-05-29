@@ -5,7 +5,7 @@ import { SettingsSidebar } from './../components/SettingsSidebar'
 export const SettingsLayout = (props) => {
   return (
     <SettingsContainer>
-      <SettingsSidebar/>
+      <SettingsSidebar />
       <SettingsContentWrapper>
         {props.children}
       </SettingsContentWrapper>

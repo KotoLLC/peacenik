@@ -10,7 +10,7 @@ interface Props {
 }
 
 const CoverBkImgCropDialog: React.FC<Props> = (props) => {
-  const { title, isModalOpen, setOpenModal} = props
+  const { title, isModalOpen, setOpenModal } = props
 
   return (
     <ModalCropImgStyled

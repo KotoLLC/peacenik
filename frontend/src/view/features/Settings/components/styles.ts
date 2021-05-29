@@ -5,7 +5,7 @@ import Modal from '@material-ui/core/Modal'
 import Select from '@material-ui/core/Select'
 import Typography from '@material-ui/core/Typography'
 import Slider from '@material-ui/core/Slider'
-import { 
+import {
   EditFormWrapper,
   EditFieldWrapper,
   EditFieldPlaceholder,
@@ -183,7 +183,7 @@ export const ButtonContainedStyled = styled(ButtonContained)`
   @media (max-width: 770px){
     min-width: 180px;
   }
-` 
+`
 
 export const FormTitle = styled.h3`
   font-family: 'SFUITextRegular';

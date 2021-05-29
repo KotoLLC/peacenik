@@ -65,7 +65,7 @@ const CommentDialog = (props) => {
 
   const [comment, onCommentChange] = useState<string>('')
   const [mentionFriends, setMentionFriends] = useState<MentionFriend[]>([])
- 
+
   const onComandEnterDownInComment = (event) => {
     if (event.keyCode === 13 && (event.metaKey || event.ctrlKey)) {
       onCommentSave()
@@ -142,7 +142,7 @@ const CommentDialog = (props) => {
           </MentionsInputWrapper>
         </EditorContentWrapper>
         <EditorButtonsWrapper className="comments">
-          <span/>
+          <span />
           <ButtonSend
             className="small"
             type="submit"
@@ -191,7 +191,7 @@ const CommentDialog = (props) => {
   )
 }
 
-type StateProps = Pick<Props, 'userId' | 'userName' >
+type StateProps = Pick<Props, 'userId' | 'userName'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   userId: selectors.profile.userId(state),
   userName: selectors.profile.userName(state),

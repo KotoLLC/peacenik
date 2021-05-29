@@ -16,7 +16,7 @@ import DirectMessageInfoBox from '../components/direct/DirectMessageInfoBox'
 import { CommonTypes, ApiTypes, StoreTypes } from 'src/types'
 import queryString from 'query-string'
 
-interface Props extends RouteComponentProps {}
+interface Props extends RouteComponentProps { }
 
 const MessagesPage: React.FC<Props> = (props) => {
   const baseUrl = useRouteMatch().path
@@ -34,23 +34,23 @@ const MessagesPage: React.FC<Props> = (props) => {
     (state: StoreTypes) => state.feed.feedsTokens
   )
 
-  useEffect( () => {
-    feedsTokens.map( (item) => {
+  useEffect(() => {
+    feedsTokens.map((item) => {
       dispatch(Actions.messages.getFriendsList())
-      
-      if ( item.host === directPostToken.host)
+
+      if (item.host === directPostToken.host)
         setMsgToken(item.token)
     })
   }, [feedsTokens, directPostToken])
-  
-  if ( location.pathname?.indexOf("messages/d/") > -1){
+
+  if (location.pathname?.indexOf("messages/d/") > -1) {
     let pathFriendId = location.pathname?.substring(location.pathname?.lastIndexOf('/') + 1)
-    if ( (pathFriendId !== friend_id) && (pathFriendId !== ""))
-      setFriendId(pathFriendId) 
+    if ((pathFriendId !== friend_id) && (pathFriendId !== ""))
+      setFriendId(pathFriendId)
   }
-  
-  useEffect( () => {
-    if ( (friend_id !== "" ) && (feedsTokens.length > 0) && (msgToken !== "")){
+
+  useEffect(() => {
+    if ((friend_id !== "") && (feedsTokens.length > 0) && (msgToken !== "")) {
       dispatch(Actions.messages.getFriendMsg({
         host: directPostToken.host,
         token: msgToken,
@@ -62,7 +62,7 @@ const MessagesPage: React.FC<Props> = (props) => {
   }, [friend_id, msgToken])
 
   useEffect(() => {
-    if ( (parsed.id && parsed.fullname)){
+    if ((parsed.id && parsed.fullname)) {
       dispatch(Actions.messages.addFriendToRoom({
         id: parsed.id as string,
         fullName: parsed.fullname as string,
@@ -73,7 +73,7 @@ const MessagesPage: React.FC<Props> = (props) => {
     }
   }, [dispatch])
 
-  useEffect( () => {
+  useEffect(() => {
     if (friend_id !== "") {
       dispatch(Actions.messages.getDirectPostMsgToken(friend_id))
     }

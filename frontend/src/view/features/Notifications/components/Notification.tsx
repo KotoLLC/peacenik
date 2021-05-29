@@ -17,9 +17,9 @@ import {
   CommentIconStyled,
   StorageIconStyled,
 } from './styles'
-import { 
+import {
   TimeBlock,
-  AccessTimeIconStyled 
+  AccessTimeIconStyled
 } from '@view/shared/styles'
 
 interface Props extends ApiTypes.Notifications.Notification {
@@ -94,11 +94,11 @@ export const Notification: React.FC<Props> = (props) => {
     if (type.indexOf('message-hub') !== -1) {
       return `/settings/hub`
     } else if (type.indexOf('message') !== -1) {
-      if (dataObj['friend-id']){
+      if (dataObj['friend-id']) {
         return `/messages/d/${dataObj['user_id']}`
       } else
         return `/feed/info${urlVars}`
-    } else  if (type.indexOf('comment') !== -1) {
+    } else if (type.indexOf('comment') !== -1) {
       return `/feed/info${urlVars}`
     } else if (type.indexOf('like') !== -1) {
       return `/feed/info${urlVars}`
@@ -106,7 +106,7 @@ export const Notification: React.FC<Props> = (props) => {
       if (type.indexOf('group-invite') !== -1) {
         return '/groups'
       } else if (type.indexOf('friend-invite') !== -1) {
-        if ( type.indexOf('friend-invite/add') !== -1){
+        if (type.indexOf('friend-invite/add') !== -1) {
           return '/friends/invitations'
         } else
           return '/friends/all'

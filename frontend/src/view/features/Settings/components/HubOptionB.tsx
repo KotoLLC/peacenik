@@ -183,7 +183,7 @@ class HubOptionB extends React.PureComponent<Props, State> {
               value={postLimit}
               onChange={value => this.onPostLimitChange(value)}
             >
-              {isAdmin && <MenuItem value={0}>Unlimited posts</MenuItem> }
+              {isAdmin && <MenuItem value={0}>Unlimited posts</MenuItem>}
               <MenuItem value={1}>Only admin can post</MenuItem>
               <MenuItem value={2}>Only admin's friends can post</MenuItem>
               <MenuItem value={3}>Admin's 2nd level of friends can post</MenuItem>
@@ -205,7 +205,7 @@ class HubOptionB extends React.PureComponent<Props, State> {
     const { isHubCreatedSuccessfully, hubCreationStatus } = this.props
     return (
       <HubSettingsBlock>
-        {(isHubCreatedSuccessfully || ((isHubCreatedSuccessfully !== false) && (hubCreationStatus !== '') )) ? this.renderSuccessfulyMessage() : this.renderForm()}
+        {(isHubCreatedSuccessfully || ((isHubCreatedSuccessfully !== false) && (hubCreationStatus !== ''))) ? this.renderSuccessfulyMessage() : this.renderForm()}
       </HubSettingsBlock>
     )
   }
