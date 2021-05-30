@@ -330,6 +330,9 @@ export const ButtonContained = styled(Button)`
   text-transform: none;
   margin-right: 20px;
 
+  &.mr-250{
+    margin-left: 250px;
+  }
   &.join-group{
     position: absolute;
     left: 50%;

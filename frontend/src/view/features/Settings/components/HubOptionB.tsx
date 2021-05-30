@@ -30,6 +30,7 @@ interface State {
   noValideField: FieldsType
   errorMessage: string
   hubName: string
+  expireDate: number
   postLimit: number
 }
 
@@ -50,6 +51,7 @@ class HubOptionB extends React.PureComponent<Props, State> {
     errorMessage: '',
     noValideField: '' as FieldsType,
     hubName: '',
+    expireDate: 0,
     postLimit: 2,
   }
 
@@ -62,6 +64,12 @@ class HubOptionB extends React.PureComponent<Props, State> {
   onHubNameChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     this.setState({
       hubName: event.currentTarget.value.trim()
+    })
+  }
+
+  onExpireDateChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    this.setState({
+      expireDate: + event.currentTarget.value.trim()
     })
   }
 
@@ -126,6 +134,7 @@ class HubOptionB extends React.PureComponent<Props, State> {
       errorMessage,
       noValideField,
       hubName,
+      expireDate,
       postLimit,
     } = this.state
 
@@ -146,7 +155,7 @@ class HubOptionB extends React.PureComponent<Props, State> {
         </HubFieldWrapper>
         <HubFieldWrapper>
           <HubFieldLabel>
-            2. Configure DNS and enter a domain name
+            2. Enter a domain name(assumes you have DNS properly configured)
           </HubFieldLabel>
           <HubFieldInput
             id="hub-name"
@@ -158,7 +167,36 @@ class HubOptionB extends React.PureComponent<Props, State> {
         </HubFieldWrapper>
         <HubFieldWrapper>
           <HubFieldLabel>
-            3. Activate your hub
+            3. Who can post to your hub?
+          </HubFieldLabel>
+          <SelectStyled
+            variant="outlined"
+            labelId="post-limit"
+            id="post-limit"
+            value={postLimit}
+            onChange={value => this.onPostLimitChange(value)}
+          >
+            {isAdmin && <MenuItem value={0}>Unlimited posts</MenuItem>}
+            <MenuItem value={1}>Only admin can post</MenuItem>
+            <MenuItem value={2}>Only admin's friends can post</MenuItem>
+            <MenuItem value={3}>Admin's 2nd level of friends can post</MenuItem>
+          </SelectStyled>
+        </HubFieldWrapper>
+        <HubFieldWrapper>
+          <HubFieldLabel>
+            4. How many days before messages are destroyed? (Enter 0 for permanent storage)
+          </HubFieldLabel>
+          <HubFieldInput
+            id="expire-date"
+            type={'number'}
+            value={expireDate}
+            className={ 'expire-date' }
+            onChange={this.onExpireDateChange}
+          />
+        </HubFieldWrapper>
+        <HubFieldWrapper>
+          <HubFieldLabel>
+            5. Activate your hub
           </HubFieldLabel>
           <HubFieldNote>
             <b>Important:</b> violations of the Peacenik code of conduct may result in deactivation of your hub.
@@ -176,21 +214,11 @@ class HubOptionB extends React.PureComponent<Props, State> {
               }
               label="I understand"
             />
-            <SelectStyled
-              variant="outlined"
-              labelId="post-limit"
-              id="post-limit"
-              value={postLimit}
-              onChange={value => this.onPostLimitChange(value)}
-            >
-              {isAdmin && <MenuItem value={0}>Unlimited posts</MenuItem>}
-              <MenuItem value={1}>Only admin can post</MenuItem>
-              <MenuItem value={2}>Only admin's friends can post</MenuItem>
-              <MenuItem value={3}>Admin's 2nd level of friends can post</MenuItem>
-            </SelectStyled>
+            
             <ButtonContained
               onClick={this.onFormSubmit}
               disabled={isRequested}
+              className="mr-250"
             >
               {isRequested ? <CircularProgress size={20} color={'inherit'} /> : 'Activate'}
             </ButtonContained>
