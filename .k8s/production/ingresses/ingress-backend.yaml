@@ -13,8 +13,8 @@ spec:
   - hosts:
     - "central.peacenik.app"
     - "node1.peacenik.app"
-    - "progresso-pg.peacenik.app"
-    secretName: peacenik-tls-backend-new
+    - "pg.peacenik.app"
+    secretName: peacenik-tls-backend2
   rules:
   - host: central.peacenik.app
     http:
@@ -36,7 +36,7 @@ spec:
             name: message-hub-service
             port:
               number: 12002
-  - host: progresso-pg.peacenik.app
+  - host: pg.peacenik.app
     http:
       paths:
       - path: /
@@ -45,4 +45,4 @@ spec:
           service:
             name: pgadmin
             port:
-              number: 443
+              number: 80
