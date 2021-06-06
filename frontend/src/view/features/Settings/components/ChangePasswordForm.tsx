@@ -68,7 +68,7 @@ class ChangePasswordForm extends React.PureComponent<Props, State> {
       newPassword: event.currentTarget.value.trim(),
     })
   }
-  
+
   onConfirmPasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
     this.setState({
       confirmPassword: event.currentTarget.value.trim(),
@@ -94,7 +94,7 @@ class ChangePasswordForm extends React.PureComponent<Props, State> {
         })
         return false
       }
-      
+
       if (newPassword !== confirmPassword) {
         this.setState({
           errorMessage: 'Confirm password isn`t equel to new password',
@@ -146,7 +146,7 @@ class ChangePasswordForm extends React.PureComponent<Props, State> {
       isNewPasswordVisible: value
     })
   }
-  
+
   onConfirmPasswordOpen = (value: boolean) => {
     this.setState({
       isConfirmPasswordVisible: value

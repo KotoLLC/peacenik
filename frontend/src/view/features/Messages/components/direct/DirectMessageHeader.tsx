@@ -18,13 +18,13 @@ import DirectMessageDropDownMenu from './DirectMessageDropDownMenu';
 const DirectMessageHeader = () => {
   // const getUserInfo = useGetUserInfoById();
 
-  const friends = useSelector( (state: StoreTypes) => state.friends.friends )
+  const friends = useSelector((state: StoreTypes) => state.friends.friends)
 
   const userid = useRouteMatch().params['id'] || undefined;
   let userInfo;
-  if ( friends) {
+  if (friends) {
     friends.forEach(friend => {
-      if ( friend.user.id === userid){
+      if (friend.user.id === userid) {
         userInfo = friend.user
       }
     });

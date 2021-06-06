@@ -151,15 +151,15 @@ class InvitionDialog extends React.Component<Props, State> {
               onClick={() => onOpenInvitationsDialog(false)}>
               Cancel
           </ModalCancelButton>
-            <ModalAllowButton 
-              type="submit" 
+            <ModalAllowButton
+              type="submit"
               disabled={isRequestSend}
               onClick={this.onFormSubmit}
             >
               {isRequestSend ? <CircularProgressWhite size={20} /> : 'Send'}
             </ModalAllowButton>
           </ModalButtonsGroup>
-          
+
         </form>
       </>
     )

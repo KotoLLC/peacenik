@@ -354,7 +354,7 @@ export const MessageInfoLastAccessTime = styled.span`
   color: #abb7cd;
 `
 interface MessageInfoTextProps {
-  color: MessageInfoTextStatus | undefined 
+  color: MessageInfoTextStatus | undefined
 }
 export const MessageInfoText = styled.div<MessageInfoTextProps>`
   font-size: 14px;  
@@ -464,7 +464,7 @@ export const DMInFooterWrapper = styled.div`
   justify-content:space-between;
   align-item:center;  
 `
-  
+
 export const DirectMsgCloseIcon = styled(CloseIcon)`
   background-color: white;
   right: -5px;
@@ -482,7 +482,7 @@ export const MessageItemWrapper = styled.div`
   display: flex;
   position: relative;
   flex-direction: row;
-  justify-content: ${p=>(p['justify-content']==MessageDirection.OUTGOING_MESSAGE)?'flex-end':'flex-start'};
+  justify-content: ${p => (p['justify-content'] == MessageDirection.OUTGOING_MESSAGE) ? 'flex-end' : 'flex-start'};
   margin: 15px;  
 `
 export const MessageTextContent = styled.div`
@@ -490,8 +490,8 @@ export const MessageTextContent = styled.div`
   max-width: 610px;
   padding: 10px 13px;
   border-radius: 13px;
-  background-color: ${p=>p.color==MessageDirection.OUTGOING_MESSAGE?'#599c0b':'#fff'};
-  color: ${p=>p.color==MessageDirection.OUTGOING_MESSAGE?'#fff':'#000'};
+  background-color: ${p => p.color == MessageDirection.OUTGOING_MESSAGE ? '#599c0b' : '#fff'};
+  color: ${p => p.color == MessageDirection.OUTGOING_MESSAGE ? '#fff' : '#000'};
   flex-wrap: wrap;
   justify-content: flex-end;
   align-item: center;
@@ -501,7 +501,7 @@ export const MessageTextContentBody = styled.div`
   margin-right: 10px;
 `
 export const MessageTransmissionTime = styled.span`
-  color: ${p=>p.color==MessageDirection.OUTGOING_MESSAGE?'#eeeeee':'#a9acb5'};
+  color: ${p => p.color == MessageDirection.OUTGOING_MESSAGE ? '#eeeeee' : '#a9acb5'};
   `
 export const MessageDeliverStatus = styled.div`
   margin-left: 12px;
@@ -531,8 +531,8 @@ export const MessageImageContent = styled.div`
   max-width: 350px;
   padding: 5px;
   border-radius: 7px;
-  background-color: ${p=>p.color==MessageDirection.OUTGOING_MESSAGE?'#599c0b':'#fff'};
-  color: ${p=>p.color==MessageDirection.OUTGOING_MESSAGE?'#fff':'#000'};  
+  background-color: ${p => p.color == MessageDirection.OUTGOING_MESSAGE ? '#599c0b' : '#fff'};
+  color: ${p => p.color == MessageDirection.OUTGOING_MESSAGE ? '#fff' : '#000'};  
   position: relative;
 `
 
@@ -549,7 +549,7 @@ export const MessageImageContentFooter = styled.div`
   position: absolute;
   right: 20px;
   bottom: 20px;  
-  background-color: ${p=>p.color==MessageDirection.OUTGOING_MESSAGE?'#599c0bE0':'#ffffffE0'};
+  background-color: ${p => p.color == MessageDirection.OUTGOING_MESSAGE ? '#599c0bE0' : '#ffffffE0'};
   padding: 0 4px;
   border-radius: 2px;
 `
@@ -640,7 +640,7 @@ export const InfoContentPhoto = styled.div`
   height: 120px;
   border-radius: 7px;
   margin-right: 5px;
-  background-image: url(${p=>p['background-image']});
+  background-image: url(${p => p['background-image']});
   background-size: cover;
   background-position: center;
 `

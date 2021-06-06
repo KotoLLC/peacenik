@@ -141,6 +141,18 @@ export const CreateGroupContainer = styled.main`
   }
 `
 
+export const GroupFounctionContainer = styled.div`
+  width: calc(100% - 30px);
+  max-width: 750px;
+  margin: 95px auto 30px;
+  background: #FFFFFF;
+  box-shadow: 0px 1px 3px #D4D4D4;
+
+  @media (max-width: 770px) {
+    margin: 60px auto 30px
+  }
+`
+
 export const EmptyScrenWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;

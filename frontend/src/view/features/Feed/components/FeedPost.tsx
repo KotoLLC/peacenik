@@ -193,14 +193,16 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
     }
 
     if (attachment_type && attachment_type.indexOf('image') !== -1) {
-      return <ImagePreview src={attachment} />;
+      return <a data-fancybox="gallery" href={attachment}><ImagePreview src={attachment} /></a>;
     }
 
     if (attachment_type && attachment_type.indexOf('video') !== -1) {
       return (
-        <Player>
-          <source src={attachment} />
-        </Player>
+        <a data-fancybox="gallery" href={attachment}>
+          <Player>
+            <source src={attachment} />
+          </Player>
+        </a>
       );
     }
 
@@ -232,7 +234,6 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
   );
 
   /*  EDIT VIEW  */
-
   const onMessageSave = () => {
     let attachment_changed = file?.size ? true : false;
     let attachment_id = file?.size ? uploadLink?.blob_id : '';

@@ -1,14 +1,61 @@
 import styled from 'styled-components'
 import { TextField } from '@material-ui/core'
 import { Link } from 'react-router-dom'
+import Modal from '@material-ui/core/Modal'
 import Select from '@material-ui/core/Select'
-import { 
+import Typography from '@material-ui/core/Typography'
+import Slider from '@material-ui/core/Slider'
+import {
   EditFormWrapper,
   EditFieldWrapper,
   EditFieldPlaceholder,
   ButtonContained,
   ButtonOutlined,
 } from '@view/shared/styles'
+
+export const ModalCropImgStyled = styled(Modal)`
+  position: relative;
+  .reactEasyCrop_Container{
+    width: 600px;
+    height: 600px;
+    max-width: 100%;
+    max-height: 100%;
+  }
+`
+
+export const CroperContainer = styled.div`
+  left: 50%;
+  position: fixed;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  max-width: 90%;
+  max-height: 90%;
+  border: 1px solid black;
+`
+
+export const SliderContainer = styled.div`
+  display: flex;
+`
+
+export const CropBottomBar = styled.div`
+  bottom: 0;
+  position: fixed;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  padding: 20px;
+`
+
+export const CropZoomLabel = styled(Typography)`
+  color: white;
+  margin-right: 20px;
+`
+
+export const CropZoomSlider = styled(Slider)`
+  width: 300px;
+`
 
 export const SettingsContainer = styled.main`
   display: flex;
@@ -136,7 +183,7 @@ export const ButtonContainedStyled = styled(ButtonContained)`
   @media (max-width: 770px){
     min-width: 180px;
   }
-` 
+`
 
 export const FormTitle = styled.h3`
   font-family: 'SFUITextRegular';

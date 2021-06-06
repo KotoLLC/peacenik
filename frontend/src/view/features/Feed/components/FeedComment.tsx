@@ -50,7 +50,7 @@ const FeedComment = (props) => {
 
   return (
     <>
-      <ReactionNavItem onClick={commentClick } >
+      <ReactionNavItem onClick={commentClick} >
         <IconButton>
           {
             checkIsCommentedByMe() ?

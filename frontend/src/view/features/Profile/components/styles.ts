@@ -85,7 +85,7 @@ export const ButtonOutlinedStyled = styled(ButtonOutlined)`
   @media (max-width: 370px) {
     margin: 10px 5px 0;
   }
-` 
+`
 
 export const ButtonContainedStyled = styled(ButtonContained)`
   margin-right: 10px;

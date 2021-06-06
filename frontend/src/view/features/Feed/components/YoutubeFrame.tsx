@@ -16,7 +16,7 @@ export const YoutubeFrame: React.FC<Props> = React.memo((props) => {
   const urls = text.match(urlRegex)
 
   if (!urls?.length) return null
-  
+
   // tslint:disable-next-line
   let Element: any = null
 

@@ -9,9 +9,9 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import queryString from 'query-string'
 import loadImage from 'blueimp-load-image'
 import { getGroupAvatarUrl, getGroupCoverUrl } from '@services/avatarUrl'
-import { 
-  ErrorMessage, 
-  ButtonContained, 
+import {
+  ErrorMessage,
+  ButtonContained,
   ButtonOutlined,
   UploadInput,
   EditCoverWrapper,
@@ -26,14 +26,21 @@ import {
   EditInputField,
   EditTextareaField,
   EditButtonsWrapper,
- } from '@view/shared/styles'
+  GroupCard,
+  PageBarTitle,
+} from '@view/shared/styles'
 import {
   CreateGroupContainer,
+  GroupFounctionContainer,
   AvatarsNote,
   // RadioStyled,
   // FormControlLabelStyled,
   // RadiosWrapper,
 } from './../components/styles'
+import UserForInvite from '../components/UserForInvite'
+import { v4 as uuidv4 } from 'uuid'
+import { Member } from '../components/Member'
+import DeleteGroupDialog from '../components/DeleteGroupDialog'
 
 interface Props extends RouteComponentProps {
   isGroupEditedSuccessfully: boolean
@@ -41,6 +48,8 @@ interface Props extends RouteComponentProps {
   myGroups: ApiTypes.Groups.RecievedGroup[]
   coverUploadLink: ApiTypes.UploadLink | null
   avatarUploadLink: ApiTypes.UploadLink | null
+  groupDetails: ApiTypes.Groups.GroupDetails | null
+  friends: ApiTypes.Friends.Friend[] | null
 
   editGroupSuccess: (value: boolean) => void
   onEditGroup: (data: ApiTypes.Groups.EditGroup) => void
@@ -53,6 +62,8 @@ interface Props extends RouteComponentProps {
 
 const EditGroupPage: React.FC<Props> = (props) => {
   const {
+    groupDetails,
+    friends,
     onEditGroup,
     editGroupSuccess,
     onGetMyGroupsRequest,
@@ -86,6 +97,16 @@ const EditGroupPage: React.FC<Props> = (props) => {
   const [isCoverFileUploaded, setCoverUploadedFile] = useState<boolean>(false)
   const [coverFile, setCoverFile] = useState<File | null>(null)
   const [coverFileObjectUrl, setCoverFileObjectUrl] = useState<string>('')
+
+  const filterFriendsForInvite = () => {
+    return friends?.filter((item) =>
+      !Boolean(
+        groupDetails?.members?.some(
+          member => member.id === item.user.id
+        )
+      )
+    )
+  }
 
   const isDataValid = (): boolean => {
 
@@ -193,6 +214,9 @@ const EditGroupPage: React.FC<Props> = (props) => {
     coverUploadLink,
     avatarUploadLink,
   ])
+
+  if (!groupDetails) return null
+  const { group, members, status, invites } = groupDetails
 
   const onAvatarFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
     setAvatarUploadedFile(false)
@@ -346,6 +370,36 @@ const EditGroupPage: React.FC<Props> = (props) => {
           </EditButtonsWrapper>
         </EditFormWrapper>
       </CreateGroupContainer>
+
+      <GroupFounctionContainer>
+        <GroupCard>
+          <PageBarTitle>Invite friends</PageBarTitle>
+          {filterFriendsForInvite()?.map(item => <UserForInvite
+            groupId={group?.id}
+            key={uuidv4()}
+            {...item}
+          />)}
+          {/* <ViewMoreButton>View more</ViewMoreButton> */}
+        </GroupCard>
+        <GroupCard>
+          <PageBarTitle>Members ({members?.length})</PageBarTitle>
+          {Boolean(members?.length) && members.map(item => (
+            <Member
+              groupId={group?.id}
+              isAdminLayout={true}
+              key={uuidv4()}
+              {...item}
+            />
+          ))}
+          {/* <ViewMoreButton>View more</ViewMoreButton> */}
+        </GroupCard>
+      </GroupFounctionContainer>
+
+      <GroupFounctionContainer>
+        <DeleteGroupDialog
+          groupId={group?.id}
+        />
+      </GroupFounctionContainer>
     </>
   )
 }
@@ -356,6 +410,8 @@ type StateProps = Pick<Props,
   | 'myGroups'
   | 'coverUploadLink'
   | 'avatarUploadLink'
+  | 'groupDetails'
+  | 'friends'
 >
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   isGroupEditedSuccessfully: selectors.groups.isGroupEditedSuccessfully(state),
@@ -363,6 +419,8 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   myGroups: selectors.groups.myGroups(state),
   coverUploadLink: selectors.groups.coverUploadLink(state),
   avatarUploadLink: selectors.groups.avatarUploadLink(state),
+  groupDetails: selectors.groups.groupDetails(state),
+  friends: selectors.friends.friends(state),
 })
 
 type DispatchProps = Pick<Props,

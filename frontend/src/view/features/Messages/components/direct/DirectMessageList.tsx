@@ -7,7 +7,7 @@ import DirectMessageListItem from './DirectMessageListItem';
 import { CommonTypes, ApiTypes, StoreTypes } from 'src/types';
 import jwt_decode from 'jwt-decode';
 
-interface Props extends RouteComponentProps {}
+interface Props extends RouteComponentProps { }
 
 const DirectMessageList: React.FC<Props> = (props) => {
   // const dispatch = useDispatch();
@@ -26,7 +26,7 @@ const DirectMessageList: React.FC<Props> = (props) => {
     StoreTypes,
     ApiTypes.Messages.UserMessage[] | null
   >((state) => state.messages.usersLastMessage);
-  
+
   const msgRoomFriends = useSelector<StoreTypes, CommonTypes.MessageRoomFriendData[]>(
     (state) => state.messages.directMsgRoomFriends
   );
@@ -34,14 +34,14 @@ const DirectMessageList: React.FC<Props> = (props) => {
   return (
     <>
       {msgRoomFriends.map((friend, idx) => (
-          <DirectMessageListItem
-            key={idx}
-            location={location}
-            userId={friend.id}
-            fullName={friend.fullName || ''}
-            accessTime={friend.accessTime || ''}
-          />
-        ))}
+        <DirectMessageListItem
+          key={idx}
+          location={location}
+          userId={friend.id}
+          fullName={friend.fullName || ''}
+          accessTime={friend.accessTime || ''}
+        />
+      ))}
     </>
   );
 };

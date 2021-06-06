@@ -39,10 +39,10 @@ const DirectMessageListItem: React.FC<Props> = ({
   }
 
   let pathName = ""
-  if ( location.pathname?.indexOf("messages/d/") > -1){
+  if (location.pathname?.indexOf("messages/d/") > -1) {
     pathName = location.pathname?.substring(location.pathname?.lastIndexOf('/') + 1)
   }
-  
+
   const renderOutgoingSwitch = useCallback(
     (status: Types.MessagePublishStatus | undefined) => {
       switch (status) {

@@ -34,12 +34,12 @@ const MessageItem: React.FC<CommonTypes.MessageTypes.MessageItemProps> = ({
   contentType,
   messeageContent,
 }: CommonTypes.MessageTypes.MessageItemProps) => {
-  
+
   const friend_id = useRouteMatch().params['id'] || undefined
   const [isOpen, setOpen] = React.useState(false)
 
   const dispatch = useDispatch()
-  const directPostToken = useSelector( (state: StoreTypes) => state.messages.directPostToken )
+  const directPostToken = useSelector((state: StoreTypes) => state.messages.directPostToken)
   const deleteMessage = () => {
     dispatch(Actions.messages.deleteDirectMsgRequest({
       host: directPostToken ? directPostToken.host : "",
@@ -53,34 +53,34 @@ const MessageItem: React.FC<CommonTypes.MessageTypes.MessageItemProps> = ({
 
   return (
     <>
-    <MessageItemWrapper justify-content={direction}>
-      {(direction === "outgoing") && <DirectMsgCloseIcon onClick={() => setOpen(true)} /> }
-      {/* message  */}
-      {contentType === MessageContentType.TEXT_TYPE && (
-        <MessageTextContent color={direction}>
-          <MessageTextContentBody>{messeageContent}</MessageTextContentBody>
-          <MessageTextContentFooter>
-            <MessageTransmissionTime color={direction}>
-              {dateToRelateString(actionTime)}
-            </MessageTransmissionTime>
-          </MessageTextContentFooter>
-        </MessageTextContent>
-      )}
-      {contentType === MessageContentType.IMAGE_TYPE && (
-        <MessageImageContent color={direction}>
-          <MessageImageContentBody
-            src={messeageContent.toString()}
-            alt='IMAGE'
-          />
-          <MessageImageContentFooter color={direction}>
-            <MessageTransmissionTime color={direction}>
-              {dateToRelateString(actionTime)}
-            </MessageTransmissionTime>
-          </MessageImageContentFooter>
-        </MessageImageContent>
-      )}
-    </MessageItemWrapper>
-    <ModalDialog
+      <MessageItemWrapper justify-content={direction}>
+        {(direction === "outgoing") && <DirectMsgCloseIcon onClick={() => setOpen(true)} />}
+        {/* message  */}
+        {contentType === MessageContentType.TEXT_TYPE && (
+          <MessageTextContent color={direction}>
+            <MessageTextContentBody>{messeageContent}</MessageTextContentBody>
+            <MessageTextContentFooter>
+              <MessageTransmissionTime color={direction}>
+                {dateToRelateString(actionTime)}
+              </MessageTransmissionTime>
+            </MessageTextContentFooter>
+          </MessageTextContent>
+        )}
+        {contentType === MessageContentType.IMAGE_TYPE && (
+          <MessageImageContent color={direction}>
+            <MessageImageContentBody
+              src={messeageContent.toString()}
+              alt='IMAGE'
+            />
+            <MessageImageContentFooter color={direction}>
+              <MessageTransmissionTime color={direction}>
+                {dateToRelateString(actionTime)}
+              </MessageTransmissionTime>
+            </MessageImageContentFooter>
+          </MessageImageContent>
+        )}
+      </MessageItemWrapper>
+      <ModalDialog
         isModalOpen={isOpen}
         setOpenModal={() => setOpen(!isOpen)}>
         <ModalSubTitle>Do you really want to remove this message?</ModalSubTitle>

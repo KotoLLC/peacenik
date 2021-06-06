@@ -12,7 +12,7 @@ import {
   UsersListHeaderSidebar,
   UsersListNameWrapperSidebar,
   UsersListButtonsWrapperSidebar,
-} from '@view/shared/styles' 
+} from '@view/shared/styles'
 
 interface Props extends ApiTypes.Friends.Friend {
   groupId: string
@@ -21,7 +21,7 @@ interface Props extends ApiTypes.Friends.Friend {
 
 const UserForInvite: React.FC<Props> = (props) => {
   const [isRequested, setRequested] = useState<boolean>(false)
-  
+
   const {
     user,
     groupId,
@@ -53,9 +53,9 @@ const UserForInvite: React.FC<Props> = (props) => {
         </UsersListNameWrapperSidebar>
       </UsersListHeaderSidebar>
       <UsersListButtonsWrapperSidebar>
-        <ButtonContained 
+        <ButtonContained
           onClick={onInvite}
-          disabled={isRequested} 
+          disabled={isRequested}
           className="small">
           Invite
         </ButtonContained>

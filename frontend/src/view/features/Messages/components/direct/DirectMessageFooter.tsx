@@ -38,18 +38,18 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 )
-const DirectMessageFooter = ({location}) => {
+const DirectMessageFooter = ({ location }) => {
   const [msgValue, setMsgValue] = useState("")
   const msgInputStyles = useStyles()
   const [isFileUploaded, setIsFileUploaded] = useState<boolean>(false)
   // const [uploadImg, setUploadImg] = useState<FileList|null>(null)
   const tokenData: CommonTypes.TokenData = useSelector((state: StoreTypes) => state.messages.directPostToken)
-  const postDirectMsgStatus: boolean = useSelector( (state: StoreTypes) => state.messages.directMsgSent)
-  const uploadLink: ApiTypes.UploadLink | null = useSelector( (state: StoreTypes) => state.messages.uploadLink)
-  
-  const [uploadImg, setUploadImg] = useState<FileList|null>(null)
+  const postDirectMsgStatus: boolean = useSelector((state: StoreTypes) => state.messages.directMsgSent)
+  const uploadLink: ApiTypes.UploadLink | null = useSelector((state: StoreTypes) => state.messages.uploadLink)
 
-  const feedsTokens = useSelector( (state: StoreTypes) => state.feed.feedsTokens )
+  const [uploadImg, setUploadImg] = useState<FileList | null>(null)
+
+  const feedsTokens = useSelector((state: StoreTypes) => state.feed.feedsTokens)
   const dispatch = useDispatch()
   // onGetMessageUploadLink: (data: ApiTypes.Feed.UploadLinkRequest) => dispatch(Actions.feed.getFeedMessageUploadLinkRequest(data))
   const handleImageFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
@@ -64,13 +64,13 @@ const DirectMessageFooter = ({location}) => {
 
     if (tempUploadImg && tempUploadImg[0] && (tokenData.host !== "")) {
       let getMsgToken = ""
-      feedsTokens.map( (item) => {
-        if ( item.host === tokenData.host)
+      feedsTokens.map((item) => {
+        if (item.host === tokenData.host)
           getMsgToken = item.token
       })
-      if ( getMsgToken !== "") {
+      if (getMsgToken !== "") {
         onGetUploadLink({
-          host: tokenData.host, 
+          host: tokenData.host,
           content_type: tempUploadImg[0].type,
           file_name: tempUploadImg[0].name,
         })
@@ -79,26 +79,26 @@ const DirectMessageFooter = ({location}) => {
     }
   }
 
-  if ( postDirectMsgStatus ){
+  if (postDirectMsgStatus) {
     setMsgValue("")
     setUploadImg(null)
     dispatch(Actions.messages.setPostMsgToFriendSuccess(false))
   }
 
   const sendMsg = () => {
-    if ( (msgValue !== "") && (location.pathname?.indexOf("messages/d/") > -1)){
+    if ((msgValue !== "") && (location.pathname?.indexOf("messages/d/") > -1)) {
       let friend_id = location.pathname?.substring(location.pathname?.lastIndexOf('/') + 1)
-      if ( friend_id !== ""){
+      if (friend_id !== "") {
         let getMsgToken = ""
-        feedsTokens.map( (item) => {
-          if ( item.host === tokenData.host)
+        feedsTokens.map((item) => {
+          if (item.host === tokenData.host)
             getMsgToken = item.token
         })
         let data: ApiTypes.Feed.PostMessage = {
           host: tokenData.host,
           body: {
             token: tokenData.token,
-            text:msgValue,
+            text: msgValue,
             attachment_id: uploadImg ? uploadLink?.blob_id : "",
             friend_id: friend_id,
             msg_token: getMsgToken
@@ -108,7 +108,7 @@ const DirectMessageFooter = ({location}) => {
       }
     }
   }
-  
+
   if (uploadLink && uploadImg) {
     const { form_data } = uploadLink;
     const data = new FormData();
@@ -141,8 +141,8 @@ const DirectMessageFooter = ({location}) => {
         type="text"
         placeholder="Write something"
         value={msgValue}
-        style={{ 
-          flex: "1 0 auto", 
+        style={{
+          flex: "1 0 auto",
           width: "calc(-48px)"
         }}
         onChange={(e) => setMsgValue(e.target.value)}
