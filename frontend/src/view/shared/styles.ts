@@ -659,7 +659,7 @@ export const ProfileRightSideBar = styled.aside`
 
 export const CentralBar = styled.section`
   flex-grow: 1;
-  max-width: calc(100% - 580px);
+  max-width: calc(100% - 380px);
   padding: 20px 0 20px;
   position: relative;
   border-radius: 0 0 4px 4px;

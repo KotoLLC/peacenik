@@ -272,10 +272,10 @@ const AdminPublicLayout: React.FC<Props> = React.memo((props) => {
               <ProfileName>{group?.name}</ProfileName>
               <ProfileNote>{group?.is_public ? 'Public' : 'Private'} group</ProfileNote>
               <GroupDescriptopn>{group?.description}</GroupDescriptopn>
-              <DeleteGroupDialog
+              {/* <DeleteGroupDialog
                 className="desktop-only"
                 groupId={group?.id}
-              />
+              /> */}
               <GroupCoverBar
                 className="mobile-only"
                 membersCounter={members?.length}
@@ -288,31 +288,10 @@ const AdminPublicLayout: React.FC<Props> = React.memo((props) => {
               {checkCurrentHub()}
               {/* <ViewMoreButton>View more</ViewMoreButton> */}
             </CentralBar>
-            <RightSideBar>
-              <GroupCard>
-                <PageBarTitle>Waiting for approval ({invites?.length || 0})</PageBarTitle>
-                {Boolean(invites?.length) && invites?.map(item => <MemberInvited
-                  key={uuidv4()}
-                  {...item}
-                />)}
-              </GroupCard>
-
-              <GroupCard>
-                <PageBarTitle>Members ({members?.length})</PageBarTitle>
-                {Boolean(members?.length) && members.map(item => (
-                  <Member
-                    groupId={group?.id}
-                    isAdminLayout={true}
-                    key={uuidv4()}
-                    {...item}
-                  />
-                ))}
-              </GroupCard>
-            </RightSideBar>
-            <DeleteGroupDialog
+            {/* <DeleteGroupDialog
               className="mobile-only"
               groupId={group?.id}
-            />
+            /> */}
           </PageColumnBarsWrapper>
 
           <UpButton color="inherit" onClick={onScrollUp}>
