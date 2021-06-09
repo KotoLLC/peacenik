@@ -32,9 +32,9 @@ export const ModalDialog: React.FC<Props> = (props) => {
       }}>
       <Fade in={isModalOpen}>
         <ModalViewport className={className}>
-          {/* <ModalCloseBtn>
+          <ModalCloseBtn>
             <CloseIcon onClick={() => setOpenModal(false)} />
-          </ModalCloseBtn> */}
+          </ModalCloseBtn>
           {title && <ModalTitle>{title}</ModalTitle>}
           {props.children}
         </ModalViewport>
