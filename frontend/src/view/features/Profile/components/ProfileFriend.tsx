@@ -54,8 +54,8 @@ const ProfileFriend: React.FC<Props> = React.memo((props) => {
     )
 
     return <ButtonContained onClick={onButtonClick}>
-        {isRequest ? <CircularProgressWhite size={20} /> : 'Add friend'}
-      </ButtonContained>
+      {isRequest ? <CircularProgressWhite size={20} /> : 'Add friend'}
+    </ButtonContained>
   }
 
   useEffect(() => {

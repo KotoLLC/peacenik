@@ -33,7 +33,7 @@ interface Props extends RouteComponentProps {
   isAboutUsViewed: boolean
   friends: ApiTypes.Friends.Friend[] | null
   postUpdated: boolean
-  
+
   onGetFriends: () => void
   onGetMessages: () => void
   onGetMoreMessages: () => void
@@ -45,7 +45,7 @@ interface State {
   authToken: string
   messageLenght: number
   isPopupOpen: boolean
-  popupData : CommonTypes.PopupData
+  popupData: CommonTypes.PopupData
 }
 
 class FeedPage extends React.Component<Props, State> {
@@ -116,7 +116,7 @@ class FeedPage extends React.Component<Props, State> {
       if (!newProps.friends?.length) {
         newProps.onGetFriends()
       }
-      
+
       return {
         authToken: newProps.authToken
       }
@@ -148,7 +148,7 @@ class FeedPage extends React.Component<Props, State> {
           <div ref={this.lastMessageRef} key={item.id}>
             <FeedPost
               {...item}
-              showCommentPopup = {this.showCommentPopup}
+              showCommentPopup={this.showCommentPopup}
               isAuthor={(userId === item.user_id) ? true : false} />
           </div>
         )
@@ -157,16 +157,16 @@ class FeedPage extends React.Component<Props, State> {
       return <FeedPost
         {...item}
         key={item.id}
-        showCommentPopup = {this.showCommentPopup}
+        showCommentPopup={this.showCommentPopup}
         isAuthor={(userId === item.user_id) ? true : false} />
     })
-    
+
     return renderData
   }
 
   showCommentPopup = (displayData: CommonTypes.PopupData) => {
     this.setState({
-      popupData:{
+      popupData: {
         created_at: displayData.created_at,
         message: displayData.message,
         isAttacmentDeleted: displayData.isAttacmentDeleted,
@@ -217,26 +217,26 @@ class FeedPage extends React.Component<Props, State> {
         </EmptyMessageFeed>
       )
     } else {
-      
+
       return (
         <>
           <div ref={this.editorRef}><Editor /></div>
           {this.mapMessages(messages)}
-          <CommentDialog 
-            isOpen={this.state.isPopupOpen} 
-            setOpen={this.setPopupOpen} 
+          <CommentDialog
+            isOpen={this.state.isPopupOpen}
+            setOpen={this.setPopupOpen}
             popupData={this.state.popupData}
           />
         </>
       )
     }
   }
- 
+
   componentDidUpdate(prevProps, prevState) {
-    const { 
-      isMessagesRequested, 
-      feedsTokens, 
-      isAboutUsViewed, 
+    const {
+      isMessagesRequested,
+      feedsTokens,
+      isAboutUsViewed,
       currentHub,
       postUpdated
     } = this.props
@@ -250,7 +250,7 @@ class FeedPage extends React.Component<Props, State> {
 
     let messageId = parsed?.message_id as string
 
-    if ( messageId ) {
+    if (messageId) {
       this.props.history.replace({
         search: "",
       })
@@ -261,7 +261,7 @@ class FeedPage extends React.Component<Props, State> {
           token: parsed?.messageToken as string,
           message_id: parsed?.message_id as string,
         }
-      }).then( (response: any) => {
+      }).then((response: any) => {
         this.showCommentPopup({
           created_at: response.data.message.created_at,
           message: response.data.message.text,
@@ -278,16 +278,16 @@ class FeedPage extends React.Component<Props, State> {
       }).catch(error => {
         console.log("GET MESSAGE ERROR: ", error)
       })
-    } else if ( postUpdated ) {
+    } else if (postUpdated) {
       API.feed.getMessageById({
         host: this.state.popupData.sourceHost,
         body: {
           token: this.state.popupData.messageToken,
           message_id: this.state.popupData.id,
         }
-      }).then( (response: any) => {
+      }).then((response: any) => {
         this.setState({
-          popupData:{
+          popupData: {
             created_at: response.data.message.created_at,
             message: response.data.message.text,
             isAttacmentDeleted: false,
@@ -355,13 +355,13 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   postUpdated: selectors.feed.postUpdated(state)
 })
 
-type DispatchProps = Pick<Props, 
-  | 'onGetMessages' 
-  | 'onGetCurrentHub' 
+type DispatchProps = Pick<Props,
+  | 'onGetMessages'
+  | 'onGetCurrentHub'
   | 'onGetMoreMessages'
   | 'onGetFriends'
   | 'onSetPostUpdated'
-  >
+>
 const mapDispatchToProps = (dispatch): DispatchProps => ({
   onGetMessages: () => dispatch(Actions.feed.getFeedTokensRequest()),
   onGetCurrentHub: () => dispatch(Actions.feed.getCurrentHubRequest()),

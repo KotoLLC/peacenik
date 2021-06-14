@@ -24,7 +24,7 @@ export const ModalViewport = styled.div`
   outline: none;
 
   &.comments {
-    padding: 30px 0px 0px;
+    padding: 40px 0px 0px;
   }
 
   @media (max-width: 570px) {

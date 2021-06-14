@@ -10,7 +10,7 @@ import {
   UsersListNameWrapperSidebar,
 } from '@view/shared/styles'
 
-interface Props extends ApiTypes.Groups.GroupAdmin {}
+interface Props extends ApiTypes.Groups.GroupAdmin { }
 
 export const Owner: React.FC<Props> = (props) => {
   const { full_name, id, name } = props

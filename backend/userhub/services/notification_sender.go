@@ -91,15 +91,31 @@ func (s *notificationSender) sendFCMNotifications(n Notification) {
 		return
 	}
 
-	fcmTokens := s.repos.FCMToken.UsersTokens(n.UserIDs)
+	userIDs := n.UserIDs
+
+	if groupID, ok := n.Data["group-id"].(string); ok && groupID != "" {
+		switch n.MessageType {
+		case "message/post", "comment/post":
+			authorID, _ := n.Data["user-id"].(string)
+			members := s.repos.Group.GroupMembers(groupID)
+			userIDs = make([]string, 0, len(members))
+			for _, member := range members {
+				if member.ID != authorID {
+					userIDs = append(userIDs, member.ID)
+				}
+			}
+		}
+	}
+
+	fcmTokens := s.repos.FCMToken.UsersTokens(userIDs)
 	// TODO remove debug messages
-	fmt.Println("Users:", n.UserIDs)
+	fmt.Println("Users:", userIDs)
 	fmt.Println("FCM Tokens:", fcmTokens)
 	for _, fcmToken := range fcmTokens {
 		resp, err := s.firebaseClient.SendWithRetry(&fcm.Message{
 			To: fcmToken,
 			Notification: &fcm.Notification{
-				Title: "KOTO",
+				Title: "Peacenik",
 				Body:  n.Text,
 			},
 		}, 3)

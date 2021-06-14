@@ -11,13 +11,13 @@ import DirectMessageContent from './DirectMessageContent';
 import DirectMessageFooter from './DirectMessageFooter';
 import DirectMessageHeader from './DirectMessageHeader';
 
-interface Props extends RouteComponentProps {}
+interface Props extends RouteComponentProps { }
 
 export default function DirectMessageBox(props: Props) {
   const { location } = props
-  
+
   const userid = useRouteMatch().params['id'] || undefined;
-  if ( userid)
+  if (userid)
     return (
       <DirectMessageBoxWapper>
         <DMHeaderWrapper>
@@ -29,10 +29,10 @@ export default function DirectMessageBox(props: Props) {
         </DMContentWrapper>
 
         <DMFooterWapper>
-          <DirectMessageFooter location={location}/>
+          <DirectMessageFooter location={location} />
         </DMFooterWapper>
       </DirectMessageBoxWapper>
     );
-  else 
+  else
     return <></>
 }

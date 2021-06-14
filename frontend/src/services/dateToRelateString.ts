@@ -5,7 +5,7 @@ export const dateToRelateString = (d: string | null) => {
   const diffSecond = (current.getTime() - oldDate.getTime()) / 1000;
 
   if(diffSecond < 60) {
-    return 'just ago'
+    return 'seconds ago'
   } else if(diffSecond < 600) {
     return 'Less in 10 min'
   } else if(diffSecond < 1800) {

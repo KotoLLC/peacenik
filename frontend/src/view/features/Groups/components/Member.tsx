@@ -7,7 +7,7 @@ import {
   MembersListItemWrapper,
   UsersListItemAvatar,
   UsersListItemFullName,
-} from '@view/shared/styles' 
+} from '@view/shared/styles'
 
 interface Props extends ApiTypes.Groups.GroupMember {
   isAdminLayout: boolean
@@ -20,7 +20,7 @@ export const Member: React.FC<Props> = (props) => {
     name,
     id,
     isAdminLayout,
-    groupId, 
+    groupId,
   } = props
 
   return (

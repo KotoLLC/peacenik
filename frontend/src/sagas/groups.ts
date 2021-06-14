@@ -72,7 +72,7 @@ export function* watchDeleteGroup(action: { type: string, payload: string }) {
 
 export function* watchGetGroupMsgToken() {
   const response = yield API.groups.getMessagesToken()
-  
+
   if (response.status === 200) {
     const feedsTokens = hubsForMessagesBack2Front(response.data?.tokens)
 
@@ -83,7 +83,7 @@ export function* watchGetGroupMsgToken() {
   }
 }
 
-export function* watchGetGroupMessagesToken(action: {type: string, payload: ApiTypes.Groups.MessagesById} ) {
+export function* watchGetGroupMessagesToken(action: {type: string, payload: ApiTypes.Groups.MessagesById}) {
   try {
     const response = yield API.groups.getGroupPostMessageToken(action.payload)
 
@@ -150,7 +150,7 @@ export function* watchRequestJoinGroup(action: { type: string, payload: ApiTypes
     if (currentGroupId) {
       yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))
     }
-    
+
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
   }
@@ -167,16 +167,16 @@ export function* watchGetInvitesToConfirmRequest() {
 }
 
 export function* watchConfirmInviteRequest(action: { type: string, payload: ApiTypes.Groups.ConfirmDenyInvite }) {
-  const response = yield API.groups.сonfirmInvite(action.payload)
+  const response = yield API.groups.confirmInvite(action.payload)
 
   if (response.status === 200) {
     // yield put(Actions.groups.getInvitesToConfirmRequest())
-    
+
     const state = yield select()
     const currentGroupId = selectors.groups.currentGroupId(state)
 
     if (currentGroupId) {
-      yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))  
+      yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))
     }
 
   } else {
@@ -192,9 +192,9 @@ export function* watchDenyInviteRequest(action: { type: string, payload: ApiType
 
     const state = yield select()
     const currentGroupId = selectors.groups.currentGroupId(state)
-    
+
     if (currentGroupId) {
-      yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))  
+      yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))
     }
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
@@ -206,10 +206,10 @@ export function* watchDeleteMemberRequest(action: { type: string, payload: ApiTy
 
   if (response.status === 200) {
     yield put(Actions.groups.deleteMemberSuccess(true))
-    
+
     const state = yield select()
     const currentGroupId = selectors.groups.currentGroupId(state)
-    
+
     if (currentGroupId) {
       yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))
     }
@@ -242,7 +242,7 @@ export function* watchDeleteJoinRequest(action: { type: string, payload: ApiType
     const currentGroupId = selectors.groups.currentGroupId(state)
 
     if (currentGroupId) {
-      yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))  
+      yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))
     }
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))
@@ -297,7 +297,7 @@ export function* watchAddUserToGroup(action: { type: string, payload: ApiTypes.G
     const currentGroupId = selectors.groups.currentGroupId(state)
 
     if (currentGroupId) {
-      yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))  
+      yield put(Actions.groups.getGroupDetailsRequest(currentGroupId))
     }
   } else {
     yield put(Actions.common.setErrorNotify(response?.error?.response?.data?.msg || 'Server error'))

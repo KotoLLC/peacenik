@@ -1,8 +1,8 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { 
-  ButtonOutlined, 
-  CoverBarWrapper, 
+import {
+  ButtonOutlined,
+  CoverBarWrapper,
   CoverBarContainer,
   CoverBarCounterWrapper,
   CoverBarCounter,

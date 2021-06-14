@@ -3,6 +3,11 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
+@import Firebase;
+#import <UserNotifications/UserNotifications.h>
+#import <RNCPushNotificationIOS.h>
+@interface AppDelegate () <UNUserNotificationCenterDelegate>
+@end
 
 #ifdef FB_SONARKIT_ENABLED
 #import <FlipperKit/FlipperClient.h>
@@ -24,6 +29,7 @@ static void InitializeFlipper(UIApplication *application) {
 #endif
 
 @implementation AppDelegate
+NSString *const kGCMMessageIDKey = @"gcm.message_id";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -43,7 +49,42 @@ static void InitializeFlipper(UIApplication *application) {
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+  
+  [FIRApp configure];
+
+  // iOS 10 or later
+  // For iOS 10 display notification (sent via APNS)
+  [UNUserNotificationCenter currentNotificationCenter].delegate = self;
+//  UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert |
+//      UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
+//  [[UNUserNotificationCenter currentNotificationCenter]
+//      requestAuthorizationWithOptions:authOptions
+//      completionHandler:^(BOOL granted, NSError * _Nullable error) {
+//        // ...
+//      }];
+//  [application registerForRemoteNotifications];
+
   return YES;
+}
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+  [RNCPushNotificationIOS didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+  [RNCPushNotificationIOS didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+}
+
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+  [RNCPushNotificationIOS didFailToRegisterForRemoteNotificationsWithError:error];
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
+  completionHandler(UNNotificationPresentationOptionSound | UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge);
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
+  [RNCPushNotificationIOS didReceiveNotificationResponse:response];
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge

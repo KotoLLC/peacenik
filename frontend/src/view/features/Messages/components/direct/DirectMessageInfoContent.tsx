@@ -67,8 +67,8 @@ const DirectMessageInfoContent = () => {
         </InfoContentSettingTitle>
         <InfoContentCheckbox
           checked={true}
-          // onChange={handleChange}
-          // inputProps={{ 'aria-label': 'primary checkbox' }}
+        // onChange={handleChange}
+        // inputProps={{ 'aria-label': 'primary checkbox' }}
         />
       </InfoContentSettingBlock>
       <InfoContentSettingBlock>

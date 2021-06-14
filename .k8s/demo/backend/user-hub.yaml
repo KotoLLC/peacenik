@@ -1,0 +1,118 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-hub
+  namespace: backend
+spec:
+  selector:
+    matchLabels:
+      app: user-hub
+  template:
+    metadata:
+      labels:
+        app: user-hub
+    spec:
+      terminationGracePeriodSeconds: 5
+      initContainers:
+      - name: kubectl
+        image: ghcr.io/kotollc/koto/kubectl:0.0.2
+        volumeMounts:
+        - name: kubectl
+          mountPath: /data
+        command: ["cp", "/usr/local/bin/kubectl", "/data/kubectl"]
+      - name: doctl
+        image: ghcr.io/kotollc/koto/doctl:0.0.1
+        volumeMounts:
+        - name: doctl
+          mountPath: /data
+        command: ["cp", "/usr/local/bin/doctl", "/data/doctl"]
+      volumes:
+        - name: user-hub-key
+          secret:
+            secretName: user-hub-key
+        - name: kubectl
+          emptyDir: {}
+        - name: doctl
+          emptyDir: {}
+        - name: koto-writeable
+          emptyDir: {}
+      containers:
+      - name: user-hub
+        image: ghcr.io/kotollc/koto/userhub:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 12001
+        volumeMounts:
+          - name: user-hub-key
+            mountPath: "/tmp"
+          - name: kubectl
+            subPath: kubectl
+            mountPath: /usr/local/bin/kubectl
+          - name: doctl
+            subPath: doctl
+            mountPath: /usr/local/bin/doctl
+          - mountPath: /koto-writeable
+            name: koto-writeable
+        env:
+          - name: KOTO_DIGITALOCEAN_TOKEN
+            value: "DUMMY-TOKEN"
+          - name: KOTO_LISTEN_ADDRESS
+            value: ":12001"
+          - name: KOTO_EXTERNAL_ADDRESS
+            value: <USER-HUB-ADDRESS>
+          - name: KOTO_PRIVATE_KEY
+            value: /tmp/key
+          - name: KOTO_ADMINS
+            value: admin
+          - name: KOTO_DB_HOST
+            value: db-user-hub-service.backend
+          - name: KOTO_DB_SSL_MODE
+            value: disable
+          - name: KOTO_FRONTEND_ADDRESS
+            value: <FRONTEND-ADDRESS>
+          - name: KOTO_DB_USER
+            value: postgres
+          - name: KOTO_DB_PASSWORD
+            value: "<SECRET>"
+          - name: KOTO_DB_NAME
+            value: koto-user-hub
+          - name: KOTO_S3_ENDPOINT
+            value: <MINIO-ENDPOINT>
+          - name: KOTO_S3_KEY
+            value: "minioadmin"
+          - name: KOTO_S3_SECRET
+            value: "<SECRET>"
+          - name: KOTO_S3_BUCKET
+            value: koto-user-hub-staging
+          - name: KOTO_SMTP_HOST
+            value: <SMTP-HOST>
+          - name: KOTO_SMTP_PORT
+            value: "<SMTP-PORT>"
+          - name: KOTO_SMTP_USER
+            value: <SMTP-USER>
+          - name: KOTO_SMTP_PASSWORD
+            value: <SMTP-PASSWORD>
+          - name: KOTO_SMTP_FROM
+            value: <SMTP-EMAIL-ADDRESS>
+          - name: KOTO_TEST_MODE
+            value: "true"
+          - name: KOTO_FIREBASE_TOKEN
+            value: "DUMMY-TOKEN"
+          - name: KOTO_ADMIN_FRIENDSHIP
+            value: ""
+          - name: KOTO_MESSAGEHUB_CONFIG
+            value: "https://raw.githubusercontent.com/mreider/koto/master/.k8s/sponsored-hub-staging/hub.yaml"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-hub-service
+  namespace: backend
+spec:
+  type: ClusterIP
+  selector:
+    app: user-hub
+  ports:
+  - name: http
+    port: 12001

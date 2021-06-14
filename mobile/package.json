@@ -13,6 +13,7 @@
     "@react-native-community/cli": "^4.14.0",
     "@react-native-community/cli-platform-android": "^4.13.0",
     "@react-native-community/cookies": "^4.0.1",
+    "@react-native-community/push-notification-ios": "^1.8.0",
     "@react-native-firebase/app": "^8.3.1",
     "@react-native-firebase/messaging": "^7.7.4",
     "axios": "^0.21.1",
@@ -20,6 +21,7 @@
     "react-native": "^0.63.4",
     "react-native-device-info": "^6.0.0",
     "react-native-eject": "^0.1.2",
+    "react-native-push-notification": "^7.3.1",
     "react-native-splash-screen": "^3.2.0",
     "react-native-webview": "^11.2.1"
   },

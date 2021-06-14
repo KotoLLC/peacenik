@@ -61,8 +61,8 @@ const JoinGroupDialog: React.FC<Props> = (props) => {
 
   return (
     <>
-      <ButtonContained 
-        onClick={() => setOpen(true)} 
+      <ButtonContained
+        onClick={() => setOpen(true)}
         className={buttonClassName}>
         {buttonText}
       </ButtonContained>
@@ -73,9 +73,9 @@ const JoinGroupDialog: React.FC<Props> = (props) => {
         <TextFieldWrapper>
           <TextFieldLabel>Tell us about yourself</TextFieldLabel>
           <TextareaStyled
-          value={message}
-          onChange={(event) => setMessage(event.target.value)}
-        />
+            value={message}
+            onChange={(event) => setMessage(event.target.value)}
+          />
         </TextFieldWrapper>
         <ModalButtonsGroup>
           <ModalCancelButton

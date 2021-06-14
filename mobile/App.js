@@ -15,6 +15,9 @@ import CookieManager from '@react-native-community/cookies';
 import axios from 'axios';
 import SplashScreen from 'react-native-splash-screen';
 
+import {fcmService} from  './fcm/FCMService'
+import {localNotificationService} from './fcm/LocalNotificationService'
+
 const url = 'https://peacenik.app';
 const inAppUrls = [
   url,
@@ -27,35 +30,59 @@ const App = () => {
   let token = null;
   const webview = useRef(null);
 
-  const requestUserPermission = async () => {
-    const authStatus = await messaging().requestPermission();
-    const enabled =
-      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+  useEffect(() => {
+    fcmService.registerAppWithFCM();
+    fcmService.register(onRegister, onNotification, onOpenNotification);
+    localNotificationService.configure(onOpenNotification)
 
-    if (enabled) {
-      console.log('Authorization status:', authStatus);
-      token = await messaging().getToken();
-      console.log(token);
+    function onRegister(token) {
+      console.log("[App] onRegister: ", token);
+      registerTokenToServer(token)
     }
-  };
+
+    function onNotification(notify) {
+      console.log("[App] onNotification: ", notify);
+      const options = {
+        soundName: 'default',
+        playSound: true
+      }
+      localNotificationService.showNotification(
+          0,
+          notify.title,
+          notify.body,
+          notify,
+          options
+      )
+    }
+
+    function onOpenNotification(notify) {
+        console.log("[App] onOpenNotification: ", notify);
+    }
+
+    messaging().setBackgroundMessageHandler(async remoteMessage => {
+        console.log('Message handled in the background!', remoteMessage);
+    });
+
+    SplashScreen.hide();
+
+    return () => {
+        console.log("[App] unRegister");
+        fcmService.unRegister();
+        localNotificationService.unregister();
+    }
+   
+  }, [])
 
   const onMessage = (event) => {
     const {data} = event.nativeEvent;
     console.log('[REACTNATIVE] NEW Message received from Web:', data);
   };
 
-  useEffect(() => {
-    requestUserPermission();
-    SplashScreen.hide();
-  });
-
-  const onNavigationStateChange = async (navState) => {
-    if (navState.url.includes('messages')) {
-      const cookies =
+  const registerTokenToServer = async (token) => {
+    const cookies =
         Platform.OS === 'ios'
           ? await CookieManager.getAll(true)
-          : await CookieManager.get('https://central.koto.at');
+          : await CookieManager.get('https://central.peacenik.app');
       console.log('CookieManager.get =>', cookies);
       const cookie = Object.values(cookies)
         .map((c) => `${c.name}=${c.value};`)
@@ -68,7 +95,7 @@ const App = () => {
           os: Platform.OS,
         };
         const res = await axios.request({
-          url: 'https://central.koto.at/rpc.UserService/RegisterFCMToken',
+          url: 'https://central.peacenik.app/rpc.UserService/RegisterFCMToken',
           method: 'post',
           headers: {
             Cookie: cookie,
@@ -79,8 +106,14 @@ const App = () => {
         });
         console.log(res);
       } catch (e) {
-        console.log(e);
+        console.log("onNavigationStateChange", e);
       }
+  }
+
+  const onNavigationStateChange = async (navState) => {
+    console.log('******************', navState.url)
+    if (navState.url.includes('messages')) {
+      registerTokenToServer(token)
     }
   };
 

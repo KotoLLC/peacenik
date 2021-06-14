@@ -17,10 +17,10 @@ const DirectMessageContent = () => {
   // )
   const directMsgs: CommonTypes.MessageTypes.MessageItemProps[] = useSelector((state: StoreTypes) => state.messages.directMsgs)
 
-  useEffect( () => {
+  useEffect(() => {
     // if ( (directMsgs.length < 11 ) && isMessagesRequested && dispatch) {
-      // console.log("scroll down", directMsgs, isMessagesRequested)
-      firstMsgRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    // console.log("scroll down", directMsgs, isMessagesRequested)
+    firstMsgRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
     // }
   }, [firstMsgRef, directMsgs])
 

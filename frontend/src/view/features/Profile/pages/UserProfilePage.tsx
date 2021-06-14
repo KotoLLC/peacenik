@@ -71,7 +71,7 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
 
   const setCurrentUserData = () => {
     const currentFriend = friends?.find(item => item.user.id === userId) || null
-    
+
     if (currentFriend && users.length) {
       currentFriend.user = users[0]
     }
@@ -80,14 +80,14 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
   }
 
   let profileUser: any = null
-  if ( users.length > 0) {
+  if (users.length > 0) {
     profileUser = users[0]
   }
-  const currentUser = setCurrentUserData() 
+  const currentUser = setCurrentUserData()
 
   let commonFriends: ApiTypes.Friends.Friend[] = []
 
-  if ( !isUser ){
+  if (!isUser) {
     currentUser?.friends?.forEach(item => {
       if (friends?.some(myFriend => myFriend.user.id === item.user.id)) {
         commonFriends.push(item as never)
@@ -96,7 +96,7 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
   }
 
   const mapFriendsList = () => {
-    if ( isUser) {
+    if (isUser) {
       return friends?.map(item => {
         const { user, invite_status } = item
 
@@ -164,9 +164,9 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
     <>
       <PageCoverWrapper>
         <PageCoverIconWrapper>
-          <ImageIcon/>
+          <ImageIcon />
         </PageCoverIconWrapper>
-        <PageCover resource={getProfileCoverUrl(userId as string)}/>
+        <PageCover resource={getProfileCoverUrl(userId as string)} />
       </PageCoverWrapper>
       <UserCoverBar
         id={profileUser?.id}
@@ -174,7 +174,7 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
         inviteStatus={profileUser?.invite_status}
         groupCount={currentUser?.group_count}
         friendsLenght={currentUser?.friends?.length || 0}
-        isUser={isUser? isUser : false}
+        isUser={isUser ? isUser : false}
         className="desktop-only"
       />
       <Container>
@@ -189,7 +189,7 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
               groupCount={currentUser?.group_count}
               inviteStatus={profileUser?.invite_status}
               friendsLenght={currentUser?.friends?.length || 0}
-              isUser={isUser? isUser : false}
+              isUser={isUser ? isUser : false}
               className="mobile-only"
             />
           </LeftSideBar>
@@ -200,10 +200,10 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
             {mapFriendsList()}
           </ProfileCentralBar>
           <ProfileRightSideBar className="empty">
-          {!isUser && <><PageBarTitle>Common friends ({commonFriends.length || 0})</PageBarTitle>
-            {mapCommonFriendsList()}
+            {!isUser && <><PageBarTitle>Common friends ({commonFriends.length || 0})</PageBarTitle>
+              {mapCommonFriendsList()}
             </>
-          }
+            }
           </ProfileRightSideBar>
         </PageColumnBarsWrapper>
       </Container>

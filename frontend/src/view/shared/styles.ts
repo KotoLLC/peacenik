@@ -330,6 +330,9 @@ export const ButtonContained = styled(Button)`
   text-transform: none;
   margin-right: 20px;
 
+  &.mr-250{
+    margin-left: 250px;
+  }
   &.join-group{
     position: absolute;
     left: 50%;
@@ -656,7 +659,7 @@ export const ProfileRightSideBar = styled.aside`
 
 export const CentralBar = styled.section`
   flex-grow: 1;
-  max-width: calc(100% - 580px);
+  max-width: calc(100% - 380px);
   padding: 20px 0 20px;
   position: relative;
   border-radius: 0 0 4px 4px;
@@ -1162,7 +1165,7 @@ export const EditCoverWrapper = styled.div`
   background-color: ${grayColor};
   background-image:  ${props => `url(${props.resource})`};
   background-position: center;
-  background-size: cover;
+  background-size: 100% 100%;
 
   @media (max-width: 770px){
     height: 100px;

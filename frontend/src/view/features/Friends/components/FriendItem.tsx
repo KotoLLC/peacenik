@@ -24,7 +24,7 @@ export const FriendItem: React.FC<Props> = (props) => {
     <FriendCard>
       <UserInfo>
         <Link to={`/profile/user?id=${id}`} >
-          <AvatarStyled alt={name} src={getAvatarUrl(id)}/>
+          <AvatarStyled alt={name} src={getAvatarUrl(id)} />
         </Link>
         <UserInfoText>
           <UserInfoDisplayName to={`/profile/user?id=${id}`} >{fullName || name}</UserInfoDisplayName>
