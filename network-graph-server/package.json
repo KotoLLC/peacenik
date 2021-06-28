@@ -1,0 +1,34 @@
+{
+  "name": "network-graph-server",
+  "version": "1.0.0",
+  "description": "network graph server for postgre sql db",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "watch": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KotoLLC/peacenik"
+  },
+  "keywords": [
+    "network",
+    "graph",
+    "postgre"
+  ],
+  "author": "Cardoso",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "knex": "^0.95.6",
+    "knex-migrate": "^1.7.4",
+    "pg": "^8.6.0",
+    "postgraphile": "^4.12.3"
+  },
+  "devDependencies": {
+    "dotenv": "^10.0.0",
+    "nodemon": "^2.0.7"
+  }
+}
