@@ -38,13 +38,13 @@ spec:
           - name: KOTO_DB_NAME
             value: koto-message-hub-1
           - name: KOTO_S3_ENDPOINT
-            value: <MINIO-ENDPOINT>
+            value: <S3-ENDPOINT>
           - name: KOTO_S3_KEY
-            value: "minioadmin"
+            value: <S3-KEY>
           - name: KOTO_S3_SECRET
-            value: "<SECRET>"
+            value: "<S3-SECRET>"
           - name: KOTO_S3_BUCKET
-            value: koto-message-hub-1
+            value: peacenik
 ---
 apiVersion: v1
 kind: Service

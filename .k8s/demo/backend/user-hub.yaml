@@ -78,11 +78,11 @@ spec:
           - name: KOTO_DB_NAME
             value: koto-user-hub
           - name: KOTO_S3_ENDPOINT
-            value: <MINIO-ENDPOINT>
+            value: "<S3-ENDPOINT>"
           - name: KOTO_S3_KEY
-            value: "minioadmin"
+            value: "<S3-KEY>"
           - name: KOTO_S3_SECRET
-            value: "<SECRET>"
+            value: "<S3-SECRET>"
           - name: KOTO_S3_BUCKET
             value: koto-user-hub-staging
           - name: KOTO_SMTP_HOST

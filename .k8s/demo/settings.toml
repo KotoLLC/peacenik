@@ -1,0 +1,16 @@
+# Required
+
+domain = "dynakube.com"
+universal_secret = "foobarbuzz"
+s3_endpoint = "fff"
+s3_key = "fff"
+s3_secret = "fff"
+
+# Optional if u want email
+
+smtp_host = "smtp.dummy.org"
+smtp_user = "dummy"
+smtp_password = "dummy"
+smtp_port = "587"
+smtp_email = "dummy@dummy.org"
+

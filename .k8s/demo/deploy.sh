@@ -60,8 +60,6 @@ find ./ -type f -name "*.yaml" -exec sed -i '' "s|<MESSAGE-HUB-ADDRESS>|https://
 find ./ -type f -name "*.yaml" -exec sed -i '' "s|<MESSAGE-HUB-NO-PROTOCOL-ADDRESS>|${messagehub}|g" {} \;
 find ./ -type f -name "*.yaml" -exec sed -i '' "s|<USER-HUB-ADDRESS>|https://${userhub}|g" {} \;
 find ./ -type f -name "*.yaml" -exec sed -i '' "s|<USER-HUB-NO-PROTOCOL-ADDRESS>|${userhub}|g" {} \;
-find ./ -type f -name "*.yaml" -exec sed -i '' "s|<MINIO-ENDPOINT>|https://${minio}|g" {} \;
-find ./ -type f -name "*.yaml" -exec sed -i '' "s|<MINIO-ENDPOINT-NO-PROTOCOL-ADDRESS>|${minio}|g" {} \;
 find ./ -type f -name "*.yaml" -exec sed -i '' "s|<FRONTEND-ADDRESS>|https://${frontend}|g" {} \;
 find ./ -type f -name "*.yaml" -exec sed -i '' "s|<FRONTEND-NO-PROTOCOL-ADDRESS>|${frontend}|g" {} \;
 find ./ -type f -name "*.yaml" -exec sed -i '' "s|<SMTP-HOST>|${smtphost}|g" {} \;
