@@ -11,7 +11,6 @@ spec:
   - hosts:
     - "<USER-HUB-NO-PROTOCOL-ADDRESS>"
     - "<MESSAGE-HUB-NO-PROTOCOL-ADDRESS>"
-    - "<MINIO-ENDPOINT-NO-PROTOCOL-ADDRESS>"
     secretName: koto-tls-backend
   rules:
   - host: <USER-HUB-NO-PROTOCOL-ADDRESS>
@@ -34,13 +33,3 @@ spec:
             name: message-hub-service
             port: 
               number: 12002
-  - host: <MINIO-ENDPOINT-NO-PROTOCOL-ADDRESS>
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: message-hub-service
-            port:
-              number: 80
