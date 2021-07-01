@@ -67,7 +67,7 @@ print(colored("Waiting for an IP address",'green'))
 ip = ""
 while ip == "":
   ip = str(subprocess.check_output('kubectl get svc nginx-ingress-ingress-nginx-controller --template="{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}"', shell=True),encoding)
-ready = input(colored("Now point A record + wildcard record for " + domain + " to " + ip + " and hit enter",'green'))
+ready = input(colored("Point an A record + wildcard record for " + domain + " to " + ip + " and hit enter",'green'))
 
 print(colored("Replacing values in deployment files",'green'))
 d = { 
@@ -110,7 +110,7 @@ time.sleep(1)
 subprocess.call('kubectl apply -f cert-manager/',shell=True,stdout=subprocess.PIPE)
 time.sleep(1)
 
-print(colored("Waiting pods to be ready",'green'))
+print(colored("Waiting for pods to be ready",'green'))
 all_pods_returned = "False"
 while all_pods_returned.find("False") != -1:
     backend_returned = str(subprocess.check_output("kubectl get pods  -o 'jsonpath={..status.conditions[?(@.type==\"Ready\")].status}' -n backend",shell=True),encoding)
@@ -153,12 +153,18 @@ make_request("users." + domain,"rpc.MessageHubService/Register",payload,1)
 print(colored("Getting postgres pod name",'green'))
 postgres_pod = ""
 while postgres_pod == "":
-  postgres_pod = subprocess.check_output('kubectl get pods -l app=db-user-hub-service -n backend -o custom-columns=:metadata.name', shell=True)
+  postgres_pod = str(subprocess.check_output('kubectl get pods -l app=db-user-hub-service -n backend -o custom-columns=:metadata.name', shell=True),encoding)
+
+print(colored("Setting up postgres tunnel",'green'))
+postgres_pod = postgres_pod.strip()
+command = 'kubectl port-forward ' + postgres_pod + ' 5432:5432 -n backend'
+subprocess.Popen(command,shell=True,stdout=subprocess.PIPE)
+time.sleep(4)
 
 # Confirm message hub, new users, make them friends
 try:
     connection = psycopg2.connect(user="postgres",
-                                  password=secret,
+                                  password=universal_secret,
                                   host="127.0.0.1",
                                   port="5432",
                                   database="koto-user-hub")
@@ -178,21 +184,18 @@ try:
     connection.commit()
 
     print(colored("Creating friendships for all users via direct SQL",'green'))
-    print("getting users")
     sql_query = """select id from users"""
     cursor.execute(sql_query)
     users = cursor.fetchall()
     users_again = users[:]
 
     # make all the users friends with one another
-    print("making friends")
     for user in users:
         for user_again in users_again:
             if user_again[0] != user[0]:
                 sql_insert_query = """insert into friends(user_id,friend_id) values(%s,%s)"""
-                print(user[0] + " " + user_again[0])
                 cursor.execute(sql_insert_query, (user[0], user_again[0],))
-                time.sleep(1)
+                time.sleep(.5)
                 connection.commit()
 
 except (Exception, psycopg2.Error) as error:
