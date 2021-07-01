@@ -15,7 +15,18 @@ from datetime import datetime, timezone
 # some setup
 
 dt = datetime.now(timezone.utc)
-toml.load("settings.toml")
+encoding = 'utf-8'
+settings = toml.load("settings.toml")
+domain = settings['domain']
+universal_secret = settings['universal_secret']
+s3_endpoint = settings['s3_endpoint']
+s3_key = settings['s3_key']
+s3_secret = settings['s3_secret']
+smtp_host = settings['smtp_host']
+smtp_user = settings['smtp_user']
+smtp_password = settings['smtp_password']
+smtp_port = settings['smtp_port']
+smtp_email = settings['smtp_email']
 
 # These functions are for making requests to create users and such
 
@@ -41,7 +52,7 @@ def make_request(domain,service,raw_payload,cookies=0):
 # This function is used by the yaml replacements
 
 def replace_all(text, dic):
-    for i, j in dic.iteritems():
+    for i, j in dic.items():
         text = text.replace(i, j)
     return text
 
@@ -55,7 +66,7 @@ subprocess.call('helm upgrade --install nginx-ingress ingress-nginx/ingress-ngin
 print(colored("Waiting for an IP address",'green'))
 ip = ""
 while ip == "":
-  ip = subprocess.check_output('kubectl get svc nginx-ingress-ingress-nginx-controller --template="{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}"', shell=True)
+  ip = str(subprocess.check_output('kubectl get svc nginx-ingress-ingress-nginx-controller --template="{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}"', shell=True),encoding)
 ready = input(colored("Now point A record + wildcard record for " + domain + " to " + ip + " and hit enter",'green'))
 
 print(colored("Replacing values in deployment files",'green'))
@@ -87,23 +98,23 @@ for r in result:
 
 print(colored("Deploying Peacenik to k8s",'green'))
 subprocess.call('kubectl apply -f namespaces/',shell=True,stdout=subprocess.PIPE)
-sleep(1)
+time.sleep(1)
 subprocess.call('kubectl create secret generic user-hub-key --from-literal=password="' + universal_secret + '" -n backend',shell=True,stdout=subprocess.PIPE)
-sleep(1)
+time.sleep(1)
 subprocess.call('kubectl apply -f backend/',shell=True,stdout=subprocess.PIPE)
-sleep(1)
+time.sleep(1)
 subprocess.call('kubectl apply -f frontend/',shell=True,stdout=subprocess.PIPE)
-sleep(1)
+time.sleep(1)
 subprocess.call('kubectl apply -f ingress/',shell=True,stdout=subprocess.PIPE)
-sleep(1)
+time.sleep(1)
 subprocess.call('kubectl apply -f cert-manager/',shell=True,stdout=subprocess.PIPE)
-sleep(1)
+time.sleep(1)
 
 print(colored("Waiting pods to be ready",'green'))
 all_pods_returned = "False"
 while all_pods_returned.find("False") != -1:
-    backend_returned = subprocess.check_output("kubectl get pods  -o 'jsonpath={..status.conditions[?(@.type==\"Ready\")].status}' -n backend",shell=True)
-    frontend_returned = subprocess.check_output("kubectl get pods  -o 'jsonpath={..status.conditions[?(@.type==\"Ready\")].status}' -n frontend",shell=True)
+    backend_returned = str(subprocess.check_output("kubectl get pods  -o 'jsonpath={..status.conditions[?(@.type==\"Ready\")].status}' -n backend",shell=True),encoding)
+    frontend_returned = str(subprocess.check_output("kubectl get pods  -o 'jsonpath={..status.conditions[?(@.type==\"Ready\")].status}' -n frontend",shell=True),encoding)
     all_pods_returned =  backend_returned + " " + frontend_returned
 
 print(colored("Registering admin user",'green'))
