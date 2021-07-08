@@ -1,22 +1,70 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react'
 import Graph from 'react-graph-vis'
 
+interface iGraphNode {
+  id: String,
+  label: String,
+  font?: String,
+  title?: String,
+  color?: String
+}
+
+interface iGraphEdge {
+  from: String,
+  to: String,
+  label?: String
+}
+
+interface iGraph {
+  nodes: iGraphNode[],
+  edges: iGraphEdge[]
+}
+
 function NetworkGraph() {
-  const graph = {
-    nodes: [
-      { id: 1, label: "Node 1", title: "node 1 tootip text" },
-      { id: 2, label: "Node 2", title: "node 2 tootip text" },
-      { id: 3, label: "Node 3", title: "node 3 tootip text" },
-      { id: 4, label: "Node 4", title: "node 4 tootip text" },
-      { id: 5, label: "Node 5", title: "node 5 tootip text" }
-    ],
-    edges: [
-      { from: 1, to: 2 },
-      { from: 1, to: 3 },
-      { from: 2, to: 4 },
-      { from: 2, to: 5 }
-    ]
-  };
+  const [graph, setGraph] = useState<iGraph>({
+    nodes: [],
+    edges: []
+  })
+
+  useEffect(() => {
+    async function fetchMyAPI() {
+      const response = await fetch("http://localhost:8080/hubs-with-users");
+
+      if (response.ok) {
+        const data = await response.json();
+        let edges: iGraphEdge[] = []
+        data.hubs.forEach(hub => {
+          hub.users.forEach(user => {
+            edges.push({
+              from: "hub_" + hub.hub,
+              to: "user_" + user.id
+            })
+          });
+        });
+        setGraph({
+          nodes: [...data.users.map(item => {
+            return {
+              id: "user_" + item?.id,
+              label: "User: " + item?.full_name,
+              font: {color:'white'},
+              color: item.hide_identity? "red" : "blue"
+            }
+          }), ...data.hubs.map(item => {
+            return {
+              id: "hub_" + item?.hub,
+              label: "Hub: " + item?.hub,
+              font: {color:'white'},
+              color: "green"
+            }
+          })],
+          edges
+        })
+      } else {
+        console.log("response error: ", response)
+      }
+    }
+    fetchMyAPI()
+  }, [])
 
   const options = {
     layout: {
@@ -25,7 +73,7 @@ function NetworkGraph() {
     edges: {
       color: "#000000"
     },
-    height: "500px"
+    height: "1500px"
   };
 
   const events = {

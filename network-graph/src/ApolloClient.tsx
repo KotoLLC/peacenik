@@ -4,11 +4,13 @@ import {
   NormalizedCacheObject,
 } from '@apollo/client'
 
-const cache = new InMemoryCache()
+const dbs = process.env.DATABASE?.split(" ")
 
-const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({
-  cache,
-  uri: 'http://localhost:8080/graphql',
-})
+const clients: ApolloClient<NormalizedCacheObject>[] = dbs ? dbs.map(db =>
+  new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: `http://localhost:8080/${db}/graphql`,
+  }) 
+) : []
 
-export default client
+export default clients
