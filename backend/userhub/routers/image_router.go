@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 
 	"github.com/mreider/koto/backend/common"
 	"github.com/mreider/koto/backend/userhub/caches"

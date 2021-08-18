@@ -12,8 +12,8 @@ import (
 
 	"github.com/ansel1/merry"
 	"github.com/appleboy/go-fcm"
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/gorilla/sessions"
 	"github.com/twitchtv/twirp"
@@ -139,7 +139,7 @@ func (s *Server) Run() error {
 
 	tokenService := services.NewToken(baseService, s.tokenGenerator, s.cfg.TokenDuration())
 	tokenServiceHandler := rpc.NewTokenServiceServer(tokenService, rpcOptions...)
-	r.Handle(tokenServiceHandler.PathPrefix()+"*", s.checkAuth(tokenServiceHandler))
+	r.Handle(tokenServiceHandler.PathPrefix()+"*", s.checkAuth(tokenServiceHandler, "/rpc.TokenService/GetPublicMessages"))
 
 	userService := services.NewUser(baseService, passwordHash)
 	userServiceHandler := rpc.NewUserServiceServer(userService, rpcOptions...)
@@ -223,8 +223,15 @@ func (s *Server) findSessionUser(next http.Handler) http.Handler {
 	})
 }
 
-func (s *Server) checkAuth(next http.Handler) http.Handler {
+func (s *Server) checkAuth(next http.Handler, skipCheckPaths ...string) http.Handler {
 	return s.findSessionUser(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		for _, p := range skipCheckPaths {
+			if p == r.URL.Path {
+				next.ServeHTTP(w, r)
+				return
+			}
+		}
+
 		// TODO: remove
 		if r.URL.Path == "/rpc.UserService/RegisterFCMToken" {
 			requestDump, err := httputil.DumpRequest(r, true)

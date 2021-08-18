@@ -14,18 +14,18 @@ import (
 	"github.com/mreider/koto/backend/userhub/rpc"
 )
 
-type tokenService struct {
-	*BaseService
-	tokenGenerator token.Generator
-	tokenDuration  time.Duration
-}
-
 func NewToken(base *BaseService, tokenGenerator token.Generator, tokenDuration time.Duration) rpc.TokenService {
 	return &tokenService{
 		BaseService:    base,
 		tokenGenerator: tokenGenerator,
 		tokenDuration:  tokenDuration,
 	}
+}
+
+type tokenService struct {
+	*BaseService
+	tokenGenerator token.Generator
+	tokenDuration  time.Duration
 }
 
 func (s *tokenService) Auth(ctx context.Context, _ *rpc.Empty) (*rpc.TokenAuthResponse, error) {
@@ -233,6 +233,40 @@ Loop:
 		tokens[hubAddress] = hubToken
 	}
 	return &rpc.TokenGetMessagesResponse{
+		Tokens: tokens,
+	}, nil
+}
+
+func (s *tokenService) GetPublicMessages(ctx context.Context, r *rpc.TokenGetPublicMessagesRequest) (*rpc.TokenGetPublicMessagesResponse, error) {
+	meID := ""
+	if s.hasMe(ctx) {
+		me := s.getMe(ctx)
+		meID = me.ID
+	}
+
+	if r.UserId == "" {
+		return nil, twirp.NewError(twirp.InvalidArgument, "user_id shouldn't be empty")
+	}
+
+	tokens := make(map[string]string)
+	exp := time.Now().Add(s.tokenDuration)
+
+	userIDs := []string{r.UserId}
+	userHubs := s.repos.MessageHubs.UserHubs(userIDs)
+
+	for hubAddress := range userHubs {
+		claims := map[string]interface{}{
+			"user": r.UserId,
+			"hub":  hubAddress,
+		}
+
+		hubToken, err := s.tokenGenerator.Generate(meID, "get-public-messages", exp, claims)
+		if err != nil {
+			return nil, merry.Wrap(err)
+		}
+		tokens[hubAddress] = hubToken
+	}
+	return &rpc.TokenGetPublicMessagesResponse{
 		Tokens: tokens,
 	}, nil
 }

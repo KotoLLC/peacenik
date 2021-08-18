@@ -32,6 +32,7 @@ type Message struct {
 	GroupID               sql.NullString `json:"group_id" db:"group_id"`
 	IsGuest               bool           `json:"is_guest" db:"is_guest"`
 	FriendID              sql.NullString `json:"friend_id" db:"friend_id"`
+	IsPublic              bool           `json:"is_public" db:"is_public"`
 }
 
 type MessageLike struct {
@@ -64,9 +65,11 @@ type Counts struct {
 
 type MessageRepo interface {
 	Messages(currentUserID string, userIDs []string, from time.Time, count int) []Message
+	PublicMessages(userID string, from time.Time, count int) []Message
 	GroupMessages(currentUserID, groupID string, from time.Time, count int) []Message
 	DirectMessages(currentUserID, friendID string, from time.Time, count int) []Message
 	Message(currentUserID string, messageID string) *Message
+	PublicMessage(messageID string) *Message
 	AddMessage(parentID string, message Message)
 	EditMessageText(userID, messageID, text string, updatedAt time.Time) bool
 	EditMessageAttachment(userID, messageID, attachmentID, attachmentType, attachmentThumbnailID string, updatedAt time.Time) bool
@@ -116,7 +119,7 @@ func (r *messageRepo) Messages(currentUserID string, userIDs []string, from time
 	var messages []Message
 	query, args, err := sqlx.In(`
 			select m.id, m.parent_id, m.user_id, m.text,
-			       m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at, m.group_id, m.friend_id,
+			       m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at, m.group_id, m.friend_id, m.is_public,
 				   (select count(*) from message_likes where message_id = m.id) likes,
 				   case when exists(select * from message_likes where message_id = m.id and user_id = ?) then true else false end liked_by_me
 			from messages m
@@ -140,6 +143,35 @@ func (r *messageRepo) Messages(currentUserID string, userIDs []string, from time
 	return messages
 }
 
+func (r *messageRepo) PublicMessages(userID string, from time.Time, count int) []Message {
+	if from.IsZero() {
+		from = maxTimestamp
+	}
+	if count <= 0 {
+		count = defaultMessageCount
+	}
+
+	var messages []Message
+	err := r.db.Select(&messages, `
+		select m.id, m.parent_id, m.user_id, m.text,
+			   m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at, m.group_id, m.friend_id, m.is_public,
+			   (select count(*) from message_likes where message_id = m.id) likes
+		from messages m
+		where m.user_id = $1 and m.parent_id is null
+		  	and m.is_public = true
+			and m.group_id is null
+			and m.friend_id is null
+			and m.created_at < $2
+			and m.deleted_at is null
+		order by m.created_at desc, m.id
+		limit $3;`,
+		userID, from, count)
+	if err != nil {
+		panic(err)
+	}
+	return messages
+}
+
 func (r *messageRepo) GroupMessages(currentUserID, groupID string, from time.Time, count int) []Message {
 	if from.IsZero() {
 		from = maxTimestamp
@@ -151,7 +183,7 @@ func (r *messageRepo) GroupMessages(currentUserID, groupID string, from time.Tim
 	var messages []Message
 	err := r.db.Select(&messages, `
 		select m.id, m.parent_id, m.user_id, m.text,
-			   m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at, m.group_id, m.friend_id,
+			   m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at, m.group_id, m.friend_id, m.is_public,
 			   (select count(*) from message_likes where message_id = m.id) likes,
 			   case when exists(select * from message_likes where message_id = m.id and user_id = $1) then true else false end liked_by_me
 		from messages m
@@ -179,7 +211,7 @@ func (r *messageRepo) DirectMessages(userID1, userID2 string, from time.Time, co
 	var messages []Message
 	err := r.db.Select(&messages, `
 		select m.id, m.parent_id, m.user_id, m.text,
-			   m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at, m.group_id, m.friend_id,
+			   m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at, m.group_id, m.friend_id, m.is_public,
 			   (select count(*) from message_likes where message_id = m.id) likes,
 			   case when exists(select * from message_likes where message_id = m.id and user_id = $1) then true else false end liked_by_me
 		from messages m
@@ -201,7 +233,7 @@ func (r *messageRepo) Message(currentUserID string, messageID string) *Message {
 	var message Message
 	err := r.db.Get(&message, `
 		select m.id, m.parent_id, m.user_id, m.text,
-			   m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at, m.group_id, m.friend_id,
+			   m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at, m.group_id, m.friend_id, m.is_public,
 			   (select count(*) from message_likes where message_id = m.id) likes,
 			   case when exists(select * from message_likes where message_id = m.id and user_id = $1) then true else false end liked_by_me
 		from messages m
@@ -216,15 +248,33 @@ func (r *messageRepo) Message(currentUserID string, messageID string) *Message {
 	return &message
 }
 
+func (r *messageRepo) PublicMessage(messageID string) *Message {
+	var message Message
+	err := r.db.Get(&message, `
+		select m.id, m.parent_id, m.user_id, m.text,
+			   m.attachment_id, m.attachment_type, m.attachment_thumbnail_id, m.created_at, m.updated_at, m.group_id, m.friend_id, m.is_public,
+			   (select count(*) from message_likes where message_id = m.id) likes
+		from messages m
+		where m.id = $1 and m.is_public = true`,
+		messageID)
+	if err != nil {
+		if merry.Is(err, sql.ErrNoRows) {
+			return nil
+		}
+		panic(err)
+	}
+	return &message
+}
+
 func (r *messageRepo) AddMessage(parentID string, message Message) {
 	_, err := r.db.Exec(`
-		insert into messages(id, parent_id, user_id, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at, group_id, is_guest, friend_id)
-		select $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
+		insert into messages(id, parent_id, user_id, text, attachment_id, attachment_type, attachment_thumbnail_id, created_at, updated_at, group_id, is_guest, friend_id, is_public)
+		select $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
 		where not exists(select * from messages where id = $1)`,
 		message.ID, sql.NullString{String: parentID, Valid: parentID != ""},
 		message.UserID,
 		message.Text, message.AttachmentID, message.AttachmentType, message.AttachmentThumbnailID,
-		message.CreatedAt, message.UpdatedAt, message.GroupID, message.IsGuest, message.FriendID)
+		message.CreatedAt, message.UpdatedAt, message.GroupID, message.IsGuest, message.FriendID, message.IsPublic)
 	if err != nil {
 		panic(err)
 	}

@@ -169,13 +169,7 @@ func TestAuthService_Login(t *testing.T) {
 		User: repo.NewUsers(te.db),
 	}
 	repos.User.AddUser("1", "user1", "user1@mail.org", "user 1", "password1-hash", false)
-	func() {
-		defer func() {
-			r := recover()
-			assert.Contains(t, r.(error).Error(), `duplicate key value violates unique constraint`)
-		}()
-		repos.User.AddUser("11", "User1", "User1@mail.org", "User 1", "password11-hash", false)
-	}()
+	repos.User.AddUser("11", "User1", "User1@mail.org", "User 1", "password11-hash", false)
 	repos.User.AddUser("2", "User2", "User2@mail.org", "User 2", "pass2-hash", false)
 
 	userCache := caches.NewUsers(te.db)

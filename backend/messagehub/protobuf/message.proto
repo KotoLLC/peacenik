@@ -8,6 +8,8 @@ import "model.proto";
 service MessageService {
   rpc Messages (MessageMessagesRequest) returns (MessageMessagesResponse);
   rpc Message (MessageMessageRequest) returns (MessageMessageResponse);
+  rpc PublicMessages (MessagePublicMessagesRequest) returns (MessagePublicMessagesResponse);
+  rpc PublicMessage (MessagePublicMessageRequest) returns (MessagePublicMessageResponse);
   rpc Post (MessagePostRequest) returns (MessagePostResponse);
   rpc Edit (MessageEditRequest) returns (MessageEditResponse);
   rpc Delete (MessageDeleteRequest) returns (Empty);
@@ -51,10 +53,30 @@ message MessageMessageResponse {
   Message message = 1;
 }
 
+message MessagePublicMessagesRequest {
+  string token = 1;
+  string from = 2;
+  int32 count = 3;
+}
+
+message MessagePublicMessagesResponse {
+  repeated Message messages = 1;
+}
+
+message MessagePublicMessageRequest {
+  string token = 1;
+  string message_id = 2;
+}
+
+message MessagePublicMessageResponse {
+  Message message = 1;
+}
+
 message MessagePostRequest {
   string token = 1;
   string text = 2;
   string attachment_id = 3;
+  bool is_public = 4;
 }
 
 message MessagePostResponse {
