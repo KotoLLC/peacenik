@@ -9,6 +9,7 @@ service TokenService {
     rpc Auth (Empty) returns (TokenAuthResponse);
     rpc PostMessage (TokenPostMessageRequest) returns (TokenPostMessageResponse);
     rpc GetMessages (Empty) returns (TokenGetMessagesResponse);
+    rpc GetPublicMessages (TokenGetPublicMessagesRequest) returns (TokenGetPublicMessagesResponse);
 }
 
 message TokenAuthResponse {
@@ -29,3 +30,10 @@ message TokenGetMessagesResponse {
     map<string, string> tokens = 1;
 }
 
+message TokenGetPublicMessagesRequest {
+    string user_id = 1;
+}
+
+message TokenGetPublicMessagesResponse {
+    map<string, string> tokens = 1;
+}

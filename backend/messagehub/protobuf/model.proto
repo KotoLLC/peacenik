@@ -32,6 +32,7 @@ message Message {
   repeated MessageLike liked_by = 14;
 
   bool is_read = 15;
+  bool is_public = 16;
 }
 
 message Notification {

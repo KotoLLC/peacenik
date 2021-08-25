@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: message-hub
+  namespace: backend
+spec:
+  selector:
+    matchLabels:
+      app: message-hub
+  template:
+    metadata:
+      labels:
+        app: message-hub
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+      - name: message-hub
+        image: ghcr.io/kotollc/koto/messagehub:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 12002
+        env:
+          - name: KOTO_ADDRESS
+            value: ":12002"
+          - name: KOTO_EXTERNAL_ADDRESS
+            value: <MESSAGE-HUB-ADDRESS>
+          - name: KOTO_USER_HUB_ADDRESS
+            value: <USER-HUB-ADDRESS>
+          - name: KOTO_DB_HOST
+            value: db-message-hub-service.backend
+          - name: KOTO_DB_SSL_MODE
+            value: disable
+          - name: KOTO_DB_USER
+            value: postgres
+          - name: KOTO_DB_PASSWORD
+            value: "<SECRET>"
+          - name: KOTO_DB_NAME
+            value: koto-message-hub-1
+          - name: KOTO_S3_ENDPOINT
+            value: <S3-ENDPOINT>
+          - name: KOTO_S3_KEY
+            value: <S3-KEY>
+          - name: KOTO_S3_SECRET
+            value: "<S3-SECRET>"
+          - name: KOTO_S3_BUCKET
+            value: peacenik
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: message-hub-service
+  namespace: backend
+spec:
+  type: ClusterIP
+  selector:
+    app: message-hub
+  ports:
+  - name: http
+    port: 12002

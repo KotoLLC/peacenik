@@ -31,6 +31,10 @@ type MessageService interface {
 
 	Message(context.Context, *MessageMessageRequest) (*MessageMessageResponse, error)
 
+	PublicMessages(context.Context, *MessagePublicMessagesRequest) (*MessagePublicMessagesResponse, error)
+
+	PublicMessage(context.Context, *MessagePublicMessageRequest) (*MessagePublicMessageResponse, error)
+
 	Post(context.Context, *MessagePostRequest) (*MessagePostResponse, error)
 
 	Edit(context.Context, *MessageEditRequest) (*MessageEditResponse, error)
@@ -78,7 +82,7 @@ type MessageService interface {
 
 type messageServiceProtobufClient struct {
 	client      HTTPClient
-	urls        [22]string
+	urls        [24]string
 	interceptor twirp.Interceptor
 	opts        twirp.ClientOptions
 }
@@ -98,9 +102,11 @@ func NewMessageServiceProtobufClient(baseURL string, client HTTPClient, opts ...
 	// Build method URLs: <baseURL>[<prefix>]/<package>.<Service>/<Method>
 	serviceURL := sanitizeBaseURL(baseURL)
 	serviceURL += baseServicePath(clientOpts.PathPrefix(), "rpc", "MessageService")
-	urls := [22]string{
+	urls := [24]string{
 		serviceURL + "Messages",
 		serviceURL + "Message",
+		serviceURL + "PublicMessages",
+		serviceURL + "PublicMessage",
 		serviceURL + "Post",
 		serviceURL + "Edit",
 		serviceURL + "Delete",
@@ -223,6 +229,98 @@ func (c *messageServiceProtobufClient) callMessage(ctx context.Context, in *Mess
 	return out, nil
 }
 
+func (c *messageServiceProtobufClient) PublicMessages(ctx context.Context, in *MessagePublicMessagesRequest) (*MessagePublicMessagesResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "MessageService")
+	ctx = ctxsetters.WithMethodName(ctx, "PublicMessages")
+	caller := c.callPublicMessages
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *MessagePublicMessagesRequest) (*MessagePublicMessagesResponse, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*MessagePublicMessagesRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*MessagePublicMessagesRequest) when calling interceptor")
+					}
+					return c.callPublicMessages(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*MessagePublicMessagesResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*MessagePublicMessagesResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *messageServiceProtobufClient) callPublicMessages(ctx context.Context, in *MessagePublicMessagesRequest) (*MessagePublicMessagesResponse, error) {
+	out := new(MessagePublicMessagesResponse)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[2], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *messageServiceProtobufClient) PublicMessage(ctx context.Context, in *MessagePublicMessageRequest) (*MessagePublicMessageResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "MessageService")
+	ctx = ctxsetters.WithMethodName(ctx, "PublicMessage")
+	caller := c.callPublicMessage
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *MessagePublicMessageRequest) (*MessagePublicMessageResponse, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*MessagePublicMessageRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*MessagePublicMessageRequest) when calling interceptor")
+					}
+					return c.callPublicMessage(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*MessagePublicMessageResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*MessagePublicMessageResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *messageServiceProtobufClient) callPublicMessage(ctx context.Context, in *MessagePublicMessageRequest) (*MessagePublicMessageResponse, error) {
+	out := new(MessagePublicMessageResponse)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[3], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
 func (c *messageServiceProtobufClient) Post(ctx context.Context, in *MessagePostRequest) (*MessagePostResponse, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "rpc")
 	ctx = ctxsetters.WithServiceName(ctx, "MessageService")
@@ -254,7 +352,7 @@ func (c *messageServiceProtobufClient) Post(ctx context.Context, in *MessagePost
 
 func (c *messageServiceProtobufClient) callPost(ctx context.Context, in *MessagePostRequest) (*MessagePostResponse, error) {
 	out := new(MessagePostResponse)
-	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[2], in, out)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[4], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -300,7 +398,7 @@ func (c *messageServiceProtobufClient) Edit(ctx context.Context, in *MessageEdit
 
 func (c *messageServiceProtobufClient) callEdit(ctx context.Context, in *MessageEditRequest) (*MessageEditResponse, error) {
 	out := new(MessageEditResponse)
-	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[3], in, out)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[5], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -346,7 +444,7 @@ func (c *messageServiceProtobufClient) Delete(ctx context.Context, in *MessageDe
 
 func (c *messageServiceProtobufClient) callDelete(ctx context.Context, in *MessageDeleteRequest) (*Empty, error) {
 	out := new(Empty)
-	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[4], in, out)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[6], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -392,7 +490,7 @@ func (c *messageServiceProtobufClient) PostComment(ctx context.Context, in *Mess
 
 func (c *messageServiceProtobufClient) callPostComment(ctx context.Context, in *MessagePostCommentRequest) (*MessagePostCommentResponse, error) {
 	out := new(MessagePostCommentResponse)
-	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[5], in, out)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[7], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -438,7 +536,7 @@ func (c *messageServiceProtobufClient) EditComment(ctx context.Context, in *Mess
 
 func (c *messageServiceProtobufClient) callEditComment(ctx context.Context, in *MessageEditCommentRequest) (*MessageEditCommentResponse, error) {
 	out := new(MessageEditCommentResponse)
-	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[6], in, out)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[8], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -484,7 +582,7 @@ func (c *messageServiceProtobufClient) DeleteComment(ctx context.Context, in *Me
 
 func (c *messageServiceProtobufClient) callDeleteComment(ctx context.Context, in *MessageDeleteCommentRequest) (*Empty, error) {
 	out := new(Empty)
-	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[7], in, out)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[9], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -530,7 +628,7 @@ func (c *messageServiceProtobufClient) LikeMessage(ctx context.Context, in *Mess
 
 func (c *messageServiceProtobufClient) callLikeMessage(ctx context.Context, in *MessageLikeMessageRequest) (*MessageLikeMessageResponse, error) {
 	out := new(MessageLikeMessageResponse)
-	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[8], in, out)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[10], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -576,7 +674,7 @@ func (c *messageServiceProtobufClient) LikeComment(ctx context.Context, in *Mess
 
 func (c *messageServiceProtobufClient) callLikeComment(ctx context.Context, in *MessageLikeCommentRequest) (*MessageLikeCommentResponse, error) {
 	out := new(MessageLikeCommentResponse)
-	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[9], in, out)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[11], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -622,7 +720,7 @@ func (c *messageServiceProtobufClient) MessageLikes(ctx context.Context, in *Mes
 
 func (c *messageServiceProtobufClient) callMessageLikes(ctx context.Context, in *MessageMessageLikesRequest) (*MessageMessageLikesResponse, error) {
 	out := new(MessageMessageLikesResponse)
-	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[10], in, out)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[12], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -668,7 +766,7 @@ func (c *messageServiceProtobufClient) CommentLikes(ctx context.Context, in *Mes
 
 func (c *messageServiceProtobufClient) callCommentLikes(ctx context.Context, in *MessageCommentLikesRequest) (*MessageCommentLikesResponse, error) {
 	out := new(MessageCommentLikesResponse)
-	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[11], in, out)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[13], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -714,7 +812,7 @@ func (c *messageServiceProtobufClient) SetMessageVisibility(ctx context.Context,
 
 func (c *messageServiceProtobufClient) callSetMessageVisibility(ctx context.Context, in *MessageSetMessageVisibilityRequest) (*Empty, error) {
 	out := new(Empty)
-	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[12], in, out)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[14], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -760,7 +858,7 @@ func (c *messageServiceProtobufClient) SetCommentVisibility(ctx context.Context,
 
 func (c *messageServiceProtobufClient) callSetCommentVisibility(ctx context.Context, in *MessageSetCommentVisibilityRequest) (*Empty, error) {
 	out := new(Empty)
-	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[13], in, out)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[15], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -806,7 +904,7 @@ func (c *messageServiceProtobufClient) ReportMessage(ctx context.Context, in *Me
 
 func (c *messageServiceProtobufClient) callReportMessage(ctx context.Context, in *MessageReportMessageRequest) (*MessageReportMessageResponse, error) {
 	out := new(MessageReportMessageResponse)
-	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[14], in, out)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[16], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -852,7 +950,7 @@ func (c *messageServiceProtobufClient) MessageReport(ctx context.Context, in *Me
 
 func (c *messageServiceProtobufClient) callMessageReport(ctx context.Context, in *MessageMessageReportRequest) (*MessageMessageReportResponse, error) {
 	out := new(MessageMessageReportResponse)
-	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[15], in, out)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[17], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -898,7 +996,7 @@ func (c *messageServiceProtobufClient) MessageReports(ctx context.Context, in *E
 
 func (c *messageServiceProtobufClient) callMessageReports(ctx context.Context, in *Empty) (*MessageMessageReportsResponse, error) {
 	out := new(MessageMessageReportsResponse)
-	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[16], in, out)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[18], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -944,7 +1042,7 @@ func (c *messageServiceProtobufClient) DeleteReportedMessage(ctx context.Context
 
 func (c *messageServiceProtobufClient) callDeleteReportedMessage(ctx context.Context, in *MessageDeleteReportedMessageRequest) (*Empty, error) {
 	out := new(Empty)
-	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[17], in, out)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[19], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -990,7 +1088,7 @@ func (c *messageServiceProtobufClient) BlockReportedUser(ctx context.Context, in
 
 func (c *messageServiceProtobufClient) callBlockReportedUser(ctx context.Context, in *MessageBlockReportedUserRequest) (*Empty, error) {
 	out := new(Empty)
-	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[18], in, out)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[20], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -1036,7 +1134,7 @@ func (c *messageServiceProtobufClient) ResolveMessageReport(ctx context.Context,
 
 func (c *messageServiceProtobufClient) callResolveMessageReport(ctx context.Context, in *MessageResolveMessageReportRequest) (*Empty, error) {
 	out := new(Empty)
-	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[19], in, out)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[21], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -1082,7 +1180,7 @@ func (c *messageServiceProtobufClient) MarkRead(ctx context.Context, in *Message
 
 func (c *messageServiceProtobufClient) callMarkRead(ctx context.Context, in *MessageMarkReadRequest) (*Empty, error) {
 	out := new(Empty)
-	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[20], in, out)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[22], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -1128,7 +1226,7 @@ func (c *messageServiceProtobufClient) Counters(ctx context.Context, in *Message
 
 func (c *messageServiceProtobufClient) callCounters(ctx context.Context, in *MessageCountersRequest) (*MessageCountersResponse, error) {
 	out := new(MessageCountersResponse)
-	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[21], in, out)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[23], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -1149,7 +1247,7 @@ func (c *messageServiceProtobufClient) callCounters(ctx context.Context, in *Mes
 
 type messageServiceJSONClient struct {
 	client      HTTPClient
-	urls        [22]string
+	urls        [24]string
 	interceptor twirp.Interceptor
 	opts        twirp.ClientOptions
 }
@@ -1169,9 +1267,11 @@ func NewMessageServiceJSONClient(baseURL string, client HTTPClient, opts ...twir
 	// Build method URLs: <baseURL>[<prefix>]/<package>.<Service>/<Method>
 	serviceURL := sanitizeBaseURL(baseURL)
 	serviceURL += baseServicePath(clientOpts.PathPrefix(), "rpc", "MessageService")
-	urls := [22]string{
+	urls := [24]string{
 		serviceURL + "Messages",
 		serviceURL + "Message",
+		serviceURL + "PublicMessages",
+		serviceURL + "PublicMessage",
 		serviceURL + "Post",
 		serviceURL + "Edit",
 		serviceURL + "Delete",
@@ -1294,6 +1394,98 @@ func (c *messageServiceJSONClient) callMessage(ctx context.Context, in *MessageM
 	return out, nil
 }
 
+func (c *messageServiceJSONClient) PublicMessages(ctx context.Context, in *MessagePublicMessagesRequest) (*MessagePublicMessagesResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "MessageService")
+	ctx = ctxsetters.WithMethodName(ctx, "PublicMessages")
+	caller := c.callPublicMessages
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *MessagePublicMessagesRequest) (*MessagePublicMessagesResponse, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*MessagePublicMessagesRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*MessagePublicMessagesRequest) when calling interceptor")
+					}
+					return c.callPublicMessages(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*MessagePublicMessagesResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*MessagePublicMessagesResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *messageServiceJSONClient) callPublicMessages(ctx context.Context, in *MessagePublicMessagesRequest) (*MessagePublicMessagesResponse, error) {
+	out := new(MessagePublicMessagesResponse)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[2], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *messageServiceJSONClient) PublicMessage(ctx context.Context, in *MessagePublicMessageRequest) (*MessagePublicMessageResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "rpc")
+	ctx = ctxsetters.WithServiceName(ctx, "MessageService")
+	ctx = ctxsetters.WithMethodName(ctx, "PublicMessage")
+	caller := c.callPublicMessage
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *MessagePublicMessageRequest) (*MessagePublicMessageResponse, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*MessagePublicMessageRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*MessagePublicMessageRequest) when calling interceptor")
+					}
+					return c.callPublicMessage(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*MessagePublicMessageResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*MessagePublicMessageResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *messageServiceJSONClient) callPublicMessage(ctx context.Context, in *MessagePublicMessageRequest) (*MessagePublicMessageResponse, error) {
+	out := new(MessagePublicMessageResponse)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[3], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
 func (c *messageServiceJSONClient) Post(ctx context.Context, in *MessagePostRequest) (*MessagePostResponse, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "rpc")
 	ctx = ctxsetters.WithServiceName(ctx, "MessageService")
@@ -1325,7 +1517,7 @@ func (c *messageServiceJSONClient) Post(ctx context.Context, in *MessagePostRequ
 
 func (c *messageServiceJSONClient) callPost(ctx context.Context, in *MessagePostRequest) (*MessagePostResponse, error) {
 	out := new(MessagePostResponse)
-	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[2], in, out)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[4], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -1371,7 +1563,7 @@ func (c *messageServiceJSONClient) Edit(ctx context.Context, in *MessageEditRequ
 
 func (c *messageServiceJSONClient) callEdit(ctx context.Context, in *MessageEditRequest) (*MessageEditResponse, error) {
 	out := new(MessageEditResponse)
-	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[3], in, out)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[5], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -1417,7 +1609,7 @@ func (c *messageServiceJSONClient) Delete(ctx context.Context, in *MessageDelete
 
 func (c *messageServiceJSONClient) callDelete(ctx context.Context, in *MessageDeleteRequest) (*Empty, error) {
 	out := new(Empty)
-	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[4], in, out)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[6], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -1463,7 +1655,7 @@ func (c *messageServiceJSONClient) PostComment(ctx context.Context, in *MessageP
 
 func (c *messageServiceJSONClient) callPostComment(ctx context.Context, in *MessagePostCommentRequest) (*MessagePostCommentResponse, error) {
 	out := new(MessagePostCommentResponse)
-	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[5], in, out)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[7], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -1509,7 +1701,7 @@ func (c *messageServiceJSONClient) EditComment(ctx context.Context, in *MessageE
 
 func (c *messageServiceJSONClient) callEditComment(ctx context.Context, in *MessageEditCommentRequest) (*MessageEditCommentResponse, error) {
 	out := new(MessageEditCommentResponse)
-	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[6], in, out)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[8], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -1555,7 +1747,7 @@ func (c *messageServiceJSONClient) DeleteComment(ctx context.Context, in *Messag
 
 func (c *messageServiceJSONClient) callDeleteComment(ctx context.Context, in *MessageDeleteCommentRequest) (*Empty, error) {
 	out := new(Empty)
-	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[7], in, out)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[9], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -1601,7 +1793,7 @@ func (c *messageServiceJSONClient) LikeMessage(ctx context.Context, in *MessageL
 
 func (c *messageServiceJSONClient) callLikeMessage(ctx context.Context, in *MessageLikeMessageRequest) (*MessageLikeMessageResponse, error) {
 	out := new(MessageLikeMessageResponse)
-	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[8], in, out)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[10], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -1647,7 +1839,7 @@ func (c *messageServiceJSONClient) LikeComment(ctx context.Context, in *MessageL
 
 func (c *messageServiceJSONClient) callLikeComment(ctx context.Context, in *MessageLikeCommentRequest) (*MessageLikeCommentResponse, error) {
 	out := new(MessageLikeCommentResponse)
-	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[9], in, out)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[11], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -1693,7 +1885,7 @@ func (c *messageServiceJSONClient) MessageLikes(ctx context.Context, in *Message
 
 func (c *messageServiceJSONClient) callMessageLikes(ctx context.Context, in *MessageMessageLikesRequest) (*MessageMessageLikesResponse, error) {
 	out := new(MessageMessageLikesResponse)
-	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[10], in, out)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[12], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -1739,7 +1931,7 @@ func (c *messageServiceJSONClient) CommentLikes(ctx context.Context, in *Message
 
 func (c *messageServiceJSONClient) callCommentLikes(ctx context.Context, in *MessageCommentLikesRequest) (*MessageCommentLikesResponse, error) {
 	out := new(MessageCommentLikesResponse)
-	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[11], in, out)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[13], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -1785,7 +1977,7 @@ func (c *messageServiceJSONClient) SetMessageVisibility(ctx context.Context, in 
 
 func (c *messageServiceJSONClient) callSetMessageVisibility(ctx context.Context, in *MessageSetMessageVisibilityRequest) (*Empty, error) {
 	out := new(Empty)
-	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[12], in, out)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[14], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -1831,7 +2023,7 @@ func (c *messageServiceJSONClient) SetCommentVisibility(ctx context.Context, in 
 
 func (c *messageServiceJSONClient) callSetCommentVisibility(ctx context.Context, in *MessageSetCommentVisibilityRequest) (*Empty, error) {
 	out := new(Empty)
-	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[13], in, out)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[15], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -1877,7 +2069,7 @@ func (c *messageServiceJSONClient) ReportMessage(ctx context.Context, in *Messag
 
 func (c *messageServiceJSONClient) callReportMessage(ctx context.Context, in *MessageReportMessageRequest) (*MessageReportMessageResponse, error) {
 	out := new(MessageReportMessageResponse)
-	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[14], in, out)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[16], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -1923,7 +2115,7 @@ func (c *messageServiceJSONClient) MessageReport(ctx context.Context, in *Messag
 
 func (c *messageServiceJSONClient) callMessageReport(ctx context.Context, in *MessageMessageReportRequest) (*MessageMessageReportResponse, error) {
 	out := new(MessageMessageReportResponse)
-	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[15], in, out)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[17], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -1969,7 +2161,7 @@ func (c *messageServiceJSONClient) MessageReports(ctx context.Context, in *Empty
 
 func (c *messageServiceJSONClient) callMessageReports(ctx context.Context, in *Empty) (*MessageMessageReportsResponse, error) {
 	out := new(MessageMessageReportsResponse)
-	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[16], in, out)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[18], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -2015,7 +2207,7 @@ func (c *messageServiceJSONClient) DeleteReportedMessage(ctx context.Context, in
 
 func (c *messageServiceJSONClient) callDeleteReportedMessage(ctx context.Context, in *MessageDeleteReportedMessageRequest) (*Empty, error) {
 	out := new(Empty)
-	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[17], in, out)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[19], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -2061,7 +2253,7 @@ func (c *messageServiceJSONClient) BlockReportedUser(ctx context.Context, in *Me
 
 func (c *messageServiceJSONClient) callBlockReportedUser(ctx context.Context, in *MessageBlockReportedUserRequest) (*Empty, error) {
 	out := new(Empty)
-	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[18], in, out)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[20], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -2107,7 +2299,7 @@ func (c *messageServiceJSONClient) ResolveMessageReport(ctx context.Context, in 
 
 func (c *messageServiceJSONClient) callResolveMessageReport(ctx context.Context, in *MessageResolveMessageReportRequest) (*Empty, error) {
 	out := new(Empty)
-	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[19], in, out)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[21], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -2153,7 +2345,7 @@ func (c *messageServiceJSONClient) MarkRead(ctx context.Context, in *MessageMark
 
 func (c *messageServiceJSONClient) callMarkRead(ctx context.Context, in *MessageMarkReadRequest) (*Empty, error) {
 	out := new(Empty)
-	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[20], in, out)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[22], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -2199,7 +2391,7 @@ func (c *messageServiceJSONClient) Counters(ctx context.Context, in *MessageCoun
 
 func (c *messageServiceJSONClient) callCounters(ctx context.Context, in *MessageCountersRequest) (*MessageCountersResponse, error) {
 	out := new(MessageCountersResponse)
-	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[21], in, out)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[23], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -2316,6 +2508,12 @@ func (s *messageServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 		return
 	case "Message":
 		s.serveMessage(ctx, resp, req)
+		return
+	case "PublicMessages":
+		s.servePublicMessages(ctx, resp, req)
+		return
+	case "PublicMessage":
+		s.servePublicMessage(ctx, resp, req)
 		return
 	case "Post":
 		s.servePost(ctx, resp, req)
@@ -2721,6 +2919,366 @@ func (s *messageServiceServer) serveMessageProtobuf(ctx context.Context, resp ht
 	}
 	if respContent == nil {
 		s.writeError(ctx, resp, twirp.InternalError("received a nil *MessageMessageResponse and nil error while calling Message. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *messageServiceServer) servePublicMessages(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.servePublicMessagesJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.servePublicMessagesProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *messageServiceServer) servePublicMessagesJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "PublicMessages")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	d := json.NewDecoder(req.Body)
+	rawReqBody := json.RawMessage{}
+	if err := d.Decode(&rawReqBody); err != nil {
+		s.handleRequestBodyError(ctx, resp, "the json request could not be decoded", err)
+		return
+	}
+	reqContent := new(MessagePublicMessagesRequest)
+	unmarshaler := protojson.UnmarshalOptions{DiscardUnknown: true}
+	if err = unmarshaler.Unmarshal(rawReqBody, reqContent); err != nil {
+		s.handleRequestBodyError(ctx, resp, "the json request could not be decoded", err)
+		return
+	}
+
+	handler := s.MessageService.PublicMessages
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *MessagePublicMessagesRequest) (*MessagePublicMessagesResponse, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*MessagePublicMessagesRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*MessagePublicMessagesRequest) when calling interceptor")
+					}
+					return s.MessageService.PublicMessages(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*MessagePublicMessagesResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*MessagePublicMessagesResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *MessagePublicMessagesResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *MessagePublicMessagesResponse and nil error while calling PublicMessages. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	marshaler := &protojson.MarshalOptions{UseProtoNames: true, EmitUnpopulated: !s.jsonSkipDefaults}
+	respBytes, err := marshaler.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *messageServiceServer) servePublicMessagesProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "PublicMessages")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.handleRequestBodyError(ctx, resp, "failed to read request body", err)
+		return
+	}
+	reqContent := new(MessagePublicMessagesRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	handler := s.MessageService.PublicMessages
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *MessagePublicMessagesRequest) (*MessagePublicMessagesResponse, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*MessagePublicMessagesRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*MessagePublicMessagesRequest) when calling interceptor")
+					}
+					return s.MessageService.PublicMessages(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*MessagePublicMessagesResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*MessagePublicMessagesResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *MessagePublicMessagesResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *MessagePublicMessagesResponse and nil error while calling PublicMessages. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *messageServiceServer) servePublicMessage(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.servePublicMessageJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.servePublicMessageProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *messageServiceServer) servePublicMessageJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "PublicMessage")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	d := json.NewDecoder(req.Body)
+	rawReqBody := json.RawMessage{}
+	if err := d.Decode(&rawReqBody); err != nil {
+		s.handleRequestBodyError(ctx, resp, "the json request could not be decoded", err)
+		return
+	}
+	reqContent := new(MessagePublicMessageRequest)
+	unmarshaler := protojson.UnmarshalOptions{DiscardUnknown: true}
+	if err = unmarshaler.Unmarshal(rawReqBody, reqContent); err != nil {
+		s.handleRequestBodyError(ctx, resp, "the json request could not be decoded", err)
+		return
+	}
+
+	handler := s.MessageService.PublicMessage
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *MessagePublicMessageRequest) (*MessagePublicMessageResponse, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*MessagePublicMessageRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*MessagePublicMessageRequest) when calling interceptor")
+					}
+					return s.MessageService.PublicMessage(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*MessagePublicMessageResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*MessagePublicMessageResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *MessagePublicMessageResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *MessagePublicMessageResponse and nil error while calling PublicMessage. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	marshaler := &protojson.MarshalOptions{UseProtoNames: true, EmitUnpopulated: !s.jsonSkipDefaults}
+	respBytes, err := marshaler.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *messageServiceServer) servePublicMessageProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "PublicMessage")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.handleRequestBodyError(ctx, resp, "failed to read request body", err)
+		return
+	}
+	reqContent := new(MessagePublicMessageRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	handler := s.MessageService.PublicMessage
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *MessagePublicMessageRequest) (*MessagePublicMessageResponse, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*MessagePublicMessageRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*MessagePublicMessageRequest) when calling interceptor")
+					}
+					return s.MessageService.PublicMessage(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*MessagePublicMessageResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*MessagePublicMessageResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *MessagePublicMessageResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *MessagePublicMessageResponse and nil error while calling PublicMessage. nil responses are not supported"))
 		return
 	}
 
@@ -6360,87 +6918,92 @@ func (s *messageServiceServer) PathPrefix() string {
 }
 
 var twirpFileDescriptor3 = []byte{
-	// 1299 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x58, 0xdd, 0x6e, 0xdb, 0x36,
-	0x14, 0x86, 0xe3, 0x9f, 0x38, 0xc7, 0x71, 0xd2, 0x30, 0x6e, 0xeb, 0xc8, 0x4d, 0xe3, 0xaa, 0xc3,
-	0x16, 0x14, 0x9b, 0x53, 0xa4, 0x18, 0xb0, 0xb6, 0xeb, 0xd0, 0x25, 0x31, 0x06, 0x63, 0x4d, 0xb1,
-	0x69, 0x59, 0x86, 0xed, 0xc6, 0x70, 0x24, 0x36, 0x11, 0xfc, 0x23, 0x4f, 0xa2, 0x83, 0xe5, 0x11,
-	0x76, 0xb7, 0x77, 0xd8, 0x7b, 0xec, 0x6e, 0xb7, 0x7b, 0x89, 0xbd, 0xc8, 0x20, 0x92, 0xa2, 0x48,
-	0x8a, 0x56, 0xec, 0xf5, 0xa6, 0x57, 0xb1, 0xce, 0xcf, 0xc7, 0xf3, 0x1d, 0x1e, 0x91, 0x9f, 0x02,
-	0xf5, 0x31, 0x8e, 0xa2, 0xc1, 0x25, 0xee, 0x4c, 0xc3, 0x80, 0x04, 0xa8, 0x18, 0x4e, 0x5d, 0xab,
-	0x36, 0x0e, 0x3c, 0x3c, 0x62, 0x16, 0xfb, 0x8f, 0x02, 0xdc, 0x3b, 0x65, 0x31, 0xfc, 0x4f, 0xe4,
-	0xe0, 0x5f, 0x67, 0x38, 0x22, 0xa8, 0x01, 0x65, 0x12, 0x0c, 0xf1, 0xa4, 0x59, 0x68, 0x17, 0xf6,
-	0xd7, 0x1c, 0xf6, 0x80, 0x10, 0x94, 0xde, 0x85, 0xc1, 0xb8, 0xb9, 0x42, 0x8d, 0xf4, 0x77, 0x1c,
-	0xe9, 0x06, 0xb3, 0x09, 0x69, 0x16, 0xdb, 0x85, 0xfd, 0xb2, 0xc3, 0x1e, 0xd0, 0x0e, 0x54, 0x2f,
-	0xc3, 0x60, 0x36, 0xed, 0xfb, 0x5e, 0xb3, 0x44, 0xa3, 0x57, 0xe9, 0x73, 0xcf, 0x43, 0x2d, 0x58,
-	0x7b, 0x17, 0xfa, 0x78, 0xe2, 0xc5, 0xbe, 0x32, 0xf5, 0x55, 0x99, 0xa1, 0xe7, 0xd9, 0xc7, 0x70,
-	0x3f, 0x53, 0x51, 0x34, 0x0d, 0x26, 0x11, 0x46, 0xfb, 0x50, 0xe5, 0x84, 0xa2, 0x66, 0xa1, 0x5d,
-	0xdc, 0xaf, 0x1d, 0xae, 0x77, 0xc2, 0xa9, 0xdb, 0xe1, 0x81, 0x8e, 0xf0, 0xda, 0x6f, 0xe0, 0xae,
-	0x0a, 0x92, 0xcf, 0x6a, 0x17, 0x80, 0xa7, 0xc6, 0x15, 0x31, 0x6e, 0x6b, 0xdc, 0xd2, 0xf3, 0xec,
-	0xd7, 0x7a, 0x93, 0x44, 0x45, 0x1f, 0xc3, 0x2a, 0x0f, 0xa3, 0x80, 0x7a, 0x41, 0x89, 0xd3, 0x76,
-	0x01, 0x71, 0xdb, 0x77, 0x41, 0x44, 0x6e, 0x6d, 0x31, 0xc1, 0xbf, 0x91, 0xa4, 0xc5, 0xf1, 0x6f,
-	0xf4, 0x18, 0xea, 0x03, 0x42, 0x06, 0xee, 0xd5, 0x18, 0x4f, 0x48, 0x5c, 0x63, 0x91, 0x3a, 0xd7,
-	0x53, 0x63, 0xcf, 0xb3, 0x5f, 0xc1, 0xb6, 0xb2, 0xc8, 0x92, 0x35, 0xfe, 0x55, 0x10, 0x45, 0x76,
-	0x3d, 0x5f, 0x14, 0xa9, 0xf6, 0xa6, 0xa0, 0xf5, 0x06, 0x3d, 0x82, 0xf5, 0xb8, 0xc2, 0xbe, 0x7b,
-	0x35, 0x98, 0x5c, 0x62, 0xd6, 0xbc, 0xaa, 0x53, 0x8b, 0x6d, 0xc7, 0xcc, 0x24, 0x08, 0x15, 0x25,
-	0x42, 0x9f, 0x01, 0x92, 0x08, 0x25, 0xc9, 0x25, 0x9a, 0xbc, 0x95, 0x7a, 0x12, 0x88, 0x0c, 0xff,
-	0x72, 0x2e, 0x7f, 0x56, 0xff, 0x92, 0xfc, 0x3f, 0x87, 0x06, 0xb7, 0x9d, 0xe0, 0x11, 0x26, 0x78,
-	0xb1, 0x06, 0xd8, 0xbf, 0x17, 0x60, 0x47, 0x6a, 0xfb, 0x71, 0x30, 0x8e, 0xcb, 0x79, 0x9f, 0x79,
-	0x33, 0x36, 0x2c, 0xd3, 0x81, 0x92, 0xa1, 0x03, 0x27, 0x60, 0x99, 0x4a, 0x49, 0x1b, 0xe1, 0x32,
-	0x93, 0xb9, 0x11, 0xdc, 0x69, 0xff, 0x9d, 0x32, 0x8a, 0x1b, 0xa9, 0x31, 0xda, 0x05, 0xe0, 0x81,
-	0x52, 0x3b, 0xb8, 0xe5, 0xc3, 0x9a, 0x87, 0xb4, 0x1b, 0x0a, 0x8d, 0x25, 0xbb, 0xf1, 0x25, 0xb4,
-	0x94, 0xb1, 0x58, 0xaa, 0x1d, 0xb6, 0x23, 0x5a, 0xf9, 0xc6, 0x1f, 0xea, 0x87, 0xd1, 0x2d, 0xaf,
-	0xd6, 0x3d, 0xa8, 0xcc, 0x26, 0x23, 0x7f, 0x88, 0x79, 0x13, 0xf9, 0x93, 0x7d, 0x28, 0x78, 0x29,
-	0x98, 0x9c, 0x57, 0x03, 0xca, 0x71, 0x54, 0x44, 0xf1, 0xca, 0x0e, 0x7b, 0xd0, 0xea, 0x58, 0x6e,
-	0x4b, 0x17, 0xab, 0x43, 0xef, 0xaf, 0xb9, 0x8e, 0x97, 0x22, 0x47, 0x4a, 0x8d, 0x16, 0x7c, 0xd5,
-	0xba, 0x62, 0x2b, 0xd4, 0x64, 0xb1, 0xa3, 0x62, 0xc5, 0xf8, 0x6e, 0xb8, 0x23, 0xef, 0x67, 0x1c,
-	0x99, 0xad, 0x81, 0xd7, 0xac, 0xd7, 0x90, 0xb7, 0xa1, 0x69, 0x0d, 0x6a, 0xf2, 0x92, 0x35, 0xb8,
-	0x60, 0x73, 0xeb, 0x0f, 0x98, 0xf0, 0x5f, 0xe7, 0x7e, 0xe4, 0x5f, 0xf8, 0x23, 0x9f, 0xdc, 0x2c,
-	0x38, 0x20, 0x0f, 0x01, 0xae, 0x45, 0x0e, 0xdf, 0x1c, 0xc9, 0xa2, 0x2e, 0xc2, 0xcb, 0x35, 0x2e,
-	0x92, 0xb7, 0xfb, 0xb7, 0x2d, 0x72, 0x26, 0x1a, 0xe2, 0xe0, 0x69, 0x10, 0x92, 0xa5, 0x67, 0x3c,
-	0xa4, 0x69, 0xfc, 0x14, 0xe4, 0x4f, 0xf6, 0x4b, 0x78, 0x60, 0x46, 0xe5, 0x7d, 0x6e, 0xc1, 0x1a,
-	0x8b, 0x4c, 0x51, 0xab, 0xcc, 0xd0, 0xf3, 0xec, 0x17, 0xfa, 0x9c, 0x30, 0x8c, 0xa4, 0xa4, 0xdc,
-	0x5c, 0x22, 0x16, 0xd6, 0x72, 0xf9, 0xc2, 0x7b, 0x50, 0x63, 0xb1, 0xd8, 0xeb, 0x5f, 0xdc, 0xf0,
-	0x74, 0x48, 0x4c, 0x47, 0x37, 0xf3, 0x18, 0xc5, 0xab, 0x0e, 0x66, 0xe4, 0x2a, 0x08, 0xd3, 0xeb,
-	0xbb, 0xca, 0x0c, 0x3d, 0xcf, 0x3e, 0x85, 0x5d, 0xd3, 0xaa, 0xe9, 0x5c, 0x7d, 0x0a, 0xab, 0x0c,
-	0x27, 0x99, 0x2c, 0xa4, 0x9c, 0x56, 0xac, 0xc6, 0x24, 0xc4, 0x3e, 0x82, 0xc7, 0xda, 0x55, 0xc6,
-	0xca, 0xd3, 0xf6, 0x26, 0xb7, 0x11, 0x5f, 0xc1, 0x1e, 0x0f, 0x3f, 0x1a, 0x05, 0xee, 0x30, 0x81,
-	0xf8, 0x31, 0xc2, 0xe1, 0x42, 0xf9, 0x5f, 0x8b, 0xe1, 0x73, 0x70, 0x14, 0x8c, 0xae, 0xff, 0xc7,
-	0x5e, 0x3c, 0x4f, 0x75, 0xd7, 0x20, 0x1c, 0x3a, 0x78, 0xe0, 0x25, 0x69, 0x7b, 0x50, 0x4b, 0xa7,
-	0x8a, 0xb5, 0x64, 0xcd, 0x01, 0x31, 0x56, 0x91, 0xdd, 0x11, 0xa9, 0xc7, 0xb1, 0x1a, 0xc5, 0x61,
-	0xbe, 0xae, 0xb5, 0xff, 0x2d, 0xc0, 0xa6, 0x96, 0x10, 0x2f, 0x42, 0x02, 0x32, 0x18, 0xf5, 0x99,
-	0xba, 0x5d, 0xa1, 0xe7, 0x18, 0x50, 0x13, 0x8d, 0x89, 0xef, 0xba, 0xd9, 0x24, 0xc4, 0x03, 0xaf,
-	0x2f, 0xeb, 0xdf, 0x1a, 0xb3, 0xb1, 0x90, 0x0e, 0x6c, 0x27, 0x18, 0xec, 0x15, 0x63, 0x91, 0x25,
-	0x1a, 0xb9, 0xc5, 0xb1, 0xa8, 0x87, 0xc5, 0x3f, 0x85, 0x86, 0x80, 0x94, 0x13, 0xca, 0x34, 0x01,
-	0x25, 0xd0, 0x52, 0xc6, 0x13, 0xd8, 0x1a, 0x0d, 0x22, 0xd2, 0x4f, 0xfa, 0x41, 0xfc, 0x31, 0x6e,
-	0x56, 0x28, 0xb7, 0xcd, 0xd8, 0xc1, 0x59, 0x9d, 0xf9, 0x63, 0x6c, 0xff, 0x59, 0x12, 0xe2, 0x3a,
-	0x6d, 0x4b, 0x3a, 0xd8, 0x32, 0xdb, 0xc2, 0xad, 0x6c, 0x57, 0x16, 0x66, 0x5b, 0x5c, 0x96, 0x6d,
-	0x69, 0x2e, 0xdb, 0x73, 0xd8, 0x60, 0x5f, 0x15, 0x2e, 0xaf, 0xbf, 0x59, 0xa6, 0xaf, 0xc3, 0x81,
-	0xfc, 0x3a, 0xe8, 0xdc, 0x3a, 0xdf, 0xc4, 0x29, 0x89, 0xb5, 0x3b, 0x21, 0xe1, 0x8d, 0x53, 0xbf,
-	0x94, 0x6d, 0xe8, 0x67, 0xd8, 0xf4, 0xfc, 0x10, 0xbb, 0x24, 0x05, 0xae, 0x50, 0xe0, 0xa7, 0xb9,
-	0xc0, 0x27, 0x34, 0x47, 0x45, 0xde, 0xf0, 0x14, 0xa3, 0x75, 0x0e, 0x28, 0xbb, 0x3e, 0xba, 0x03,
-	0xc5, 0x21, 0x4e, 0xce, 0x8f, 0xf8, 0x27, 0x7a, 0x02, 0xe5, 0xeb, 0xc1, 0x68, 0xc6, 0x6e, 0xd9,
-	0xda, 0x61, 0xc3, 0xb8, 0x30, 0x0b, 0x79, 0xb1, 0xf2, 0x45, 0xc1, 0xfa, 0x09, 0xb6, 0x0d, 0xcb,
-	0xbf, 0x3f, 0xf0, 0xe1, 0x3f, 0xeb, 0xb0, 0x21, 0xee, 0x8d, 0xf0, 0xda, 0x77, 0x31, 0xea, 0x42,
-	0x35, 0xf9, 0x1a, 0x43, 0x2d, 0x39, 0x5f, 0xfb, 0x6a, 0xb4, 0x1e, 0x98, 0x9d, 0x7c, 0xc6, 0x8e,
-	0x60, 0x95, 0xdb, 0x90, 0x65, 0x08, 0x4c, 0x40, 0x5a, 0x46, 0x1f, 0xc7, 0x78, 0x0e, 0xa5, 0x58,
-	0xdc, 0xa2, 0xfb, 0x72, 0x90, 0xf4, 0x55, 0x65, 0x35, 0xb3, 0x8e, 0x34, 0x35, 0x56, 0x82, 0x6a,
-	0xaa, 0xf4, 0xad, 0xa3, 0xa6, 0x2a, 0x1f, 0x11, 0x07, 0x50, 0x61, 0x47, 0x29, 0xda, 0x91, 0x63,
-	0x94, 0x2f, 0x05, 0x0b, 0xa8, 0xab, 0x3b, 0x9e, 0x92, 0x1b, 0xf4, 0x16, 0x6a, 0x92, 0x06, 0x47,
-	0x0f, 0xf5, 0xa2, 0x54, 0x09, 0x66, 0xed, 0xcd, 0xf5, 0xf3, 0x02, 0xde, 0x42, 0x4d, 0x52, 0xb1,
-	0x2a, 0x5e, 0x56, 0xa5, 0xab, 0x78, 0x26, 0xf9, 0xfb, 0x0a, 0xea, 0x8a, 0x9e, 0x45, 0xed, 0x2c,
-	0x2f, 0x0d, 0x53, 0xa3, 0x27, 0x89, 0x4f, 0xb5, 0x9c, 0xac, 0xd2, 0x55, 0xcb, 0x31, 0xa9, 0x56,
-	0x8e, 0x67, 0xa4, 0x97, 0x55, 0xac, 0x59, 0x3c, 0x9d, 0xde, 0xf7, 0xb0, 0x2e, 0x6b, 0x44, 0xb4,
-	0x67, 0x18, 0x29, 0x59, 0xf6, 0x59, 0xed, 0xf9, 0x01, 0x29, 0xa4, 0x2c, 0xf9, 0x54, 0x48, 0x83,
-	0x92, 0x54, 0x21, 0x8d, 0x6a, 0xf1, 0x5b, 0x68, 0x98, 0xe4, 0x1f, 0xfa, 0x44, 0xce, 0xcc, 0x11,
-	0x88, 0xca, 0x96, 0x30, 0xb0, 0x8c, 0xcc, 0xcb, 0x80, 0xcd, 0x13, 0x82, 0x0a, 0xd8, 0x19, 0xd4,
-	0x15, 0xe1, 0xa5, 0x8e, 0x87, 0x49, 0xe9, 0x59, 0x8f, 0x72, 0x22, 0x38, 0xdf, 0x33, 0xa8, 0x2b,
-	0x7e, 0xd4, 0x36, 0xbe, 0xe9, 0x92, 0x40, 0x50, 0x51, 0xcd, 0x92, 0xec, 0xb5, 0x38, 0xae, 0xb8,
-	0x6a, 0x42, 0x12, 0x13, 0xcb, 0x9e, 0x0b, 0x90, 0xee, 0xc3, 0x29, 0xdc, 0x35, 0x0a, 0x25, 0xb4,
-	0x6f, 0x7a, 0xd9, 0x4d, 0x5a, 0x4a, 0x69, 0x5e, 0x17, 0xb6, 0x32, 0x9a, 0x09, 0x7d, 0x24, 0x43,
-	0xcd, 0x93, 0x54, 0xfa, 0x86, 0x9a, 0xa4, 0x93, 0xba, 0xa1, 0x39, 0xe2, 0x4a, 0x01, 0x7b, 0x06,
-	0xd5, 0x44, 0x44, 0x69, 0x27, 0xb8, 0x2a, 0xad, 0x34, 0x22, 0x55, 0x71, 0x43, 0xb6, 0xcc, 0x17,
-	0xa1, 0xe1, 0xd8, 0xd7, 0x6f, 0xc9, 0xa3, 0xea, 0x2f, 0x95, 0x4e, 0xe7, 0x20, 0x9c, 0xba, 0x17,
-	0x15, 0xfa, 0x6f, 0xc7, 0x67, 0xff, 0x05, 0x00, 0x00, 0xff, 0xff, 0x85, 0x8b, 0x00, 0x44, 0x99,
-	0x14, 0x00, 0x00,
+	// 1381 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x58, 0xdd, 0x6e, 0x1b, 0x45,
+	0x14, 0x96, 0xe3, 0x9f, 0x6c, 0x8e, 0xe3, 0xa4, 0x99, 0xb8, 0xad, 0x63, 0x37, 0x8d, 0xb3, 0x45,
+	0x10, 0x55, 0xe0, 0x54, 0xa9, 0x90, 0x68, 0x4b, 0x51, 0x49, 0x62, 0x90, 0x45, 0x53, 0xc1, 0x12,
+	0x52, 0xc1, 0x05, 0x96, 0xb3, 0x3b, 0x4d, 0x56, 0xfe, 0x59, 0xb3, 0x3b, 0x8e, 0xc8, 0x1d, 0xb7,
+	0xdc, 0xf1, 0x0e, 0xbc, 0x07, 0x77, 0x3c, 0x09, 0xcf, 0x81, 0x84, 0x76, 0x66, 0x76, 0x76, 0x66,
+	0x76, 0xec, 0xd8, 0x84, 0x0b, 0xae, 0xe2, 0x3d, 0x73, 0xce, 0x37, 0xe7, 0x7c, 0x73, 0x66, 0xe6,
+	0x9b, 0x40, 0x65, 0x88, 0xa3, 0xa8, 0x77, 0x81, 0x5b, 0xe3, 0x30, 0x20, 0x01, 0xca, 0x87, 0x63,
+	0xb7, 0x5e, 0x1e, 0x06, 0x1e, 0x1e, 0x30, 0x8b, 0xfd, 0x5b, 0x0e, 0xee, 0x9d, 0x30, 0x1f, 0xfe,
+	0x27, 0x72, 0xf0, 0x4f, 0x13, 0x1c, 0x11, 0x54, 0x85, 0x22, 0x09, 0xfa, 0x78, 0x54, 0xcb, 0x35,
+	0x73, 0x7b, 0x2b, 0x0e, 0xfb, 0x40, 0x08, 0x0a, 0xef, 0xc2, 0x60, 0x58, 0x5b, 0xa2, 0x46, 0xfa,
+	0x3b, 0xf6, 0x74, 0x83, 0xc9, 0x88, 0xd4, 0xf2, 0xcd, 0xdc, 0x5e, 0xd1, 0x61, 0x1f, 0x68, 0x0b,
+	0xac, 0x8b, 0x30, 0x98, 0x8c, 0xbb, 0xbe, 0x57, 0x2b, 0x50, 0xef, 0x65, 0xfa, 0xdd, 0xf1, 0x50,
+	0x03, 0x56, 0xde, 0x85, 0x3e, 0x1e, 0x79, 0xf1, 0x58, 0x91, 0x8e, 0x59, 0xcc, 0xd0, 0xf1, 0xec,
+	0x23, 0xb8, 0x9f, 0xc9, 0x28, 0x1a, 0x07, 0xa3, 0x08, 0xa3, 0x3d, 0xb0, 0x78, 0x41, 0x51, 0x2d,
+	0xd7, 0xcc, 0xef, 0x95, 0x0f, 0x56, 0x5b, 0xe1, 0xd8, 0x6d, 0x71, 0x47, 0x47, 0x8c, 0xda, 0xaf,
+	0xe1, 0xae, 0x0a, 0x32, 0xbb, 0xaa, 0x6d, 0x00, 0x1e, 0x1a, 0x67, 0xc4, 0x6a, 0x5b, 0xe1, 0x96,
+	0x8e, 0x67, 0xbf, 0xd2, 0x49, 0x12, 0x19, 0xbd, 0x0f, 0xcb, 0xdc, 0x8d, 0x02, 0xea, 0x09, 0x25,
+	0x83, 0xf6, 0x8f, 0xf0, 0x80, 0xdb, 0xbe, 0x9e, 0x9c, 0x0f, 0x7c, 0xf7, 0x3f, 0x26, 0xdb, 0xee,
+	0xc0, 0xf6, 0x14, 0xfc, 0x85, 0xa9, 0x73, 0xa0, 0x61, 0x82, 0xba, 0x15, 0x81, 0x5f, 0x98, 0xcb,
+	0x5f, 0x98, 0xc6, 0x5f, 0x72, 0x80, 0x12, 0xa0, 0x20, 0x22, 0x37, 0xb2, 0x47, 0xf0, 0xcf, 0x24,
+	0x61, 0x2f, 0xfe, 0x8d, 0x1e, 0x41, 0xa5, 0x47, 0x48, 0xcf, 0xbd, 0x1c, 0xe2, 0x11, 0x89, 0x53,
+	0xcd, 0xd3, 0xc1, 0xd5, 0xd4, 0xc8, 0xda, 0xd3, 0x8f, 0xba, 0x63, 0x9a, 0x29, 0x6d, 0x5d, 0xcb,
+	0xb1, 0xfc, 0x88, 0x65, 0x6e, 0xbf, 0x84, 0x4d, 0x25, 0x83, 0x05, 0x2b, 0xf8, 0x23, 0xad, 0xa0,
+	0xed, 0xf9, 0xa2, 0x02, 0x95, 0xbf, 0x9c, 0xc6, 0x1f, 0xda, 0x85, 0xd5, 0x38, 0xfd, 0xae, 0x7b,
+	0xd9, 0x1b, 0x5d, 0x60, 0x46, 0xb0, 0xe5, 0x94, 0x63, 0xdb, 0x11, 0x33, 0x89, 0x6a, 0xf3, 0x52,
+	0xb5, 0x1f, 0x01, 0x92, 0xaa, 0x4d, 0x82, 0x59, 0x45, 0x1b, 0xe9, 0x48, 0x02, 0x91, 0x21, 0xa7,
+	0x98, 0x25, 0x47, 0xaa, 0x9f, 0xe5, 0xbf, 0x60, 0xfd, 0x1f, 0x43, 0x95, 0xdb, 0x8e, 0xf1, 0x00,
+	0x13, 0x3c, 0x1f, 0x01, 0xf6, 0xaf, 0x39, 0xd8, 0x92, 0x68, 0x3f, 0x0a, 0x86, 0x71, 0x3a, 0xb7,
+	0xe9, 0x49, 0x23, 0x61, 0x19, 0x06, 0x0a, 0x06, 0x06, 0x8e, 0xa1, 0x6e, 0x4a, 0x25, 0x25, 0xc2,
+	0x65, 0x26, 0x33, 0x11, 0x7c, 0xd0, 0xfe, 0x33, 0xad, 0x28, 0x26, 0x52, 0xab, 0x68, 0x1b, 0x80,
+	0x3b, 0x4a, 0x74, 0x70, 0xcb, 0xff, 0xab, 0x1f, 0x52, 0x36, 0x94, 0x32, 0x16, 0x64, 0xe3, 0x53,
+	0x71, 0xe8, 0xb0, 0xb6, 0x58, 0x88, 0x0e, 0xdb, 0x11, 0x54, 0xbe, 0xf6, 0xfb, 0xfa, 0x89, 0x7f,
+	0xc3, 0xd6, 0xba, 0x07, 0xa5, 0xc9, 0x68, 0xe0, 0xf7, 0x31, 0x27, 0x91, 0x7f, 0xd9, 0x07, 0xa2,
+	0x2e, 0x05, 0x93, 0xd7, 0x55, 0x85, 0x62, 0xec, 0x15, 0x51, 0xbc, 0xa2, 0xc3, 0x3e, 0xb4, 0x3c,
+	0x16, 0x5b, 0xd2, 0xf9, 0xf2, 0xd0, 0xf9, 0x35, 0xe7, 0xf1, 0x42, 0xc4, 0x48, 0xa1, 0xd1, 0x9c,
+	0x5b, 0xad, 0x2d, 0x96, 0x42, 0x0d, 0x16, 0x2b, 0x2a, 0x66, 0x8c, 0x6f, 0x91, 0x3b, 0xf2, 0x7a,
+	0xc6, 0x9e, 0xd9, 0x1c, 0x78, 0xce, 0x7a, 0x0e, 0xb3, 0x16, 0x34, 0xcd, 0x41, 0x0d, 0x5e, 0x30,
+	0x07, 0x17, 0x6c, 0x6e, 0xfd, 0x16, 0x13, 0xfe, 0xeb, 0xcc, 0x8f, 0xfc, 0x73, 0x7f, 0xe0, 0x93,
+	0xeb, 0x39, 0x1b, 0xe4, 0x21, 0xc0, 0x95, 0x88, 0xe1, 0x8b, 0x23, 0x59, 0xd4, 0x49, 0x78, 0xba,
+	0xc6, 0x49, 0x66, 0xad, 0xfe, 0x4d, 0x93, 0x9c, 0x0a, 0x42, 0x1c, 0x3c, 0x0e, 0x42, 0xb2, 0x70,
+	0x8f, 0x87, 0x34, 0x8c, 0x9f, 0x82, 0xfc, 0xcb, 0x7e, 0x21, 0xae, 0x65, 0x0d, 0x95, 0xf3, 0xdc,
+	0x80, 0x15, 0xe6, 0x99, 0xa2, 0x5a, 0xcc, 0xd0, 0xf1, 0xec, 0xe7, 0x7a, 0x9f, 0x30, 0x8c, 0x24,
+	0xa5, 0x99, 0xb1, 0x44, 0x4c, 0xac, 0xc5, 0xf2, 0x89, 0x77, 0xa0, 0xcc, 0x7c, 0xb1, 0xd7, 0x3d,
+	0xbf, 0xe6, 0xe1, 0x90, 0x98, 0x0e, 0xaf, 0xa7, 0x55, 0x14, 0xcf, 0xda, 0x9b, 0x90, 0xcb, 0x20,
+	0x4c, 0xef, 0x76, 0x8b, 0x19, 0x3a, 0x9e, 0x7d, 0x22, 0x44, 0x92, 0x32, 0x6b, 0xda, 0x57, 0x1f,
+	0xc2, 0x32, 0xc3, 0x49, 0x3a, 0x0b, 0x29, 0xa7, 0x15, 0xcb, 0x31, 0x71, 0xb1, 0x0f, 0xe1, 0x91,
+	0x76, 0x95, 0xb1, 0xf4, 0xb4, 0xb5, 0x99, 0x49, 0xc4, 0x67, 0xb0, 0xc3, 0xdd, 0x0f, 0x07, 0x81,
+	0xdb, 0x4f, 0x20, 0xbe, 0x8b, 0x70, 0x38, 0x57, 0xfc, 0xe7, 0xa2, 0xf9, 0x1c, 0x1c, 0x05, 0x83,
+	0xab, 0x7f, 0xb1, 0x16, 0xcf, 0x52, 0x71, 0xdb, 0x0b, 0xfb, 0x0e, 0xee, 0x79, 0x49, 0xd8, 0x0e,
+	0x94, 0xd3, 0xae, 0x62, 0x94, 0xac, 0x38, 0x20, 0xda, 0x2a, 0xb2, 0x5b, 0x22, 0xf4, 0x28, 0x56,
+	0xa1, 0x38, 0x9c, 0xad, 0x67, 0xed, 0xbf, 0x72, 0xb0, 0xae, 0x05, 0xc4, 0x93, 0x90, 0x80, 0xf4,
+	0x06, 0x5d, 0xa6, 0x6a, 0x97, 0xe8, 0x39, 0x06, 0xd4, 0x44, 0x7d, 0xe2, 0xbb, 0x6e, 0x32, 0x0a,
+	0x71, 0xcf, 0xeb, 0xca, 0xba, 0xb7, 0xcc, 0x6c, 0xcc, 0xa5, 0x05, 0x9b, 0x09, 0x06, 0xdb, 0x62,
+	0xcc, 0xb3, 0x40, 0x3d, 0x37, 0x38, 0x16, 0x1d, 0x61, 0xfe, 0x4f, 0xa0, 0x2a, 0x20, 0xe5, 0x80,
+	0x22, 0x0d, 0x40, 0x09, 0xb4, 0x14, 0xf1, 0x18, 0x36, 0x06, 0xbd, 0x88, 0x74, 0x13, 0x3e, 0x88,
+	0x3f, 0xc4, 0xb5, 0x12, 0xad, 0x6d, 0x3d, 0x1e, 0xe0, 0x55, 0x9d, 0xfa, 0x43, 0x6c, 0xff, 0x5e,
+	0x10, 0x2f, 0x98, 0x94, 0x96, 0xb4, 0xb1, 0xe5, 0x6a, 0x73, 0x37, 0x56, 0xbb, 0x34, 0x77, 0xb5,
+	0xf9, 0x45, 0xab, 0x2d, 0x4c, 0xad, 0xf6, 0x0c, 0xd6, 0xd8, 0xd3, 0xcd, 0xe5, 0xf9, 0xd7, 0x8a,
+	0x74, 0x3b, 0xec, 0xcb, 0xdb, 0x41, 0xaf, 0xad, 0xf5, 0x65, 0x1c, 0x92, 0x58, 0xdb, 0x23, 0x12,
+	0x5e, 0x3b, 0x95, 0x0b, 0xd9, 0x86, 0xbe, 0x87, 0x75, 0xcf, 0x0f, 0xb1, 0x4b, 0x52, 0xe0, 0x12,
+	0x05, 0x7e, 0x32, 0x13, 0xf8, 0x98, 0xc6, 0xa8, 0xc8, 0x6b, 0x9e, 0x62, 0xac, 0x9f, 0x01, 0xca,
+	0xce, 0x8f, 0xee, 0x40, 0xbe, 0x8f, 0x93, 0xf3, 0x23, 0xfe, 0x89, 0x1e, 0x43, 0xf1, 0xaa, 0x37,
+	0x98, 0xb0, 0x5b, 0xb6, 0x7c, 0x50, 0x35, 0x4e, 0xcc, 0x5c, 0x9e, 0x2f, 0x7d, 0x92, 0xab, 0xbf,
+	0x85, 0x4d, 0xc3, 0xf4, 0xb7, 0x07, 0x3e, 0xf8, 0xbb, 0x02, 0x6b, 0xe2, 0xde, 0x08, 0xaf, 0x7c,
+	0x17, 0xa3, 0x36, 0x58, 0xc9, 0xbb, 0x0d, 0x35, 0xe4, 0x78, 0xed, 0xb5, 0x58, 0x7f, 0x60, 0x1e,
+	0xe4, 0x3d, 0x76, 0x08, 0xcb, 0xdc, 0x86, 0xea, 0x06, 0xc7, 0x04, 0xa4, 0x61, 0x1c, 0xe3, 0x18,
+	0x6f, 0x61, 0x4d, 0x7d, 0x48, 0xa2, 0x5d, 0xd9, 0xdd, 0xf8, 0x88, 0xad, 0xdb, 0xb3, 0x5c, 0x38,
+	0xf0, 0x29, 0x54, 0x94, 0x11, 0xd4, 0x9c, 0x1a, 0x94, 0xc0, 0xee, 0xce, 0xf0, 0xe0, 0xa8, 0xcf,
+	0xa0, 0x10, 0x6b, 0x71, 0x74, 0x5f, 0x71, 0x4d, 0x5f, 0x88, 0xf5, 0x5a, 0x76, 0x20, 0x0d, 0x8d,
+	0x85, 0xab, 0x1a, 0x2a, 0x3d, 0xcd, 0xd4, 0x50, 0xe5, 0xcd, 0xb3, 0x0f, 0x25, 0x76, 0xf2, 0xa3,
+	0x2d, 0xd9, 0x47, 0x79, 0xd8, 0xd4, 0x81, 0x0e, 0xb5, 0x87, 0x63, 0x72, 0x8d, 0xde, 0x40, 0x59,
+	0x7a, 0x32, 0xa0, 0x87, 0x7a, 0x52, 0xaa, 0x62, 0xac, 0xef, 0x4c, 0x1d, 0xe7, 0x09, 0xbc, 0x81,
+	0xb2, 0x24, 0xba, 0x55, 0xbc, 0xec, 0xa3, 0x42, 0xc5, 0x33, 0xa9, 0xf5, 0x97, 0x50, 0x51, 0xe4,
+	0xb7, 0xba, 0x38, 0x26, 0x65, 0xae, 0x97, 0x27, 0x69, 0x65, 0x35, 0x9d, 0xac, 0x30, 0x57, 0xd3,
+	0x31, 0x89, 0x6c, 0x8e, 0x67, 0x2c, 0x2f, 0x2b, 0xb0, 0xb3, 0x78, 0x7a, 0x79, 0xdf, 0xc0, 0xaa,
+	0x2c, 0x69, 0xd1, 0x8e, 0x61, 0x07, 0xc8, 0x2a, 0xb5, 0xde, 0x9c, 0xee, 0x90, 0x42, 0xca, 0x0a,
+	0x55, 0x85, 0x34, 0x08, 0x5f, 0x15, 0xd2, 0x28, 0x6e, 0xbf, 0x82, 0xaa, 0x49, 0xad, 0xa2, 0x0f,
+	0xe4, 0xc8, 0x19, 0x7a, 0x56, 0x59, 0x12, 0x06, 0x96, 0x51, 0xa5, 0x19, 0xb0, 0x69, 0xba, 0x55,
+	0x01, 0x3b, 0x85, 0x8a, 0xa2, 0x13, 0xd5, 0xf6, 0x30, 0x09, 0x53, 0x75, 0xef, 0x9a, 0x45, 0xe6,
+	0x29, 0x54, 0x94, 0x71, 0xd4, 0x34, 0x1e, 0x4c, 0x92, 0x9e, 0x51, 0x51, 0xcd, 0x0a, 0xf2, 0x95,
+	0x38, 0x5d, 0xb9, 0xc8, 0x43, 0x52, 0x25, 0xea, 0x49, 0x35, 0x45, 0x0c, 0x9e, 0xc0, 0x5d, 0xa3,
+	0xae, 0x43, 0x7b, 0xa6, 0xcd, 0x6e, 0x92, 0x7e, 0x0a, 0x79, 0x6d, 0xd8, 0xc8, 0x48, 0x3c, 0xf4,
+	0x9e, 0x0c, 0x35, 0x4d, 0x01, 0xea, 0x0b, 0x6a, 0x52, 0x7a, 0xea, 0x82, 0xce, 0xd0, 0x82, 0x0a,
+	0xd8, 0x53, 0xb0, 0x12, 0xcd, 0xa7, 0x5d, 0x38, 0xaa, 0x12, 0xd4, 0x0a, 0xb1, 0xc4, 0x85, 0xde,
+	0x30, 0xdf, 0xdb, 0x86, 0x5b, 0x4a, 0xbf, 0xd4, 0x0f, 0xad, 0x1f, 0x4a, 0xad, 0xd6, 0x7e, 0x38,
+	0x76, 0xcf, 0x4b, 0xf4, 0x5f, 0xd1, 0x4f, 0xff, 0x09, 0x00, 0x00, 0xff, 0xff, 0xaf, 0x2a, 0xd5,
+	0xb9, 0xad, 0x16, 0x00, 0x00,
 }

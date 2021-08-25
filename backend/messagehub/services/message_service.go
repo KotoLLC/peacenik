@@ -104,6 +104,7 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		GroupID:               groupID,
 		IsGuest:               isGuestHub,
 		FriendID:              friendID,
+		IsPublic:              r.IsPublic,
 	}
 	s.repos.Message.AddMessage("", msg)
 
@@ -168,6 +169,7 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 			UpdatedAt:           common.TimeToRPCString(msg.UpdatedAt),
 			Likes:               int32(msg.Likes),
 			LikedByMe:           msg.LikedByMe,
+			IsPublic:            msg.IsPublic,
 		},
 	}, nil
 }
@@ -250,6 +252,7 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 			UpdatedAt:           common.TimeToRPCString(msg.UpdatedAt),
 			Likes:               int32(msg.Likes),
 			LikedByMe:           msg.LikedByMe,
+			IsPublic:            msg.IsPublic,
 		}
 		rpcMessageMap[msg.ID] = rpcMessages[i]
 	}
@@ -294,6 +297,7 @@ func (s *messageService) Messages(ctx context.Context, r *rpc.MessageMessagesReq
 				UpdatedAt:           common.TimeToRPCString(comment.UpdatedAt),
 				Likes:               int32(comment.Likes),
 				LikedByMe:           comment.LikedByMe,
+				IsPublic:            comment.IsPublic,
 			}
 			rpcComments = append(rpcComments, rpcComment)
 		}
@@ -371,6 +375,7 @@ func (s *messageService) Message(ctx context.Context, r *rpc.MessageMessageReque
 		UpdatedAt:           common.TimeToRPCString(msg.UpdatedAt),
 		Likes:               int32(msg.Likes),
 		LikedByMe:           msg.LikedByMe,
+		IsPublic:            msg.IsPublic,
 	}
 
 	allLikes := s.repos.Message.MessagesLikes([]string{msg.ID})
@@ -413,6 +418,7 @@ func (s *messageService) Message(ctx context.Context, r *rpc.MessageMessageReque
 				UpdatedAt:           common.TimeToRPCString(comment.UpdatedAt),
 				Likes:               int32(comment.Likes),
 				LikedByMe:           comment.LikedByMe,
+				IsPublic:            comment.IsPublic,
 			}
 			rpcComments = append(rpcComments, rpcComment)
 		}
@@ -420,6 +426,117 @@ func (s *messageService) Message(ctx context.Context, r *rpc.MessageMessageReque
 	}
 
 	return &rpc.MessageMessageResponse{
+		Message: rpcMessage,
+	}, nil
+}
+
+func (s *messageService) PublicMessages(ctx context.Context, r *rpc.MessagePublicMessagesRequest) (*rpc.MessagePublicMessagesResponse, error) {
+	_, claims, err := s.tokenParser.Parse(r.Token, "get-public-messages")
+	if err != nil {
+		return nil, twirp.NewError(twirp.InvalidArgument, err.Error())
+	}
+
+	if strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected hub %s, was %s)", s.externalAddress, claims["hub"].(string)))
+	}
+
+	var from time.Time
+	if r.From != "" {
+		from, err = common.RPCStringToTime(r.From)
+		if err != nil {
+			return nil, twirp.InvalidArgumentError("from", err.Error())
+		}
+	}
+
+	var messages []repo.Message
+	if rawUserID, ok := claims["user"]; ok {
+		userID := rawUserID.(string)
+		messages = s.repos.Message.PublicMessages(userID, from, int(r.Count))
+	}
+
+	messageIDs := make([]string, len(messages))
+	rpcMessages := make([]*rpc.Message, len(messages))
+	rpcMessageMap := make(map[string]*rpc.Message, len(messages))
+	for i, msg := range messages {
+		messageIDs[i] = msg.ID
+		attachmentLink, err := s.createBlobLink(ctx, msg.AttachmentID)
+		if err != nil {
+			return nil, err
+		}
+		attachmentThumbnailLink, err := s.createBlobLink(ctx, msg.AttachmentThumbnailID)
+		if err != nil {
+			return nil, err
+		}
+
+		rpcMessages[i] = &rpc.Message{
+			Id:                  msg.ID,
+			UserId:              msg.UserID,
+			Text:                msg.Text,
+			Attachment:          attachmentLink,
+			AttachmentType:      msg.AttachmentType,
+			AttachmentThumbnail: attachmentThumbnailLink,
+			CreatedAt:           common.TimeToRPCString(msg.CreatedAt),
+			UpdatedAt:           common.TimeToRPCString(msg.UpdatedAt),
+			Likes:               int32(msg.Likes),
+			LikedByMe:           msg.LikedByMe,
+			IsPublic:            msg.IsPublic,
+		}
+		rpcMessageMap[msg.ID] = rpcMessages[i]
+	}
+
+	return &rpc.MessagePublicMessagesResponse{
+		Messages: rpcMessages,
+	}, nil
+}
+
+func (s *messageService) PublicMessage(ctx context.Context, r *rpc.MessagePublicMessageRequest) (*rpc.MessagePublicMessageResponse, error) {
+	_, claims, err := s.tokenParser.Parse(r.Token, "get-public-messages")
+	if err != nil {
+		return nil, twirp.NewError(twirp.InvalidArgument, err.Error())
+	}
+
+	if strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected hub %s, was %s)", s.externalAddress, claims["hub"].(string)))
+	}
+
+	msg := s.repos.Message.PublicMessage(r.MessageId)
+	if msg == nil {
+		return nil, twirp.NotFoundError("message not found")
+	}
+
+	found := false
+	if rawUserID, ok := claims["user"]; ok {
+		found = rawUserID.(string) == msg.UserID
+	}
+
+	if !found {
+		return nil, twirp.NotFoundError("not found")
+	}
+
+	attachmentLink, err := s.createBlobLink(ctx, msg.AttachmentID)
+	if err != nil {
+		return nil, err
+	}
+	attachmentThumbnailLink, err := s.createBlobLink(ctx, msg.AttachmentThumbnailID)
+	if err != nil {
+		return nil, err
+	}
+
+	rpcMessage := &rpc.Message{
+		Id:                  msg.ID,
+		UserId:              msg.UserID,
+		Text:                msg.Text,
+		Attachment:          attachmentLink,
+		AttachmentType:      msg.AttachmentType,
+		AttachmentThumbnail: attachmentThumbnailLink,
+		CreatedAt:           common.TimeToRPCString(msg.CreatedAt),
+		UpdatedAt:           common.TimeToRPCString(msg.UpdatedAt),
+		Likes:               int32(msg.Likes),
+		LikedByMe:           msg.LikedByMe,
+		IsPublic:            msg.IsPublic,
+	}
+
+	return &rpc.MessagePublicMessageResponse{
 		Message: rpcMessage,
 	}, nil
 }
@@ -473,6 +590,7 @@ func (s *messageService) Edit(ctx context.Context, r *rpc.MessageEditRequest) (*
 			UpdatedAt:           common.TimeToRPCString(msg.UpdatedAt),
 			Likes:               int32(msg.Likes),
 			LikedByMe:           msg.LikedByMe,
+			IsPublic:            msg.IsPublic,
 		},
 	}, nil
 }
@@ -627,6 +745,7 @@ func (s *messageService) PostComment(ctx context.Context, r *rpc.MessagePostComm
 			UpdatedAt:           common.TimeToRPCString(comment.UpdatedAt),
 			Likes:               int32(comment.Likes),
 			LikedByMe:           comment.LikedByMe,
+			IsPublic:            comment.IsPublic,
 		},
 	}, nil
 }
@@ -680,6 +799,7 @@ func (s *messageService) EditComment(ctx context.Context, r *rpc.MessageEditComm
 			UpdatedAt:           common.TimeToRPCString(comment.UpdatedAt),
 			Likes:               int32(comment.Likes),
 			LikedByMe:           comment.LikedByMe,
+			IsPublic:            comment.IsPublic,
 		},
 	}, nil
 }

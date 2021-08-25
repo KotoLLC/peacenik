@@ -1,0 +1,60 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: user-hub-db-pvc
+  namespace: backend
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-user-hub-service
+  namespace: backend
+  labels:
+    app: db-user-hub-service
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: db-user-hub-service
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-user-hub-db
+  namespace: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-user-hub-service
+  template:
+    metadata:
+      labels:
+        app: db-user-hub-service
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:13.1
+          env:
+          - name: POSTGRES_DB
+            value: koto-user-hub
+          - name: POSTGRES_PASSWORD
+            value: "<SECRET>"
+          - name: PGDATA
+            value: /var/lib/postgresql/data/pgdata
+          ports:
+          - containerPort: 5432
+          volumeMounts:
+          - name: user-hub-db-data
+            mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: user-hub-db-data
+        persistentVolumeClaim:
+          claimName: user-hub-db-pvc

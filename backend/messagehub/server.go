@@ -18,8 +18,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/jmoiron/sqlx"
 	"github.com/twitchtv/twirp"
@@ -92,7 +92,7 @@ func (s *Server) Run() error {
 
 	messageService := services.NewMessage(baseService)
 	messageServiceHandler := rpc.NewMessageServiceServer(messageService, rpcOptions...)
-	r.Handle(messageServiceHandler.PathPrefix()+"*", s.checkAuth(messageServiceHandler))
+	r.Handle(messageServiceHandler.PathPrefix()+"*", s.checkAuth(messageServiceHandler, "/rpc.MessageService/PublicMessages", "/rpc.MessageService/PublicMessage"))
 
 	blobService := services.NewBlob(baseService)
 	blobServiceHandler := rpc.NewBlobServiceServer(blobService, rpcOptions...)
@@ -168,9 +168,16 @@ func (s *Server) setupMiddlewares(r *chi.Mux) {
 	r.Use(cors.New(corsOptions).Handler)
 }
 
-func (s *Server) checkAuth(next http.Handler) http.Handler {
+func (s *Server) checkAuth(next http.Handler, skipCheckPaths ...string) http.Handler {
 	const bearerPrefix = "bearer "
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		for _, p := range skipCheckPaths {
+			if p == r.URL.Path {
+				next.ServeHTTP(w, r)
+				return
+			}
+		}
+
 		authorizationToken := r.Header.Get("Authorization")
 		if authorizationToken == "" || !strings.HasPrefix(strings.ToLower(authorizationToken), bearerPrefix) {
 			http.Error(w, "", http.StatusUnauthorized)
