@@ -5,7 +5,7 @@ import { CommonTypes, ApiTypes } from 'src/types'
 import { currentHubBack2Front } from '@services/dataTransforms/currentHubTransform'
 import { hubsForMessagesBack2Front } from '@services/dataTransforms/hubsForMessagesTransform'
 import { Types as FeedMessagesTypes } from '@store/feed/actions'
-import { Types as DirectMessagesTypes } from '@store/messages/actions'
+// import { Types as DirectMessagesTypes } from '@store/messages/actions'
 import selectors from '@selectors/index'
 
 export function* watchGetMessages() {
@@ -188,6 +188,8 @@ export function* watchPostMessage(action: { type: string, payload: ApiTypes.Feed
       feedsTokens.map( (item: CommonTypes.HubTypes.CurrentHub ) => {
         if(item.host === groupMsgToken.host)
           msgToken = item.token
+
+        return item
       })
   
       yield put(Actions.groups.getGroupFeedRequest({

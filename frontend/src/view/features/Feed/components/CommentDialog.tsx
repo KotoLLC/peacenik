@@ -110,7 +110,7 @@ const CommentDialog = (props) => {
     if (!mentionFriends?.length && friends?.length) {
       setMentionFriends(friendsToMentionFriends(friends))
     }
-  }, [])
+  }, [friends, mentionFriends])
 
   const renderEditor = () => {
     return (

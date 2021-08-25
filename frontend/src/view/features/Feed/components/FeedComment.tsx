@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import { ApiTypes, StoreTypes } from 'src/types'
 import IconButton from '@material-ui/core/IconButton'

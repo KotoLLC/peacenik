@@ -1,8 +1,7 @@
-import React, { useCallback, useState, useEffect } from "react"
+import React, { useState } from "react"
 import {
   createStyles,
   IconButton,
-  Input,
   InputAdornment,
   makeStyles,
   OutlinedInput,
@@ -11,7 +10,7 @@ import {
 import SendIcon from "@material-ui/icons/Send"
 import PhotoCameraOutlinedIcon from "@material-ui/icons/PhotoCameraOutlined"
 import { AttachmentButton, DMInFooterWrapper } from "../styles"
-import { Visibility } from "@material-ui/icons"
+// import { Visibility } from "@material-ui/icons"
 import { UploadInput } from "@view/shared/styles"
 import { ChangeEvent } from "react"
 import { useSelector, useDispatch } from 'react-redux'
@@ -41,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const DirectMessageFooter = ({ location }) => {
   const [msgValue, setMsgValue] = useState("")
   const msgInputStyles = useStyles()
-  const [isFileUploaded, setIsFileUploaded] = useState<boolean>(false)
+  // const [isFileUploaded, setIsFileUploaded] = useState<boolean>(false)
   // const [uploadImg, setUploadImg] = useState<FileList|null>(null)
   const tokenData: CommonTypes.TokenData = useSelector((state: StoreTypes) => state.messages.directPostToken)
   const postDirectMsgStatus: boolean = useSelector((state: StoreTypes) => state.messages.directMsgSent)
@@ -56,7 +55,7 @@ const DirectMessageFooter = ({ location }) => {
     const onGetUploadLink = (value: ApiTypes.UploadLinkRequestWithHost) =>
       dispatch(Actions.messages.getUploadLinkRequest(value))
 
-    setIsFileUploaded(false)
+    // setIsFileUploaded(false)
 
     let tempUploadImg = event.target.files
 
@@ -67,6 +66,8 @@ const DirectMessageFooter = ({ location }) => {
       feedsTokens.map((item) => {
         if (item.host === tokenData.host)
           getMsgToken = item.token
+
+        return item
       })
       if (getMsgToken !== "") {
         onGetUploadLink({
@@ -93,6 +94,8 @@ const DirectMessageFooter = ({ location }) => {
         feedsTokens.map((item) => {
           if (item.host === tokenData.host)
             getMsgToken = item.token
+
+          return item
         })
         let data: ApiTypes.Feed.PostMessage = {
           host: tokenData.host,

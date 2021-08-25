@@ -23,7 +23,7 @@ import {
   Separator,
   LinkBlock,
   CheckboxFieldWrapper,
-  LabelLink,
+  // LabelLink,
 } from '../components/styles'
 
 type FieldsType = 'username' | 'password' | 'email' | ''

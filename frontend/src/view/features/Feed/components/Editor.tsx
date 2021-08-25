@@ -169,6 +169,7 @@ export const Editor: React.FC<Props> = (props) => {
     onPostMessageSucces,
     props,
     friends,
+    mentionFriends
   ]);
 
   const renderAttachment = () => {

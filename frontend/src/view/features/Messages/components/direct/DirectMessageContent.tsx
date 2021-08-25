@@ -1,10 +1,10 @@
 import React, { useEffect } from "react"
 
 import { CommonTypes, StoreTypes } from 'src/types'
-import { RouteComponentProps } from 'react-router-dom'
+// import { RouteComponentProps } from 'react-router-dom'
 import MessageItem from "../common/MessageItem"
-import { useSelector, useDispatch } from 'react-redux'
-import Actions from '@store/actions'
+import { useSelector } from 'react-redux'
+// import Actions from '@store/actions'
 import {
   MsgWrapper
 } from '../styles'

@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import GroupCoverBar from '../components/GroupCoverBar'
-import { Member } from '../components/Member'
-import MemberInvited from '../components/MemberInvited'
-import DeleteGroupDialog from '../components/DeleteGroupDialog'
+// import { Member } from '../components/Member'
+// import MemberInvited from '../components/MemberInvited'
+// import DeleteGroupDialog from '../components/DeleteGroupDialog'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'
 import { ApiTypes, CommonTypes, StoreTypes } from 'src/types'
-import { v4 as uuidv4 } from 'uuid'
+// import { v4 as uuidv4 } from 'uuid'
 import { getGroupAvatarUrl, getGroupCoverUrl } from '@services/avatarUrl'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import PullToRefresh from 'react-simple-pull-to-refresh'
@@ -27,11 +27,11 @@ import {
   PageCover,
   ProfileAvatar, 
   LeftSideBar,
-  RightSideBar,
-  GroupCard,
+  // RightSideBar,
+  // GroupCard,
   CentralBar,
   PageColumnBarsWrapper,
-  PageBarTitle,
+  // PageBarTitle,
   ProfileName,
   ProfileNote,
  } from '@view/shared/styles'
@@ -82,7 +82,6 @@ const AdminPublicLayout: React.FC<Props> = React.memo((props) => {
     userId,
     groupMessageToken,
     feedsTokens,
-    state,
     postUpdated,
     onGetInvitesToConfirmRequest, 
     onGetGroupMessages,
@@ -90,15 +89,16 @@ const AdminPublicLayout: React.FC<Props> = React.memo((props) => {
     onSetPostUpdated
   } = props
 
-  let timerId: any = null
-  
   let msgToken: string = feedsTokens[0].token
   feedsTokens.map( (item: CommonTypes.HubTypes.CurrentHub ) => {
     if(item.host === groupMessageToken.host)
       msgToken = item.token
-  })
 
-  const getGroupMsg = () => {
+    return item
+  })
+  const parsed = queryString.parse(location.search)
+
+  const getGroupMsg = useCallback(() => {
     onGetGroupMessages({
       host: groupMessageToken.host as string,
       body: {
@@ -106,7 +106,7 @@ const AdminPublicLayout: React.FC<Props> = React.memo((props) => {
         group_id: parsed?.id as string,
       }
     })
-  }
+  }, [groupMessageToken.host, msgToken, onGetGroupMessages, parsed])
 
   useEffect( () => {
     onGetGroupMessagesToken({
@@ -119,14 +119,14 @@ const AdminPublicLayout: React.FC<Props> = React.memo((props) => {
     
     getGroupMsg()
 
-    timerId = setInterval(() => {
+    let timerId = setInterval(() => {
       getGroupMsg()
     }, 10000)
 
     return () => {
       clearInterval(timerId)
     }
-  }, [])
+  }, [getGroupMsg, groupMessageToken.host, msgToken, onGetGroupMessagesToken, parsed])
 
   useEffect( () => {
     if ( postUpdated ) {
@@ -155,7 +155,23 @@ const AdminPublicLayout: React.FC<Props> = React.memo((props) => {
         console.log("GET MESSAGE ERROR 3: ", error)
       })
     }
-  }, [postUpdated])
+  }, [postUpdated, onSetPostUpdated, popupData.id, popupData.messageToken, popupData.sourceHost])
+
+  if (!groupDetails) return null
+
+  const { group, members, invites } = groupDetails
+
+  // console.log("ADMIN PUBLIC LAYOUT", props)
+
+  const fixInvitesGroupId = useCallback(() => {
+    if (!groupDetails?.invites?.length) return []
+
+    return groupDetails?.invites?.map(item => {
+      item.group_id = groupDetails?.group?.id
+      return item
+    })
+  }, [groupDetails])
+
   useEffect(() => {
     if (groupInvites === null && !isRequested) {
       onGetInvitesToConfirmRequest()
@@ -166,24 +182,7 @@ const AdminPublicLayout: React.FC<Props> = React.memo((props) => {
       setGroupInvites(fixInvitesGroupId())
       setRequested(false)
     }
-  }, [groupInvites, isRequested, messages])
-
-
-  if (!groupDetails) return null
-
-  const { group, members, status, invites } = groupDetails
-
-  const parsed = queryString.parse(location.search)
-  // console.log("ADMIN PUBLIC LAYOUT", props)
-
-  const fixInvitesGroupId = () => {
-    if (!groupDetails?.invites?.length) return []
-
-    return groupDetails?.invites?.map(item => {
-      item.group_id = groupDetails?.group?.id
-      return item
-    })
-  }
+  }, [groupInvites, isRequested, messages, groupDetails, onGetInvitesToConfirmRequest, fixInvitesGroupId])
 
   const showCommentPopup = (displayData: CommonTypes.PopupData) => {
     setPopupData({

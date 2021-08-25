@@ -3,7 +3,7 @@ import CustomDropdownMenu from "../CustomDropdownMenu";
 import logo from "./../../../assets/images/logo-1.png";
 import { Link } from "react-router-dom";
 import HomeIcon from "@material-ui/icons/Home";
-import ChatBubbleIcon from "@material-ui/icons/ChatBubble";
+// import ChatBubbleIcon from "@material-ui/icons/ChatBubble";
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
 import logoMobile from "@assets/images/icon.png";
 import { Container } from "@view/shared/styles";

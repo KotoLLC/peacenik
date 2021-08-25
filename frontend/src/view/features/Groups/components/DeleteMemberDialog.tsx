@@ -53,7 +53,7 @@ const DeleteMemberDialog: React.FC<Props> = (props) => {
     if (errorMessage) {
       setRequested(false)
     }
-  }, [isMemberDeletedSuccessfully])
+  }, [isMemberDeletedSuccessfully, errorMessage, onDeleteMemberSuccess])
 
   return (
     <>

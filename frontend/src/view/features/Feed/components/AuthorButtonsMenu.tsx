@@ -38,6 +38,7 @@ export const AuthorButtonsMenu: React.FC<Props> = React.memo((props) => {
 
   return (
     <>
+      <span>Toggle position</span>
       <IconButton onClick={onMenuClick}>
         <MoreHorizIcon />
       </IconButton>

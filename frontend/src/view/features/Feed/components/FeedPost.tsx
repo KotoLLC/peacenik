@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent, useRef } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import ReactMarkdown from 'react-markdown';
 import moment from 'moment';
 import { connect } from 'react-redux';
@@ -8,8 +8,8 @@ import { Player } from 'video-react';
 import { ApiTypes, StoreTypes, CommonTypes } from 'src/types';
 import { getAvatarUrl } from '@services/avatarUrl';
 import { TimeBlock, AccessTimeIconStyled } from '@view/shared/styles';
-import commentIconContained from '@assets/images/comment-icon-contained.svg';
-import likeIconContained from '@assets/images/like-icon-contained.svg';
+// import commentIconContained from '@assets/images/comment-icon-contained.svg';
+// import likeIconContained from '@assets/images/like-icon-contained.svg';
 import { MentionsInput, Mention } from 'react-mentions';
 import {
   friendsToMentionFriends,
@@ -35,9 +35,9 @@ import {
   UserNameLink,
   FeedText,
   FeedAttachmentWrapper,
-  ActionCountersWrapper,
-  ActionCounterIcon,
-  ActionCounter,
+  // ActionCountersWrapper,
+  // ActionCounterIcon,
+  // ActionCounter,
   ImagePreview,
   FeedFooter,
   ReactionNawWrapper,
@@ -106,20 +106,20 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
 
   /*  READ VIEW  */
 
-  const renderReactions = () => {
-    return (
-      <ActionCountersWrapper>
-        <ActionCounter>
-          <ActionCounterIcon src={likeIconContained} />
-          <b>{likes || 0}</b> likes
-        </ActionCounter>
-        <ActionCounter>
-          <ActionCounterIcon src={commentIconContained} />
-          <b>{comments?.length || 0}</b> comments
-        </ActionCounter>
-      </ActionCountersWrapper>
-    );
-  };
+  // const renderReactions = () => {
+  //   return (
+  //     <ActionCountersWrapper>
+  //       <ActionCounter>
+  //         <ActionCounterIcon src={likeIconContained} />
+  //         <b>{likes || 0}</b> likes
+  //       </ActionCounter>
+  //       <ActionCounter>
+  //         <ActionCounterIcon src={commentIconContained} />
+  //         <b>{comments?.length || 0}</b> comments
+  //       </ActionCounter>
+  //     </ActionCountersWrapper>
+  //   );
+  // };
 
   const renderReactionNav = () => {
     return (
@@ -424,7 +424,7 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
     }
 
     callback && callback();
-  }, [props, file, isFileUploaded, id, callback, friends]);
+  }, [props, file, isFileUploaded, id, callback, friends, mentionFriends]);
 
   return (
     <FeedWrapper>

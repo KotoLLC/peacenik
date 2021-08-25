@@ -21,7 +21,7 @@ import VolumeMuteOutlinedIcon from '@material-ui/icons/VolumeMuteOutlined';
 import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined';
 import BlockOutlinedIcon from '@material-ui/icons/BlockOutlined';
 
-import { Checkbox } from '@material-ui/core';
+// import { Checkbox } from '@material-ui/core';
 
 const DirectMessageInfoContent = () => {
   // const senderId = useSelector((state) => state.message);

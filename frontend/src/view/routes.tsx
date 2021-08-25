@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { StoreTypes } from "src/types";
 import NoHubsPage from "./pages/NoHubsPage";
 import ProfilePage from "./features/Profile/pages";
-import DocsPages from "./pages/DocsPages";
+// import DocsPages from "./pages/DocsPages";
 import { DashboardPage } from "@view/pages/DashboardPage";
 import selectors from "@selectors/index";
 import { LastLocationProvider } from "react-router-last-location";

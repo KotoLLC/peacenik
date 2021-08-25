@@ -213,10 +213,20 @@ const EditGroupPage: React.FC<Props> = (props) => {
     initialGroup,
     coverUploadLink,
     avatarUploadLink,
+    avatarFile,
+    coverFile,
+    editGroupSuccess,
+    groupName,
+    history,
+    onGetMyGroupsRequest,
+    onSetAvatarRequest,
+    onSetCoverRequest,
+    isAvatarFileUploaded,
+    isCoverFileUploaded
   ])
 
   if (!groupDetails) return null
-  const { group, members, status, invites } = groupDetails
+  const { group, members } = groupDetails
 
   const onAvatarFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
     setAvatarUploadedFile(false)

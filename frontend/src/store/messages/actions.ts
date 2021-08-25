@@ -98,19 +98,6 @@ const getMessageFromHubFailed = () => ({
   type: Types.GET_MESSAGE_TOKENS_FROM_HUB_FAILED
 })
 
-const getMoreMessageRequest = () => ({
-  type: Types.GET_MORE_MESSAGE_REQUEST,
-})
-
-const getMoreMessageSucces = (payload: CommonTypes.HubTypes.CurrentHub[]) => ({
-  type: Types.GET_MORE_MESSAGE_SUCCESS,
-  payload
-})
-
-const getMoreMessageFailed = () => ({
-  type: Types.GET_MORE_MESSAGE_FAILED,
-})
-
 const getUploadLinkRequest = (payload: ApiTypes.UploadLinkRequestWithHost) => ({
   type: Types.GET_DIRECT_MSG_UPLOAD_LINK_REQUEST,
   payload

@@ -67,6 +67,9 @@ const UserProfilePage: React.FC<Props> = React.memo((props) => {
     users,
     userId,
     friends,
+    onGetFriends,
+    onGetFriendsOfFriendsRequest,
+    onGetUser
   ])
 
   const setCurrentUserData = () => {
