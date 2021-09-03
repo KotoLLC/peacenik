@@ -105,7 +105,8 @@ export const Routes = () => {
               <PrivateRoute path="/profile" component={ProfilePage} />
               <PrivateRoute path="/friends" component={FriendsPages} />
               <PrivateRoute path="/groups" component={GroupsPages} />
-              <PrivateRoute path="/feed" component={FeedPage} />
+              {/* <PrivateRoute path="/feed" component={FeedPage} /> */}
+              <Route path="/feed" component={FeedPage} />
               <PrivateRoute path="/hubslist" component={HubListPage} />
               <AuthPages />
               <Route component={() => <>404 not found</>} />

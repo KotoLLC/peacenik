@@ -12,6 +12,8 @@ import SendIcon from '@material-ui/icons/Send';
 import queryString from 'query-string';
 import { urlify } from '@services/urlify';
 import { MentionsInput, Mention } from 'react-mentions';
+import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import {
   friendsToMentionFriends,
   MentionFriend,
@@ -30,6 +32,7 @@ import {
   DeleteAttachmentButton,
   AttachmentWrapper,
   ErrorMessage,
+  SendBtnWrapper
 } from './styles';
 
 interface Props {
@@ -68,6 +71,11 @@ export const Editor: React.FC<Props> = (props) => {
   const parsed = queryString.parse(window.location.search);
   let group_id: string = parsed?.id as string;
 
+  const [isPublicPost, setPublicPost] = useState(false)
+  const changePostStatus = (event) => {
+    setPublicPost(event.target.checked)
+  }
+
   const onMessageSend = () => {
     if (!props.currentHub.host && !isGroupMsgPage) {
       showHubsEmptyMessage(true);
@@ -84,6 +92,7 @@ export const Editor: React.FC<Props> = (props) => {
           text: urlify(value),
           attachment_id: uploadLink?.blob_id,
           group_id: isGroupMsgPage ? group_id : undefined,
+          is_public: isPublicPost
         },
       };
       setFile(null);
@@ -243,9 +252,21 @@ export const Editor: React.FC<Props> = (props) => {
               accept='video/*,image/*'
             />
           </AttachmentButton>
-          <ButtonSend type='submit' onClick={onMessageSend}>
-            <SendIcon />
-          </ButtonSend>
+          <SendBtnWrapper>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={isPublicPost}
+                  onChange={changePostStatus}
+                  inputProps={{ 'aria-label': 'secondary checkbox' }}
+                />
+              }
+              label="Friends Only"
+            />
+            <ButtonSend type='submit' onClick={onMessageSend}>
+              <SendIcon />
+            </ButtonSend>
+          </SendBtnWrapper>
         </EditorButtonsWrapper>
       )}
     </EditorBlockWrapper>

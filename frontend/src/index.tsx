@@ -78,6 +78,28 @@ const { breakpoints } = defaultTheme
 const theme = {
   ...defaultTheme,
   overrides: {
+    MuiSwitch: {
+      switchBase: {
+        // Controls default (unchecked) color for the thumb
+        color: "#ccc"
+      },
+      colorSecondary: {
+        "&$checked": {
+          // Controls checked color for the thumb
+          color: "#599C0B"
+        }
+      },
+      track: {
+        // Controls default (unchecked) color for the track
+        opacity: 0.2,
+        backgroundColor: "#ccc",
+        "$checked$checked + &": {
+          // Controls checked color for the track
+          opacity: 0.7,
+          backgroundColor: "#599C0B"
+        }
+      }
+    },
     MuiTypography: {
       h1: {
         [breakpoints.down('xs')]: {
