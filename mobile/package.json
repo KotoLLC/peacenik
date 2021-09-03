@@ -18,7 +18,7 @@
     "@react-native-firebase/messaging": "^7.7.4",
     "axios": "^0.21.1",
     "react": "16.13.1",
-    "react-native": "^0.63.4",
+    "react-native": "^0.64.1",
     "react-native-device-info": "^6.0.0",
     "react-native-eject": "^0.1.2",
     "react-native-push-notification": "^7.3.1",
