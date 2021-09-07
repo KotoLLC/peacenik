@@ -75,11 +75,11 @@ func (s *tokenService) PostMessage(ctx context.Context, r *rpc.TokenPostMessageR
 	case r.FriendId != "":
 		return s.postMessageForUser(ctx, r.FriendId)
 	default:
-		return s.postMessage(ctx)
+		return s.postMessage(ctx, r.IsPublic)
 	}
 }
 
-func (s *tokenService) postMessage(ctx context.Context) (*rpc.TokenPostMessageResponse, error) {
+func (s *tokenService) postMessage(ctx context.Context, isPublicMessage bool) (*rpc.TokenPostMessageResponse, error) {
 	me := s.getMe(ctx)
 
 	hubs := s.repos.MessageHubs.ConnectedHubs(me)
@@ -90,7 +90,7 @@ func (s *tokenService) postMessage(ctx context.Context) (*rpc.TokenPostMessageRe
 	}
 
 	hubs = hubs[:1]
-	s.repos.MessageHubs.AssignUserToHub(me.ID, hubs[0].Hub.ID, hubs[0].MinDistance)
+	s.repos.MessageHubs.AssignUserToHub(me.ID, hubs[0].Hub.ID, hubs[0].MinDistance, isPublicMessage)
 
 	friends := s.repos.Friend.Friends(me)
 	friendIDs := make([]string, len(friends))
@@ -106,6 +106,9 @@ func (s *tokenService) postMessage(ctx context.Context) (*rpc.TokenPostMessageRe
 			"hub":          hub.Hub.Address,
 			"friends":      friendIDs,
 			"is_guest_hub": hub.MinDistance == repo.GuestHubDistance,
+		}
+		if isPublicMessage {
+			claims["is_public_message"] = true
 		}
 		hubToken, err := s.tokenGenerator.Generate(me.ID, "post-message", exp, claims)
 		if err != nil {
@@ -160,7 +163,7 @@ func (s *tokenService) postMessageForUser(ctx context.Context, friendID string) 
 	tokens := make(map[string]string)
 	if len(hubs) > 0 {
 		hub := hubs[0]
-		s.repos.MessageHubs.AssignUserToHub(me.ID, hub.Hub.ID, hub.MinDistance)
+		s.repos.MessageHubs.AssignUserToHub(me.ID, hub.Hub.ID, hub.MinDistance, false)
 
 		exp := time.Now().Add(s.tokenDuration)
 		claims := map[string]interface{}{
@@ -190,12 +193,12 @@ func (s *tokenService) GetMessages(ctx context.Context, _ *rpc.Empty) (*rpc.Toke
 	for i, u := range friends {
 		userIDs[i+1] = u.ID
 	}
-	userHubs := s.repos.MessageHubs.UserHubs(userIDs)
+	userHubs := s.repos.MessageHubs.UserHubs(userIDs, false)
 
 	groupHubs := make(map[string][]string)
 	userGroups := s.repos.Group.UserGroups(me.ID)
 	for _, group := range userGroups {
-		adminHubs := s.repos.MessageHubs.UserHubs([]string{group.AdminID})
+		adminHubs := s.repos.MessageHubs.UserHubs([]string{group.AdminID}, false)
 		for adminHub := range adminHubs {
 			groupHubs[adminHub] = append(groupHubs[adminHub], group.ID)
 		}
@@ -252,7 +255,7 @@ func (s *tokenService) GetPublicMessages(ctx context.Context, r *rpc.TokenGetPub
 	exp := time.Now().Add(s.tokenDuration)
 
 	userIDs := []string{r.UserId}
-	userHubs := s.repos.MessageHubs.UserHubs(userIDs)
+	userHubs := s.repos.MessageHubs.UserHubs(userIDs, true)
 
 	for hubAddress := range userHubs {
 		claims := map[string]interface{}{

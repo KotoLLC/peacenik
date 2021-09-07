@@ -79,7 +79,7 @@ func (s *Server) Run() error {
 	r := chi.NewRouter()
 	s.setupMiddlewares(r)
 
-	r.Mount("/image", s.checkAuth(routers.Image(s.repos, s.userCache, s.s3Storage, s.staticFS)))
+	r.Mount("/image", s.checkAuth(routers.Image(s.repos, s.userCache, s.s3Storage, s.staticFS), "/image/user/"))
 
 	rpcOptions := []interface{}{
 		&twirp.ServerHooks{
@@ -143,7 +143,7 @@ func (s *Server) Run() error {
 
 	userService := services.NewUser(baseService, passwordHash)
 	userServiceHandler := rpc.NewUserServiceServer(userService, rpcOptions...)
-	r.Handle(userServiceHandler.PathPrefix()+"*", s.checkAuth(userServiceHandler))
+	r.Handle(userServiceHandler.PathPrefix()+"*", s.checkAuth(userServiceHandler, "/rpc.UserService/User"))
 
 	messageHubService := services.NewMessageHub(baseService, s.cfg.AdminList())
 	messageHubServiceHandler := rpc.NewMessageHubServiceServer(messageHubService, rpcOptions...)
@@ -226,7 +226,7 @@ func (s *Server) findSessionUser(next http.Handler) http.Handler {
 func (s *Server) checkAuth(next http.Handler, skipCheckPaths ...string) http.Handler {
 	return s.findSessionUser(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		for _, p := range skipCheckPaths {
-			if p == r.URL.Path {
+			if p == r.URL.Path || (strings.HasSuffix(p, "/") && strings.HasPrefix(r.URL.Path, p)) {
 				next.ServeHTTP(w, r)
 				return
 			}

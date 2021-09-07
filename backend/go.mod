@@ -14,7 +14,7 @@ require (
 	github.com/docker/docker v20.10.6+incompatible
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
-	github.com/go-chi/chi/v5 v5.0.4-0.20210817181946-13e9eff8bd29
+	github.com/go-chi/chi/v5 v5.0.4
 	github.com/go-chi/cors v1.2.0
 	github.com/gofrs/uuid v4.0.0+incompatible
 	github.com/gorilla/mux v1.7.3 // indirect
