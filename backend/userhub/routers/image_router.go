@@ -56,7 +56,7 @@ func (ir *imageRouter) UserAvatar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	me := r.Context().Value(services.ContextUserKey).(repo.User)
+	me, _ := r.Context().Value(services.ContextUserKey).(repo.User)
 	userInfo := ir.userCache.User(userID, me.ID)
 
 	if userInfo.AvatarThumbnailID == "" || (me.ID != userID && !ir.repos.Friend.AreFriends(me.ID, userID)) {

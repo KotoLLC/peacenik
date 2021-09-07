@@ -267,7 +267,10 @@ func (s *userService) Users(ctx context.Context, r *rpc.UserUsersRequest) (*rpc.
 }
 
 func (s *userService) User(ctx context.Context, r *rpc.UserUserRequest) (*rpc.UserUserResponse, error) {
-	me := s.getMe(ctx)
+	var me repo.User
+	if s.hasMe(ctx) {
+		me = s.getMe(ctx)
+	}
 
 	if r.UserId == "" {
 		return nil, twirp.NewError(twirp.InvalidArgument, "user_id should be specified")
@@ -285,7 +288,11 @@ func (s *userService) User(ctx context.Context, r *rpc.UserUserRequest) (*rpc.Us
 		IsConfirmed:  user.ConfirmedAt.Valid,
 		HideIdentity: userInfo.HideIdentity,
 	}
-	inviteStatuses := s.repos.Invite.InviteStatuses(me)
+
+	var inviteStatuses map[string]string
+	if me.ID != "" {
+		inviteStatuses = s.repos.Invite.InviteStatuses(me)
+	}
 
 	return &rpc.UserUserResponse{
 		User:         rpcUser,

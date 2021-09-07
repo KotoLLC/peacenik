@@ -53,16 +53,39 @@ func (c *userCache) User(userID, meID string) User {
 		user.DisplayName = user.FullName + " (" + user.Name + ")"
 	}
 
-	if !user.HideIdentity || userID == meID {
+	if userID == meID {
 		return user
 	}
 
+	if !user.HideIdentity {
+		if meID != "" {
+			return user
+		}
+
+		var hasPublicMessages bool
+		err := c.db.Get(&hasPublicMessages, `
+			select exists(
+			    select *
+			    from user_message_hubs
+				where user_id = $1 and public_at is not null);`,
+			userID)
+		if err != nil {
+			panic(err)
+		}
+
+		if hasPublicMessages {
+			return user
+		}
+	}
+
 	var isFriend bool
-	err = c.db.Get(&isFriend, `
+	if meID != "" {
+		err = c.db.Get(&isFriend, `
 		select exists(select * from friends where user_id = $1 and friend_id = $2);`,
-		userID, meID)
-	if err != nil {
-		panic(err)
+			userID, meID)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	if !isFriend {

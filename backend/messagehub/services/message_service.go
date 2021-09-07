@@ -54,6 +54,11 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected hub %s, was %s)", s.externalAddress, claims["hub"].(string)))
 	}
 
+	isPublicMessage, _ := claims["is_public_message"].(bool)
+	if isPublicMessage != r.IsPublic {
+		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected is_public_message %t, was %t)", r.IsPublic, isPublicMessage))
+	}
+
 	var notifiedUsers []string
 	if rawFriends, ok := claims["friends"]; ok {
 		rawFriendIDs := rawFriends.([]interface{})
