@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"net/http"
 	"time"
 
 	"github.com/mreider/koto/backend/common"
@@ -53,18 +54,26 @@ func (u User) DisplayName() string {
 type BaseService struct {
 	repos              repo.Repos
 	tokenParser        token.Parser
+	tokenGenerator     token.Generator
 	externalAddress    string
+	userHubAddress     string
 	s3Storage          *common.S3Storage
 	notificationSender NotificationSender
+	userHubClient      *http.Client
 }
 
-func NewBase(repos repo.Repos, tokenParser token.Parser, externalAddress string, s3Storage *common.S3Storage, notificationSender NotificationSender) *BaseService {
+func NewBase(repos repo.Repos, tokenParser token.Parser, tokenGenerator token.Generator, externalAddress, userHubAddress string, s3Storage *common.S3Storage, notificationSender NotificationSender) *BaseService {
 	return &BaseService{
 		repos:              repos,
 		tokenParser:        tokenParser,
+		tokenGenerator:     tokenGenerator,
 		externalAddress:    externalAddress,
+		userHubAddress:     userHubAddress,
 		s3Storage:          s3Storage,
 		notificationSender: notificationSender,
+		userHubClient: &http.Client{
+			Timeout: time.Second * 30,
+		},
 	}
 }
 

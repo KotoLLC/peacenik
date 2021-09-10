@@ -47,7 +47,8 @@ type MessageHubRepo interface {
 	SetHubPostLimit(hubAdminID, hubID string, postLimit int)
 	SetHubAllowFriendGroups(hubAdminID, hubID string, allowFriendGroups bool)
 	SetHubExpirationDays(hubAdminID, hubID string, expirationDays int)
-	AssignUserToHub(userID, hubID string, minDistance int, isPublicMessage bool)
+	AssignUserToHub(userID, hubID string, minDistance int)
+	SetUserPublic(userID, hubID string, isPublic bool)
 	UserHubs(userIDs []string, forPublicMessages bool) map[string][]string
 	GroupHub(groupAdminID string) string
 	BlockUser(userID, hubID string)
@@ -326,17 +327,29 @@ func (r *messageHubRepo) SetHubExpirationDays(hubAdminID, hubID string, expirati
 	}
 }
 
-func (r *messageHubRepo) AssignUserToHub(userID, hubID string, minDistance int, isPublicMessage bool) {
+func (r *messageHubRepo) AssignUserToHub(userID, hubID string, minDistance int) {
 	now := common.CurrentTimestamp()
+	_, err := r.db.Exec(`
+		insert into user_message_hubs(user_id, hub_id, created_at, updated_at, min_distance)
+		values($1, $2, $3, $4, $5)
+		on conflict (user_id, hub_id) do update set updated_at = $4, min_distance = $5;`,
+		userID, hubID, now, now, minDistance)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (r *messageHubRepo) SetUserPublic(userID, hubID string, isPublic bool) {
 	var publicAt sql.NullTime
-	if isPublicMessage {
+	if isPublic {
+		now := common.CurrentTimestamp()
 		publicAt = sql.NullTime{Time: now, Valid: true}
 	}
 	_, err := r.db.Exec(`
-		insert into user_message_hubs(user_id, hub_id, created_at, updated_at, min_distance, public_at)
-		values($1, $2, $3, $4, $5, $6)
-		on conflict (user_id, hub_id) do update set updated_at = $4, min_distance = $5, public_at = coalesce($6, user_message_hubs.public_at);`,
-		userID, hubID, now, now, minDistance, publicAt)
+		update user_message_hubs
+		set public_at = $1
+		where user_id = $2 and hub_id = $3;`,
+		publicAt, userID, hubID)
 	if err != nil {
 		panic(err)
 	}

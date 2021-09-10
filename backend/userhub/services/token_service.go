@@ -75,11 +75,11 @@ func (s *tokenService) PostMessage(ctx context.Context, r *rpc.TokenPostMessageR
 	case r.FriendId != "":
 		return s.postMessageForUser(ctx, r.FriendId)
 	default:
-		return s.postMessage(ctx, r.IsPublic)
+		return s.postMessage(ctx)
 	}
 }
 
-func (s *tokenService) postMessage(ctx context.Context, isPublicMessage bool) (*rpc.TokenPostMessageResponse, error) {
+func (s *tokenService) postMessage(ctx context.Context) (*rpc.TokenPostMessageResponse, error) {
 	me := s.getMe(ctx)
 
 	hubs := s.repos.MessageHubs.ConnectedHubs(me)
@@ -90,7 +90,7 @@ func (s *tokenService) postMessage(ctx context.Context, isPublicMessage bool) (*
 	}
 
 	hubs = hubs[:1]
-	s.repos.MessageHubs.AssignUserToHub(me.ID, hubs[0].Hub.ID, hubs[0].MinDistance, isPublicMessage)
+	s.repos.MessageHubs.AssignUserToHub(me.ID, hubs[0].Hub.ID, hubs[0].MinDistance)
 
 	friends := s.repos.Friend.Friends(me)
 	friendIDs := make([]string, len(friends))
@@ -106,9 +106,6 @@ func (s *tokenService) postMessage(ctx context.Context, isPublicMessage bool) (*
 			"hub":          hub.Hub.Address,
 			"friends":      friendIDs,
 			"is_guest_hub": hub.MinDistance == repo.GuestHubDistance,
-		}
-		if isPublicMessage {
-			claims["is_public_message"] = true
 		}
 		hubToken, err := s.tokenGenerator.Generate(me.ID, "post-message", exp, claims)
 		if err != nil {
@@ -163,7 +160,7 @@ func (s *tokenService) postMessageForUser(ctx context.Context, friendID string) 
 	tokens := make(map[string]string)
 	if len(hubs) > 0 {
 		hub := hubs[0]
-		s.repos.MessageHubs.AssignUserToHub(me.ID, hub.Hub.ID, hub.MinDistance, false)
+		s.repos.MessageHubs.AssignUserToHub(me.ID, hub.Hub.ID, hub.MinDistance)
 
 		exp := time.Now().Add(s.tokenDuration)
 		claims := map[string]interface{}{

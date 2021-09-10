@@ -44,3 +44,13 @@ func (s *messageHubInternalService) ExpirationDays(ctx context.Context, _ *rpc.E
 		ExpirationDays: int32(hub.ExpirationDays),
 	}, nil
 }
+
+func (s *messageHubInternalService) SetUserAsPublic(ctx context.Context, r *rpc.MessageSetUserAsPublicRequest) (*rpc.Empty, error) {
+	hubAddress := s.getHubAddress(ctx)
+	hub := s.repos.MessageHubs.HubByIDOrAddress(hubAddress)
+	if hub == nil {
+		return nil, twirp.NotFoundError("hub not found")
+	}
+	s.repos.MessageHubs.SetUserPublic(r.UserId, hub.ID, r.IsPublic)
+	return &rpc.Empty{}, nil
+}

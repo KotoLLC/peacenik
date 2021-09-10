@@ -6,13 +6,16 @@ import (
 	"database/sql"
 	"fmt"
 	"image/jpeg"
+	"io"
 	"log"
+	"net/http"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/ansel1/merry"
 	"github.com/h2non/filetype"
+	"github.com/tidwall/sjson"
 	"github.com/twitchtv/twirp"
 
 	"github.com/mreider/koto/backend/common"
@@ -52,11 +55,6 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 
 	if strings.TrimSuffix(s.externalAddress, "/") != strings.TrimSuffix(claims["hub"].(string), "/") {
 		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected hub %s, was %s)", s.externalAddress, claims["hub"].(string)))
-	}
-
-	isPublicMessage, _ := claims["is_public_message"].(bool)
-	if isPublicMessage != r.IsPublic {
-		return nil, twirp.NewError(twirp.InvalidArgument, fmt.Sprintf("invalid token (expected is_public_message %t, was %t)", r.IsPublic, isPublicMessage))
 	}
 
 	var notifiedUsers []string
@@ -152,6 +150,11 @@ func (s *messageService) Post(ctx context.Context, r *rpc.MessagePostRequest) (*
 		}
 		s.notificationSender.SendNotification(notification)
 	}
+
+	if r.IsPublic {
+		go s.sendUserIsPublic(me.ID)
+	}
+
 	attachmentLink, err := s.createBlobLink(ctx, msg.AttachmentID)
 	if err != nil {
 		return nil, err
@@ -1224,4 +1227,36 @@ func (s *messageService) Counters(ctx context.Context, r *rpc.MessageCountersReq
 		GroupCounters:      rpcGroupCounts,
 		DirectCounters:     rpcDirectCounts,
 	}, err
+}
+
+func (s *messageService) sendUserIsPublic(userID string) {
+	body := []byte("{}")
+	body, _ = sjson.SetBytes(body, "user_id", userID)
+	body, _ = sjson.SetBytes(body, "is_public", true)
+
+	authToken, err := s.tokenGenerator.Generate(s.externalAddress, "auth", time.Now().Add(time.Minute*1), nil)
+	if err != nil {
+		log.Println("can't generate auth token:", err)
+		return
+	}
+
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodPost, fmt.Sprintf("%s/rpc.MessageHubInternalService/SetUserAsPublic", s.userHubAddress), bytes.NewReader(body))
+	if err != nil {
+		log.Println("can't create notifications request:", err)
+		return
+	}
+	req.Header.Set("Authorization", "Bearer "+authToken)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := s.userHubClient.Do(req)
+	if err != nil {
+		log.Println("can't post notifications request:", err)
+		return
+	}
+	defer func() { _ = resp.Body.Close() }()
+	if resp.StatusCode != http.StatusOK {
+		respBody, _ := io.ReadAll(resp.Body)
+		log.Printf("set user as public - unexpected status: %s. %s", resp.Status, string(respBody))
+		return
+	}
 }
