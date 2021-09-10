@@ -19,7 +19,6 @@ message TokenAuthResponse {
 message TokenPostMessageRequest {
     string group_id = 1;
     string friend_id = 2;
-    bool is_public = 3;
 }
 
 message TokenPostMessageResponse {

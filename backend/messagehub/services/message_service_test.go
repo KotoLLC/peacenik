@@ -41,7 +41,7 @@ func (s *MessageServiceTestSuite) SetupSuite() {
 
 	s.te = testutils.NewTestEnvironment("token_service", migrate.Migrate)
 	s.repos = repo.NewRepos(s.te.DB)
-	base := services.NewBase(s.repos, tokenParser, "hub-1", s.te.Storage, nil)
+	base := services.NewBase(s.repos, tokenParser, s.tokenGenerator, "hub-1", "", s.te.Storage, nil)
 	s.service = services.NewMessage(base)
 }
 

@@ -8,6 +8,7 @@ import "model.proto";
 service MessageHubInternalService {
     rpc PostNotifications (MessageHubInternalPostNotificationsRequest) returns (Empty);
     rpc ExpirationDays (Empty) returns (MessageHubInternalExpirationDaysResponse);
+    rpc SetUserAsPublic (MessageSetUserAsPublicRequest) returns (Empty);
 }
 
 message MessageHubInternalPostNotificationsRequest {
@@ -16,4 +17,9 @@ message MessageHubInternalPostNotificationsRequest {
 
 message MessageHubInternalExpirationDaysResponse {
     int32 expiration_days = 1;
+}
+
+message MessageSetUserAsPublicRequest {
+    string user_id = 1;
+    bool is_public = 2;
 }

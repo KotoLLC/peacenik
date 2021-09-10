@@ -88,7 +88,7 @@ func (s *Server) Run() error {
 		fmt.Sprintf("%s/rpc.MessageHubInternalService/PostNotifications", s.cfg.UserHubAddress),
 		s.tokenGenerator)
 	notificationSender.Start()
-	baseService := services.NewBase(s.repos, s.tokenParser, s.cfg.ExternalAddress, s.s3Storage, notificationSender)
+	baseService := services.NewBase(s.repos, s.tokenParser, s.tokenGenerator, s.cfg.ExternalAddress, s.cfg.UserHubAddress, s.s3Storage, notificationSender)
 
 	messageService := services.NewMessage(baseService)
 	messageServiceHandler := rpc.NewMessageServiceServer(messageService, rpcOptions...)
