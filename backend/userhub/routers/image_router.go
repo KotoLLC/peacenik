@@ -59,7 +59,7 @@ func (ir *imageRouter) UserAvatar(w http.ResponseWriter, r *http.Request) {
 	me, _ := r.Context().Value(services.ContextUserKey).(repo.User)
 	userInfo := ir.userCache.User(userID, me.ID)
 
-	if userInfo.AvatarThumbnailID == "" || (me.ID != userID && !ir.repos.Friend.AreFriends(me.ID, userID)) {
+	if userInfo.AvatarThumbnailID == "" {
 		ir.loadNoAvatarImages()
 		w.Header().Set("Cache-Control", "max-age=60")
 		http.ServeContent(w, r, "no-avatar.png", ir.noUserAvatarModTime, bytes.NewReader(ir.noUserAvatarImage))

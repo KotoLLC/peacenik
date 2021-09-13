@@ -81,7 +81,7 @@ func (c *userCache) User(userID, meID string) User {
 	var isFriend bool
 	if meID != "" {
 		err = c.db.Get(&isFriend, `
-		select exists(select * from friends where user_id = $1 and friend_id = $2);`,
+			select exists(select * from friends where user_id = $1 and friend_id = $2);`,
 			userID, meID)
 		if err != nil {
 			panic(err)
