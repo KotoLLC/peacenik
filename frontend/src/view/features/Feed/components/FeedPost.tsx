@@ -6,7 +6,7 @@ import Actions from '@store/actions';
 import selectors from '@selectors/index';
 import { Player } from 'video-react';
 import { ApiTypes, StoreTypes, CommonTypes } from 'src/types';
-import { getAvatarUrl } from '@services/avatarUrl';
+import { getAvatarUrl, getPublicUserAvatarUrl } from '@services/avatarUrl';
 import { TimeBlock, AccessTimeIconStyled } from '@view/shared/styles';
 // import commentIconContained from '@assets/images/comment-icon-contained.svg';
 // import likeIconContained from '@assets/images/like-icon-contained.svg';
@@ -67,6 +67,8 @@ interface Props extends ApiTypes.Feed.Message {
   isCommentsOpenByDeafult?: boolean;
   friends: ApiTypes.Friends.Friend[] | null;
   isLogged?: boolean;
+  publicMsgToken?: ApiTypes.HubToken | null;
+  publicUserName?: string;
 
   showCommentPopup: any;
 
@@ -104,6 +106,8 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
     isLogged,
     is_public,
     showCommentPopup,
+    publicMsgToken,
+    publicUserName
   } = props;
 
   const [isEditer, setEditor] = useState<boolean>(false);
@@ -465,10 +469,10 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
       <FeedHeader>
         <UserInfo>
           <AvatarWrapperLink to={`/profile/user?id=${user_id}`}>
-            <AvatarStyled src={getAvatarUrl(user_id)} alt={user_name} />
+            <AvatarStyled src={isLogged ? getAvatarUrl(user_id) : getPublicUserAvatarUrl(user_id, publicMsgToken)} alt={user_name} />
           </AvatarWrapperLink>
           <UserNameLink to={`/profile/user?id=${user_id}`}>
-            {getUserNameByUserId(user_id)}
+            {isLogged ? getUserNameByUserId(user_id) : publicUserName}
           </UserNameLink>
         </UserInfo>
         <TimeBlock>
@@ -484,14 +488,15 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
 
 type StateProps = Pick<
   Props,
-  'uploadLink' | 'currentHub' | 'currentMessageLikes' | 'friends' | 'isLogged'
+  'uploadLink' | 'currentHub' | 'currentMessageLikes' | 'friends' | 'isLogged' | 'publicMsgToken'
 >;
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   uploadLink: state.feed.uploadLink,
   currentHub: selectors.feed.currentHub(state),
   currentMessageLikes: selectors.feed.currentMessageLikes(state),
   friends: selectors.friends.friends(state),
-  isLogged: selectors.authorization.isLogged(state)
+  isLogged: selectors.authorization.isLogged(state),
+  publicMsgToken: selectors.feed.publicMsgToken(state)
 });
 
 type DispatchProps = Pick<

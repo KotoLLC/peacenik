@@ -13,6 +13,7 @@ import FeedPost from '../components/FeedPost'
 import CommentDialog from '../components/CommentDialog'
 import { API } from '@services/api'
 import queryString from 'query-string'
+import { getPublicPostUserName } from '@services/userNames';
 
 import {
   ContainerStyled,
@@ -51,7 +52,8 @@ interface State {
   isPopupOpen: boolean
   popupData: CommonTypes.PopupData,
   userId: string | null,
-  msgId: string | null
+  msgId: string | null,
+  publicUserName: string
 }
 
 class FeedPage extends React.Component<Props, State> {
@@ -62,6 +64,7 @@ class FeedPage extends React.Component<Props, State> {
     isPopupOpen: false,
     userId: null,
     msgId: null,
+    publicUserName: '',
     popupData: {
       created_at: "",
       message: null,
@@ -111,9 +114,9 @@ class FeedPage extends React.Component<Props, State> {
       this.setState({
         userId: currentUserId
       })
-      this.timerId = setInterval(() => {
-        onGetPublicPosts(currentUserId)
-      }, 10000)
+      // this.timerId = setInterval(() => {
+      //   onGetPublicPosts(currentUserId)
+      // }, 10000)
     } else {
       history.push('/login')
     }
@@ -184,6 +187,7 @@ class FeedPage extends React.Component<Props, State> {
             <FeedPost
               {...item}
               showCommentPopup={this.showCommentPopup}
+              publicUserName={this.state.publicUserName}
               isAuthor={(userId === item.user_id) ? true : false} />
           </div>
         )
@@ -193,6 +197,7 @@ class FeedPage extends React.Component<Props, State> {
         {...item}
         key={item.id}
         showCommentPopup={this.showCommentPopup}
+        publicUserName={this.state.publicUserName}
         isAuthor={(userId === item.user_id) ? true : false} />
     })
 
@@ -287,6 +292,14 @@ class FeedPage extends React.Component<Props, State> {
     let messageId = parsed?.message_id as string
     let msgid = parsed?.msgid as string
     let userid = parsed?.userid as string
+
+    if (prevState.publicUserName === '' && publicMsgToken) {
+      getPublicPostUserName(userid, publicMsgToken).then(res => {
+        this.setState({
+          publicUserName: res
+        })
+      })
+    }
 
     if (messageId) {
       this.props.history.replace({
