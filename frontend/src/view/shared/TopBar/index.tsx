@@ -27,7 +27,7 @@ export const TopBar: React.FC<Props> = React.memo((props) => {
     <AppBarStyled position="fixed" color="primary">
       <Container>
         <ToolbarStyled>
-          <Link to="/feed">
+          <Link to={isLogged ? "/feed" : "/login"}>
             <Logo src={logo} />
             <LogoMobile src={logoMobile} />
           </Link>

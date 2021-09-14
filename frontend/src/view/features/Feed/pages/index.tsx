@@ -266,6 +266,7 @@ class FeedPage extends React.Component<Props, State> {
             isOpen={this.state.isPopupOpen}
             setOpen={this.setPopupOpen}
             popupData={this.state.popupData}
+            publicUserName={this.state.publicUserName}
           />
         </>
       )

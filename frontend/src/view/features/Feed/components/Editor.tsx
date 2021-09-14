@@ -71,9 +71,9 @@ export const Editor: React.FC<Props> = (props) => {
   const parsed = queryString.parse(window.location.search);
   let group_id: string = parsed?.id as string;
 
-  const [isPublicPost, setPublicPost] = useState(false)
+  const [isPrivatePost, setPrivatePost] = useState(false)
   const changePostStatus = (event) => {
-    setPublicPost(event.target.checked)
+    setPrivatePost(event.target.checked)
   }
 
   const onMessageSend = () => {
@@ -92,7 +92,7 @@ export const Editor: React.FC<Props> = (props) => {
           text: urlify(value),
           attachment_id: uploadLink?.blob_id,
           group_id: isGroupMsgPage ? group_id : undefined,
-          is_public: isPublicPost
+          is_public: !isPrivatePost
         },
       };
       setFile(null);
@@ -256,7 +256,7 @@ export const Editor: React.FC<Props> = (props) => {
             <FormControlLabel
               control={
                 <Switch
-                  checked={isPublicPost}
+                  checked={isPrivatePost}
                   onChange={changePostStatus}
                   inputProps={{ 'aria-label': 'secondary checkbox' }}
                 />

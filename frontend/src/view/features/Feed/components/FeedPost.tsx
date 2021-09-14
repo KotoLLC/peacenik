@@ -67,7 +67,6 @@ interface Props extends ApiTypes.Feed.Message {
   isCommentsOpenByDeafult?: boolean;
   friends: ApiTypes.Friends.Friend[] | null;
   isLogged?: boolean;
-  publicMsgToken?: ApiTypes.HubToken | null;
   publicUserName?: string;
 
   showCommentPopup: any;
@@ -106,7 +105,6 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
     isLogged,
     is_public,
     showCommentPopup,
-    publicMsgToken,
     publicUserName
   } = props;
 
@@ -469,7 +467,7 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
       <FeedHeader>
         <UserInfo>
           <AvatarWrapperLink to={`/profile/user?id=${user_id}`}>
-            <AvatarStyled src={isLogged ? getAvatarUrl(user_id) : getPublicUserAvatarUrl(user_id, publicMsgToken)} alt={user_name} />
+            <AvatarStyled src={isLogged ? getAvatarUrl(user_id) : getPublicUserAvatarUrl(user_id)} alt={user_name} />
           </AvatarWrapperLink>
           <UserNameLink to={`/profile/user?id=${user_id}`}>
             {isLogged ? getUserNameByUserId(user_id) : publicUserName}
@@ -488,15 +486,14 @@ const FeedPost: React.FC<Props> = React.memo((props) => {
 
 type StateProps = Pick<
   Props,
-  'uploadLink' | 'currentHub' | 'currentMessageLikes' | 'friends' | 'isLogged' | 'publicMsgToken'
+  'uploadLink' | 'currentHub' | 'currentMessageLikes' | 'friends' | 'isLogged'
 >;
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   uploadLink: state.feed.uploadLink,
   currentHub: selectors.feed.currentHub(state),
   currentMessageLikes: selectors.feed.currentMessageLikes(state),
   friends: selectors.friends.friends(state),
-  isLogged: selectors.authorization.isLogged(state),
-  publicMsgToken: selectors.feed.publicMsgToken(state)
+  isLogged: selectors.authorization.isLogged(state)
 });
 
 type DispatchProps = Pick<
