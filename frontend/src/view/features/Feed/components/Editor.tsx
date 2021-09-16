@@ -71,7 +71,7 @@ export const Editor: React.FC<Props> = (props) => {
   const parsed = queryString.parse(window.location.search);
   let group_id: string = parsed?.id as string;
 
-  const [isPrivatePost, setPrivatePost] = useState(false)
+  const [isPrivatePost, setPrivatePost] = useState(true)
   const changePostStatus = (event) => {
     setPrivatePost(event.target.checked)
   }

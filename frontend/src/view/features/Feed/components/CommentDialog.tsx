@@ -190,7 +190,7 @@ const CommentDialog = (props) => {
           sourceHost={sourceHost}
         />
       ))}
-      {renderEditor()}
+      {isLogged && renderEditor()}
     </ModalDialog>
   )
 }
