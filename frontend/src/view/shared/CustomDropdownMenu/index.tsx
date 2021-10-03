@@ -50,7 +50,9 @@ const DropdownMenu2: React.FC<Props> = (props) => {
     return (
       <ClickAwayListener onClickAway={() => { openMenu(false) }}>
         <DropdownMenuWrapper>
-          <AvatarWrapper onClick={() => openMenu(!isMenuOpen)}>
+          <AvatarWrapper onClick={() => {
+            openMenu(!isMenuOpen)
+          }}>
             <Avatar src={getAvatarUrl(userId)} />
           </AvatarWrapper>
           {isMenuOpen && <Dropdown>
@@ -73,7 +75,7 @@ const DropdownMenu2: React.FC<Props> = (props) => {
   else {
     return (<ClickAwayListener onClickAway={() => { openMenu(false) }}>
       <DropdownMenuWrapper>
-        <Link to="/login">
+        <Link to="/loginsss">
           <AvatarWrapper>
             <Avatar src={noAvatar} />
           </AvatarWrapper>

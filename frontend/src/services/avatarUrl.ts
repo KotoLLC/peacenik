@@ -19,6 +19,5 @@ export function getProfileCoverUrl(id: string) {
 }
 
 export function getPublicUserAvatarUrl(id: string) {
-  console.log('===> user Avatar url: ', `/image/user/${id}`)
   return `${userHubUrl}/image/user/${id}`
 }
