@@ -1,8 +1,21 @@
-import { axiosInstance } from './index'
+import { axiosInstance, axiosWithoutCredentials } from './index'
 import { ApiTypes } from 'src/types'
 import { getHeaderConfig } from './commonAPIFunctions'
 
 export default {
+  getPublicPostToken: async (data) => await axiosInstance.post('/rpc.TokenService/GetPublicMessages', {user_id: data.payload}).then(response => response).catch(error => error),
+
+  getPublicPosts: async (data) => await axiosWithoutCredentials.post(`${data.host}/rpc.MessageService/PublicMessages`, {
+    token: data.token,
+    from: data.from ? data.from : null,
+    count: data.count ? data.count : 10
+  }).then(res => res).catch(err=>err),
+
+  getPublicPostById: async (data) => await axiosWithoutCredentials.post(`${data.host}/rpc.MessageService/PublicMessage`, {
+    token: data.token,
+    message_id: data.message_id
+  }).then(res => res).catch(err => err),
+
   getMessages: async () => {
     return await axiosInstance.post('/rpc.TokenService/GetMessages', {}).then(response => {
       return response

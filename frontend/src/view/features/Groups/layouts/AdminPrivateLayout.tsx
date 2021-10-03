@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import GroupCoverBar from '../components/GroupCoverBar'
-import { Member } from '../components/Member'
-import UserForInvite from '../components/UserForInvite'
-import DeleteGroupDialog from '../components/DeleteGroupDialog'
+// import { Member } from '../components/Member'
+// import UserForInvite from '../components/UserForInvite'
+// import DeleteGroupDialog from '../components/DeleteGroupDialog'
 import { connect } from 'react-redux'
 import Actions from '@store/actions'
 import selectors from '@selectors/index'
@@ -20,20 +20,20 @@ import Editor from '../../Feed/components/Editor'
 import CommentDialog from '../../Feed/components/CommentDialog'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 
-import { v4 as uuidv4 } from 'uuid'
+// import { v4 as uuidv4 } from 'uuid'
 import { getGroupAvatarUrl, getGroupCoverUrl } from '@services/avatarUrl'
 import { 
   Container, 
   PageCover, 
   ProfileAvatar, 
   LeftSideBar,
-  RightSideBar,
+  // RightSideBar,
   CentralBar,
   PageColumnBarsWrapper,
-  PageBarTitle,
+  // PageBarTitle,
   ProfileName,
   ProfileNote,
-  GroupCard,
+  // GroupCard,
 } from '@view/shared/styles'
 import {
   GroupDescriptopn,
@@ -83,7 +83,6 @@ const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
     location, 
     groupMessageToken,
     feedsTokens,
-    state,
     userId,
     postUpdated,
 
@@ -100,9 +99,11 @@ const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
   feedsTokens.map( (item: CommonTypes.HubTypes.CurrentHub ) => {
     if(item.host === groupMessageToken.host)
       msgToken = item.token
+
+    return item
   })
 
-  const getGroupMsg = () => {
+  const getGroupMsg = useCallback(() => {
     onGetGroupMessages({
       host: groupMessageToken.host as string,
       body: {
@@ -110,7 +111,7 @@ const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
         group_id: parsed?.id as string,
       }
     })
-  }
+  }, [groupMessageToken.host, msgToken, onGetGroupMessages, parsed])
   
   useEffect( () => {
     if ( postUpdated ) {
@@ -139,7 +140,7 @@ const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
         console.log("GET MESSAGE ERROR 3: ", error)
       })
     }
-  }, [postUpdated])
+  }, [postUpdated, onSetPostUpdated, popupData.id, popupData.messageToken, popupData.sourceHost])
   useEffect( () => {
     onGetGroupMessagesToken({
       host: groupMessageToken.host as string,
@@ -150,14 +151,23 @@ const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
     })
     getGroupMsg()
     
-    timerId = setInterval(() => {
+    let timerId = setInterval(() => {
       getGroupMsg()
     }, 10000)
 
     return () => {
       clearInterval(timerId)
     }
-  }, [])
+  }, [getGroupMsg, groupMessageToken.host, msgToken, onGetGroupMessagesToken, parsed])
+
+  const fixInvitesGroupId = useCallback(() => {
+    if (!groupDetails?.invites?.length) return []
+    
+    return groupDetails?.invites?.map(item => {
+      item.group_id = groupDetails?.group?.id
+      return item
+    })
+  }, [groupDetails])
 
   useEffect(() => {
     if (groupInvites === null && !isRequested) {
@@ -174,11 +184,10 @@ const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
       onGetFriends()
     }
 
-  }, [groupInvites, isRequested, friends])
+  }, [groupInvites, isRequested, friends, groupDetails, onGetFriends, onGetInvitesToConfirmRequest, fixInvitesGroupId])
 
   if (!groupDetails) return null
-  const { group, members, status, invites } = groupDetails
-  let timerId: any = null
+  const { group, members, invites } = groupDetails
 
   const showCommentPopup = (displayData: CommonTypes.PopupData) => {
     setPopupData({
@@ -247,24 +256,15 @@ const AdminPrivateLayout: React.FC<Props> = React.memo((props) => {
     editorRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
   }
 
-  const fixInvitesGroupId = () => {
-    if (!groupDetails?.invites?.length) return []
-    
-    return groupDetails?.invites?.map(item => {
-      item.group_id = groupDetails?.group?.id
-      return item
-    })
-  }
-
-  const filterFriendsForInvite = () => {
-    return friends?.filter((item) =>
-      !Boolean(
-        groupDetails?.members?.some(
-          member => member.id === item.user.id
-        )
-      )
-    )
-  }
+  // const filterFriendsForInvite = () => {
+  //   return friends?.filter((item) =>
+  //     !Boolean(
+  //       groupDetails?.members?.some(
+  //         member => member.id === item.user.id
+  //       )
+  //     )
+  //   )
+  // }
 
   return (
     <PullToRefresh

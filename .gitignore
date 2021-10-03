@@ -10,3 +10,7 @@ npm-debug.log*
 temp
 
 ./docker-compose.yml
+network-graph-server/.env
+
+package-lock.json
+yarn.lock

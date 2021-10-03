@@ -23,6 +23,14 @@ export const axiosInstance = axios.create({
   }
 })
 
+export const axiosWithoutCredentials = axios.create({
+  baseURL: URL,
+  withCredentials: false,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+
 export const API = {
   registration,
   authorization,

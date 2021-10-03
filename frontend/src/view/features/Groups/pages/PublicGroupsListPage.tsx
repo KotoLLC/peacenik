@@ -26,12 +26,11 @@ const PublicGroupsListPage: React.FC<Props> = (props) => {
   const {
     onGetPublicGroupsRequest,
     publicGroups,
-    ownedHubs,
   } = props
 
   useEffect(() => {
     onGetPublicGroupsRequest()
-  }, [])
+  }, [onGetPublicGroupsRequest])
 
   const renderGroups = () => (
     publicGroups?.length && publicGroups.map(
@@ -39,9 +38,9 @@ const PublicGroupsListPage: React.FC<Props> = (props) => {
     )
   )
 
-  const isHubsOwnerCheck = (): boolean => {
-    return ownedHubs.length ? true : false
-  }
+  // const isHubsOwnerCheck = (): boolean => {
+  //   return ownedHubs.length ? true : false
+  // }
 
   const renderEmptyScreen = () => (
     <EmptyGroups>
