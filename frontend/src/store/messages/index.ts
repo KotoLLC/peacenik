@@ -28,11 +28,11 @@ export interface State {
   directMsgSent: boolean
 }
 
-const peacenikmessagesTokens = localStorage.getItem('peacenikmessagesTokens') 
-let messagesTokensLocal
-if (peacenikmessagesTokens !== 'undefined' && peacenikmessagesTokens !== null) {
-  messagesTokensLocal = JSON.parse(peacenikmessagesTokens)?.tokens
-}
+// const peacenikmessagesTokens = localStorage.getItem('peacenikmessagesTokens') 
+// let messagesTokensLocal
+// if (peacenikmessagesTokens !== 'undefined' && peacenikmessagesTokens !== null) {
+//   messagesTokensLocal = JSON.parse(peacenikmessagesTokens)?.tokens
+// }
 const initialState: State = {
   currentHub: {
     host: '',
@@ -158,7 +158,7 @@ const reducer = (state = initialState, action) => {
       }
     }
     case Types.GET_USER_LAST_MESSAGES_FROM_HUB_SUCCESS: {
-      const { usersLastMessage , hub } = action.payload
+      const { usersLastMessage } = action.payload
 
       return {
         ...state, 

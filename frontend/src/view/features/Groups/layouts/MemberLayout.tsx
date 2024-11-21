@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { connect } from 'react-redux'
 import selectors from '@selectors/index'
 import { ApiTypes, StoreTypes, CommonTypes } from 'src/types'
@@ -84,29 +84,30 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
     userId,
     groupMessageToken,
     feedsTokens,
-    state,
-    isGroupLeavedSuccess,
-    errorMessage,
+    // state,
+    // isGroupLeavedSuccess,
+    // errorMessage,
     postUpdated,
     
     onGetGroupMessages,
     onGetGroupMessagesToken,
     onLeaveGroupRequest,
-    onLeaveGroupSuccess,
+    // onLeaveGroupSuccess,
     onDeleteJoinRequest,
     onSetPostUpdated
   } = props
 
   //  console.log("MEMBER LAYOUT: ", props)
   const parsed = queryString.parse(location.search)
-  let timerId: any = null
   let msgToken: string = feedsTokens[0].token
   feedsTokens.map( (item: CommonTypes.HubTypes.CurrentHub ) => {
     if(item.host === groupMessageToken.host)
       msgToken = item.token
+
+    return item
   })
   
-  const getGroupMsg = () => {
+  const getGroupMsg = useCallback(() => {
     onGetGroupMessages({
       host: groupMessageToken.host as string,
       body: {
@@ -114,7 +115,7 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
         group_id: parsed?.id as string,
       }
     })
-  }
+  }, [groupMessageToken.host, msgToken, onGetGroupMessages, parsed])
   const [isRequested, setRequested] = useState<boolean>(false)
 
   useEffect( () => {
@@ -128,14 +129,14 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
 
     getGroupMsg()
     // console.log("OWNED HUB: ", groupMessageToken.host)
-    timerId = setInterval(() => {
+    let timerId = setInterval(() => {
       getGroupMsg()
     }, 10000)
 
     return () => {
       clearInterval(timerId)
     }
-  }, [groupMessageToken])
+  }, [groupMessageToken, getGroupMsg, msgToken, onGetGroupMessagesToken, parsed])
 
   useEffect( () => {
     if ( postUpdated ) {
@@ -164,7 +165,7 @@ const MemberLayout: React.FC<Props> = React.memo((props) => {
         console.log("GET MESSAGE ERROR 3: ", error)
       })
     }
-  }, [postUpdated])
+  }, [postUpdated, onSetPostUpdated, popupData.id, popupData.messageToken, popupData.sourceHost])
 
   if (!groupDetails) return null
 

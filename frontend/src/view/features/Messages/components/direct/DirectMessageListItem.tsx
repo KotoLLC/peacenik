@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import { Link, useRouteMatch } from 'react-router-dom'
 import { getAvatarUrl } from '@services/avatarUrl'
 
@@ -12,11 +12,11 @@ import {
   MessageInfoLastAccessTime,
 } from '@view/features/Messages/components/styles'
 
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined'
-import DonutLargeIcon from '@material-ui/icons/DonutLarge'
-import DoneIcon from '@material-ui/icons/Done'
-import DoneAllIcon from '@material-ui/icons/DoneAll'
-import * as Types from '../../../../../types/enum'
+// import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined'
+// import DonutLargeIcon from '@material-ui/icons/DonutLarge'
+// import DoneIcon from '@material-ui/icons/Done'
+// import DoneAllIcon from '@material-ui/icons/DoneAll'
+// import * as Types from '../../../../../types/enum'
 import { dateToRelateString } from '@services/dateToRelateString'
 
 interface Props {
@@ -43,22 +43,22 @@ const DirectMessageListItem: React.FC<Props> = ({
     pathName = location.pathname?.substring(location.pathname?.lastIndexOf('/') + 1)
   }
 
-  const renderOutgoingSwitch = useCallback(
-    (status: Types.MessagePublishStatus | undefined) => {
-      switch (status) {
-        case Types.MessagePublishStatus.PENDING_STATUS:
-          return <DonutLargeIcon />
-        case Types.MessagePublishStatus.ACCEPTED_STATUS:
-          return <DoneIcon />
-        case Types.MessagePublishStatus.READ_STATUS:
-          return <DoneAllIcon style={{ color: '#599C0B' }} />
-        case Types.MessagePublishStatus.NOT_SENT_STATUS:
-        case Types.MessagePublishStatus.UNKNOWN_STATUS:
-      }
-      return <InfoOutlinedIcon />
-    },
-    []
-  )
+  // const renderOutgoingSwitch = useCallback(
+  //   (status: Types.MessagePublishStatus | undefined) => {
+  //     switch (status) {
+  //       case Types.MessagePublishStatus.PENDING_STATUS:
+  //         return <DonutLargeIcon />
+  //       case Types.MessagePublishStatus.ACCEPTED_STATUS:
+  //         return <DoneIcon />
+  //       case Types.MessagePublishStatus.READ_STATUS:
+  //         return <DoneAllIcon style={{ color: '#599C0B' }} />
+  //       case Types.MessagePublishStatus.NOT_SENT_STATUS:
+  //       case Types.MessagePublishStatus.UNKNOWN_STATUS:
+  //     }
+  //     return <InfoOutlinedIcon />
+  //   },
+  //   []
+  // )
 
   return (
     <Link to={`${baseURL}/${userId}`} >

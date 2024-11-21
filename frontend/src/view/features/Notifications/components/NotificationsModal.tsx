@@ -37,6 +37,7 @@ interface Props {
 interface State {
   notifications: ApiTypes.Notifications.Notification[]
   isModalOpen: boolean
+  isCheckedNotification: boolean
 }
 
 class NotificationsModal extends React.PureComponent<Props, State> {
@@ -153,7 +154,9 @@ class NotificationsModal extends React.PureComponent<Props, State> {
   }
 
   notifyClickHandler = () => {
-    this.state.isCheckedNotification = true
+    this.setState({
+      isCheckedNotification: true
+    })
     this.openModal(!this.state.isModalOpen)
   }
 

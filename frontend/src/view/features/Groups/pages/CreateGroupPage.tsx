@@ -168,6 +168,14 @@ const CreateGroupPage: React.FC<Props> = (props) => {
     errorMessage,
     coverUploadLink,
     avatarUploadLink,
+    addGroupSucces,
+    avatarFile,
+    coverFile,
+    history,
+    isAvatarFileUploaded,
+    isCoverFileUploaded,
+    onSetAvatarRequest,
+    onSetCoverRequest
   ])
 
   const onAvatarFileUpload = (event: ChangeEvent<HTMLInputElement>) => {

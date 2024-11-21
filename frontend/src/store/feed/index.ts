@@ -18,7 +18,8 @@ export interface State {
   currentMessageLikes: ApiTypes.Feed.LikesInfoData | null
   currentCommentLikes: ApiTypes.Feed.LikesInfoData | null
   messageById: ApiTypes.Feed.Message | null | undefined
-  postUpdated: boolean
+  postUpdated: boolean,
+  publicMsgToken: ApiTypes.HubToken | null
 }
 
 const peacenikfeedsTokens = localStorage.getItem('peacenikfeedsTokens') 
@@ -43,7 +44,8 @@ const initialState: State = {
   currentMessageLikes: null,
   currentCommentLikes: null,
   messageById: null,
-  postUpdated: false
+  postUpdated: false,
+  publicMsgToken: null
 }
 
 const reducer = (state = initialState, action) => {
@@ -196,6 +198,12 @@ const reducer = (state = initialState, action) => {
       return {
         ...state, 
         postUpdated: true
+      }
+    }
+    case Types.GET_PUBLIC_POSTS_SUCCESS: {
+      return {
+        ...state,
+        publicMsgToken: action.payload
       }
     }
     default: return state

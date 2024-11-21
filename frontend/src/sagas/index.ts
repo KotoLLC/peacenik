@@ -56,6 +56,7 @@ import {
     watchDeleteAccount,
 } from './profile'
 import {
+    watchGetPublicPosts,
     watchGetMessages,
     watchGetCurrentHub,
     watchPostMessage,
@@ -72,6 +73,7 @@ import {
     watchGetLikesForMessage,
     watchGetLikesForComment,
     watchGetMoreMessages,
+    watchGetMorePublicMessages,
     watchGetMoreMessagesFromHub,
     watchGetMessagesByIdFromHub,
     watchHideMessage,
@@ -167,6 +169,7 @@ export function* rootSaga() {
         takeEvery(ProfileTypes.SET_PROFILE_COVER_REQUEST, watchSetProfileCover),
         takeEvery(ProfileTypes.DELETE_ACCOUNT_REQUEST, watchDeleteAccount),
 
+        takeEvery(FeedMessagesTypes.GET_PUBLIC_POSTS_REQUEST, watchGetPublicPosts),
         takeEvery(FeedMessagesTypes.GET_FEED_TOKENS_REQUEST, watchGetMessages),
         takeEvery(FeedMessagesTypes.GET_CURRENT_HUB_REQUEST, watchGetCurrentHub),
         takeEvery(FeedMessagesTypes.POST_FEED_MESSAGE_REQUEST, watchPostMessage),
@@ -183,6 +186,7 @@ export function* rootSaga() {
         takeEvery(FeedMessagesTypes.GET_LIKES_FOR_FEED_MESSAGES_REQUEST, watchGetLikesForMessage),
         takeEvery(FeedMessagesTypes.GET_LIKES_FOR_FEED_COMMENT_REQUEST, watchGetLikesForComment),
         takeEvery(FeedMessagesTypes.GET_MORE_FEED_REQUEST, watchGetMoreMessages),
+        takeEvery(FeedMessagesTypes.GET_MORE_PUBLIC_FEED_REQUEST, watchGetMorePublicMessages),
         takeEvery(FeedMessagesTypes.GET_MORE_FEED_FROM_HUB_REQUEST, watchGetMoreMessagesFromHub),
         takeEvery(FeedMessagesTypes.GET_FEED_TOKENS_MESSAGES_BY_ID_FROM_HUB_REQUEST, watchGetMessagesByIdFromHub),
         takeEvery(FeedMessagesTypes.HIDE_FEED_MESSAGES_REQUEST, watchHideMessage),

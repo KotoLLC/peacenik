@@ -9,7 +9,7 @@ import {
   SidebarWrapper,
   SidebarContent,
   MessagesListContent,
-  SidebarFooter,
+  // SidebarFooter,
 } from './styles';
 
 import { DirectMessageDialog } from './direct/DirectMessageDialog';
