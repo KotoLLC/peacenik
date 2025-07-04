@@ -9,11 +9,11 @@ import {
   ContactUserInfo,
   UserInfoBlock,
   UserInfoName,
-  UserInfoStatus,
+  // UserInfoStatus,
   DMInHeaderWrapper,
 } from '../styles';
 
-import DirectMessageDropDownMenu from './DirectMessageDropDownMenu';
+// import DirectMessageDropDownMenu from './DirectMessageDropDownMenu';
 
 const DirectMessageHeader = () => {
   // const getUserInfo = useGetUserInfoById();

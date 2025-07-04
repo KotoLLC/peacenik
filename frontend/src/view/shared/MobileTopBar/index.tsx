@@ -23,11 +23,13 @@ import {
 } from './styles'
 
 interface Props {
+  isLogged: boolean
   userId: string
   notificationsUnread: ApiTypes.Notifications.Notification[]
 }
 
 const MobileTopBar: React.FC<Props> = React.memo((props) => {
+  const { isLogged } = props
   const [isHamburgerMenuOpen, openHamburgerMenu] = useState<boolean>(false)
 
   return (
@@ -79,15 +81,16 @@ const MobileTopBar: React.FC<Props> = React.memo((props) => {
           <MenuItem>
             <NotificationsModal/>
           </MenuItem>
-          <CustomDropdownMenu />
+          <CustomDropdownMenu isLogged={isLogged}/>
         </NavigationsWrapper>
       </ClickAwayListener>
     </MobileTopBarWrapper>
   )
 })
 
-type StateProps = Pick<Props, 'notificationsUnread' | 'userId'>
+type StateProps = Pick<Props, 'notificationsUnread' | 'userId' | 'isLogged'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
+  isLogged: selectors.authorization.isLogged(state),
   notificationsUnread: selectors.notifications.notificationsUnread(state),
   userId: selectors.profile.userId(state),
 })

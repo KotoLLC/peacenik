@@ -3,7 +3,7 @@ import { dateToRelateString } from '@services/dateToRelateString'
 import { useDispatch, useSelector } from 'react-redux'
 import { useRouteMatch } from 'react-router'
 import Actions from '@store/actions'
-import { CommonTypes, ApiTypes, StoreTypes } from 'src/types'
+import { CommonTypes, StoreTypes } from 'src/types'
 import { ModalDialog } from '@view/shared/ModalDialog'
 import {
   MessageContentType

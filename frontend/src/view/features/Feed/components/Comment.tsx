@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
+// import Tooltip from '@material-ui/core/Tooltip';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import Actions from '@store/actions';
@@ -25,10 +25,10 @@ import {
   UserNameLink,
   CommentTextWrapper,
   AvatarWrapper,
-  CircularProgressStyled,
+  // CircularProgressStyled,
   CommentContent,
   CommentReactionsNavWrapper,
-  LikeCommentButton,
+  // LikeCommentButton,
   UserInfo,
   FeedHeader,
   AvatarWrapperLink,
@@ -55,8 +55,8 @@ interface Props extends ApiTypes.Feed.Comment {
 const Comment: React.SFC<Props> = (props) => {
   const {
     text,
-    user_name,
-    user_full_name,
+    // user_name,
+    // user_full_name,
     created_at,
     id,
     user_id,
@@ -66,23 +66,23 @@ const Comment: React.SFC<Props> = (props) => {
     likes,
     onLikeComment,
     currentCommentLikes,
-    getLikesForComment,
+    // getLikesForComment,
     friends,
   } = props;
   const [isEditer, setEditor] = useState<boolean>(false);
   const [comment, onCommentChange] = useState<string>(text);
   const commentRef = React.createRef<HTMLDivElement>();
-  const [isLikesInfoRequested, setLikesInfoRequest] = useState<boolean>(false);
+  // const [isLikesInfoRequested, setLikesInfoRequest] = useState<boolean>(false);
   const [mentionFriends, setMentionFriends] = useState<MentionFriend[]>([]);
 
   useEffect(() => {
-    if (currentCommentLikes?.id === id) {
-      setLikesInfoRequest(false);
-    }
+    // if (currentCommentLikes?.id === id) {
+    //   setLikesInfoRequest(false);
+    // }
     if (!mentionFriends?.length && friends?.length) {
       setMentionFriends(friendsToMentionFriends(friends));
     }
-  }, [currentCommentLikes, id, friends]);
+  }, [currentCommentLikes, id, friends, mentionFriends]);
 
   const onMessageSave = () => {
     setEditor(false);
@@ -102,63 +102,63 @@ const Comment: React.SFC<Props> = (props) => {
     }
   };
 
-  const getLikesInfo = () => {
-    if (currentCommentLikes?.id === id) {
-      setLikesInfoRequest(false);
-    }
+  // const getLikesInfo = () => {
+  //   if (currentCommentLikes?.id === id) {
+  //     setLikesInfoRequest(false);
+  //   }
 
-    if (currentCommentLikes?.id !== id) {
-      setLikesInfoRequest(true);
-      getLikesForComment({
-        host: sourceHost,
-        id: id,
-      });
-    }
-  };
+  //   if (currentCommentLikes?.id !== id) {
+  //     setLikesInfoRequest(true);
+  //     getLikesForComment({
+  //       host: sourceHost,
+  //       id: id,
+  //     });
+  //   }
+  // };
 
-  const rendreLikeButton = () => {
-    let likesInfo = 'No likes yet';
-    let usersLikes = '';
+  // const rendreLikeButton = () => {
+  //   let likesInfo = 'No likes yet';
+  //   let usersLikes = '';
 
-    if (currentCommentLikes?.id === id) {
-      currentCommentLikes.likes.length &&
-        currentCommentLikes.likes.forEach((item, counter) => {
-          if (counter < 15) {
-            const likedUserName = item.user_full_name || item.user_name;
-            const comma =
-              currentCommentLikes?.likes.length - 1 === counter ? '' : ', ';
-            usersLikes += `${likedUserName}${comma}`;
-          }
+  //   if (currentCommentLikes?.id === id) {
+  //     currentCommentLikes.likes.length &&
+  //       currentCommentLikes.likes.forEach((item, counter) => {
+  //         if (counter < 15) {
+  //           const likedUserName = item.user_full_name || item.user_name;
+  //           const comma =
+  //             currentCommentLikes?.likes.length - 1 === counter ? '' : ', ';
+  //           usersLikes += `${likedUserName}${comma}`;
+  //         }
 
-          if (counter === 15) {
-            usersLikes += `...`;
-          }
-        });
-    }
+  //         if (counter === 15) {
+  //           usersLikes += `...`;
+  //         }
+  //       });
+  //   }
 
-    return (
-      <Tooltip
-        onClick={() => {
-          if (liked_by_me) {
-            onLikeComment({ host: sourceHost, id: id, unlike: true });
-          } else {
-            onLikeComment({ host: sourceHost, id: id });
-          }
-        }}
-        title={
-          isLikesInfoRequested ? (
-            <CircularProgressStyled size={30} />
-          ) : (
-            <>{usersLikes || likesInfo}</>
-          )
-        }
-        interactive
-        onOpen={() => getLikesInfo()}
-      >
-        <LikeCommentButton>{likes} like</LikeCommentButton>
-      </Tooltip>
-    );
-  };
+  //   return (
+  //     <Tooltip
+  //       onClick={() => {
+  //         if (liked_by_me) {
+  //           onLikeComment({ host: sourceHost, id: id, unlike: true });
+  //         } else {
+  //           onLikeComment({ host: sourceHost, id: id });
+  //         }
+  //       }}
+  //       title={
+  //         isLikesInfoRequested ? (
+  //           <CircularProgressStyled size={30} />
+  //         ) : (
+  //           <>{usersLikes || likesInfo}</>
+  //         )
+  //       }
+  //       interactive
+  //       onOpen={() => getLikesInfo()}
+  //     >
+  //       <LikeCommentButton>{likes} like</LikeCommentButton>
+  //     </Tooltip>
+  //   );
+  // };
 
   const renderReactionNav = () => {
     return (
