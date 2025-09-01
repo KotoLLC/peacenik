@@ -18,3 +18,6 @@ To install Peacenik on your k8s cluster:
 
 Everything should be up and running in a minute or so.
 
+
+
+<!-- Security scan triggered at 2025-09-01 22:25:59 -->
