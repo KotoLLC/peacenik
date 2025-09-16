@@ -36,7 +36,7 @@ const GroupPage: React.FC<Props> = (props) => {
     if (groupDetails?.group?.id !== groupId) {
       onGetGroupDetailsRequest(groupId as string)
     }
-  }, [groupDetails, userId])
+  }, [groupDetails, userId, groupId, onGetGroupDetailsRequest, setCurrentGroupId])
 
   if (groupDetails && groupDetails?.group?.admin?.id === userId) {
     return (groupDetails?.group?.is_public === true) ? <AdminPublicLayout location={location}/> : <AdminPrivateLayout location={location}/>

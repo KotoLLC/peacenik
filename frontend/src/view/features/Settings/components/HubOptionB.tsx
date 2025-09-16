@@ -8,7 +8,7 @@ import Checkbox from '@material-ui/core/Checkbox'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import {
   HubSettingsBlock,
-  HubOptionTitle,
+  // HubOptionTitle,
   HubOptionText,
   HubFieldWrapper,
   HubFieldLabel,

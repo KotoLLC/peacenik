@@ -2,6 +2,10 @@
 import { ApiTypes, CommonTypes } from 'src/types'
 
 export enum Types {
+  GET_PUBLIC_POSTS_REQUEST                        = 'GET_PUBLIC_POSTS_REQUEST',
+  GET_PUBLIC_POSTS_SUCCESS                        = 'GET_PUBLIC_POSTS_SUCCESS',
+  GET_MORE_PUBLIC_FEED_REQUEST                    = 'GET_MORE_PUBLIC_FEED_REQUEST',
+
   GET_FEED_TOKENS_REQUEST                         = 'GET_FEED_TOKENS_REQUEST',
   GET_FEED_TOKENS_SUCCESS                         = 'GET_FEED_TOKENS_SUCCESS',
 
@@ -267,6 +271,11 @@ const getMoreFeedRequest = () => ({
   type: Types.GET_MORE_FEED_REQUEST,
 })
 
+const getMorePublicFeedRequest = (payload: string) => ({
+  type: Types.GET_MORE_PUBLIC_FEED_REQUEST,
+  payload
+})
+
 const getMoreFeedSucces = (payload: CommonTypes.HubTypes.CurrentHub[]) => ({
   type: Types.GET_MORE_FEED_SUCCESS,
   payload
@@ -323,7 +332,19 @@ const setPostUpdated = (payload: boolean) => ({
   payload
 })
 
+const getFeedPublicPosts = (payload: string) => ({
+  type: Types.GET_PUBLIC_POSTS_REQUEST,
+  payload
+})
+
+const getPublicFeedTokenSuccess = (payload: ApiTypes.HubToken) => ({
+  type: Types.GET_PUBLIC_POSTS_SUCCESS,
+  payload
+})
+
 export default {
+  getFeedPublicPosts,
+  getPublicFeedTokenSuccess,
   getFeedTokensRequest,
   getFeedTokensSuccess,
   getCurrentHubRequest,
@@ -357,6 +378,7 @@ export default {
   getLikesForFeedCommentRequest,
   getLikesForFeedCommentSuccess,
   getMoreFeedRequest,
+  getMorePublicFeedRequest,
   getMoreFeedSucces,
   getMoreFeedFailed,
   getMoreFeedFromHubRequest,

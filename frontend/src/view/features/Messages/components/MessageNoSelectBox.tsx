@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+// import styled from "styled-components";
 
 import { ReactComponent as SendIcon } from "@assets/images/send-outline.svg";
 import { SendOutlineWrapper } from "./styles";

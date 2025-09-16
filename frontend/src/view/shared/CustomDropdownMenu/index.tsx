@@ -10,6 +10,8 @@ import ListItemText from '@material-ui/core/ListItemText'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import ClickAwayListener from '@material-ui/core/ClickAwayListener'
 import PersonIcon from '@material-ui/icons/Person'
+import noAvatar from "./../../../assets/images/no-avatar.png";
+import { Link } from "react-router-dom";
 import {
   AvatarWrapper,
   ListItemIconStyled,
@@ -23,13 +25,14 @@ import {
 
 interface Props {
   userId: string
+  isLogged?: boolean
 
   onLogout: () => void
 }
 
 const DropdownMenu2: React.FC<Props> = (props) => {
   const [isMenuOpen, openMenu] = useState(false)
-  const { userId } = props
+  const { userId, isLogged } = props
 
   const goToPage = (path: string) => {
     openMenu(false)
@@ -43,29 +46,43 @@ const DropdownMenu2: React.FC<Props> = (props) => {
     props.onLogout()
   }
 
-  return (
-    <ClickAwayListener onClickAway={() => { openMenu(false) }}>
+  if ( isLogged )
+    return (
+      <ClickAwayListener onClickAway={() => { openMenu(false) }}>
+        <DropdownMenuWrapper>
+          <AvatarWrapper onClick={() => {
+            openMenu(!isMenuOpen)
+          }}>
+            <Avatar src={getAvatarUrl(userId)} />
+          </AvatarWrapper>
+          {isMenuOpen && <Dropdown>
+            <CustomMenuItem onClick={() => goToPage('/settings')}>
+              <ListItemIconStyled>
+                <PersonIcon fontSize="small" />
+              </ListItemIconStyled>
+              <ListItemText primary="Edit profile" />
+            </CustomMenuItem>
+            <CustomMenuItem className="logout" onClick={onLogoutClick}>
+              <ListItemIconStyled>
+                <ExitToAppIcon fontSize="small" />
+              </ListItemIconStyled>
+              <ListItemText primary="Log out" />
+            </CustomMenuItem>
+          </Dropdown>}
+        </DropdownMenuWrapper>
+      </ClickAwayListener>
+    )
+  else {
+    return (<ClickAwayListener onClickAway={() => { openMenu(false) }}>
       <DropdownMenuWrapper>
-        <AvatarWrapper onClick={() => openMenu(!isMenuOpen)}>
-          <Avatar src={getAvatarUrl(userId)} />
-        </AvatarWrapper>
-        {isMenuOpen && <Dropdown>
-          <CustomMenuItem onClick={() => goToPage('/settings')}>
-            <ListItemIconStyled>
-              <PersonIcon fontSize="small" />
-            </ListItemIconStyled>
-            <ListItemText primary="Edit profile" />
-          </CustomMenuItem>
-          <CustomMenuItem className="logout" onClick={onLogoutClick}>
-            <ListItemIconStyled>
-              <ExitToAppIcon fontSize="small" />
-            </ListItemIconStyled>
-            <ListItemText primary="Log out" />
-          </CustomMenuItem>
-        </Dropdown>}
+        <Link to="/loginsss">
+          <AvatarWrapper>
+            <Avatar src={noAvatar} />
+          </AvatarWrapper>
+        </Link>
       </DropdownMenuWrapper>
-    </ClickAwayListener>
-  )
+    </ClickAwayListener>)
+  }
 }
 
 type StateProps = Pick<Props, 'userId'>

@@ -13,7 +13,7 @@ import MesssageSidebar from '../components/MesssageSidebar'
 import DirectMessageBox from '../components/direct/DirectMessageBox'
 import MesssageNoSelectBox from '../components/MessageNoSelectBox'
 import DirectMessageInfoBox from '../components/direct/DirectMessageInfoBox'
-import { CommonTypes, ApiTypes, StoreTypes } from 'src/types'
+import { CommonTypes, StoreTypes } from 'src/types'
 import queryString from 'query-string'
 
 interface Props extends RouteComponentProps { }
@@ -40,8 +40,10 @@ const MessagesPage: React.FC<Props> = (props) => {
 
       if (item.host === directPostToken.host)
         setMsgToken(item.token)
+
+      return item
     })
-  }, [feedsTokens, directPostToken])
+  }, [feedsTokens, directPostToken, dispatch])
 
   if (location.pathname?.indexOf("messages/d/") > -1) {
     let pathFriendId = location.pathname?.substring(location.pathname?.lastIndexOf('/') + 1)
@@ -59,7 +61,7 @@ const MessagesPage: React.FC<Props> = (props) => {
         }
       }))
     }
-  }, [friend_id, msgToken])
+  }, [friend_id, msgToken, directPostToken.host, dispatch, feedsTokens.length])
 
   useEffect(() => {
     if ((parsed.id && parsed.fullname)) {
@@ -71,17 +73,17 @@ const MessagesPage: React.FC<Props> = (props) => {
 
       dispatch(Actions.messages.getDirectPostMsgToken(parsed.id as string))
     }
-  }, [dispatch])
+  }, [dispatch, parsed.fullname, parsed.id])
 
   useEffect(() => {
     if (friend_id !== "") {
       dispatch(Actions.messages.getDirectPostMsgToken(friend_id))
     }
-  }, [friend_id])
+  }, [friend_id, dispatch])
 
   const directMsgRoomFriends: CommonTypes.MessageRoomFriendData[] = useSelector((state: StoreTypes) => state.messages.directMsgRoomFriends)
 
-  const state = useSelector((state: StoreTypes) => state)
+  // const state = useSelector((state: StoreTypes) => state)
 
   return (
     <>
