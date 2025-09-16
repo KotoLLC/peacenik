@@ -32,7 +32,7 @@ require (
 	github.com/rubenv/sql-migrate v0.0.0-20210614095031-55d5740dbbcc
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
 	github.com/stretchr/testify v1.7.0
-	github.com/tidwall/gjson v1.9.0
+	github.com/tidwall/gjson v1.9.3
 	github.com/tidwall/sjson v1.2.1
 	github.com/twitchtv/twirp v8.0.0+incompatible
 	github.com/vmware-labs/yaml-jsonpointer v0.1.1
