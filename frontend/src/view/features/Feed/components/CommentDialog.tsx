@@ -4,7 +4,7 @@ import { ApiTypes, StoreTypes } from 'src/types'
 import Actions from '@store/actions'
 import { ModalDialog } from '@view/shared/ModalDialog'
 import { TimeBlock, AccessTimeIconStyled } from '@view/shared/styles'
-import { getAvatarUrl } from '@services/avatarUrl'
+import { getAvatarUrl, getPublicUserAvatarUrl } from '@services/avatarUrl'
 import ReactMarkdown from 'react-markdown'
 import moment from 'moment'
 import { YoutubeFrame } from './YoutubeFrame'
@@ -36,6 +36,8 @@ import {
 interface Props extends ApiTypes.Feed.Comment {
   userId: string
   userName: string
+  isLogged?: boolean
+  publicUserName?: string;
 
   onCommentPost: (data: ApiTypes.Feed.PostComment) => void
 }
@@ -46,7 +48,9 @@ const CommentDialog = (props) => {
     userName,
     isOpen,
     setOpen,
-    popupData
+    isLogged,
+    popupData,
+    publicUserName
   } = props
 
   const {
@@ -110,7 +114,7 @@ const CommentDialog = (props) => {
     if (!mentionFriends?.length && friends?.length) {
       setMentionFriends(friendsToMentionFriends(friends))
     }
-  }, [])
+  }, [friends, mentionFriends])
 
   const renderEditor = () => {
     return (
@@ -118,9 +122,9 @@ const CommentDialog = (props) => {
         <FeedHeader>
           <UserInfo>
             <AvatarWrapperLink className="small" to={`/profile/user?id=${userId}`}>
-              <AvatarStyled className="small" src={getAvatarUrl(userId)} alt={userName} />
+              <AvatarStyled className="small" src={isLogged ? getAvatarUrl(user_id) : getPublicUserAvatarUrl(user_id)} alt={userName} />
             </AvatarWrapperLink>
-            <UserNameLink to={`/profile/user?id=${userId}`}>{getUserNameByUserId(userId)}</UserNameLink>
+            <UserNameLink to={`/profile/user?id=${userId}`}>{isLogged ? getUserNameByUserId(userId) : publicUserName}</UserNameLink>
           </UserInfo>
         </FeedHeader>
         <EditorContentWrapper className="comments">
@@ -163,9 +167,9 @@ const CommentDialog = (props) => {
       <FeedHeader className="comments">
         <UserInfo>
           <AvatarWrapperLink to={`/profile/user?id=${user_id}`}>
-            <AvatarStyled src={getAvatarUrl(user_id)} alt={getUserNameByUserId(user_id)} />
+            <AvatarStyled src={isLogged ? getAvatarUrl(user_id) : getPublicUserAvatarUrl(user_id)} alt={isLogged ? getUserNameByUserId(user_id) : publicUserName} />
           </AvatarWrapperLink>
-          <UserNameLink to={`/profile/user?id=${user_id}`}>{getUserNameByUserId(user_id)}</UserNameLink>
+          <UserNameLink to={`/profile/user?id=${user_id}`}>{isLogged ? getUserNameByUserId(user_id) : publicUserName}</UserNameLink>
         </UserInfo>
         <TimeBlock>
           {moment(created_at).fromNow()}
@@ -186,15 +190,16 @@ const CommentDialog = (props) => {
           sourceHost={sourceHost}
         />
       ))}
-      {renderEditor()}
+      {isLogged && renderEditor()}
     </ModalDialog>
   )
 }
 
-type StateProps = Pick<Props, 'userId' | 'userName'>
+type StateProps = Pick<Props, 'userId' | 'userName' | 'isLogged'>
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   userId: selectors.profile.userId(state),
   userName: selectors.profile.userName(state),
+  isLogged: selectors.authorization.isLogged(state)
 })
 
 type DispatchProps = Pick<Props, 'onCommentPost'>

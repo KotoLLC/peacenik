@@ -18,3 +18,6 @@ export function getProfileCoverUrl(id: string) {
   return `${userHubUrl}/image/user/background/${id}`
 }
 
+export function getPublicUserAvatarUrl(id: string) {
+  return `${userHubUrl}/image/user/${id}`
+}

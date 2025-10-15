@@ -13,6 +13,7 @@ import FeedPost from '../components/FeedPost'
 import CommentDialog from '../components/CommentDialog'
 import { API } from '@services/api'
 import queryString from 'query-string'
+import { getPublicPostUserName } from '@services/userNames';
 
 import {
   ContainerStyled,
@@ -33,19 +34,26 @@ interface Props extends RouteComponentProps {
   isAboutUsViewed: boolean
   friends: ApiTypes.Friends.Friend[] | null
   postUpdated: boolean
+  isLogged: boolean
+  publicMsgToken: ApiTypes.HubToken | null
 
   onGetFriends: () => void
   onGetMessages: () => void
   onGetMoreMessages: () => void
+  onGetMorePublicMessages: (data) => void
   onGetCurrentHub: () => void
   onSetPostUpdated: (data) => void
+  onGetPublicPosts: (data) => void
 }
 
 interface State {
   authToken: string
   messageLenght: number
   isPopupOpen: boolean
-  popupData: CommonTypes.PopupData
+  popupData: CommonTypes.PopupData,
+  userId: string | null,
+  msgId: string | null,
+  publicUserName: string
 }
 
 class FeedPage extends React.Component<Props, State> {
@@ -54,6 +62,9 @@ class FeedPage extends React.Component<Props, State> {
     authToken: '',
     messageLenght: 0,
     isPopupOpen: false,
+    userId: null,
+    msgId: null,
+    publicUserName: '',
     popupData: {
       created_at: "",
       message: null,
@@ -75,7 +86,20 @@ class FeedPage extends React.Component<Props, State> {
   lastMessageRef = React.createRef<HTMLDivElement>()
 
   componentDidMount() {
-    const { onGetMessages, onGetCurrentHub, authToken, onGetFriends } = this.props
+    const {
+      onGetMessages,
+      onGetCurrentHub,
+      onGetFriends,
+      onGetPublicPosts,
+      authToken,
+      location,
+      history,
+    } = this.props
+
+    const url = location.search
+    const params = queryString.parse(url)
+    const currentUserId = params.userid ? params.userid as string : null
+    // const msgId = params.msgid ? params.msgid as string : null
 
     if (authToken) {
       onGetMessages()
@@ -85,13 +109,23 @@ class FeedPage extends React.Component<Props, State> {
       this.timerId = setInterval(() => {
         onGetMessages()
       }, 10000)
+    } else if (currentUserId){
+      onGetPublicPosts(currentUserId)
+      this.setState({
+        userId: currentUserId
+      })
+      // this.timerId = setInterval(() => {
+      //   onGetPublicPosts(currentUserId)
+      // }, 10000)
+    } else {
+      history.push('/login')
     }
 
     window.addEventListener('scroll', this.onScrollList)
   }
 
   onScrollList = () => {
-    const { isMoreMessagesRequested, messages } = this.props
+    const { isMoreMessagesRequested, messages, isLogged } = this.props
     const { messageLenght } = this.state
     const lastMessageRect = this.lastMessageRef?.current?.getBoundingClientRect()
 
@@ -99,7 +133,11 @@ class FeedPage extends React.Component<Props, State> {
 
     if (lastMessageRect?.top <= window.innerHeight && isMoreMessagesRequested !== true) {
       if (messages?.length !== messageLenght) {
-        this.props.onGetMoreMessages()
+        if ( isLogged ) {
+          this.props.onGetMoreMessages()
+        } else {
+          this.props.onGetMorePublicMessages(this.state.userId)
+        }
         this.setState({
           messageLenght: messages.length
         })
@@ -149,6 +187,7 @@ class FeedPage extends React.Component<Props, State> {
             <FeedPost
               {...item}
               showCommentPopup={this.showCommentPopup}
+              publicUserName={this.state.publicUserName}
               isAuthor={(userId === item.user_id) ? true : false} />
           </div>
         )
@@ -158,6 +197,7 @@ class FeedPage extends React.Component<Props, State> {
         {...item}
         key={item.id}
         showCommentPopup={this.showCommentPopup}
+        publicUserName={this.state.publicUserName}
         isAuthor={(userId === item.user_id) ? true : false} />
     })
 
@@ -206,7 +246,7 @@ class FeedPage extends React.Component<Props, State> {
   }
 
   checkCurrentHub = () => {
-    const { messages, isCurrentHubRequested } = this.props
+    const { messages, isCurrentHubRequested, isLogged } = this.props
 
     if (isCurrentHubRequested) {
       return (
@@ -220,12 +260,13 @@ class FeedPage extends React.Component<Props, State> {
 
       return (
         <>
-          <div ref={this.editorRef}><Editor /></div>
+          {isLogged && <div ref={this.editorRef}><Editor /></div>}
           {this.mapMessages(messages)}
           <CommentDialog
             isOpen={this.state.isPopupOpen}
             setOpen={this.setPopupOpen}
             popupData={this.state.popupData}
+            publicUserName={this.state.publicUserName}
           />
         </>
       )
@@ -238,7 +279,8 @@ class FeedPage extends React.Component<Props, State> {
       feedsTokens,
       isAboutUsViewed,
       currentHub,
-      postUpdated
+      postUpdated,
+      publicMsgToken
     } = this.props
     const parsed = queryString.parse(this.props.history.location.search)
 
@@ -249,6 +291,16 @@ class FeedPage extends React.Component<Props, State> {
     }
 
     let messageId = parsed?.message_id as string
+    let msgid = parsed?.msgid as string
+    let userid = parsed?.userid as string
+
+    if (prevState.publicUserName === '' && publicMsgToken) {
+      getPublicPostUserName(userid, publicMsgToken).then(res => {
+        this.setState({
+          publicUserName: res
+        })
+      })
+    }
 
     if (messageId) {
       this.props.history.replace({
@@ -307,6 +359,33 @@ class FeedPage extends React.Component<Props, State> {
       })
     }
 
+    if ( publicMsgToken && publicMsgToken.host && msgid) {
+      this.props.history.replace({
+        search: "userid=" + userid,
+      })
+      API.feed.getPublicPostById({
+        host: publicMsgToken?.host,
+        token: publicMsgToken?.token,
+        message_id: msgid
+      }).then((response: any) => {
+        this.showCommentPopup({
+          created_at: response.data.message.created_at,
+          message: response.data.message.text,
+          isAttacmentDeleted: false,
+          attachment_type: response.data.message.attachment_type,
+          attachment: response.data.message.attachment,
+          comments: response.data.message.comments,
+          sourceHost: publicMsgToken?.host ? publicMsgToken.host : '',
+          messageToken: publicMsgToken?.token ? publicMsgToken.token : '',
+          id: response.data.message.id,
+          user_id: response.data.message.user_id,
+          friends: []
+        })
+        this.setPopupOpen(true)
+      }).catch(error => {
+        console.log("getPublicPostById: ", error)
+      })
+    }
   }
 
   render() {
@@ -340,6 +419,8 @@ type StateProps = Pick<Props,
   | 'isCurrentHubRequested'
   | 'friends'
   | 'postUpdated'
+  | 'isLogged'
+  | 'publicMsgToken'
 >
 const mapStateToProps = (state: StoreTypes): StateProps => ({
   feedsTokens: selectors.feed.feedsTokens(state),
@@ -352,20 +433,26 @@ const mapStateToProps = (state: StoreTypes): StateProps => ({
   isAboutUsViewed: selectors.common.isAboutUsViewed(state),
   isCurrentHubRequested: selectors.feed.isCurrentHubRequested(state),
   friends: selectors.friends.friends(state),
-  postUpdated: selectors.feed.postUpdated(state)
+  postUpdated: selectors.feed.postUpdated(state),
+  isLogged: selectors.authorization.isLogged(state),
+  publicMsgToken: selectors.feed.publicMsgToken(state)
 })
 
 type DispatchProps = Pick<Props,
   | 'onGetMessages'
   | 'onGetCurrentHub'
   | 'onGetMoreMessages'
+  | 'onGetMorePublicMessages'
   | 'onGetFriends'
   | 'onSetPostUpdated'
+  | 'onGetPublicPosts'
 >
 const mapDispatchToProps = (dispatch): DispatchProps => ({
+  onGetPublicPosts: (data) => dispatch(Actions.feed.getFeedPublicPosts(data)),
   onGetMessages: () => dispatch(Actions.feed.getFeedTokensRequest()),
   onGetCurrentHub: () => dispatch(Actions.feed.getCurrentHubRequest()),
   onGetMoreMessages: () => dispatch(Actions.feed.getMoreFeedRequest()),
+  onGetMorePublicMessages: (data) => dispatch(Actions.feed.getMorePublicFeedRequest(data)),
   onGetFriends: () => dispatch(Actions.friends.getFriendsRequest()),
   onSetPostUpdated: (data) => dispatch(Actions.feed.setPostUpdated(data))
 })

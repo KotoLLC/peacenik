@@ -27,7 +27,7 @@ const MyGroupsListPage: React.FC<Props> = (props) => {
 
   useEffect(() => {
     onGetMyGroupsRequest()
-  }, [])
+  }, [onGetMyGroupsRequest])
 
   const renderGroups = () => (
     myGroups?.length && myGroups.map(

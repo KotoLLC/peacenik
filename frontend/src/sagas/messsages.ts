@@ -24,6 +24,8 @@ export function * watchDeleteDirectMsg(action: {
       feedsTokens.map( (item) => {
         if ( item.host === action.payload.host)
           msgToken = item.token
+
+        return item
       })
       yield call(watchGetFriendMsgAPIData, {
         type: "test",

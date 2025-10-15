@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import selectors from '@selectors/index'
 import Actions from '@store/actions'
@@ -6,7 +6,7 @@ import { StoreTypes, CommonTypes } from 'src/types'
 import { ProfileSettingsContent } from '../components/styles'
 import HubMajorInfo from './../components/HubMajorInfo'
 import { HubStepsInfo } from './../components/HubStepsInfo'
-import { HubOptionA } from './../components/HubOptionA'
+// import { HubOptionA } from './../components/HubOptionA'
 import HubOptionB from './../components/HubOptionB'
 
 interface Props {
@@ -33,7 +33,7 @@ const HubSettingsPage: React.FC<Props> = (props) => {
   const [myActiveHub, setMyActiveHub] = useState<CommonTypes.HubTypes.Hub>(myActiveHubInitialState)
   const { onGetHubs, hubsList, userName, currentHub, onGetCurrentHub } = props
 
-  const checkIsPosiblyCreateHub = () => {
+  const checkIsPosiblyCreateHub = useCallback(() => {
     if (isHubsRequested !== null) {
 
       if (hubsList.length) {
@@ -48,7 +48,7 @@ const HubSettingsPage: React.FC<Props> = (props) => {
         }
       }
     }
-  }
+  }, [hubsList, isHubsRequested, userName])
 
   const renderCurrentView = () => {
     if (hubCreationStatus === 'approved') {
@@ -84,7 +84,7 @@ const HubSettingsPage: React.FC<Props> = (props) => {
       onGetCurrentHub()
     }
 
-  }, [isHubsRequested, hubsList, hubCreationStatus, currentHub])
+  }, [isHubsRequested, hubsList, hubCreationStatus, currentHub, checkIsPosiblyCreateHub, myActiveHubInitialState, onGetCurrentHub, onGetHubs])
 
   return (
     <ProfileSettingsContent>

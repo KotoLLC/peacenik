@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import { ApiTypes, StoreTypes } from 'src/types'
 import IconButton from '@material-ui/core/IconButton'
@@ -9,6 +9,8 @@ import {
 
 interface Props extends ApiTypes.Feed.Comment {
   userId: string
+  isLogged: boolean
+  showLoginDlg: () => void
 }
 
 const FeedComment = (props) => {
@@ -25,7 +27,9 @@ const FeedComment = (props) => {
     messageToken,
     id,
     userId,
-    showCommentPopup
+    showCommentPopup,
+    isLogged,
+    showLoginDlg
   } = props
 
   const checkIsCommentedByMe = (): boolean => {
@@ -33,19 +37,23 @@ const FeedComment = (props) => {
   }
 
   const commentClick = (): void => {
-    showCommentPopup({
-      created_at: created_at,
-      message: message,
-      isAttacmentDeleted: isAttacmentDeleted,
-      attachment_type: attachment_type,
-      attachment: attachment,
-      comments: comments,
-      sourceHost: sourceHost,
-      messageToken: messageToken,
-      id: id,
-      user_id: user_id,
-      friends: friends
-    })
+    if ( isLogged ) {
+      showCommentPopup({
+        created_at: created_at,
+        message: message,
+        isAttacmentDeleted: isAttacmentDeleted,
+        attachment_type: attachment_type,
+        attachment: attachment,
+        comments: comments,
+        sourceHost: sourceHost,
+        messageToken: messageToken,
+        id: id,
+        user_id: user_id,
+        friends: friends
+      })
+    } else {
+      showLoginDlg(true)
+    }
   }
 
   return (

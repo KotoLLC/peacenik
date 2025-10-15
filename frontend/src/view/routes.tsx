@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { StoreTypes } from "src/types";
 import NoHubsPage from "./pages/NoHubsPage";
 import ProfilePage from "./features/Profile/pages";
-import DocsPages from "./pages/DocsPages";
+// import DocsPages from "./pages/DocsPages";
 import { DashboardPage } from "@view/pages/DashboardPage";
 import selectors from "@selectors/index";
 import { LastLocationProvider } from "react-router-last-location";
@@ -105,7 +105,8 @@ export const Routes = () => {
               <PrivateRoute path="/profile" component={ProfilePage} />
               <PrivateRoute path="/friends" component={FriendsPages} />
               <PrivateRoute path="/groups" component={GroupsPages} />
-              <PrivateRoute path="/feed" component={FeedPage} />
+              {/* <PrivateRoute path="/feed" component={FeedPage} /> */}
+              <Route path="/feed" component={FeedPage} />
               <PrivateRoute path="/hubslist" component={HubListPage} />
               <AuthPages />
               <Route component={() => <>404 not found</>} />

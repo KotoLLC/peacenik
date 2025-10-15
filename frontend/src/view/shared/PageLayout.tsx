@@ -11,12 +11,12 @@ interface Props {
   isEmailConfirmed: boolean
 }
 
-export const WithPageLayout: React.SFC<Props> = (props) => {
+const WithPageLayout: React.SFC<Props> = (props) => {
   const { isLogged, isEmailConfirmed } = props
 
   return (
     <PageWrapper>
-      {isLogged && isEmailConfirmed && <TopBar />}
+      <TopBar isLogged={isLogged}/>
       {isLogged && isEmailConfirmed && <MobileTopBar />}
       <PageContent>
         {props.children}

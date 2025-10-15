@@ -1,5 +1,6 @@
 import { ApiTypes, CommonTypes } from 'src/types'
 import uniqBy from 'lodash.uniqby'
+import axios from 'axios'
 
 function getUserNamesFromUserFriends(data: ApiTypes.User[]): CommonTypes.UserNameData[] {
   const usersNames: CommonTypes.UserNameData[] = []
@@ -79,6 +80,27 @@ export function getUserNameByUserId(userId: string): string {
     const currentUserNameData = usersNames.find(item => item.userId === userId)
     return checkCurrentUserName(currentUserNameData)
   } else {
+    return ''
+  }
+}
+
+// @ts-ignore
+const URL: string = window.apiEndpoint
+
+const axiosInstance = axios.create({
+  baseURL: URL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  }
+})
+
+export const getPublicPostUserName = async (userId: string, data) => {
+  try {
+    const response = await axiosInstance.post(`/rpc.UserService/User`, {user_id: userId}).then(response => response).catch(error => error)
+    return response.data.user.full_name
+  } catch (err) {
+    console.log('getPublicPostUserName error', err)
     return ''
   }
 }

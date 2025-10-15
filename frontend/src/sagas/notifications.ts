@@ -5,7 +5,7 @@ import { hubsForMessagesBack2Front } from '@services/dataTransforms/hubsForMessa
 import { Types as NotificationsTypes } from '@store/notifications/actions'
 import { CommonTypes } from 'src/types'
 import { store } from '@store/store'
-import { FormatColorResetOutlined } from '@material-ui/icons'
+// import { FormatColorResetOutlined } from '@material-ui/icons'
 
 export function* watchGetNotifications() {
   const response = yield API.feed.getMessages()

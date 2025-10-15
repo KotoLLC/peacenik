@@ -43,6 +43,7 @@ export const NoHubs: React.FC<Props> = (props) => {
   }, [
     feedsTokens,
     currentHub,
+    props.history
   ])
 
   return (

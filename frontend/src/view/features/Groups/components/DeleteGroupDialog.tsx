@@ -53,7 +53,7 @@ const DeleteGroupDialog: React.FC<Props> = (props) => {
     if (errorMessage) {
       setRequested(false)
     }
-  }, [isGroupDeletedSuccessfully])
+  }, [isGroupDeletedSuccessfully, errorMessage, history, onDeleteGroupSuccess])
 
   return (
     <DangerZoneWrapper className={className}>

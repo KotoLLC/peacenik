@@ -183,6 +183,7 @@ export declare namespace ApiTypes {
         group_id?: string
         friend_id?: string
         msg_token?: string
+        is_public?: boolean
       }
     }
 
@@ -275,6 +276,7 @@ export declare namespace ApiTypes {
       attachment?: string
       attachment_type?: string
       attachment_thumbnail?: string
+      is_public?: boolean
       likes?: number
       liked_by_me?: boolean
       friend_id?: string

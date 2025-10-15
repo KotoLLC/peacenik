@@ -9,6 +9,10 @@ import TextField from '@material-ui/core/TextField'
 import { Link } from 'react-router-dom'
 import ListItemText from '@material-ui/core/ListItemText'
 
+export const SendBtnWrapper = styled.div`
+  display: flex
+`
+
 export const ContainerStyled = styled.div`
   margin: 0 auto;
   padding: 95px 15px 40px;

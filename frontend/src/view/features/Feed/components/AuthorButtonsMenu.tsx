@@ -7,12 +7,15 @@ import IconButton from '@material-ui/core/IconButton'
 import RemoveMessageDialog from './RemoveMessageDialog'
 import { ListItemIconStyled } from '@view/shared/styles'
 import { ListItemTextStyled } from './styles'
+import LinkIcon from '@material-ui/icons/Link'
 
 interface Props {
   isEditer: boolean
   sourceHost: string
   message: string
   id: string
+  user_id?: string
+  is_public?: boolean
 
   setEditor: (value: boolean) => void
 }
@@ -28,12 +31,19 @@ export const AuthorButtonsMenu: React.FC<Props> = React.memo((props) => {
     setAnchorEl(null)
   }
 
+  const copySharedLink = () => {
+    onMenuClose()
+    navigator.clipboard.writeText("" + window.location.href + "?userid=" + user_id + "&msgid=" + id)
+  }
+
   const {
     isEditer,
     sourceHost,
     message,
     id,
     setEditor,
+    user_id,
+    is_public
   } = props
 
   return (
@@ -54,6 +64,12 @@ export const AuthorButtonsMenu: React.FC<Props> = React.memo((props) => {
           <ListItemTextStyled primary="Edit" />
         </MenuItem>
         <RemoveMessageDialog {...{ message, id, sourceHost }} />
+        { is_public && <MenuItem onClick={copySharedLink}>
+          <ListItemIconStyled>
+            <LinkIcon fontSize="small" />
+          </ListItemIconStyled>
+          <ListItemTextStyled primary="Share Link" />
+        </MenuItem>}
       </Menu>
     </>
   )

@@ -57,7 +57,7 @@ const JoinGroupDialog: React.FC<Props> = (props) => {
     if (errorMessage) {
       setRequested(false)
     }
-  }, [joinToGroupRequestSuccessfully])
+  }, [joinToGroupRequestSuccessfully, errorMessage, onJoinToGroupSuccess])
 
   return (
     <>

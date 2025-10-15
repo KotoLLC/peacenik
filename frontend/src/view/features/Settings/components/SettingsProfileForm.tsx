@@ -11,9 +11,9 @@ import MailIcon from '@material-ui/icons/Mail';
 import Checkbox from '@material-ui/core/Checkbox';
 import { getAvatarUrl, getProfileCoverUrl } from '@services/avatarUrl';
 import { validate } from '@services/validation';
-import loadImage from 'blueimp-load-image';
+// import loadImage from 'blueimp-load-image';
 import { history } from '@view/routes';
-import cropImg from '@assets/images/1.nohub.png'
+// import cropImg from '@assets/images/1.nohub.png'
 import CoverBkImgCropDialog from './CoverBkImgCropDialog';
 import Cropper from 'react-easy-crop'
 import {
@@ -46,8 +46,8 @@ import {
   CropZoomLabel,
   CropZoomSlider,
 } from './styles';
-import { updateJsxSelfClosingElement } from 'typescript';
-import { StringifyOptions } from 'querystring';
+// import { updateJsxSelfClosingElement } from 'typescript';
+// import { StringifyOptions } from 'querystring';
 
 interface Props {
   userName: string;

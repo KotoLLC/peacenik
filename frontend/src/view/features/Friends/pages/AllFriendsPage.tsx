@@ -3,8 +3,8 @@ import { connect } from "react-redux";
 import { StoreTypes, ApiTypes } from "src/types";
 import Actions from "@store/actions";
 import selectors from "@selectors/index";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import SearchIcon from "@material-ui/icons/Search";
+// import InputAdornment from "@material-ui/core/InputAdornment";
+// import SearchIcon from "@material-ui/icons/Search";
 import PeopleAltRoundedIcon from "@material-ui/icons/PeopleAltRounded";
 import { FriendItem } from "../components/FriendItem";
 import { v4 as uuidv4 } from "uuid";
@@ -17,8 +17,8 @@ import {
 import {
   FriendsEmpty,
   FriendsEmptyWrapper,
-  SearchInput,
-  SearchInputWrapper,
+  // SearchInput,
+  // SearchInputWrapper,
 } from "../components/styles";
 
 export interface Props {

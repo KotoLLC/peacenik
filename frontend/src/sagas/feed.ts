@@ -5,8 +5,40 @@ import { CommonTypes, ApiTypes } from 'src/types'
 import { currentHubBack2Front } from '@services/dataTransforms/currentHubTransform'
 import { hubsForMessagesBack2Front } from '@services/dataTransforms/hubsForMessagesTransform'
 import { Types as FeedMessagesTypes } from '@store/feed/actions'
-import { Types as DirectMessagesTypes } from '@store/messages/actions'
+// import { Types as DirectMessagesTypes } from '@store/messages/actions'
 import selectors from '@selectors/index'
+
+export function* watchGetPublicPosts(user_id) {
+  try {
+    const response = yield API.feed.getPublicPostToken(user_id)
+    if (response.status === 200) {
+      const feedsTokens = hubsForMessagesBack2Front(response.data.tokens)
+      if ( feedsTokens.length > 0 ) {
+        yield put(Actions.feed.getPublicFeedTokenSuccess(feedsTokens[0]))
+      }
+      const postResponse = yield API.feed.getPublicPosts(feedsTokens[0] as any)
+      let resultData = []
+      if (postResponse.data?.messages?.length) {
+        resultData = postResponse.data?.messages.map(item => {
+          item.sourceHost = feedsTokens[0].host
+          item.messageToken = feedsTokens[0].token
+          return item
+        })
+      }
+  
+      if ( resultData.length > 0) {
+        yield put(Actions.feed.getFeedFromHubSuccess({
+          hub: feedsTokens[0].host,
+          messages: resultData
+        }))
+      }
+    }
+  } catch (error) {
+    if (!error.response) {
+      yield put(Actions.common.setConnectionError(true))
+    }
+  }
+}
 
 export function* watchGetMessages() {
   try {
@@ -59,6 +91,39 @@ export function* watchGetMessages() {
       window.location.reload()
     }
 
+  } catch (error) {
+    if (!error.response) {
+      yield put(Actions.common.setConnectionError(true))
+    }
+  }
+}
+
+export function* watchGetMorePublicMessages(data) {
+  try {
+    const state = yield select()
+    const publicHost = state.feed.publicMsgToken.host
+    const publicToken = state.feed.publicMsgToken.token
+    const fromDate = state.feed.messages[state.feed.messages.length - 1].updated_at
+    const postResponse = yield API.feed.getPublicPosts({
+      host: publicHost,
+      token: publicToken,
+      from: fromDate,
+      count: 10
+    })
+    let resultData = []
+    if (postResponse.data?.messages?.length) {
+      resultData = postResponse.data?.messages.map(item => {
+        item.sourceHost = publicHost
+        item.messageToken = publicToken
+        return item
+      })
+    }
+    if ( resultData.length > 0) {
+      yield put(Actions.feed.getFeedFromHubSuccess({
+        hub: publicHost,
+        messages: resultData
+      }))
+    }
   } catch (error) {
     if (!error.response) {
       yield put(Actions.common.setConnectionError(true))
@@ -188,6 +253,8 @@ export function* watchPostMessage(action: { type: string, payload: ApiTypes.Feed
       feedsTokens.map( (item: CommonTypes.HubTypes.CurrentHub ) => {
         if(item.host === groupMsgToken.host)
           msgToken = item.token
+
+        return item
       })
   
       yield put(Actions.groups.getGroupFeedRequest({
